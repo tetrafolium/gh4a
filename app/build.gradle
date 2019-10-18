@@ -29,10 +29,8 @@ android {
         versionName "4.5.0"
         applicationId "com.gh4a"
 
-        /*** ERROR: Could not get unknown property 'ClientId'
         buildConfigField 'String', 'CLIENT_ID', ClientId
         buildConfigField 'String', 'CLIENT_SECRET', ClientSecret
-        ***/
     }
 
     buildTypes {
