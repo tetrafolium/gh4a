@@ -222,12 +222,10 @@ public class ContentListContainerFragment extends Fragment
       String itemToLoad = mInitialPathToLoad.get(0);
       boolean found = false;
       for (Content content : contents) {
-        if (content.type() == ContentType.Directory) {
-          if (content.path().equals(itemToLoad)) {
-            onTreeSelected(content);
-            found = true;
-            break;
-          }
+        if ((content.type() == ContentType.Directory) && (content.path().equals(itemToLoad))) {
+          onTreeSelected(content);
+          found = true;
+          break;
         }
       }
       if (found) {

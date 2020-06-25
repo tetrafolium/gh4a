@@ -326,11 +326,9 @@ public class HtmlUtils {
         int end = mSpannableStringBuilder.getSpanEnd(span);
 
         // If the last line of the range is blank, back off by one.
-        if (end - 2 >= 0 && (end - start) >= 2) {
-          if (mSpannableStringBuilder.charAt(end - 1) == '\n' &&
-              mSpannableStringBuilder.charAt(end - 2) == '\n') {
-            end--;
-          }
+        if ((end - 2 >= 0 && (end - start) >= 2) && (mSpannableStringBuilder.charAt(end - 1) == '\n' &&
+              mSpannableStringBuilder.charAt(end - 2) == '\n')) {
+          end--;
         }
 
         if (end == start) {
@@ -826,10 +824,8 @@ public class HtmlUtils {
 
     private static void endA(final Editable text) {
       Href h = getLast(text, Href.class);
-      if (h != null) {
-        if (h.mHref != null) {
-          setSpanFromMark(text, h, new URLSpan((h.mHref)));
-        }
+      if ((h != null) && (h.mHref != null)) {
+        setSpanFromMark(text, h, new URLSpan((h.mHref)));
       }
     }
 

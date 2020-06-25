@@ -291,10 +291,8 @@ public class NotificationListFragment extends LoadingListFragmentBase
 
   private void handleMarkAsRead(final Repository repository,
                                 final NotificationThread notification) {
-    if (mAdapter.markAsRead(repository, notification)) {
-      if (!mAll && !mParticipating) {
-        mCallback.setNotificationsIndicatorVisible(false);
-      }
+    if ((mAdapter.markAsRead(repository, notification)) && (!mAll && !mParticipating)) {
+      mCallback.setNotificationsIndicatorVisible(false);
     }
     updateMenuItemVisibility();
   }

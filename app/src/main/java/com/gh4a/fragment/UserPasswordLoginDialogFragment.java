@@ -135,9 +135,7 @@ public class UserPasswordLoginDialogFragment
   }
 
   private void updateOkButtonState() {
-    boolean enable = mProgressContainer.getVisibility() == View.VISIBLE
-                         ? false
-                         : mWaitingForOtpCode
+    boolean enable = !(mProgressContainer.getVisibility() == View.VISIBLE) && mWaitingForOtpCode
                                ? !mOtpCodeEditor.hasError()
                                : !mUserName.hasError() && !mPassword.hasError();
     if (mOkButton != null) {

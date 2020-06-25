@@ -107,10 +107,8 @@ public abstract class WebViewerActivity extends BaseActivity
   public void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      if ((getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
-        WebView.setWebContentsDebuggingEnabled(true);
-      }
+    if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) && ((getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0)) {
+      WebView.setWebContentsDebuggingEnabled(true);
     }
 
     // We also use the dark CAB for the light theme, so we have to inflate

@@ -75,10 +75,8 @@ public class RxUtils {
   public static <T> SingleTransformer<T, T> mapFailureToValue(final int code,
                                                               final T value) {
     return upstream -> upstream.onErrorResumeNext(error -> {
-      if (error instanceof ApiRequestException) {
-        if (((ApiRequestException)error).getStatus() == code) {
-          return Single.just(value);
-        }
+      if ((error instanceof ApiRequestException) && (((ApiRequestException)error).getStatus() == code)) {
+        return Single.just(value);
       }
       return Single.error(error);
     });

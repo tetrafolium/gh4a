@@ -320,11 +320,9 @@ public class CommitFragment
   public void onActivityResult(final int requestCode, final int resultCode,
                                final Intent data) {
     if (requestCode == REQUEST_DIFF_VIEWER) {
-      if (resultCode == Activity.RESULT_OK) {
-        // reload comments
-        if (getActivity() instanceof CommentUpdateListener) {
-          ((CommentUpdateListener)getActivity()).onCommentsUpdated();
-        }
+      // reload comments
+      if ((resultCode == Activity.RESULT_OK) && (getActivity() instanceof CommentUpdateListener)) {
+        ((CommentUpdateListener)getActivity()).onCommentsUpdated();
       }
     } else {
       super.onActivityResult(requestCode, resultCode, data);

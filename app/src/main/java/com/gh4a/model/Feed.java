@@ -81,10 +81,8 @@ public class Feed {
     Uri uri = Uri.parse(url);
     String host = uri.getHost();
 
-    if (host.startsWith("avatars") && host.contains("githubusercontent.com")) {
-      if (uri.getPathSegments().size() == 2) {
-        return Integer.valueOf(uri.getLastPathSegment());
-      }
+    if ((host.startsWith("avatars") && host.contains("githubusercontent.com")) && (uri.getPathSegments().size() == 2)) {
+      return Integer.valueOf(uri.getLastPathSegment());
     }
 
     // We couldn't parse the user ID from the avatar, so construct a fake

@@ -256,11 +256,9 @@ public class RepositoryActivity extends BaseFragmentPagerActivity
 
   @Override
   public void onBackPressed() {
-    if (mContentListFragment != null) {
-      if (getPager().getCurrentItem() == 1 &&
-          mContentListFragment.handleBackPress()) {
-        return;
-      }
+    if ((mContentListFragment != null) && (getPager().getCurrentItem() == 1 &&
+          mContentListFragment.handleBackPress())) {
+      return;
     }
     super.onBackPressed();
   }
