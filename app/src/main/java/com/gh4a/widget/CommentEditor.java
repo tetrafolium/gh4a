@@ -19,7 +19,7 @@ import me.thanel.markdownedit.MarkdownEdit;
 import me.thanel.markdownedit.SelectionUtils;
 
 public class CommentEditor extends AppCompatMultiAutoCompleteTextView
-        implements TextView.OnEditorActionListener {
+    implements TextView.OnEditorActionListener {
     private DropDownUserAdapter mMentionAdapter;
     private boolean mLocked;
     @StringRes
@@ -44,7 +44,7 @@ public class CommentEditor extends AppCompatMultiAutoCompleteTextView
 
     private void initialize(Context context) {
         int inputType = (getInputType() | InputType.TYPE_TEXT_FLAG_AUTO_CORRECT)
-                & ~InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE;
+                        & ~InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE;
         setInputType(inputType);
 
         mMentionAdapter = new DropDownUserAdapter(context);

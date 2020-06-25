@@ -65,7 +65,7 @@ public class TrendAdapter extends RootAdapter<Trend, TrendAdapter.ViewHolder> {
             holder.tvLang.setText(lang);
         }
         holder.tvStars.setText(mContext.getString(mStarsTemplate,
-                trend.getNewStars(), trend.getStars()));
+                               trend.getNewStars(), trend.getStars()));
         holder.tvForks.setText(String.valueOf(trend.getForks()));
     }
 

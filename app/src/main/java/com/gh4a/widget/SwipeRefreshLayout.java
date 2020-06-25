@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewConfiguration;
 
 public class SwipeRefreshLayout extends android.support.v4.widget.SwipeRefreshLayout
-        implements AppBarLayout.OnOffsetChangedListener {
+    implements AppBarLayout.OnOffsetChangedListener {
     public interface ChildScrollDelegate {
         boolean canChildScrollUp();
     }
@@ -70,25 +70,25 @@ public class SwipeRefreshLayout extends android.support.v4.widget.SwipeRefreshLa
         }
 
         switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                mDownX = event.getX();
-                mDownY = event.getY();
-                mHorizontalSwipe = false;
-                mIsOrWasUpSwipe = false;
-                mChildScrollableOnDown = canChildScrollUp();
-                break;
-            case MotionEvent.ACTION_MOVE:
-                final float xDiff = Math.abs(event.getX() - mDownX);
-                final float yDiff = event.getY() - mDownY;
+        case MotionEvent.ACTION_DOWN:
+            mDownX = event.getX();
+            mDownY = event.getY();
+            mHorizontalSwipe = false;
+            mIsOrWasUpSwipe = false;
+            mChildScrollableOnDown = canChildScrollUp();
+            break;
+        case MotionEvent.ACTION_MOVE:
+            final float xDiff = Math.abs(event.getX() - mDownX);
+            final float yDiff = event.getY() - mDownY;
 
-                if (yDiff < -mTouchSlop) {
-                    mIsOrWasUpSwipe = true;
-                }
-                if (mHorizontalSwipe || xDiff > mTouchSlop) {
-                    mHorizontalSwipe = true;
-                    return false;
-                }
-                break;
+            if (yDiff < -mTouchSlop) {
+                mIsOrWasUpSwipe = true;
+            }
+            if (mHorizontalSwipe || xDiff > mTouchSlop) {
+                mHorizontalSwipe = true;
+                return false;
+            }
+            break;
         }
 
         return super.onInterceptTouchEvent(event);
@@ -148,7 +148,7 @@ public class SwipeRefreshLayout extends android.support.v4.widget.SwipeRefreshLa
                                final int dxUnconsumed, final int dyUnconsumed) {
         if (shouldPreventRefresh()) {
             dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed,
-                    mParentOffsetInWindow);
+                                 mParentOffsetInWindow);
         } else {
             super.onNestedScroll(target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
         }

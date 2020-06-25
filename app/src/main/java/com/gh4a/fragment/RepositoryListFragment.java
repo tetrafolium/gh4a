@@ -80,7 +80,7 @@ public class RepositoryListFragment extends PagedDataBaseFragment<Repository> {
         // type when adding affiliation.
 
         String actualFilterType = "sources".equals(mRepoType) || "forks".equals(mRepoType)
-                ? "all" : mRepoType;
+                                  ? "all" : mRepoType;
 
         if (isSelf && TextUtils.equals(actualFilterType, "all")) {
             mFilterData.put("affiliation", "owner,collaborator");
@@ -107,7 +107,7 @@ public class RepositoryListFragment extends PagedDataBaseFragment<Repository> {
 
     @Override
     protected void onAddData(RootAdapter<Repository, ? extends RecyclerView.ViewHolder> adapter,
-            Collection<Repository> repositories) {
+                             Collection<Repository> repositories) {
         if ("sources".equals(mRepoType) || "forks".equals(mRepoType)) {
             for (Repository repository : repositories) {
                 if ("sources".equals(mRepoType) && !repository.isFork()) {
@@ -131,7 +131,7 @@ public class RepositoryListFragment extends PagedDataBaseFragment<Repository> {
     protected Single<Response<Page<Repository>>> loadPage(int page, boolean bypassCache) {
         final RepositoryService service = ServiceFactory.get(RepositoryService.class, bypassCache);
         return ApiHelpers.loginEquals(mLogin, Gh4Application.get().getAuthLogin())
-                ? service.getUserRepositories(mFilterData, page)
-                : service.getUserRepositories(mLogin, mFilterData, page);
+               ? service.getUserRepositories(mFilterData, page)
+               : service.getUserRepositories(mLogin, mFilterData, page);
     }
 }

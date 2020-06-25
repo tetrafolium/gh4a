@@ -14,9 +14,9 @@ import io.reactivex.Single;
 
 public class EditCommitCommentActivity extends EditCommentActivity {
     public static Intent makeIntent(Context context, String repoOwner, String repoName,
-            String commitSha, long id, String body) {
+                                    String commitSha, long id, String body) {
         Intent intent = new Intent(context, EditCommitCommentActivity.class)
-                .putExtra("commit", commitSha);
+        .putExtra("commit", commitSha);
         return EditCommentActivity.fillInIntent(intent, repoOwner, repoName, id, 0L, body, 0);
     }
 
@@ -27,7 +27,7 @@ public class EditCommitCommentActivity extends EditCommentActivity {
         CreateCommitComment request = CreateCommitComment.builder().body(body).build();
         String sha = getIntent().getStringExtra("commit");
         return service.createCommitComment(repoOwner, repoName, sha, request)
-                .map(ApiHelpers::throwOnFailure);
+               .map(ApiHelpers::throwOnFailure);
     }
 
     @Override
@@ -36,6 +36,6 @@ public class EditCommitCommentActivity extends EditCommentActivity {
         RepositoryCommentService service = ServiceFactory.get(RepositoryCommentService.class, false);
         CommentRequest request = CommentRequest.builder().body(body).build();
         return service.editCommitComment(repoOwner, repoName, commentId, request)
-                .map(ApiHelpers::throwOnFailure);
+               .map(ApiHelpers::throwOnFailure);
     }
 }

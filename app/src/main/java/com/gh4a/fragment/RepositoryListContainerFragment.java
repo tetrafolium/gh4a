@@ -24,8 +24,8 @@ import com.gh4a.widget.SwipeRefreshLayout;
 import com.meisolsson.githubsdk.model.Repository;
 
 public class RepositoryListContainerFragment extends Fragment implements
-        BaseActivity.RefreshableChild, SearchView.OnCloseListener, SearchView.OnQueryTextListener,
-        MenuItem.OnActionExpandListener, SwipeRefreshLayout.ChildScrollDelegate {
+    BaseActivity.RefreshableChild, SearchView.OnCloseListener, SearchView.OnQueryTextListener,
+    MenuItem.OnActionExpandListener, SwipeRefreshLayout.ChildScrollDelegate {
     public static RepositoryListContainerFragment newInstance(String userLogin, boolean isOrg) {
         return newInstance(userLogin, isOrg, null);
     }
@@ -101,9 +101,9 @@ public class RepositoryListContainerFragment extends Fragment implements
 
     public void destroyChildren() {
         getChildFragmentManager().beginTransaction()
-                .remove(mMainFragment)
-                .remove(mSearchFragment)
-                .commitNowAllowingStateLoss();
+        .remove(mMainFragment)
+        .remove(mSearchFragment)
+        .commitNowAllowingStateLoss();
     }
 
     @Nullable
@@ -188,13 +188,13 @@ public class RepositoryListContainerFragment extends Fragment implements
         }
 
         switch (mFilterType) {
-            case "watched":
-                mMainFragment = WatchedRepositoryListFragment.newInstance(mUserLogin);
-                break;
-            default:
-                mMainFragment = RepositoryListFragment.newInstance(mUserLogin, mIsOrg,
-                        mFilterType, mSortOrder, mSortDirection);
-                break;
+        case "watched":
+            mMainFragment = WatchedRepositoryListFragment.newInstance(mUserLogin);
+            break;
+        default:
+            mMainFragment = RepositoryListFragment.newInstance(mUserLogin, mIsOrg,
+                            mFilterType, mSortOrder, mSortDirection);
+            break;
         }
 
         FragmentManager fm = getChildFragmentManager();
@@ -260,14 +260,14 @@ public class RepositoryListContainerFragment extends Fragment implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.search:
-                setSearchVisibility(true);
-                return true;
-            case R.id.filter:
-                if (getActivity() instanceof Callback) {
-                    ((Callback) getActivity()).initiateFilter();
-                }
-                return true;
+        case R.id.search:
+            setSearchVisibility(true);
+            return true;
+        case R.id.filter:
+            if (getActivity() instanceof Callback) {
+                ((Callback) getActivity()).initiateFilter();
+            }
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -426,7 +426,7 @@ public class RepositoryListContainerFragment extends Fragment implements
         }
 
         public void selectSortType(Menu menu, String order, String direction,
-                boolean updateSingleItem) {
+                                   boolean updateSingleItem) {
             int selectedId = 0;
             for (int i = 0; i < SORT_LOOKUP.size(); i++) {
                 String[] value = SORT_LOOKUP.valueAt(i);

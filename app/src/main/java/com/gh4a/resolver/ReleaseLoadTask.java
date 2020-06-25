@@ -25,7 +25,7 @@ public class ReleaseLoadTask extends UrlLoadTask {
     protected final long mId;
 
     public ReleaseLoadTask(FragmentActivity activity, String repoOwner, String repoName,
-            String tagName) {
+                           String tagName) {
         super(activity);
         mRepoOwner = repoOwner;
         mRepoName = repoName;
@@ -45,11 +45,11 @@ public class ReleaseLoadTask extends UrlLoadTask {
     protected Single<Optional<Intent>> getSingle() {
         RepositoryReleaseService service = ServiceFactory.get(RepositoryReleaseService.class, false);
         return ApiHelpers.PageIterator
-                .toSingle(page -> service.getReleases(mRepoOwner, mRepoName, page))
-                .compose(RxUtils.filterAndMapToFirst(r -> {
-                    return mId >= 0 ? mId == r.id() : TextUtils.equals(r.tagName(), mTagName);
-                }))
-                .map(releaseOpt -> releaseOpt.map(r -> ReleaseInfoActivity.makeIntent(mActivity,
-                        mRepoOwner, mRepoName, r)));
+               .toSingle(page -> service.getReleases(mRepoOwner, mRepoName, page))
+        .compose(RxUtils.filterAndMapToFirst(r -> {
+            return mId >= 0 ? mId == r.id() : TextUtils.equals(r.tagName(), mTagName);
+        }))
+        .map(releaseOpt -> releaseOpt.map(r -> ReleaseInfoActivity.makeIntent(mActivity,
+                                          mRepoOwner, mRepoName, r)));
     }
 }

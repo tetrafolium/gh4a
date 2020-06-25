@@ -7,10 +7,10 @@ public class Gh4JobCreator implements JobCreator {
     @Override
     public Job create(String tag) {
         switch (tag) {
-            case NotificationsJob.TAG:
-                return new NotificationsJob();
-            default:
-                return null;
+        case NotificationsJob.TAG:
+            return new NotificationsJob();
+        default:
+            return null;
         }
     }
 }

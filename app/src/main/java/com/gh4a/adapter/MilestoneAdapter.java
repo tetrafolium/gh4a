@@ -49,7 +49,7 @@ public class MilestoneAdapter extends RootAdapter<Milestone, MilestoneAdapter.Vi
     public void onBindViewHolder(ViewHolder holder, Milestone milestone) {
         holder.tvTitle.setText(milestone.title());
         holder.tvTitle.setTextColor(milestone.state() == IssueState.Closed
-                ? mTextColorSecondary : mTextColorPrimary);
+                                    ? mTextColorSecondary : mTextColorPrimary);
 
         if (!StringUtils.isBlank(milestone.description())) {
             holder.tvDesc.setVisibility(View.VISIBLE);
@@ -59,13 +59,13 @@ public class MilestoneAdapter extends RootAdapter<Milestone, MilestoneAdapter.Vi
         }
 
         holder.tvOpen.setText(mContext.getString(R.string.issue_milestone_open_issues,
-                milestone.openIssues()));
+                              milestone.openIssues()));
         holder.tvClosed.setText(mContext.getString(R.string.issue_milestone_closed_issues,
-                milestone.closedIssues()));
+                                milestone.closedIssues()));
 
         if (milestone.dueOn() != null) {
             holder.tvDue.setText(
-                    DateFormat.getMediumDateFormat(mContext).format(milestone.dueOn()));
+                DateFormat.getMediumDateFormat(mContext).format(milestone.dueOn()));
             holder.tvDue.setVisibility(View.VISIBLE);
         } else {
             holder.tvDue.setVisibility(View.GONE);

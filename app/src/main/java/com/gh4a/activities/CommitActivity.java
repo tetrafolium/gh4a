@@ -42,29 +42,29 @@ import com.meisolsson.githubsdk.service.repositories.RepositoryCommitService;
 import java.util.List;
 
 public class CommitActivity extends BaseFragmentPagerActivity implements
-        CommitFragment.CommentUpdateListener, CommitNoteFragment.CommentUpdateListener {
+    CommitFragment.CommentUpdateListener, CommitNoteFragment.CommentUpdateListener {
     public static Intent makeIntent(Context context, String repoOwner, String repoName, String sha) {
         return makeIntent(context, repoOwner, repoName, -1, sha, null);
     }
 
     public static Intent makeIntent(Context context, String repoOwner, String repoName,
-            int pullRequestNumber, String sha) {
+                                    int pullRequestNumber, String sha) {
         return makeIntent(context, repoOwner, repoName, pullRequestNumber, sha, null);
     }
 
     public static Intent makeIntent(Context context, String repoOwner, String repoName,
-            String sha, IntentUtils.InitialCommentMarker initialComment) {
+                                    String sha, IntentUtils.InitialCommentMarker initialComment) {
         return makeIntent(context, repoOwner, repoName, -1, sha, initialComment);
     }
 
     private static Intent makeIntent(Context context, String repoOwner, String repoName,
-            int pullRequestNumber, String sha, IntentUtils.InitialCommentMarker initialComment) {
+                                     int pullRequestNumber, String sha, IntentUtils.InitialCommentMarker initialComment) {
         return new Intent(context, CommitActivity.class)
-                .putExtra("owner", repoOwner)
-                .putExtra("repo", repoName)
-                .putExtra("pr", pullRequestNumber)
-                .putExtra("sha", sha)
-                .putExtra("initial_comment", initialComment);
+               .putExtra("owner", repoOwner)
+               .putExtra("repo", repoName)
+               .putExtra("pr", pullRequestNumber)
+               .putExtra("sha", sha)
+               .putExtra("initial_comment", initialComment);
     }
 
     private static final int ID_LOADER_COMMIT = 0;
@@ -139,12 +139,12 @@ public class CommitActivity extends BaseFragmentPagerActivity implements
     protected Fragment makeFragment(int position) {
         if (position == 1) {
             Fragment f = CommitNoteFragment.newInstance(mRepoOwner, mRepoName, mObjectSha,
-                    mCommit, mComments, mInitialComment);
+                         mCommit, mComments, mInitialComment);
             mInitialComment = null;
             return f;
         } else {
             return CommitFragment.newInstance(mRepoOwner, mRepoName, mObjectSha,
-                    mCommit, mComments);
+                                              mCommit, mComments);
         }
     }
 
@@ -177,18 +177,18 @@ public class CommitActivity extends BaseFragmentPagerActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Uri diffUri = IntentUtils.createBaseUriForRepo(mRepoOwner, mRepoName)
-                .appendPath("commit")
-                .appendPath(mObjectSha)
-                .build();
+                      .appendPath("commit")
+                      .appendPath(mObjectSha)
+                      .build();
 
         switch (item.getItemId()) {
-            case R.id.browser:
-                IntentUtils.launchBrowser(this, diffUri);
-                return true;
-            case R.id.share:
-                IntentUtils.share(this, getString(R.string.share_commit_subject,
-                        mObjectSha.substring(0, 7), mRepoOwner + "/" + mRepoName), diffUri);
-                return true;
+        case R.id.browser:
+            IntentUtils.launchBrowser(this, diffUri);
+            return true;
+        case R.id.share:
+            IntentUtils.share(this, getString(R.string.share_commit_subject,
+                                              mObjectSha.substring(0, 7), mRepoOwner + "/" + mRepoName), diffUri);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -215,26 +215,26 @@ public class CommitActivity extends BaseFragmentPagerActivity implements
         RepositoryCommitService service = ServiceFactory.get(RepositoryCommitService.class, force);
 
         service.getCommit(mRepoOwner, mRepoName, mObjectSha)
-                .map(ApiHelpers::throwOnFailure)
-                .compose(makeLoaderSingle(ID_LOADER_COMMIT, force))
-                .subscribe(result -> {
-                    mCommit = result;
-                    showContentIfReady();
-                }, this::handleLoadFailure);
+        .map(ApiHelpers::throwOnFailure)
+        .compose(makeLoaderSingle(ID_LOADER_COMMIT, force))
+        .subscribe(result -> {
+            mCommit = result;
+            showContentIfReady();
+        }, this::handleLoadFailure);
     }
 
     private void loadComments(boolean force) {
         final RepositoryCommentService service =
-                ServiceFactory.get(RepositoryCommentService.class, force);
+            ServiceFactory.get(RepositoryCommentService.class, force);
         ApiHelpers.PageIterator
-                .toSingle(page -> service.getCommitComments(mRepoOwner, mRepoName, mObjectSha, page))
-                .compose(makeLoaderSingle(ID_LOADER_COMMENTS, force))
-                .subscribe(result -> {
-                    mComments = result;
-                    if (result.isEmpty()) {
-                        mInitialComment = null;
-                    }
-                    showContentIfReady();
-                }, this::handleLoadFailure);
+        .toSingle(page -> service.getCommitComments(mRepoOwner, mRepoName, mObjectSha, page))
+        .compose(makeLoaderSingle(ID_LOADER_COMMENTS, force))
+        .subscribe(result -> {
+            mComments = result;
+            if (result.isEmpty()) {
+                mInitialComment = null;
+            }
+            showContentIfReady();
+        }, this::handleLoadFailure);
     }
 }

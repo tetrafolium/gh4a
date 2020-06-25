@@ -43,8 +43,8 @@ import java.util.List;
 import io.reactivex.Single;
 
 public class RepositoryActivity extends BaseFragmentPagerActivity implements
-        CommitListFragment.ContextSelectionCallback,
-        ContentListContainerFragment.CommitSelectionCallback {
+    CommitListFragment.ContextSelectionCallback,
+    ContentListContainerFragment.CommitSelectionCallback {
     public static Intent makeIntent(Context context, Repository repo) {
         return makeIntent(context, repo, null);
     }
@@ -62,16 +62,16 @@ public class RepositoryActivity extends BaseFragmentPagerActivity implements
     }
 
     public static Intent makeIntent(Context context, String repoOwner, String repoName, String ref,
-            String initialPath, int initialPage) {
+                                    String initialPath, int initialPage) {
         if (TextUtils.isEmpty(ref)) {
             ref = null;
         }
         return new Intent(context, RepositoryActivity.class)
-                .putExtra("owner", repoOwner)
-                .putExtra("repo", repoName)
-                .putExtra("ref", ref)
-                .putExtra("initial_path", initialPath)
-                .putExtra("initial_page", initialPage);
+               .putExtra("owner", repoOwner)
+               .putExtra("repo", repoName)
+               .putExtra("ref", ref)
+               .putExtra("initial_path", initialPath)
+               .putExtra("initial_page", initialPage);
     }
 
     private static final String STATE_KEY_SELECTED_REF = "selected_ref";
@@ -172,17 +172,17 @@ public class RepositoryActivity extends BaseFragmentPagerActivity implements
     @Override
     protected Fragment makeFragment(int position) {
         switch (position) {
-            case 0:
-                return RepositoryFragment.newInstance(mRepository, mSelectedRef);
-            case 1:
-                Fragment f = ContentListContainerFragment.newInstance(mRepository,
-                        mSelectedRef, mInitialPath);
-                mInitialPath = null;
-                return f;
-            case 2:
-                return CommitListFragment.newInstance(mRepository, mSelectedRef);
-            case 3:
-                return RepositoryEventListFragment.newInstance(mRepository);
+        case 0:
+            return RepositoryFragment.newInstance(mRepository, mSelectedRef);
+        case 1:
+            Fragment f = ContentListContainerFragment.newInstance(mRepository,
+                         mSelectedRef, mInitialPath);
+            mInitialPath = null;
+            return f;
+        case 2:
+            return CommitListFragment.newInstance(mRepository, mSelectedRef);
+        case 3:
+            return RepositoryEventListFragment.newInstance(mRepository);
         }
         return null;
     }
@@ -190,10 +190,18 @@ public class RepositoryActivity extends BaseFragmentPagerActivity implements
     @Override
     protected void onFragmentInstantiated(Fragment f, int position) {
         switch (position) {
-            case 0: mRepositoryFragment = (RepositoryFragment) f; break;
-            case 1: mContentListFragment = (ContentListContainerFragment) f; break;
-            case 2: mCommitListFragment = (CommitListFragment) f; break;
-            case 3: mActivityFragment = (RepositoryEventListFragment) f; break;
+        case 0:
+            mRepositoryFragment = (RepositoryFragment) f;
+            break;
+        case 1:
+            mContentListFragment = (ContentListContainerFragment) f;
+            break;
+        case 2:
+            mCommitListFragment = (CommitListFragment) f;
+            break;
+        case 3:
+            mActivityFragment = (RepositoryEventListFragment) f;
+            break;
         }
     }
 
@@ -215,7 +223,7 @@ public class RepositoryActivity extends BaseFragmentPagerActivity implements
         if (fragment instanceof CommitListFragment && mCommitListFragment == null) {
             return true;
         } else if (fragment instanceof ContentListContainerFragment
-                && mContentListFragment == null) {
+                   && mContentListFragment == null) {
             return true;
         } else if (fragment instanceof RepositoryFragment && mRepositoryFragment == null) {
             return true;
@@ -267,8 +275,8 @@ public class RepositoryActivity extends BaseFragmentPagerActivity implements
             MenuItem bookmarkAction = menu.findItem(R.id.bookmark);
             if (bookmarkAction != null) {
                 bookmarkAction.setTitle(BookmarksProvider.hasBookmarked(this, getBookmarkUrl())
-                        ? R.string.remove_bookmark
-                        : R.string.bookmark);
+                                        ? R.string.remove_bookmark
+                                        : R.string.bookmark);
             }
         }
 
@@ -284,34 +292,34 @@ public class RepositoryActivity extends BaseFragmentPagerActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         Uri url = IntentUtils.createBaseUriForRepo(mRepoOwner, mRepoName).build();
         switch (item.getItemId()) {
-            case R.id.ref:
-                loadOrShowRefSelection();
-                return true;
-            case R.id.share:
-                IntentUtils.share(this, mRepoOwner + "/" + mRepoName, url);
-                return true;
-            case R.id.browser:
-                IntentUtils.launchBrowser(this, url);
-                return true;
-            case R.id.search:
-                String initialSearch = "repo:" + mRepoOwner + "/" + mRepoName + " ";
-                startActivity(SearchActivity.makeIntent(this, initialSearch,
-                        SearchActivity.SEARCH_TYPE_CODE, false));
-                return true;
-            case R.id.bookmark:
-                String bookmarkUrl = getBookmarkUrl();
-                if (BookmarksProvider.hasBookmarked(this, bookmarkUrl)) {
-                    BookmarksProvider.removeBookmark(this, bookmarkUrl);
-                } else {
-                    BookmarksProvider.saveBookmark(this, mActionBar.getTitle().toString(),
-                            BookmarksProvider.Columns.TYPE_REPO, bookmarkUrl, getCurrentRef(), true);
-                }
-                return true;
-            case R.id.zip_download:
-                String zipUrl = url + "/archive/" + getCurrentRef() + ".zip";
-                UiUtils.enqueueDownloadWithPermissionCheck(this, zipUrl, "application/zip",
-                        mRepoName + "-" + getCurrentRef() + ".zip", null, null);
-                return true;
+        case R.id.ref:
+            loadOrShowRefSelection();
+            return true;
+        case R.id.share:
+            IntentUtils.share(this, mRepoOwner + "/" + mRepoName, url);
+            return true;
+        case R.id.browser:
+            IntentUtils.launchBrowser(this, url);
+            return true;
+        case R.id.search:
+            String initialSearch = "repo:" + mRepoOwner + "/" + mRepoName + " ";
+            startActivity(SearchActivity.makeIntent(this, initialSearch,
+                                                    SearchActivity.SEARCH_TYPE_CODE, false));
+            return true;
+        case R.id.bookmark:
+            String bookmarkUrl = getBookmarkUrl();
+            if (BookmarksProvider.hasBookmarked(this, bookmarkUrl)) {
+                BookmarksProvider.removeBookmark(this, bookmarkUrl);
+            } else {
+                BookmarksProvider.saveBookmark(this, mActionBar.getTitle().toString(),
+                                               BookmarksProvider.Columns.TYPE_REPO, bookmarkUrl, getCurrentRef(), true);
+            }
+            return true;
+        case R.id.zip_download:
+            String zipUrl = url + "/archive/" + getCurrentRef() + ".zip";
+            UiUtils.enqueueDownloadWithPermissionCheck(this, zipUrl, "application/zip",
+                    mRepoName + "-" + getCurrentRef() + ".zip", null, null);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -334,14 +342,14 @@ public class RepositoryActivity extends BaseFragmentPagerActivity implements
         }
 
         new AlertDialog.Builder(this)
-                .setCancelable(true)
-                .setTitle(R.string.repo_select_ref_dialog_title)
-                .setSingleChoiceItems(adapter, current, (dialog, which) -> {
-                    setSelectedRef(adapter.getItem(which).name());
-                    dialog.dismiss();
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+        .setCancelable(true)
+        .setTitle(R.string.repo_select_ref_dialog_title)
+        .setSingleChoiceItems(adapter, current, (dialog, which) -> {
+            setSelectedRef(adapter.getItem(which).name());
+            dialog.dismiss();
+        })
+        .setNegativeButton(R.string.cancel, null)
+        .show();
     }
 
     private void setSelectedRef(String selectedRef) {
@@ -363,20 +371,20 @@ public class RepositoryActivity extends BaseFragmentPagerActivity implements
     private void loadRepository(boolean force) {
         RepositoryService service = ServiceFactory.get(RepositoryService.class, force);
         service.getRepository(mRepoOwner, mRepoName)
-                .map(ApiHelpers::throwOnFailure)
-                .compose(makeLoaderSingle(ID_LOADER_REPO, force))
-                .subscribe(result -> {
-                    mRepository = result;
-                    updateTitle();
-                    invalidateTabs();
-                    // Apply initial page selection first time the repo is loaded
-                    if (mInitialPage >= PAGE_REPO_OVERVIEW && mInitialPage <= PAGE_ACTIVITY) {
-                        getPager().setCurrentItem(mInitialPage);
-                        mInitialPage = -1;
-                    }
-                    setContentShown(true);
-                    supportInvalidateOptionsMenu();
-                }, this::handleLoadFailure);
+        .map(ApiHelpers::throwOnFailure)
+        .compose(makeLoaderSingle(ID_LOADER_REPO, force))
+        .subscribe(result -> {
+            mRepository = result;
+            updateTitle();
+            invalidateTabs();
+            // Apply initial page selection first time the repo is loaded
+            if (mInitialPage >= PAGE_REPO_OVERVIEW && mInitialPage <= PAGE_ACTIVITY) {
+                getPager().setCurrentItem(mInitialPage);
+                mInitialPage = -1;
+            }
+            setContentShown(true);
+            supportInvalidateOptionsMenu();
+        }, this::handleLoadFailure);
     }
 
     private void loadOrShowRefSelection() {
@@ -384,22 +392,22 @@ public class RepositoryActivity extends BaseFragmentPagerActivity implements
             showRefSelectionDialog();
         } else {
             final RepositoryBranchService branchService =
-                    ServiceFactory.get(RepositoryBranchService.class, false);
+                ServiceFactory.get(RepositoryBranchService.class, false);
             final RepositoryService repoService = ServiceFactory.get(RepositoryService.class, false);
 
             Single<List<Branch>> branchSingle = ApiHelpers.PageIterator
-                    .toSingle(page -> branchService.getBranches(mRepoOwner, mRepoName, page));
+                                                .toSingle(page -> branchService.getBranches(mRepoOwner, mRepoName, page));
             Single<List<Branch>> tagSingle = ApiHelpers.PageIterator
-                    .toSingle(page -> repoService.getTags(mRepoOwner, mRepoName, page));
+                                             .toSingle(page -> repoService.getTags(mRepoOwner, mRepoName, page));
 
             registerTemporarySubscription(Single.zip(branchSingle, tagSingle, Pair::create)
-                    .compose(RxUtils::doInBackground)
-                    .compose(RxUtils.wrapWithProgressDialog(this, R.string.loading_msg))
-                    .subscribe(result -> {
-                        mBranches = result.first;
-                        mTags = result.second;
-                        showRefSelectionDialog();
-                    }, this::handleLoadFailure));
+                                          .compose(RxUtils::doInBackground)
+                                          .compose(RxUtils.wrapWithProgressDialog(this, R.string.loading_msg))
+            .subscribe(result -> {
+                mBranches = result.first;
+                mTags = result.second;
+                showRefSelectionDialog();
+            }, this::handleLoadFailure));
         }
     }
 
@@ -444,7 +452,7 @@ public class RepositoryActivity extends BaseFragmentPagerActivity implements
             TextView title = convertView.findViewById(R.id.title);
 
             icon.setImageResource(position >= mFirstTagIndex
-                    ? mTagDrawableResId : mBranchDrawableResId);
+                                  ? mTagDrawableResId : mBranchDrawableResId);
             title.setText(mItems.get(position).name());
 
             return convertView;

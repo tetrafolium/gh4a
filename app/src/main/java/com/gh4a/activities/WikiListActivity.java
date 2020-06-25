@@ -27,12 +27,12 @@ import com.meisolsson.githubsdk.model.GitHubWikiPage;
 
 public class WikiListActivity extends FragmentContainerActivity {
     public static Intent makeIntent(Context context, String repoOwner,
-            String repoName, GitHubWikiPage initialPage) {
+                                    String repoName, GitHubWikiPage initialPage) {
         String initialPageId = initialPage != null ? initialPage.sha() : null;
         return new Intent(context, WikiListActivity.class)
-                .putExtra("owner", repoOwner)
-                .putExtra("repo", repoName)
-                .putExtra("initial_page", initialPageId);
+               .putExtra("owner", repoOwner)
+               .putExtra("repo", repoName)
+               .putExtra("initial_page", initialPageId);
     }
 
     private String mUserLogin;

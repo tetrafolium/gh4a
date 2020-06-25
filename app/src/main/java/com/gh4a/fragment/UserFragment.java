@@ -58,7 +58,7 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class UserFragment extends LoadingFragmentBase implements
-        OverviewRow.OnIconClickListener, View.OnClickListener {
+    OverviewRow.OnIconClickListener, View.OnClickListener {
     public static UserFragment newInstance(User user) {
         UserFragment f = new UserFragment();
 
@@ -133,7 +133,7 @@ public class UserFragment extends LoadingFragmentBase implements
         OverviewRow joinDateRow = mContentView.findViewById(R.id.join_date_row);
         if (mUser.createdAt() != null) {
             joinDateRow.setText(getString(R.string.user_created_at,
-                    DateFormat.getMediumDateFormat(getActivity()).format(mUser.createdAt())));
+                                          DateFormat.getMediumDateFormat(getActivity()).format(mUser.createdAt())));
             joinDateRow.setVisibility(View.VISIBLE);
         } else {
             joinDateRow.setVisibility(View.GONE);
@@ -151,15 +151,15 @@ public class UserFragment extends LoadingFragmentBase implements
         if (isUser) {
             mFollowersRow.setIconClickListener(canFollowUser() ? this : null);
             mFollowersRow.setClickIntent(FollowerFollowingListActivity.makeIntent(
-                    getActivity(), mUser.login(), true));
+                                             getActivity(), mUser.login(), true));
 
             followingRow.setText(getResources().getQuantityString(R.plurals.following,
-                    mUser.following(), mUser.following()));
+                                 mUser.following(), mUser.following()));
             followingRow.setClickIntent(FollowerFollowingListActivity.makeIntent(
-                    getActivity(), mUser.login(), false));
+                                            getActivity(), mUser.login(), false));
         } else {
             membersRow.setClickIntent(OrganizationMemberListActivity.makeIntent(
-                    getActivity(), mUser.login()));
+                                          getActivity(), mUser.login()));
         }
 
         OverviewRow gistsRow = mContentView.findViewById(R.id.gists_row);
@@ -218,7 +218,7 @@ public class UserFragment extends LoadingFragmentBase implements
 
         if (id == R.id.btn_repos) {
             intent = RepositoryListActivity.makeIntent(getActivity(), mUser.login(),
-                    mUser.type() == UserType.Organization);
+                     mUser.type() == UserType.Organization);
         } else if (view.getTag() instanceof Repository) {
             intent = RepositoryActivity.makeIntent(getActivity(), (Repository) view.getTag());
         } else if (view.getTag() instanceof User) {
@@ -313,22 +313,22 @@ public class UserFragment extends LoadingFragmentBase implements
     private void toggleFollowingState() {
         UserFollowerService service = ServiceFactory.get(UserFollowerService.class, false);
         Single<Response<Void>> responseSingle = mIsFollowing
-                ? service.unfollowUser(mUser.login())
-                : service.followUser(mUser.login());
+                                                ? service.unfollowUser(mUser.login())
+                                                : service.followUser(mUser.login());
         responseSingle.map(ApiHelpers::mapToBooleanOrThrowOnFailure)
-                .compose(RxUtils::doInBackground)
-                .subscribe(result -> {
-                    if (mUser != null && mIsFollowing != null) {
-                        mIsFollowing = !mIsFollowing;
-                        mUser = mUser.toBuilder()
-                                .followers(mUser.followers() + (mIsFollowing ? 1 : -1))
-                                .build();
-                        updateFollowingUi();
-                    }
-                }, error -> {
-                    handleActionFailure("Toggling following state failed", error);
-                    updateFollowingUi();
-                });
+        .compose(RxUtils::doInBackground)
+        .subscribe(result -> {
+            if (mUser != null && mIsFollowing != null) {
+                mIsFollowing = !mIsFollowing;
+                mUser = mUser.toBuilder()
+                .followers(mUser.followers() + (mIsFollowing ? 1 : -1))
+                .build();
+                updateFollowingUi();
+            }
+        }, error -> {
+            handleActionFailure("Toggling following state failed", error);
+            updateFollowingUi();
+        });
     }
 
     private void loadTopRepositories(boolean force) {
@@ -348,13 +348,13 @@ public class UserFragment extends LoadingFragmentBase implements
         }
 
         observable.map(ApiHelpers::throwOnFailure)
-                .map(Page::items)
-                .compose(makeLoaderSingle(ID_LOADER_REPO_LIST, force))
-                .doOnSubscribe(disposable -> {
-                    mContentView.findViewById(R.id.pb_top_repos).setVisibility(View.VISIBLE);
-                    mContentView.findViewById(R.id.ll_top_repos).setVisibility(View.GONE);
-                })
-                .subscribe(this::fillTopRepos, this::handleLoadFailure);
+        .map(Page::items)
+        .compose(makeLoaderSingle(ID_LOADER_REPO_LIST, force))
+        .doOnSubscribe(disposable -> {
+            mContentView.findViewById(R.id.pb_top_repos).setVisibility(View.VISIBLE);
+            mContentView.findViewById(R.id.ll_top_repos).setVisibility(View.GONE);
+        })
+        .subscribe(this::fillTopRepos, this::handleLoadFailure);
     }
 
     private void loadOrganizationsIfUser(boolean force) {
@@ -365,12 +365,12 @@ public class UserFragment extends LoadingFragmentBase implements
 
         final OrganizationService service = ServiceFactory.get(OrganizationService.class, force);
         ApiHelpers.PageIterator
-                .toSingle(page -> mIsSelf
-                        ? service.getMyOrganizations(page)
-                        : service.getUserPublicOrganizations(mUser.login(), page)
-                )
-                .compose(makeLoaderSingle(ID_LOADER_ORG_LIST, force))
-                .subscribe(this::fillOrganizations, this::handleLoadFailure);
+        .toSingle(page -> mIsSelf
+                  ? service.getMyOrganizations(page)
+                  : service.getUserPublicOrganizations(mUser.login(), page)
+                 )
+        .compose(makeLoaderSingle(ID_LOADER_ORG_LIST, force))
+        .subscribe(this::fillOrganizations, this::handleLoadFailure);
     }
 
     private void loadOrganizationMemberCountIfOrg(boolean force) {
@@ -378,15 +378,15 @@ public class UserFragment extends LoadingFragmentBase implements
             return;
         }
         final OrganizationMemberService service =
-                ServiceFactory.get(OrganizationMemberService.class, force);
+            ServiceFactory.get(OrganizationMemberService.class, force);
         ApiHelpers.PageIterator
-                .toSingle(page -> service.getMembers(mUser.login(), page))
-                .map(memberList -> memberList.size())
-                .compose(makeLoaderSingle(ID_LOADER_ORG_MEMBER_COUNT, force))
-                .subscribe(count -> {
-                    OverviewRow membersRow = mContentView.findViewById(R.id.members_row);
-                    membersRow.setText(getResources().getQuantityString(R.plurals.member, count, count));
-                }, this::handleLoadFailure);
+        .toSingle(page -> service.getMembers(mUser.login(), page))
+        .map(memberList -> memberList.size())
+        .compose(makeLoaderSingle(ID_LOADER_ORG_MEMBER_COUNT, force))
+        .subscribe(count -> {
+            OverviewRow membersRow = mContentView.findViewById(R.id.members_row);
+            membersRow.setText(getResources().getQuantityString(R.plurals.member, count, count));
+        }, this::handleLoadFailure);
     }
 
     private void loadIsFollowingStateIfNeeded(boolean force) {
@@ -397,12 +397,12 @@ public class UserFragment extends LoadingFragmentBase implements
         }
         UserFollowerService service = ServiceFactory.get(UserFollowerService.class, force);
         service.isFollowing(mUser.login())
-                .map(ApiHelpers::mapToBooleanOrThrowOnFailure)
-                .compose(makeLoaderSingle(ID_LOADER_IS_FOLLOWING, force))
-                .doOnSubscribe(disposable -> mFollowersRow.setText(null))
-                .subscribe(result -> {
-                    mIsFollowing = result;
-                    updateFollowingUi();
-                }, this::handleLoadFailure);
+        .map(ApiHelpers::mapToBooleanOrThrowOnFailure)
+        .compose(makeLoaderSingle(ID_LOADER_IS_FOLLOWING, force))
+        .doOnSubscribe(disposable -> mFollowersRow.setText(null))
+        .subscribe(result -> {
+            mIsFollowing = result;
+            updateFollowingUi();
+        }, this::handleLoadFailure);
     }
 }

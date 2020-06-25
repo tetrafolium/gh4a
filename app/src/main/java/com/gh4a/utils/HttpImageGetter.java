@@ -186,7 +186,7 @@ public class HttpImageGetter {
                     }
                     mTask = new ImageGetterAsyncTask(HttpImageGetter.this, this);
                     mTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
-                            imagesToLoad.toArray(new PlaceholderDrawable[imagesToLoad.size()]));
+                                            imagesToLoad.toArray(new PlaceholderDrawable[imagesToLoad.size()]));
                 }
                 mHasStartedImageLoad = true;
             }
@@ -350,14 +350,14 @@ public class HttpImageGetter {
         mHeight = size.y;
 
         mLoadingDrawable = ContextCompat.getDrawable(context,
-                UiUtils.resolveDrawable(context, R.attr.loadingPictureIcon));
+                           UiUtils.resolveDrawable(context, R.attr.loadingPictureIcon));
         mLoadingDrawable.setBounds(0, 0,
-                mLoadingDrawable.getIntrinsicWidth(), mLoadingDrawable.getIntrinsicHeight());
+                                   mLoadingDrawable.getIntrinsicWidth(), mLoadingDrawable.getIntrinsicHeight());
 
         mErrorDrawable = ContextCompat.getDrawable(context,
-                UiUtils.resolveDrawable(context, R.attr.contentPictureIcon));
+                         UiUtils.resolveDrawable(context, R.attr.contentPictureIcon));
         mErrorDrawable.setBounds(0, 0,
-                mErrorDrawable.getIntrinsicWidth(), mErrorDrawable.getIntrinsicHeight());
+                                 mErrorDrawable.getIntrinsicWidth(), mErrorDrawable.getIntrinsicHeight());
     }
 
     public void pause() {
@@ -446,8 +446,8 @@ public class HttpImageGetter {
             File output = null;
             InputStream is = null;
             Request request = new Request.Builder()
-                    .url(url)
-                    .build();
+            .url(url)
+            .build();
             try (Response response = mClient.newCall(request).execute()) {
                 is = response.body().byteStream();
                 if (is != null) {
@@ -511,15 +511,15 @@ public class HttpImageGetter {
 
     private boolean canLoadGif() {
         SharedPreferences prefs = mContext.getSharedPreferences(SettingsFragment.PREF_NAME,
-                Context.MODE_PRIVATE);
+                                  Context.MODE_PRIVATE);
         int mode = prefs.getInt(SettingsFragment.KEY_GIF_LOADING, 1);
         switch (mode) {
-            case 1: // load via Wifi
-                return !UiUtils.downloadNeedsWarning(mContext);
-            case 2: // always load
-                return true;
-            default:
-                return false;
+        case 1: // load via Wifi
+            return !UiUtils.downloadNeedsWarning(mContext);
+        case 2: // always load
+            return true;
+        default:
+            return false;
         }
     }
 
@@ -560,7 +560,7 @@ public class HttpImageGetter {
     }
 
     private static Bitmap renderSvgToBitmap(Resources res, InputStream is,
-            int maxWidth, int maxHeight) {
+                                            int maxWidth, int maxHeight) {
         //noinspection TryWithIdenticalCatches
         try {
             SVG svg = SVG.getFromInputStream(is);

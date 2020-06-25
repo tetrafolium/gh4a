@@ -52,11 +52,11 @@ public class RepositorySearchFragment extends PagedDataBaseFragment<Repository> 
         String params = query + " fork:true user:" + login;
 
         return service.searchRepositories(params, null, null, page)
-                .compose(RxUtils::searchPageAdapter)
-                // With that status code, Github wants to tell us there are no
-                // repositories to search in. Just pretend no error and return
-                // an empty list in that case.
-                .compose(RxUtils.mapFailureToValue(422, Response.success(new ApiHelpers.DummyPage<>())));
+               .compose(RxUtils::searchPageAdapter)
+               // With that status code, Github wants to tell us there are no
+               // repositories to search in. Just pretend no error and return
+               // an empty list in that case.
+               .compose(RxUtils.mapFailureToValue(422, Response.success(new ApiHelpers.DummyPage<>())));
     }
 
     @Override

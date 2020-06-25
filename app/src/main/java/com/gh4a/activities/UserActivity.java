@@ -34,7 +34,7 @@ public class UserActivity extends BaseFragmentPagerActivity {
             return null;
         }
         return new Intent(context, UserActivity.class)
-                .putExtra("login", login);
+               .putExtra("login", login);
     }
 
     private String mUserLogin;
@@ -85,8 +85,10 @@ public class UserActivity extends BaseFragmentPagerActivity {
     @Override
     protected Fragment makeFragment(int position) {
         switch (position) {
-            case 0: return UserFragment.newInstance(mUser);
-            case 1: return PublicEventListFragment.newInstance(mUser);
+        case 0:
+            return UserFragment.newInstance(mUser);
+        case 1:
+            return PublicEventListFragment.newInstance(mUser);
         }
         return null;
     }
@@ -123,8 +125,8 @@ public class UserActivity extends BaseFragmentPagerActivity {
         if (bookmarkAction != null) {
             String url = "https://github.com/" + mUserLogin;
             bookmarkAction.setTitle(BookmarksProvider.hasBookmarked(this, url)
-                    ? R.string.remove_bookmark
-                    : R.string.bookmark);
+                                    ? R.string.remove_bookmark
+                                    : R.string.bookmark);
             bookmarkAction.setVisible(mUser != null);
         }
 
@@ -140,27 +142,27 @@ public class UserActivity extends BaseFragmentPagerActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         Uri url = IntentUtils.createBaseUriForUser(mUserLogin).build();
         switch (item.getItemId()) {
-            case R.id.share: {
-                String userName = mUser != null ? mUser.name() : null;
-                int subjectId = StringUtils.isBlank(userName)
-                        ? R.string.share_user_subject_loginonly : R.string.share_user_subject;
-                IntentUtils.share(this, getString(subjectId, mUserLogin, userName), url);
-                return true;
+        case R.id.share: {
+            String userName = mUser != null ? mUser.name() : null;
+            int subjectId = StringUtils.isBlank(userName)
+                            ? R.string.share_user_subject_loginonly : R.string.share_user_subject;
+            IntentUtils.share(this, getString(subjectId, mUserLogin, userName), url);
+            return true;
+        }
+        case R.id.browser:
+            IntentUtils.launchBrowser(this, url);
+            return true;
+        case R.id.bookmark: {
+            String urlString = url.toString();
+            if (BookmarksProvider.hasBookmarked(this, urlString)) {
+                BookmarksProvider.removeBookmark(this, urlString);
+            } else {
+                BookmarksProvider.saveBookmark(this, mUserLogin,
+                                               BookmarksProvider.Columns.TYPE_USER,
+                                               urlString, mUser.name(), true);
             }
-            case R.id.browser:
-                IntentUtils.launchBrowser(this, url);
-                return true;
-            case R.id.bookmark: {
-                String urlString = url.toString();
-                if (BookmarksProvider.hasBookmarked(this, urlString)) {
-                    BookmarksProvider.removeBookmark(this, urlString);
-                } else {
-                    BookmarksProvider.saveBookmark(this, mUserLogin,
-                            BookmarksProvider.Columns.TYPE_USER,
-                            urlString, mUser.name(), true);
-                }
-                return true;
-            }
+            return true;
+        }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -168,13 +170,13 @@ public class UserActivity extends BaseFragmentPagerActivity {
     private void loadUser(boolean force) {
         UserService service = ServiceFactory.get(UserService.class, force);
         service.getUser(mUserLogin)
-                .map(ApiHelpers::throwOnFailure)
-                .compose(makeLoaderSingle(ID_LOADER_USER, force))
-                .subscribe(result -> {
-                    mUser = result;
-                    invalidateTabs();
-                    setContentShown(true);
-                    invalidateOptionsMenu();
-                }, this::handleLoadFailure);
+        .map(ApiHelpers::throwOnFailure)
+        .compose(makeLoaderSingle(ID_LOADER_USER, force))
+        .subscribe(result -> {
+            mUser = result;
+            invalidateTabs();
+            setContentShown(true);
+            invalidateOptionsMenu();
+        }, this::handleLoadFailure);
     }
 }

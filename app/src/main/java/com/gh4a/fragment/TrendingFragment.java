@@ -31,7 +31,7 @@ import java.util.List;
 import io.reactivex.Single;
 
 public class TrendingFragment extends ListDataBaseFragment<Trend> implements
-        RootAdapter.OnItemClickListener<Trend> {
+    RootAdapter.OnItemClickListener<Trend> {
     public static final String TYPE_DAILY = "daily";
     public static final String TYPE_WEEKLY = "weekly";
     public static final String TYPE_MONTHLY = "monthly";
@@ -48,10 +48,17 @@ public class TrendingFragment extends ListDataBaseFragment<Trend> implements
         Bundle args = new Bundle();
         args.putString("type", type);
         switch (type) {
-            case TYPE_DAILY: args.putInt("stars_template", R.string.trend_stars_today); break;
-            case TYPE_WEEKLY: args.putInt("stars_template", R.string.trend_stars_week); break;
-            case TYPE_MONTHLY: args.putInt("stars_template", R.string.trend_stars_month); break;
-            default: throw new IllegalArgumentException();
+        case TYPE_DAILY:
+            args.putInt("stars_template", R.string.trend_stars_today);
+            break;
+        case TYPE_WEEKLY:
+            args.putInt("stars_template", R.string.trend_stars_week);
+            break;
+        case TYPE_MONTHLY:
+            args.putInt("stars_template", R.string.trend_stars_month);
+            break;
+        default:
+            throw new IllegalArgumentException();
         }
         f.setArguments(args);
 

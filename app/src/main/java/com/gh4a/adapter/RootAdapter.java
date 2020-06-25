@@ -35,8 +35,8 @@ import java.util.List;
  * @param <T> the generic type
  */
 public abstract class RootAdapter<T, VH extends RecyclerView.ViewHolder>
-        extends RecyclerView.Adapter<RecyclerView.ViewHolder>
-        implements Filterable, View.OnClickListener {
+    extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+    implements Filterable, View.OnClickListener {
     public interface OnItemClickListener<T> {
         void onItemClick(T item);
     }
@@ -138,8 +138,8 @@ public abstract class RootAdapter<T, VH extends RecyclerView.ViewHolder>
     @Override
     public int getItemCount() {
         return mObjects.size()
-                + (mHeaderView != null ? 1 : 0)
-                + (mFooterView != null ? 1 : 0);
+               + (mHeaderView != null ? 1 : 0)
+               + (mFooterView != null ? 1 : 0);
     }
 
     @Override
@@ -207,20 +207,20 @@ public abstract class RootAdapter<T, VH extends RecyclerView.ViewHolder>
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         mHolderCreated = true;
         switch (viewType) {
-            case VIEW_TYPE_HEADER:
-                return new HeaderViewHolder(mHeaderView);
-            case VIEW_TYPE_FOOTER:
-                return new FooterViewHolder(mFooterView);
-            default:
-                RecyclerView.ViewHolder holder = onCreateViewHolder(mInflater, parent, viewType);
-                if (mItemClickListener != null) {
-                    holder.itemView.setOnClickListener(this);
-                    holder.itemView.setTag(holder);
-                }
-                if (mContextMenuSupported) {
-                    holder.itemView.setLongClickable(true);
-                }
-                return holder;
+        case VIEW_TYPE_HEADER:
+            return new HeaderViewHolder(mHeaderView);
+        case VIEW_TYPE_FOOTER:
+            return new FooterViewHolder(mFooterView);
+        default:
+            RecyclerView.ViewHolder holder = onCreateViewHolder(mInflater, parent, viewType);
+            if (mItemClickListener != null) {
+                holder.itemView.setOnClickListener(this);
+                holder.itemView.setTag(holder);
+            }
+            if (mContextMenuSupported) {
+                holder.itemView.setLongClickable(true);
+            }
+            return holder;
         }
     }
 

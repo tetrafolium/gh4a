@@ -40,7 +40,7 @@ import io.reactivex.Single;
 import io.reactivex.processors.PublishProcessor;
 
 public class UserPasswordLoginDialogFragment extends DialogFragment implements
-        View.OnClickListener {
+    View.OnClickListener {
     public interface ParentCallback {
         void onLoginFinished(String token, User user);
         void onLoginFailed(Throwable error);
@@ -94,10 +94,10 @@ public class UserPasswordLoginDialogFragment extends DialogFragment implements
         updateContainerVisibility(false);
 
         return new AlertDialog.Builder(getActivity())
-                .setView(view)
-                .setPositiveButton(R.string.login, null) // will be assigned later
-                .setNegativeButton(R.string.cancel, null)
-                .create();
+               .setView(view)
+               .setPositiveButton(R.string.login, null) // will be assigned later
+               .setNegativeButton(R.string.cancel, null)
+               .create();
     }
 
     @Override
@@ -119,23 +119,23 @@ public class UserPasswordLoginDialogFragment extends DialogFragment implements
             mRetryProcessor.onNext(0);
         } else {
             makeRequestSingle()
-                    .flatMap(request -> makeLoginSingle(request))
-                    .subscribe(pair -> {
-                        mCallback.onLoginFinished(pair.first, pair.second);
-                        dismissAllowingStateLoss();
-                    }, error -> {
-                        mCallback.onLoginFailed(error);
-                        dismissAllowingStateLoss();
-                    });
+            .flatMap(request -> makeLoginSingle(request))
+            .subscribe(pair -> {
+                mCallback.onLoginFinished(pair.first, pair.second);
+                dismissAllowingStateLoss();
+            }, error -> {
+                mCallback.onLoginFailed(error);
+                dismissAllowingStateLoss();
+            });
         }
         updateContainerVisibility(true);
     }
 
     private void updateOkButtonState() {
         boolean enable =
-                mProgressContainer.getVisibility() == View.VISIBLE ? false :
-                mWaitingForOtpCode ? !mOtpCodeEditor.hasError() :
-                !mUserName.hasError() && !mPassword.hasError();
+            mProgressContainer.getVisibility() == View.VISIBLE ? false :
+            mWaitingForOtpCode ? !mOtpCodeEditor.hasError() :
+            !mUserName.hasError() && !mPassword.hasError();
         if (mOkButton != null) {
             mOkButton.setEnabled(enable);
         }
@@ -159,64 +159,64 @@ public class UserPasswordLoginDialogFragment extends DialogFragment implements
         String scopes = getArguments().getString("scopes");
 
         return service.getAuthorizations()
-                .map(ApiHelpers::throwOnFailure)
-                .compose(RxUtils::doInBackground)
-                .retryWhen(handler -> handler.flatMap(error -> {
-                    if (error instanceof ApiRequestException) {
-                        ApiRequestException are = (ApiRequestException) error;
-                        if (are.getStatus() == 401 && are.getResponse().message().contains("OTP code")) {
-                            mWaitingForOtpCode = true;
-                            mHandler.post(() -> updateContainerVisibility(false));
-                            // getAuthorizations() doesn't trigger the OTP SMS for whatever reason,
-                            // so make a dummy create request (which we know will fail) just to
-                            // actually trigger SMS sending
-                            LoginService.AuthorizationRequest dummyRequest =
-                                    new LoginService.AuthorizationRequest("", "dummy", "");
-                            service.createAuthorization(dummyRequest)
-                                    .compose(RxUtils::doInBackground)
-                                    .subscribe(ignoredResponse -> {}, ignoredError -> {});
-                        }
-                    }
-                    if (!mWaitingForOtpCode) {
-                        mRetryProcessor.onError(error);
-                    }
-                    return mRetryProcessor;
-                }))
-                .compose(RxUtils.filter(authorization -> {
-                    String note = authorization.note();
-                    return note != null && note.startsWith(description);
-                }))
-                .flatMap(existingAuthorizations -> {
-                    Single<Void> deleteSingle = null;
-                    Iterator<LoginService.AuthorizationResponse> iter =
-                            existingAuthorizations.iterator();
-                    while (iter.hasNext()) {
-                        LoginService.AuthorizationResponse auth = iter.next();
-                        if (fingerprint.equals(auth.fingerprint())) {
-                            deleteSingle = service.deleteAuthorization(auth.id())
-                                    .map(ApiHelpers::throwOnFailure)
-                                    .compose(RxUtils::doInBackground);
-                            iter.remove();
-                        }
-                    }
+               .map(ApiHelpers::throwOnFailure)
+               .compose(RxUtils::doInBackground)
+        .retryWhen(handler -> handler.flatMap(error -> {
+            if (error instanceof ApiRequestException) {
+                ApiRequestException are = (ApiRequestException) error;
+                if (are.getStatus() == 401 && are.getResponse().message().contains("OTP code")) {
+                    mWaitingForOtpCode = true;
+                    mHandler.post(() -> updateContainerVisibility(false));
+                    // getAuthorizations() doesn't trigger the OTP SMS for whatever reason,
+                    // so make a dummy create request (which we know will fail) just to
+                    // actually trigger SMS sending
+                    LoginService.AuthorizationRequest dummyRequest =
+                    new LoginService.AuthorizationRequest("", "dummy", "");
+                    service.createAuthorization(dummyRequest)
+                    .compose(RxUtils::doInBackground)
+                    .subscribe(ignoredResponse -> {}, ignoredError -> {});
+                }
+            }
+            if (!mWaitingForOtpCode) {
+                mRetryProcessor.onError(error);
+            }
+            return mRetryProcessor;
+        }))
+        .compose(RxUtils.filter(authorization -> {
+            String note = authorization.note();
+            return note != null && note.startsWith(description);
+        }))
+        .flatMap(existingAuthorizations -> {
+            Single<Void> deleteSingle = null;
+            Iterator<LoginService.AuthorizationResponse> iter =
+            existingAuthorizations.iterator();
+            while (iter.hasNext()) {
+                LoginService.AuthorizationResponse auth = iter.next();
+                if (fingerprint.equals(auth.fingerprint())) {
+                    deleteSingle = service.deleteAuthorization(auth.id())
+                    .map(ApiHelpers::throwOnFailure)
+                    .compose(RxUtils::doInBackground);
+                    iter.remove();
+                }
+            }
 
-                    String finalDescription = description;
-                    if (!existingAuthorizations.isEmpty()) {
-                        finalDescription += " #" + (existingAuthorizations.size() + 1);
-                    }
-                    LoginService.AuthorizationRequest request =
-                            new LoginService.AuthorizationRequest(scopes, finalDescription, fingerprint);
-                    if (deleteSingle != null) {
-                        return deleteSingle.map(response -> request);
-                    } else {
-                        return Single.just(request);
-                    }
-                });
+            String finalDescription = description;
+            if (!existingAuthorizations.isEmpty()) {
+                finalDescription += " #" + (existingAuthorizations.size() + 1);
+            }
+            LoginService.AuthorizationRequest request =
+                new LoginService.AuthorizationRequest(scopes, finalDescription, fingerprint);
+            if (deleteSingle != null) {
+                return deleteSingle.map(response -> request);
+            } else {
+                return Single.just(request);
+            }
+        });
     }
 
     private String getHashedDeviceId() {
         String androidId = Settings.Secure.getString(getActivity().getContentResolver(),
-                Settings.Secure.ANDROID_ID);
+                           Settings.Secure.ANDROID_ID);
         if (androidId == null) {
             // shouldn't happen, do a lame fallback in that case
             androidId = Build.FINGERPRINT;
@@ -238,17 +238,17 @@ public class UserPasswordLoginDialogFragment extends DialogFragment implements
 
     private Single<Pair<String, User>> makeLoginSingle(LoginService.AuthorizationRequest request) {
         return getService().createAuthorization(request)
-                .map(ApiHelpers::throwOnFailure)
-                .compose(RxUtils::doInBackground)
-                .flatMap(response -> {
-                    UserService userService = ServiceFactory.get(UserService.class, true,
-                            null, response.token(), null);
-                    Single<User> userSingle = userService.getUser()
-                            .map(ApiHelpers::throwOnFailure)
-                            .compose(RxUtils::doInBackground);
-                    return Single.zip(Single.just(response), userSingle,
-                            (r, user) -> Pair.create(r.token(), user));
-                });
+               .map(ApiHelpers::throwOnFailure)
+               .compose(RxUtils::doInBackground)
+        .flatMap(response -> {
+            UserService userService = ServiceFactory.get(UserService.class, true,
+                    null, response.token(), null);
+            Single<User> userSingle = userService.getUser()
+            .map(ApiHelpers::throwOnFailure)
+            .compose(RxUtils::doInBackground);
+            return Single.zip(Single.just(response), userSingle,
+                              (r, user) -> Pair.create(r.token(), user));
+        });
     }
 
     private class WrappedEditor implements TextWatcher {

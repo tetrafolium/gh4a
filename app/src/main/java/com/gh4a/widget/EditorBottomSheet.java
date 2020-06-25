@@ -42,7 +42,7 @@ import java.util.Set;
 import io.reactivex.Single;
 
 public class EditorBottomSheet extends FrameLayout implements View.OnClickListener,
-        View.OnTouchListener, AppBarLayout.OnOffsetChangedListener {
+    View.OnTouchListener, AppBarLayout.OnOffsetChangedListener {
 
     public interface Callback {
         @StringRes int getCommentEditorHintResId();
@@ -80,7 +80,7 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
     private int mTopShadowHeight;
 
     private final BottomSheetBehavior.BottomSheetCallback mBehaviorCallback =
-            new BottomSheetBehavior.BottomSheetCallback() {
+    new BottomSheetBehavior.BottomSheetCallback() {
         @Override
         public void onStateChanged(@NonNull View bottomSheet, int newState) {
             if (isInAdvancedMode()
@@ -137,7 +137,7 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
 
         mBasicEditor = view.findViewById(R.id.et_basic_editor);
         mBasicEditor.addTextChangedListener(
-                new UiUtils.ButtonEnableTextWatcher(mBasicEditor, sendButton));
+            new UiUtils.ButtonEnableTextWatcher(mBasicEditor, sendButton));
         mBasicEditor.setOnTouchListener(this);
 
         mBasicEditorScrollView = view.findViewById(R.id.basic_editor_scroll);
@@ -157,7 +157,7 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
 
     public void addHeaderView(View view) {
         mContainer.addView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
+                           ViewGroup.LayoutParams.WRAP_CONTENT));
         mContainer.setVisibility(View.VISIBLE);
     }
 
@@ -201,7 +201,7 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
         if (mMarkdownButtons != null) {
             mMarkdownButtons.setButtonsBackgroundColor(mHighlightColor);
         }
-     }
+    }
 
     public void addQuote(CharSequence text) {
         if (isInAdvancedMode()) {
@@ -238,13 +238,13 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.iv_advanced_editor_toggle:
-                setAdvancedMode(!isInAdvancedMode());
-                break;
-            case R.id.send_button:
-                send(getCommentText().toString());
-                UiUtils.hideImeForView(mCallback.getActivity().getCurrentFocus());
-                break;
+        case R.id.iv_advanced_editor_toggle:
+            setAdvancedMode(!isInAdvancedMode());
+            break;
+        case R.id.send_button:
+            send(getCommentText().toString());
+            UiUtils.hideImeForView(mCallback.getActivity().getCurrentFocus());
+            break;
         }
     }
 
@@ -262,7 +262,7 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
 
     public boolean isExpanded() {
         return getBehavior().getState() == BottomSheetBehavior.STATE_EXPANDED
-                && getBehavior().getPeekHeight() != getHeight();
+               && getBehavior().getPeekHeight() != getHeight();
     }
 
     public void resetPeekHeight(int totalScrollRange) {
@@ -283,7 +283,7 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
                 paddingBottom = peekHeight + mLatestOffset - mTopShadowHeight;
             }
             mResizingView.setPadding(mResizingView.getPaddingLeft(), mResizingView.getPaddingTop(),
-                    mResizingView.getPaddingRight(), paddingBottom);
+                                     mResizingView.getPaddingRight(), paddingBottom);
         }
 
         // Update peek height to keep the bottom sheet at unchanged position
@@ -309,13 +309,13 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
             updatePeekHeight(visible);
 
             getBehavior().setState(visible
-                    ? BottomSheetBehavior.STATE_EXPANDED : BottomSheetBehavior.STATE_COLLAPSED);
+                                   ? BottomSheetBehavior.STATE_EXPANDED : BottomSheetBehavior.STATE_COLLAPSED);
         });
     }
 
     public boolean isInAdvancedMode() {
         return mAdvancedEditorContainer != null
-                && mAdvancedEditorContainer.getVisibility() == View.VISIBLE;
+               && mAdvancedEditorContainer.getVisibility() == View.VISIBLE;
     }
 
     public void setCommentText(CharSequence text, boolean clearFocus) {
@@ -355,7 +355,7 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
         }
 
         mAdvancedEditorToggle.setImageResource(UiUtils.resolveDrawable(getContext(),
-                visible ? R.attr.collapseIcon : R.attr.expandIcon));
+                                               visible ? R.attr.collapseIcon : R.attr.expandIcon));
 
         if (mListener != null) {
             mListener.onToggleAdvancedMode(visible);
@@ -383,14 +383,14 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
 
         mAdvancedEditor = mAdvancedEditorContainer.findViewById(R.id.editor);
         mAdvancedEditor.addTextChangedListener(new UiUtils.ButtonEnableTextWatcher(mAdvancedEditor,
-                findViewById(R.id.send_button)));
+                                               findViewById(R.id.send_button)));
 
         updateHint();
         mAdvancedEditor.setLocked(mBasicEditor.isLocked(), mBasicEditor.getLockedHintResId());
         mAdvancedEditor.setMentionUsers(mBasicEditor.getMentionUsers());
 
         mMarkdownButtons =
-                mAdvancedEditorContainer.findViewById(R.id.markdown_buttons);
+            mAdvancedEditorContainer.findViewById(R.id.markdown_buttons);
         mMarkdownButtons.setEditText(mAdvancedEditor);
         if (mHighlightColor != Color.TRANSPARENT) {
             mMarkdownButtons.setButtonsBackgroundColor(mHighlightColor);
@@ -418,13 +418,13 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
         CoordinatorLayout rootLayout = mCallback.getRootLayout();
 
         mCallback.onEditorDoSend(comment)
-                .compose(RxUtils.wrapForBackgroundTask(activity, rootLayout,
-                        R.string.saving_comment, R.string.issue_error_comment))
-                .subscribe(result -> {
-                    mCallback.onEditorTextSent();
-                    setCommentText(null, true);
-                    setAdvancedMode(false);
-                }, error -> Log.d(Gh4Application.LOG_TAG, "Sending comment failed", error));
+        .compose(RxUtils.wrapForBackgroundTask(activity, rootLayout,
+                                               R.string.saving_comment, R.string.issue_error_comment))
+        .subscribe(result -> {
+            mCallback.onEditorTextSent();
+            setCommentText(null, true);
+            setAdvancedMode(false);
+        }, error -> Log.d(Gh4Application.LOG_TAG, "Sending comment failed", error));
     }
 
     private static class AdvancedEditorPagerAdapter extends PagerAdapter {
@@ -443,12 +443,12 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
             @IdRes
             int resId = 0;
             switch (position) {
-                case 0:
-                    resId = R.id.comment_container;
-                    break;
-                case 1:
-                    resId = R.id.preview;
-                    break;
+            case 0:
+                resId = R.id.comment_container;
+                break;
+            case 1:
+                resId = R.id.preview;
+                break;
             }
             return container.findViewById(resId);
         }
@@ -511,7 +511,7 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
         }
 
         public static final Parcelable.Creator<SavedState> CREATOR =
-                new Parcelable.Creator<SavedState>() {
+        new Parcelable.Creator<SavedState>() {
             @Override
             public SavedState createFromParcel(Parcel source) {
                 return new SavedState(source);

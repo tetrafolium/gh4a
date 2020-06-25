@@ -32,6 +32,6 @@ public class RepositoryIssueAdapter extends IssueAdapter {
         // https://api.github.com/repos/batterseapower/pinyin-toolkit/issues/132
         String[] urlPart = issue.url().split("/");
         holder.tvNumber.setText(mContext.getString(R.string.repo_issue_on,
-                issue.number(), urlPart[4], urlPart[5]));
+                                issue.number(), urlPart[4], urlPart[5]));
     }
 }

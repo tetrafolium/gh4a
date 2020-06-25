@@ -59,41 +59,41 @@ public class CommitStatusBox extends LinearLayoutCompat implements View.OnClickL
         final int statusIconDrawableAttrId;
         final int statusLabelResId;
         switch (mergableState) {
-            case Behind:
-                statusIconDrawableAttrId = R.attr.pullRequestMergeDirtyIcon;
-                statusLabelResId = R.string.pull_merge_status_behind;
-                break;
-            case Blocked:
-                statusIconDrawableAttrId = R.attr.pullRequestMergeDirtyIcon;
-                statusLabelResId = R.string.pull_merge_status_blocked;
-                break;
-            case Clean:
-                statusIconDrawableAttrId = R.attr.pullRequestMergeOkIcon;
-                statusLabelResId = statuses.isEmpty()
-                        ? R.string.pull_merge_status_mergable
-                        : R.string.pull_merge_status_clean;
-                break;
-            case Unstable:
-                statusIconDrawableAttrId = R.attr.pullRequestMergeDirtyIcon;
-                statusLabelResId = R.string.pull_merge_status_unstable;
-                break;
-            case Dirty:
-                statusIconDrawableAttrId = R.attr.pullRequestMergeDirtyIcon;
-                statusLabelResId = R.string.pull_merge_status_dirty;
-                break;
-            case Draft:
-                statusIconDrawableAttrId = R.attr.pullRequestMergeDirtyIcon;
-                statusLabelResId = R.string.pull_merge_status_dirty;
-                break;
-            default:
-                if (statuses.isEmpty()) {
-                    // Unknown status, no commit statuses -> nothing to display
-                    setVisibility(View.GONE);
-                    return;
-                }
-                statusIconDrawableAttrId = R.attr.pullRequestMergeUnknownIcon;
-                statusLabelResId = R.string.pull_merge_status_unknown;
-                break;
+        case Behind:
+            statusIconDrawableAttrId = R.attr.pullRequestMergeDirtyIcon;
+            statusLabelResId = R.string.pull_merge_status_behind;
+            break;
+        case Blocked:
+            statusIconDrawableAttrId = R.attr.pullRequestMergeDirtyIcon;
+            statusLabelResId = R.string.pull_merge_status_blocked;
+            break;
+        case Clean:
+            statusIconDrawableAttrId = R.attr.pullRequestMergeOkIcon;
+            statusLabelResId = statuses.isEmpty()
+                               ? R.string.pull_merge_status_mergable
+                               : R.string.pull_merge_status_clean;
+            break;
+        case Unstable:
+            statusIconDrawableAttrId = R.attr.pullRequestMergeDirtyIcon;
+            statusLabelResId = R.string.pull_merge_status_unstable;
+            break;
+        case Dirty:
+            statusIconDrawableAttrId = R.attr.pullRequestMergeDirtyIcon;
+            statusLabelResId = R.string.pull_merge_status_dirty;
+            break;
+        case Draft:
+            statusIconDrawableAttrId = R.attr.pullRequestMergeDirtyIcon;
+            statusLabelResId = R.string.pull_merge_status_dirty;
+            break;
+        default:
+            if (statuses.isEmpty()) {
+                // Unknown status, no commit statuses -> nothing to display
+                setVisibility(View.GONE);
+                return;
+            }
+            statusIconDrawableAttrId = R.attr.pullRequestMergeUnknownIcon;
+            statusLabelResId = R.string.pull_merge_status_unknown;
+            break;
         }
 
         setVisibility(View.VISIBLE);
@@ -129,19 +129,19 @@ public class CommitStatusBox extends LinearLayoutCompat implements View.OnClickL
 
             final int iconDrawableAttrId;
             switch (status.state()) {
-                case Error:
-                case Failure:
-                    iconDrawableAttrId = R.attr.commitStatusFailIcon;
-                    failingCount += 1;
-                    break;
-                case Success:
-                    iconDrawableAttrId = R.attr.commitStatusOkIcon;
-                    successCount += 1;
-                    break;
-                default:
-                    iconDrawableAttrId = R.attr.commitStatusUnknownIcon;
-                    pendingCount += 1;
-                    break;
+            case Error:
+            case Failure:
+                iconDrawableAttrId = R.attr.commitStatusFailIcon;
+                failingCount += 1;
+                break;
+            case Success:
+                iconDrawableAttrId = R.attr.commitStatusOkIcon;
+                successCount += 1;
+                break;
+            default:
+                iconDrawableAttrId = R.attr.commitStatusUnknownIcon;
+                pendingCount += 1;
+                break;
             }
             ImageView icon = statusRow.findViewById(R.id.iv_status_icon);
             icon.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -169,13 +169,13 @@ public class CommitStatusBox extends LinearLayoutCompat implements View.OnClickL
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.row_commit_status:
-                Status status = (Status) v.getTag();
-                IntentUtils.launchBrowser(getContext(), Uri.parse(status.targetUrl()));
-                break;
-            case R.id.commit_status_header:
-                setStatusesExpanded(mStatusContainer.getVisibility() != View.VISIBLE);
-                break;
+        case R.id.row_commit_status:
+            Status status = (Status) v.getTag();
+            IntentUtils.launchBrowser(getContext(), Uri.parse(status.targetUrl()));
+            break;
+        case R.id.commit_status_header:
+            setStatusesExpanded(mStatusContainer.getVisibility() != View.VISIBLE);
+            break;
         }
     }
 
@@ -194,7 +194,7 @@ public class CommitStatusBox extends LinearLayoutCompat implements View.OnClickL
 
         int sumCount = pendingCount + failingCount + successCount;
         mSummaryTextView.setText(getResources().getQuantityString(R.plurals.checks_summary,
-                sumCount, summary));
+                                 sumCount, summary));
     }
 
     private void setStatusesExpanded(boolean expanded) {

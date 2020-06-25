@@ -22,7 +22,7 @@ public abstract class DiffLoadTask<C extends PositionalCommentBase> extends UrlL
     protected final DiffHighlightId mDiffId;
 
     public DiffLoadTask(FragmentActivity activity, String repoOwner, String repoName,
-            DiffHighlightId diffId) {
+                        DiffHighlightId diffId) {
         super(activity);
         mRepoOwner = repoOwner;
         mRepoName = repoName;
@@ -33,13 +33,13 @@ public abstract class DiffLoadTask<C extends PositionalCommentBase> extends UrlL
     protected Single<Optional<Intent>> getSingle() {
         Single<Optional<GitHubFile>> fileSingle = getFiles()
                 .compose(RxUtils.filterAndMapToFirst(
-                        f -> ApiHelpers.md5(f.filename()).equalsIgnoreCase(mDiffId.fileHash)));
+                             f -> ApiHelpers.md5(f.filename()).equalsIgnoreCase(mDiffId.fileHash)));
         return Single.zip(getSha(), fileSingle, (sha, fileOpt) -> {
             final Intent intent;
             GitHubFile file = fileOpt.orNull();
             if (file != null && FileUtils.isImage(file.filename())) {
                 intent = FileViewerActivity.makeIntent(mActivity, mRepoOwner, mRepoName,
-                        sha, file.filename());
+                                                       sha, file.filename());
             } else if (file != null) {
                 intent = getLaunchIntent(sha, file, getComments().blockingGet(), mDiffId);
             } else {

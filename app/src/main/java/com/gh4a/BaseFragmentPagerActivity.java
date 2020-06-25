@@ -11,7 +11,7 @@ import com.gh4a.fragment.LoadingFragmentBase;
 import com.gh4a.widget.SwipeRefreshLayout;
 
 public abstract class BaseFragmentPagerActivity extends BasePagerActivity implements
-        SwipeRefreshLayout.ChildScrollDelegate {
+    SwipeRefreshLayout.ChildScrollDelegate {
     private FragmentAdapter mAdapter;
 
     @Override

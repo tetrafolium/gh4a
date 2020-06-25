@@ -32,13 +32,13 @@ public class IssueLabelSpan extends ReplacementSpan {
         Resources res = context.getResources();
         mPadding = res.getDimensionPixelSize(R.dimen.issue_label_padding);
         mRightAndBottomMargin =
-                withMargin ? res.getDimensionPixelSize(R.dimen.issue_label_margin) : 0;
+            withMargin ? res.getDimensionPixelSize(R.dimen.issue_label_margin) : 0;
         mTextSize = res.getDimension(R.dimen.issue_label_text_size);
     }
 
     @Override
     public int getSize(@NonNull Paint paint, CharSequence text,
-            int start, int end, Paint.FontMetricsInt fm) {
+                       int start, int end, Paint.FontMetricsInt fm) {
         paint.setTextSize(mTextSize);
         if (fm != null) {
             paint.getFontMetricsInt(fm);
@@ -57,7 +57,7 @@ public class IssueLabelSpan extends ReplacementSpan {
     @SuppressWarnings("UnnecessaryLocalVariable")
     @Override
     public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end,
-            float x, int top, int y, int bottom, @NonNull Paint paint) {
+                     float x, int top, int y, int bottom, @NonNull Paint paint) {
         paint.setTextSize(mTextSize);
         float textSize = paint.measureText(text, start, end);
 

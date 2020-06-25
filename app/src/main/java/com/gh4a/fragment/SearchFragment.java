@@ -51,9 +51,9 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class SearchFragment extends PagedDataBaseFragment<Object> implements
-        SearchView.OnQueryTextListener, SearchView.OnCloseListener,
-        SearchView.OnSuggestionListener, FilterQueryProvider,
-        AdapterView.OnItemSelectedListener, SearchAdapter.Callback {
+    SearchView.OnQueryTextListener, SearchView.OnCloseListener,
+    SearchView.OnSuggestionListener, FilterQueryProvider,
+    AdapterView.OnItemSelectedListener, SearchAdapter.Callback {
     public static SearchFragment newInstance(int initialType, String initialQuery,
             boolean startSearchImmediately) {
         SearchFragment f = new SearchFragment();
@@ -76,11 +76,11 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
     };
 
     private static final String[] SUGGESTION_PROJECTION = {
-            SuggestionsProvider.Columns._ID, SuggestionsProvider.Columns.SUGGESTION
+        SuggestionsProvider.Columns._ID, SuggestionsProvider.Columns.SUGGESTION
     };
     private static final String SUGGESTION_SELECTION =
-            SuggestionsProvider.Columns.TYPE + " = ? AND " +
-                    SuggestionsProvider.Columns.SUGGESTION + " LIKE ?";
+        SuggestionsProvider.Columns.TYPE + " = ? AND " +
+        SuggestionsProvider.Columns.SUGGESTION + " LIKE ?";
     private static final String SUGGESTION_ORDER = SuggestionsProvider.Columns.DATE + " DESC";
 
     private static final String STATE_KEY_QUERY = "query";
@@ -162,9 +162,12 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
             return Single.just(Response.success(new ApiHelpers.DummyPage<>()));
         }
         switch (mSelectedSearchType) {
-            case SEARCH_TYPE_REPO: return makeRepoSearchSingle(page, bypassCache);
-            case SEARCH_TYPE_USER: return makeUserSearchSingle(page, bypassCache);
-            case SEARCH_TYPE_CODE: return makeCodeSearchSingle(page, bypassCache);
+        case SEARCH_TYPE_REPO:
+            return makeRepoSearchSingle(page, bypassCache);
+        case SEARCH_TYPE_USER:
+            return makeUserSearchSingle(page, bypassCache);
+        case SEARCH_TYPE_CODE:
+            return makeCodeSearchSingle(page, bypassCache);
         }
         throw new IllegalStateException("Unexpected search type " + mSelectedSearchType);
     }
@@ -202,7 +205,7 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
                 public void run() {
                     cr.insert(SuggestionsProvider.Columns.CONTENT_URI, cv);
                 }
-            }.start();
+            } .start();
         }
         loadResults();
         return true;
@@ -239,10 +242,10 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
                     @Override
                     public void run() {
                         cr.delete(SuggestionsProvider.Columns.CONTENT_URI,
-                                SuggestionsProvider.Columns.TYPE + " = ?",
-                                new String[] { String.valueOf(type) });
+                                  SuggestionsProvider.Columns.TYPE + " = ?",
+                                  new String[] { String.valueOf(type) });
                     }
-                }.start();
+                } .start();
             } else {
                 mQuery = cursor.getString(1);
                 mSearch.setQuery(mQuery, false);
@@ -282,8 +285,8 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
         String ref = uri.getQueryParameter("ref");
         TextMatch textMatch = matchIndex >= 0 ? result.textMatches().get(matchIndex) : null;
         startActivity(FileViewerActivity.makeIntentWithSearchMatch(getActivity(),
-                repo.owner().login(), repo.name(), ref, result.path(),
-                textMatch));
+                      repo.owner().login(), repo.name(), ref, result.path(),
+                      textMatch));
     }
 
     private void loadResults() {
@@ -323,25 +326,25 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
         String params = mQuery + " fork:true";
 
         return service.searchRepositories(params, null, null, page)
-                .compose(result -> RxUtils.<Repository, Object>searchPageAdapter(result, item -> item))
-                // With that status code, Github wants to tell us there are no
-                // repositories to search in. Just pretend no error and return
-                // an empty list in that case.
-                .compose(RxUtils.mapFailureToValue(422, Response.success(new ApiHelpers.DummyPage<>())));
+               .compose(result -> RxUtils.<Repository, Object>searchPageAdapter(result, item -> item))
+               // With that status code, Github wants to tell us there are no
+               // repositories to search in. Just pretend no error and return
+               // an empty list in that case.
+               .compose(RxUtils.mapFailureToValue(422, Response.success(new ApiHelpers.DummyPage<>())));
     }
 
     private Single<Response<Page<Object>>> makeUserSearchSingle(long page, boolean bypassCache) {
         final SearchService service = ServiceFactory.get(SearchService.class, bypassCache);
         return service.searchUsers(mQuery, null, null, page)
-                .compose(result -> RxUtils.<User, Object>searchPageAdapter(result, item -> item));
+               .compose(result -> RxUtils.<User, Object>searchPageAdapter(result, item -> item));
     }
 
     private Single<Response<Page<Object>>> makeCodeSearchSingle(long page, boolean bypassCache) {
         SearchService service = ServiceFactory.get(SearchService.class, bypassCache,
-                "application/vnd.github.v3.text-match+json", null, null);
+                                "application/vnd.github.v3.text-match+json", null, null);
 
         return service.searchCode(mQuery, null, null, page)
-                .compose(result -> RxUtils.<SearchCode, Object>searchPageAdapter(result, item -> item));
+               .compose(result -> RxUtils.<SearchCode, Object>searchPageAdapter(result, item -> item));
     }
 
     private static class SearchTypeAdapter extends BaseAdapter implements SpinnerAdapter {
@@ -420,9 +423,9 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
             if (newCursor != null && newCursor.getCount() > 0) {
                 MatrixCursor clearRowCursor = new MatrixCursor(SUGGESTION_PROJECTION);
                 clearRowCursor.addRow(new Object[] {
-                        Long.MAX_VALUE,
-                        mContext.getString(R.string.clear_suggestions)
-                });
+                                          Long.MAX_VALUE,
+                                          mContext.getString(R.string.clear_suggestions)
+                                      });
                 newCursor = new MergeCursor(new Cursor[] { newCursor, clearRowCursor });
             }
             return super.swapCursor(newCursor);
@@ -441,7 +444,7 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
             @LayoutRes int layoutResId = isClearRow(cursor.getPosition())
-                    ? R.layout.row_suggestion_clear : R.layout.row_suggestion;
+                                         ? R.layout.row_suggestion_clear : R.layout.row_suggestion;
             return mInflater.inflate(layoutResId, parent, false);
         }
 

@@ -13,7 +13,7 @@ import com.gh4a.R;
 @SuppressWarnings("unused")
 public class ScrollAwareFloatingActionButtonBehavior extends FloatingActionButton.Behavior {
     private final FloatingActionButton.OnVisibilityChangedListener mVisibilityChangedListener =
-            new FloatingActionButton.OnVisibilityChangedListener() {
+    new FloatingActionButton.OnVisibilityChangedListener() {
         @Override
         public void onHidden(FloatingActionButton fab) {
             super.onHidden(fab);
@@ -27,21 +27,21 @@ public class ScrollAwareFloatingActionButtonBehavior extends FloatingActionButto
 
     @Override
     public boolean onStartNestedScroll(@NonNull CoordinatorLayout coordinatorLayout,
-            @NonNull FloatingActionButton child, @NonNull View directTargetChild,
-            @NonNull View target, int axes, int type) {
+                                       @NonNull FloatingActionButton child, @NonNull View directTargetChild,
+                                       @NonNull View target, int axes, int type) {
         if (target.getTag(R.id.FloatingActionButtonScrollEnabled) == null) {
             return super.onStartNestedScroll(coordinatorLayout, child, directTargetChild, target,
-                    axes, type);
+                                             axes, type);
         }
         return axes == ViewCompat.SCROLL_AXIS_VERTICAL;
     }
 
     @Override
     public void onNestedScroll(@NonNull CoordinatorLayout coordinatorLayout,
-            @NonNull FloatingActionButton child, @NonNull View target, int dxConsumed,
-            int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type) {
+                               @NonNull FloatingActionButton child, @NonNull View target, int dxConsumed,
+                               int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type) {
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed,
-                dyUnconsumed, type);
+                             dyUnconsumed, type);
 
         if (dyConsumed > 0 && child.getVisibility() == View.VISIBLE) {
             child.hide(mVisibilityChangedListener);

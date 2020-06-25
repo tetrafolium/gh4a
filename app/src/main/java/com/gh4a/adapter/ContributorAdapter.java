@@ -35,7 +35,7 @@ public class ContributorAdapter extends RootAdapter<User, ContributorAdapter.Vie
 
         holder.tvTitle.setText(StringUtils.formatName(contributor.login(), contributor.name()));
         holder.tvExtra.setText(mContext.getResources().getQuantityString(R.plurals.contributor_extra_data,
-                contributor.contributions(), contributor.contributions()));
+                               contributor.contributions(), contributor.contributions()));
     }
 
     @Override

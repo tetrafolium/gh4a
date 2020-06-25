@@ -17,14 +17,14 @@ public class IssueListFactory extends FragmentFactory {
     private static final String STATE_KEY_SHOWING_CLOSED = "issue:showing_closed";
 
     private static final int[] TAB_TITLES = new int[] {
-            R.string.created, R.string.assigned, R.string.mentioned, R.string.participating
+        R.string.created, R.string.assigned, R.string.mentioned, R.string.participating
     };
 
     private boolean mShowingClosed;
     private final String mLogin;
     private final boolean mIsPullRequest;
     private final IssueListFragment.SortDrawerHelper mDrawerHelper =
-            new IssueListFragment.SortDrawerHelper();
+        new IssueListFragment.SortDrawerHelper();
     private int[] mHeaderColorAttrs;
 
     public IssueListFactory(HomeActivity activity, String userLogin, boolean pr) {
@@ -67,26 +67,26 @@ public class IssueListFactory extends FragmentFactory {
         }
 
         final String query = String.format(QUERY, mIsPullRequest ? "pr" : "issue",
-                mShowingClosed ? ApiHelpers.IssueState.CLOSED : ApiHelpers.IssueState.OPEN,
-                action, mLogin);
+                                           mShowingClosed ? ApiHelpers.IssueState.CLOSED : ApiHelpers.IssueState.OPEN,
+                                           action, mLogin);
 
         return IssueListFragment.newInstance(query,
-                mDrawerHelper.getSortMode(), mDrawerHelper.getSortOrder(),
-                mShowingClosed ? ApiHelpers.IssueState.CLOSED : ApiHelpers.IssueState.OPEN,
-                mIsPullRequest ? R.string.no_pull_requests_found : R.string.no_issues_found,
-                true);
+                                             mDrawerHelper.getSortMode(), mDrawerHelper.getSortOrder(),
+                                             mShowingClosed ? ApiHelpers.IssueState.CLOSED : ApiHelpers.IssueState.OPEN,
+                                             mIsPullRequest ? R.string.no_pull_requests_found : R.string.no_issues_found,
+                                             true);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         int resIdState = mShowingClosed ?
-                R.string.issues_menu_show_open : R.string.issues_menu_show_closed;
+                         R.string.issues_menu_show_open : R.string.issues_menu_show_closed;
         menu.add(Menu.NONE, Menu.FIRST, Menu.NONE, resIdState)
-                .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         menu.add(Menu.NONE, Menu.FIRST + 1, Menu.NONE, R.string.actions)
-                .setIcon(R.drawable.overflow_horizontal)
-                .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        .setIcon(R.drawable.overflow_horizontal)
+        .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -94,12 +94,12 @@ public class IssueListFactory extends FragmentFactory {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case Menu.FIRST:
-                toggleStateFilter();
-                return true;
-            case Menu.FIRST + 1:
-                mActivity.toggleToolDrawer();
-                return true;
+        case Menu.FIRST:
+            toggleStateFilter();
+            return true;
+        case Menu.FIRST + 1:
+            mActivity.toggleToolDrawer();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

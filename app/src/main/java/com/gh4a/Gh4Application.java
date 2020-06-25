@@ -72,7 +72,7 @@ public class Gh4Application extends Application implements OnSharedPreferenceCha
         int prefsVersion = prefs.getInt(KEY_VERSION, 0);
         if (prefsVersion < 3) {
             SharedPreferences.Editor editor = prefs.edit()
-                    .putInt(KEY_VERSION, 3);
+                                              .putInt(KEY_VERSION, 3);
 
             if (prefsVersion < 2) {
                 // convert old-style login/token pref to new-style login list
@@ -83,9 +83,9 @@ public class Gh4Application extends Application implements OnSharedPreferenceCha
                     loginSet.add(login);
                 }
                 editor.putString(KEY_ACTIVE_LOGIN, login)
-                        .putStringSet(KEY_ALL_LOGINS, loginSet)
-                        .remove("USER_LOGIN")
-                        .remove("Token");
+                .putStringSet(KEY_ALL_LOGINS, loginSet)
+                .remove("USER_LOGIN")
+                .remove("Token");
                 if (login != null && token != null) {
                     editor.putString(KEY_PREFIX_TOKEN + login, token);
                 }
@@ -130,13 +130,13 @@ public class Gh4Application extends Application implements OnSharedPreferenceCha
 
     private void selectTheme(int theme) {
         switch (theme) {
-            case THEME_DARK:
-                THEME = R.style.DarkTheme;
-                break;
-            case THEME_LIGHT:
-            case 2: /* for backwards compat with old settings, was light-dark theme */
-                THEME = R.style.LightTheme;
-                break;
+        case THEME_DARK:
+            THEME = R.style.DarkTheme;
+            break;
+        case THEME_LIGHT:
+        case 2: /* for backwards compat with old settings, was light-dark theme */
+            THEME = R.style.LightTheme;
+            break;
         }
     }
 
@@ -158,8 +158,8 @@ public class Gh4Application extends Application implements OnSharedPreferenceCha
     public void setActiveLogin(String login) {
         if (getPrefs().getStringSet(KEY_ALL_LOGINS, null).contains(login)) {
             getPrefs().edit()
-                    .putString(KEY_ACTIVE_LOGIN, login)
-                    .apply();
+            .putString(KEY_ACTIVE_LOGIN, login)
+            .apply();
         }
     }
 
@@ -190,11 +190,11 @@ public class Gh4Application extends Application implements OnSharedPreferenceCha
         logins.add(login);
 
         prefs.edit()
-                .putString(KEY_ACTIVE_LOGIN, login)
-                .putStringSet(KEY_ALL_LOGINS, logins)
-                .putString(KEY_PREFIX_TOKEN + login, token)
-                .putLong(KEY_PREFIX_USER_ID + login, user.id())
-                .apply();
+        .putString(KEY_ACTIVE_LOGIN, login)
+        .putStringSet(KEY_ALL_LOGINS, logins)
+        .putString(KEY_PREFIX_TOKEN + login, token)
+        .putLong(KEY_PREFIX_USER_ID + login, user.id())
+        .apply();
 
         updateNotificationJob(prefs);
     }
@@ -212,8 +212,8 @@ public class Gh4Application extends Application implements OnSharedPreferenceCha
 
     public void setCurrentAccountInfo(User user) {
         getPrefs().edit()
-                .putLong(KEY_PREFIX_USER_ID + user.login(), user.id())
-                .apply();
+        .putLong(KEY_PREFIX_USER_ID + user.login(), user.id())
+        .apply();
     }
 
     public void logout() {
@@ -226,11 +226,11 @@ public class Gh4Application extends Application implements OnSharedPreferenceCha
         logins.remove(login);
 
         getPrefs().edit()
-                .putString(KEY_ACTIVE_LOGIN, logins.size() > 0 ? logins.iterator().next() : null)
-                .putStringSet(KEY_ALL_LOGINS, logins)
-                .remove(KEY_PREFIX_TOKEN + login)
-                .remove(KEY_PREFIX_USER_ID + login)
-                .apply();
+        .putString(KEY_ACTIVE_LOGIN, logins.size() > 0 ? logins.iterator().next() : null)
+        .putStringSet(KEY_ALL_LOGINS, logins)
+        .remove(KEY_PREFIX_TOKEN + login)
+        .remove(KEY_PREFIX_USER_ID + login)
+        .apply();
 
         NotificationsJob.cancelJob();
     }

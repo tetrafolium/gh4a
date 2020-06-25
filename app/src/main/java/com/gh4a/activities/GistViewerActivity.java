@@ -36,8 +36,8 @@ import com.meisolsson.githubsdk.service.gists.GistService;
 public class GistViewerActivity extends WebViewerActivity {
     public static Intent makeIntent(Context context, String id, String fileName) {
         return new Intent(context, GistViewerActivity.class)
-                .putExtra("id", id)
-                .putExtra("file", fileName);
+               .putExtra("id", id)
+               .putExtra("file", fileName);
     }
 
     private static final int ID_LOADER_GIST = 0;
@@ -86,7 +86,7 @@ public class GistViewerActivity extends WebViewerActivity {
             return generateMarkdownHtml(base64Data, null, null, null, cssTheme, addTitleHeader);
         } else {
             return generateCodeHtml(mGistFile.content(), mFileName,
-                    -1, -1, cssTheme, addTitleHeader);
+                                    -1, -1, cssTheme, addTitleHeader);
         }
     }
 
@@ -116,9 +116,9 @@ public class GistViewerActivity extends WebViewerActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.browser:
-                IntentUtils.launchBrowser(this, Uri.parse(mGistFile.rawUrl()));
-                return true;
+        case R.id.browser:
+            IntentUtils.launchBrowser(this, Uri.parse(mGistFile.rawUrl()));
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -126,13 +126,13 @@ public class GistViewerActivity extends WebViewerActivity {
     private void loadGist(boolean force) {
         GistService service = ServiceFactory.get(GistService.class, force);
         service.getGist(mGistId)
-                .map(ApiHelpers::throwOnFailure)
-                .compose(makeLoaderSingle(ID_LOADER_GIST, force))
-                .subscribe(result -> {
-                    mGistOwner = ApiHelpers.getUserLogin(GistViewerActivity.this, result.owner());
-                    mGistFile = result.files().get(mFileName);
-                    onDataReady();
-                }, this::handleLoadFailure);
+        .map(ApiHelpers::throwOnFailure)
+        .compose(makeLoaderSingle(ID_LOADER_GIST, force))
+        .subscribe(result -> {
+            mGistOwner = ApiHelpers.getUserLogin(GistViewerActivity.this, result.owner());
+            mGistFile = result.files().get(mFileName);
+            onDataReady();
+        }, this::handleLoadFailure);
 
     }
 }

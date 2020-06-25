@@ -86,7 +86,7 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
     private MenuPopupHelper mAddReactionPopup;
     private AddReactionMenuHelper mAddHelper;
     private final PopupMenu.OnMenuItemClickListener mAddReactionClickListener =
-            new PopupMenu.OnMenuItemClickListener() {
+    new PopupMenu.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem item) {
             return mAddHelper.onItemClick(item);
@@ -185,10 +185,10 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
                 popup.inflate(R.menu.reaction_menu);
                 popup.setOnMenuItemClickListener(mAddReactionClickListener);
                 mAddHelper = new AddReactionMenuHelper(getContext(), popup.getMenu(),
-                        mCallback, mReferenceItem, mDetailsCache);
+                                                       mCallback, mReferenceItem, mDetailsCache);
 
                 mAddReactionPopup = new MenuPopupHelper(getContext(), (MenuBuilder) popup.getMenu(),
-                        mReactButton);
+                                                        mReactButton);
                 mAddReactionPopup.setForceShowIcon(true);
             }
             mAddHelper.startLoadingIfNeeded();
@@ -199,7 +199,7 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
             if (view.getId() == VIEW_IDS[i]) {
                 if (mPopup == null) {
                     mPopup = new ReactionUserPopup(getContext(),
-                            mCallback, mReferenceItem, mDetailsCache);
+                                                   mCallback, mReferenceItem, mDetailsCache);
                 }
                 mPopup.setAnchorView(view);
                 mPopup.show(CONTENTS[i]);
@@ -225,7 +225,7 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
         private String mContent;
 
         public ReactionUserPopup(@NonNull Context context, Callback callback,
-                Item item, ReactionDetailsCache detailsCache) {
+                                 Item item, ReactionDetailsCache detailsCache) {
             super(context);
 
             mCallback = callback;
@@ -233,8 +233,8 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
             mDetailsCache = detailsCache;
             mAdapter = new ReactionUserAdapter(context, this);
             setContentWidth(
-                    context.getResources()
-                            .getDimensionPixelSize(R.dimen.reaction_details_popup_width));
+                context.getResources()
+                .getDimensionPixelSize(R.dimen.reaction_details_popup_width));
             setAdapter(mAdapter);
         }
 
@@ -257,20 +257,20 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
                 populateAdapter(details);
             } else {
                 fetchReactions(mCallback, mItem, mDetailsCache)
-                        .subscribe(this::populateAdapter, error -> {
-                            Log.d(Gh4Application.LOG_TAG, "Fetching reactions failed", error);
-                            dismiss();
-                        });
+                .subscribe(this::populateAdapter, error -> {
+                    Log.d(Gh4Application.LOG_TAG, "Fetching reactions failed", error);
+                    dismiss();
+                });
             }
         }
 
         public void toggleOwnReaction(Reaction currentReaction) {
             final long id = currentReaction != null ? currentReaction.id() : 0;
             toggleReaction(mContent, id, mLastKnownDetails, mCallback, mItem, mDetailsCache)
-                    .subscribe(result -> dismiss(), error -> {
-                        Log.d(Gh4Application.LOG_TAG, "Toggling reaction failed", error);
-                        dismiss();
-                    });
+            .subscribe(result -> dismiss(), error -> {
+                Log.d(Gh4Application.LOG_TAG, "Toggling reaction failed", error);
+                dismiss();
+            });
         }
 
         private void populateAdapter(List<Reaction> details) {
@@ -355,9 +355,9 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
         public View getView(int position, View convertView, ViewGroup parent) {
             int viewType = getItemViewType(position);
             @LayoutRes int layoutResId =
-                    viewType == 0 ? R.layout.row_reaction_details :
-                    viewType == 1 ? R.layout.reaction_details_progress :
-                    R.layout.reaction_details_divider;
+                viewType == 0 ? R.layout.row_reaction_details :
+                viewType == 1 ? R.layout.reaction_details_progress :
+                R.layout.reaction_details_divider;
 
             if (convertView == null) {
                 convertView = mInflater.inflate(layoutResId, parent, false);
@@ -375,7 +375,7 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
                 if (ApiHelpers.loginEquals(user, ownLogin)) {
                     avatar.setAlpha(mOwnReaction != null ? 1.0f : 0.4f);
                     name.setText(mOwnReaction != null
-                            ? R.string.remove_reaction : R.string.add_reaction);
+                                 ? R.string.remove_reaction : R.string.add_reaction);
                     convertView.setTag(mOwnReaction);
                 } else {
                     avatar.setAlpha(1.0f);
@@ -403,15 +403,15 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
     private static Single<List<Reaction>> fetchReactions(Callback callback, Item item,
             ReactionDetailsCache cache) {
         return callback.loadReactionDetails(item, false)
-                .compose(RxUtils::doInBackground)
-                .compose(RxUtils.sortList((lhs, rhs) -> {
-                    int result = lhs.content().compareTo(rhs.content());
-                    if (result == 0) {
-                        result = rhs.createdAt().compareTo(lhs.createdAt());
-                    }
-                    return result;
-                }))
-                .doOnSuccess(result -> cache.putEntry(item, result));
+               .compose(RxUtils::doInBackground)
+        .compose(RxUtils.sortList((lhs, rhs) -> {
+            int result = lhs.content().compareTo(rhs.content());
+            if (result == 0) {
+                result = rhs.createdAt().compareTo(lhs.createdAt());
+            }
+            return result;
+        }))
+        .doOnSuccess(result -> cache.putEntry(item, result));
     }
 
     private static Single<Optional<Reaction>> toggleReaction(String content, long id,
@@ -421,29 +421,29 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
 
         if (id == 0) {
             resultSingle = callback.addReaction(item, content)
-                    .map(Optional::of);
+                           .map(Optional::of);
         } else {
             ReactionService service = ServiceFactory.get(ReactionService.class, false);
             resultSingle = service.deleteReaction(id)
-                    .map(response -> Optional.absent());
+                           .map(response -> Optional.absent());
         }
 
         return resultSingle
-                .compose(RxUtils::doInBackground)
-                .doOnSuccess(reactionOpt -> {
-                    if (reactionOpt.isPresent()) {
-                        existingDetails.add(reactionOpt.get());
-                    } else {
-                        for (int i = 0; i < existingDetails.size(); i++) {
-                            Reaction reaction = existingDetails.get(i);
-                            if (reaction.id() == id) {
-                                existingDetails.remove(i);
-                                break;
-                            }
-                        }
+               .compose(RxUtils::doInBackground)
+        .doOnSuccess(reactionOpt -> {
+            if (reactionOpt.isPresent()) {
+                existingDetails.add(reactionOpt.get());
+            } else {
+                for (int i = 0; i < existingDetails.size(); i++) {
+                    Reaction reaction = existingDetails.get(i);
+                    if (reaction.id() == id) {
+                        existingDetails.remove(i);
+                        break;
                     }
-                    cache.putEntry(item, existingDetails);
-                });
+                }
+            }
+            cache.putEntry(item, existingDetails);
+        });
     }
 
     public static class AddReactionMenuHelper {
@@ -458,7 +458,7 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
         private boolean mLoading;
 
         public AddReactionMenuHelper(@NonNull Context context, Menu menu,
-                Callback callback, Item item, ReactionDetailsCache detailsCache) {
+                                     Callback callback, Item item, ReactionDetailsCache detailsCache) {
             mContext = context;
             mCallback = callback;
             mItem = item;
@@ -525,13 +525,13 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
                 update();
             } else if (!mLoading) {
                 fetchReactions(mCallback, mItem, mDetailsCache)
-                        .doOnSubscribe(disposable -> mLoading = true)
-                        .doOnSuccess(result -> mLoading = false)
-                        .doOnError(error -> mLoading = false)
-                        .subscribe(reactions -> update(), error -> {
-                            Log.d(Gh4Application.LOG_TAG, "Fetching reactions failed", error);
-                            update();
-                        });
+                .doOnSubscribe(disposable -> mLoading = true)
+                .doOnSuccess(result -> mLoading = false)
+                .doOnError(error -> mLoading = false)
+                .subscribe(reactions -> update(), error -> {
+                    Log.d(Gh4Application.LOG_TAG, "Fetching reactions failed", error);
+                    update();
+                });
             }
         }
 
@@ -553,23 +553,23 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
         private void updateDrawableState() {
             @ColorInt int accentColor = UiUtils.resolveColor(mContext, R.attr.colorAccent);
             @ColorInt int secondaryColor = UiUtils.resolveColor(mContext,
-                    android.R.attr.textColorSecondary);
+                                           android.R.attr.textColorSecondary);
             for (MenuItem item : mItems) {
                 DrawableCompat.setTint(item.getIcon(),
-                        item.isChecked() ? accentColor : secondaryColor);
+                                       item.isChecked() ? accentColor : secondaryColor);
             }
         }
 
         private void addOrRemoveReaction(final String content, final long id) {
             toggleReaction(content, id, mLastKnownDetails, mCallback, mItem, mDetailsCache)
-                    .subscribe(result -> {
-                        for (int i = 0; i < CONTENTS.length; i++) {
-                            if (TextUtils.equals(CONTENTS[i], content)) {
-                                mOldReactionIds[i] = result.isPresent() ? result.get().id() : 0;
-                                break;
-                            }
-                        }
-                    }, error -> Log.d(Gh4Application.LOG_TAG, "Changing reaction failed", error));
+            .subscribe(result -> {
+                for (int i = 0; i < CONTENTS.length; i++) {
+                    if (TextUtils.equals(CONTENTS[i], content)) {
+                        mOldReactionIds[i] = result.isPresent() ? result.get().id() : 0;
+                        break;
+                    }
+                }
+            }, error -> Log.d(Gh4Application.LOG_TAG, "Changing reaction failed", error));
         }
     }
 
@@ -617,26 +617,42 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
             int hooray = 0, laugh = 0, rocket = 0, eyes = 0;
             for (Reaction reaction : reactions) {
                 switch (reaction.content()) {
-                    case Reaction.CONTENT_PLUS_ONE: ++plusOne; break;
-                    case Reaction.CONTENT_MINUS_ONE: ++minusOne; break;
-                    case Reaction.CONTENT_CONFUSED: ++confused; break;
-                    case Reaction.CONTENT_HEART: ++heart; break;
-                    case Reaction.CONTENT_HOORAY: ++hooray; break;
-                    case Reaction.CONTENT_LAUGH: ++laugh; break;
-                    case Reaction.CONTENT_ROCKET: ++rocket; break;
-                    case Reaction.CONTENT_EYES: ++eyes; break;
+                case Reaction.CONTENT_PLUS_ONE:
+                    ++plusOne;
+                    break;
+                case Reaction.CONTENT_MINUS_ONE:
+                    ++minusOne;
+                    break;
+                case Reaction.CONTENT_CONFUSED:
+                    ++confused;
+                    break;
+                case Reaction.CONTENT_HEART:
+                    ++heart;
+                    break;
+                case Reaction.CONTENT_HOORAY:
+                    ++hooray;
+                    break;
+                case Reaction.CONTENT_LAUGH:
+                    ++laugh;
+                    break;
+                case Reaction.CONTENT_ROCKET:
+                    ++rocket;
+                    break;
+                case Reaction.CONTENT_EYES:
+                    ++eyes;
+                    break;
                 }
             }
             return Reactions.builder()
-                    .plusOne(plusOne)
-                    .minusOne(minusOne)
-                    .confused(confused)
-                    .heart(heart)
-                    .hooray(hooray)
-                    .laugh(laugh)
-                    .rocket(rocket)
-                    .eyes(eyes)
-                    .build();
+                   .plusOne(plusOne)
+                   .minusOne(minusOne)
+                   .confused(confused)
+                   .heart(heart)
+                   .hooray(hooray)
+                   .laugh(laugh)
+                   .rocket(rocket)
+                   .eyes(eyes)
+                   .build();
         }
     }
 }

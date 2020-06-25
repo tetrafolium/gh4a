@@ -14,12 +14,12 @@ import io.reactivex.Single;
 
 public class EditIssueCommentActivity extends EditCommentActivity {
     public static Intent makeIntent(Context context, String repoOwner,
-            String repoName, int issueNumber, long id, String body,
-            @AttrRes int highlightColorAttr) {
+                                    String repoName, int issueNumber, long id, String body,
+                                    @AttrRes int highlightColorAttr) {
         Intent intent = new Intent(context, EditIssueCommentActivity.class)
-                .putExtra("issue", issueNumber);
+        .putExtra("issue", issueNumber);
         return EditCommentActivity.fillInIntent(intent,
-                repoOwner, repoName, id, 0L, body, highlightColorAttr);
+                                                repoOwner, repoName, id, 0L, body, highlightColorAttr);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class EditIssueCommentActivity extends EditCommentActivity {
         IssueCommentService service = ServiceFactory.get(IssueCommentService.class, false);
         CommentRequest request = CommentRequest.builder().body(body).build();
         return service.createIssueComment(repoOwner, repoName, issueNumber, request)
-                .map(ApiHelpers::throwOnFailure);
+               .map(ApiHelpers::throwOnFailure);
     }
 
     @Override
@@ -38,6 +38,6 @@ public class EditIssueCommentActivity extends EditCommentActivity {
         IssueCommentService service = ServiceFactory.get(IssueCommentService.class, false);
         CommentRequest request = CommentRequest.builder().body(body).build();
         return service.editIssueComment(repoOwner, repoName, commentId, request)
-                .map(ApiHelpers::throwOnFailure);
+               .map(ApiHelpers::throwOnFailure);
     }
 }

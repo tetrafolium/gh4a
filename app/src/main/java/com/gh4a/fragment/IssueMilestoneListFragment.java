@@ -36,7 +36,7 @@ import java.util.List;
 import io.reactivex.Single;
 
 public class IssueMilestoneListFragment extends ListDataBaseFragment<Milestone> implements
-        RootAdapter.OnItemClickListener<Milestone> {
+    RootAdapter.OnItemClickListener<Milestone> {
     private String mRepoOwner;
     private String mRepoName;
     private boolean mShowClosed;
@@ -78,25 +78,25 @@ public class IssueMilestoneListFragment extends ListDataBaseFragment<Milestone> 
     @Override
     protected int getEmptyTextResId() {
         return mShowClosed
-                ? R.string.no_closed_milestones_found
-                : R.string.no_open_milestones_found;
+               ? R.string.no_closed_milestones_found
+               : R.string.no_open_milestones_found;
     }
 
     @Override
     public void onItemClick(Milestone milestone) {
         startActivityForResult(IssueMilestoneEditActivity.makeEditIntent(
-                getActivity(), mRepoOwner, mRepoName, milestone, mFromPullRequest),
-                REQUEST_EDIT_MILESTONE);
+                                   getActivity(), mRepoOwner, mRepoName, milestone, mFromPullRequest),
+                               REQUEST_EDIT_MILESTONE);
     }
 
     @Override
     protected Single<List<Milestone>> onCreateDataSingle(boolean bypassCache) {
         final IssueMilestoneService service =
-                ServiceFactory.get(IssueMilestoneService.class, bypassCache);
+            ServiceFactory.get(IssueMilestoneService.class, bypassCache);
         String targetState = mShowClosed ? "closed" : "open";
 
         return ApiHelpers.PageIterator
-                .toSingle(page -> service.getRepositoryMilestones(mRepoOwner, mRepoName, targetState, page));
+               .toSingle(page -> service.getRepositoryMilestones(mRepoOwner, mRepoName, targetState, page));
     }
 
     @Override

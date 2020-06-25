@@ -83,9 +83,9 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public abstract class BaseActivity extends AppCompatActivity implements
-        SwipeRefreshLayout.OnRefreshListener,
-        ActivityCompat.OnRequestPermissionsResultCallback,
-        NavigationView.OnNavigationItemSelectedListener {
+    SwipeRefreshLayout.OnRefreshListener,
+    ActivityCompat.OnRequestPermissionsResultCallback,
+    NavigationView.OnNavigationItemSelectedListener {
     public interface RefreshableChild {
         void onRefresh();
     }
@@ -130,7 +130,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         public void run() {
             String label = IntentUtils.isNewTaskIntent(getIntent()) ? getActionBarTitle() : null;
             setTaskDescription(new ActivityManager.TaskDescription(label, null,
-                    mProgressColors[0]));
+                               mProgressColors[0]));
         }
     };
 
@@ -180,8 +180,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
         boolean isAuthError = are != null && are.getStatus() == HttpURLConnection.HTTP_UNAUTHORIZED;
         if (isAuthError) {
             Snackbar.make(mCoordinatorLayout, R.string.load_auth_failure_notice, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.login, v -> goToToplevelActivity())
-                    .show();
+            .setAction(R.string.login, v -> goToToplevelActivity())
+            .show();
         }
         if (are == null && e instanceof RuntimeException) {
             // If this happens, it means Rx catched a programming error of us. Crash the app
@@ -411,8 +411,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     protected void addHeaderView(View view, boolean scrollable) {
         mHeader.addView(view, 1, new AppBarLayout.LayoutParams(
-                AppBarLayout.LayoutParams.MATCH_PARENT,
-                AppBarLayout.LayoutParams.WRAP_CONTENT));
+                            AppBarLayout.LayoutParams.MATCH_PARENT,
+                            AppBarLayout.LayoutParams.WRAP_CONTENT));
         setAppBarChildScrollable(view, scrollable);
     }
 
@@ -430,7 +430,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         AppBarLayout.LayoutParams lp = (AppBarLayout.LayoutParams) view.getLayoutParams();
         if (scrollable) {
             lp.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
-                    | AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL);
+                              | AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL);
         } else {
             lp.setScrollFlags(0);
         }
@@ -539,13 +539,13 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     public void setRightDrawerLockedClosed(boolean locked) {
         mDrawerLayout.setDrawerLockMode(
-                locked ? DrawerLayout.LOCK_MODE_LOCKED_CLOSED : DrawerLayout.LOCK_MODE_UNLOCKED,
-                Gravity.RIGHT);
+            locked ? DrawerLayout.LOCK_MODE_LOCKED_CLOSED : DrawerLayout.LOCK_MODE_UNLOCKED,
+            Gravity.RIGHT);
     }
 
     public void requestPermission(final String permission,
-            ActivityCompat.OnRequestPermissionsResultCallback cb,
-            int rationaleTextResId) {
+                                  ActivityCompat.OnRequestPermissionsResultCallback cb,
+                                  int rationaleTextResId) {
         if (mPendingPermissionCb != null) {
             throw new IllegalStateException();
         }
@@ -556,9 +556,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
             mPendingPermissionCb = cb;
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
                 Snackbar.make(getRootLayout(), rationaleTextResId, Snackbar.LENGTH_INDEFINITE)
-                        .setAction(R.string.ok, v -> ActivityCompat.requestPermissions(
-                                BaseActivity.this, new String[] { permission }, 0))
-                        .show();
+                .setAction(R.string.ok, v -> ActivityCompat.requestPermissions(
+                               BaseActivity.this, new String[] { permission }, 0))
+                .show();
             } else {
                 ActivityCompat.requestPermissions(this, new String[] { permission }, 0);
             }
@@ -567,7 +567,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-            @NonNull String[] permissions, @NonNull int[] grantResults) {
+                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (mPendingPermissionCb != null) {
             mPendingPermissionCb.onRequestPermissionsResult(0, permissions, grantResults);
             mPendingPermissionCb = null;
@@ -583,8 +583,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     public <T> SingleTransformer<T, T> makeLoaderSingle(int id, boolean force) {
         return upstream -> upstream
-                .compose(RxUtils::doInBackground)
-                .compose(mRxLoader.makeSingleTransformer(id, force));
+               .compose(RxUtils::doInBackground)
+               .compose(mRxLoader.makeSingleTransformer(id, force));
     }
 
     protected void setErrorViewVisibility(boolean visible, Throwable e) {
@@ -620,11 +620,11 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
             if (blockReason != null) {
                 messageView.setText(
-                        getString(R.string.load_failure_explanation_dmca, blockReason.htmlUrl()));
+                    getString(R.string.load_failure_explanation_dmca, blockReason.htmlUrl()));
                 retryButton.setVisibility(View.GONE);
             } else if (re != null && re.getMessage() != null) {
                 messageView.setText(
-                        getString(R.string.load_failure_explanation_with_reason, re.getMessage()));
+                    getString(R.string.load_failure_explanation_with_reason, re.getMessage()));
                 retryButton.setVisibility(View.VISIBLE);
             } else {
                 messageView.setText(R.string.load_failure_explanation);
@@ -663,7 +663,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     private ObjectAnimator createColorTransition(ColorDrawable drawable, int color) {
         final ObjectAnimator animation = ObjectAnimator.ofInt(drawable,
-                "color", drawable.getColor(), color);
+                                         "color", drawable.getColor(), color);
         animation.setEvaluator(new ArgbEvaluator());
         return animation;
     }
@@ -683,13 +683,13 @@ public abstract class BaseActivity extends AppCompatActivity implements
         if (canSwipeToRefresh()) {
             mSwipeLayout.setOnRefreshListener(this);
             mSwipeLayout.setColorSchemeColors(
-                    UiUtils.resolveColor(this, R.attr.colorPrimary), 0,
-                    UiUtils.resolveColor(this, R.attr.colorPrimaryDark), 0
+                UiUtils.resolveColor(this, R.attr.colorPrimary), 0,
+                UiUtils.resolveColor(this, R.attr.colorPrimaryDark), 0
             );
         }
 
         CoordinatorLayout.LayoutParams lp =
-                (CoordinatorLayout.LayoutParams) mSwipeLayout.getLayoutParams();
+            (CoordinatorLayout.LayoutParams) mSwipeLayout.getLayoutParams();
         lp.setBehavior(onCreateSwipeLayoutBehavior());
 
         updateSwipeToRefreshState();
@@ -767,12 +767,12 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     private void applyHighlightColor(NavigationView view) {
         ColorStateList iconTint =
-                createDefaultNavigationColorStateList(android.R.attr.textColorSecondary);
+            createDefaultNavigationColorStateList(android.R.attr.textColorSecondary);
         if (iconTint != null) {
             view.setItemIconTintList(iconTint);
         }
         ColorStateList textColor =
-                createDefaultNavigationColorStateList(android.R.attr.textColorPrimary);
+            createDefaultNavigationColorStateList(android.R.attr.textColorPrimary);
         if (textColor != null) {
             view.setItemTextColor(textColor);
         }
@@ -818,7 +818,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
         if (animate) {
             Animation anim = AnimationUtils.loadAnimation(view.getContext(),
-                    show ? android.R.anim.fade_in : android.R.anim.fade_out);
+                             show ? android.R.anim.fade_in : android.R.anim.fade_out);
             view.startAnimation(anim);
         } else {
             view.clearAnimation();
@@ -844,7 +844,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
         mHeaderBehavior = new ToggleableAppBarLayoutBehavior();
         CoordinatorLayout.LayoutParams lp =
-                (CoordinatorLayout.LayoutParams) mHeader.getLayoutParams();
+            (CoordinatorLayout.LayoutParams) mHeader.getLayoutParams();
         lp.setBehavior(mHeaderBehavior);
 
         mSwipeLayout.setAppBarLayout(mHeader);

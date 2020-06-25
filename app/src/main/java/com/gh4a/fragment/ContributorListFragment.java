@@ -17,7 +17,7 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class ContributorListFragment extends PagedDataBaseFragment<User> implements
-        RootAdapter.OnItemClickListener<User> {
+    RootAdapter.OnItemClickListener<User> {
     public static ContributorListFragment newInstance(String repoOwner, String repoName) {
         ContributorListFragment f = new ContributorListFragment();
 

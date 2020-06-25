@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHolder> implements
-        View.OnClickListener {
+    View.OnClickListener {
     public interface OnItemInteractListener {
         void onItemClick(long id, String url);
         void onItemDrag(RecyclerView.ViewHolder viewHolder);
@@ -111,9 +111,15 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
         String extraData = mCursor.getString(mExtraColumnIndex);
 
         switch (type) {
-            case Columns.TYPE_REPO: holder.mIcon.setImageResource(mRepoIconResId); break;
-            case Columns.TYPE_USER: holder.mIcon.setImageResource(mUserIconResId); break;
-            default: holder.mIcon.setImageDrawable(null); break;
+        case Columns.TYPE_REPO:
+            holder.mIcon.setImageResource(mRepoIconResId);
+            break;
+        case Columns.TYPE_USER:
+            holder.mIcon.setImageResource(mUserIconResId);
+            break;
+        default:
+            holder.mIcon.setImageDrawable(null);
+            break;
         }
 
         holder.mTitle.setText(name);
@@ -141,7 +147,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
         int position = vh.getAdapterPosition();
         if (position != RecyclerView.NO_POSITION && moveCursorToPosition(position)) {
             mItemInteractListener.onItemClick(mCursor.getLong(mIdColumnIndex),
-                    mCursor.getString(mUrlColumnIndex));
+                                              mCursor.getString(mUrlColumnIndex));
         }
     }
 
@@ -169,9 +175,9 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
         context.getContentResolver().delete(uri, null, null);
 
         Snackbar.make(viewHolder.itemView, R.string.bookmark_removed, Snackbar.LENGTH_LONG)
-                .setAction(R.string.undo,
-                        v -> BookmarksProvider.saveBookmark(context, name, type, url, extraData, false))
-                .show();
+        .setAction(R.string.undo,
+                   v -> BookmarksProvider.saveBookmark(context, name, type, url, extraData, false))
+        .show();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener {

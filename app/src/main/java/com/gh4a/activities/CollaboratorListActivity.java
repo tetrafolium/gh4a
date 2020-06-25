@@ -27,8 +27,8 @@ import com.gh4a.fragment.CollaboratorListFragment;
 public class CollaboratorListActivity extends FragmentContainerActivity {
     public static Intent makeIntent(Context context, String repoOwner, String repoName) {
         return new Intent(context, CollaboratorListActivity.class)
-                .putExtra("owner", repoOwner)
-                .putExtra("repo", repoName);
+               .putExtra("owner", repoOwner)
+               .putExtra("repo", repoName);
     }
 
     private String mUserLogin;

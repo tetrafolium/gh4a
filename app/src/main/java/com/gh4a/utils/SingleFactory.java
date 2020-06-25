@@ -45,31 +45,31 @@ public class SingleFactory {
         }
 
         RepositoryCollaboratorService service =
-                ServiceFactory.get(RepositoryCollaboratorService.class, bypassCache);
+            ServiceFactory.get(RepositoryCollaboratorService.class, bypassCache);
 
         return service.isUserCollaborator(repoOwner, repoName, app.getAuthLogin())
-                // there's no actual content, result is always null
-                .map(ApiHelpers::mapToTrueOnSuccess)
-                // the API returns 403 if the user doesn't have push access,
-                // which in turn means he isn't a collaborator
-                .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_FORBIDDEN, false));
+               // there's no actual content, result is always null
+               .map(ApiHelpers::mapToTrueOnSuccess)
+               // the API returns 403 if the user doesn't have push access,
+               // which in turn means he isn't a collaborator
+               .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_FORBIDDEN, false));
     }
 
     public static Single<NotificationListLoadResult> getNotifications(boolean all,
             boolean participating, boolean bypassCache) {
         final NotificationService service =
-                ServiceFactory.get(NotificationService.class, bypassCache);
+            ServiceFactory.get(NotificationService.class, bypassCache);
         final Map<String, Object> options = new HashMap<>();
         options.put("all", all);
         options.put("participating", participating);
 
         return ApiHelpers.PageIterator
-                .toSingle(page -> service.getNotifications(options, page))
-                .map(SingleFactory::notificationsToResult);
+               .toSingle(page -> service.getNotifications(options, page))
+               .map(SingleFactory::notificationsToResult);
     }
 
     private static NotificationListLoadResult notificationsToResult(
-            List<NotificationThread> notifications) {
+        List<NotificationThread> notifications) {
         // group notifications by repo
         final HashMap<Repository, ArrayList<NotificationThread>> notificationsByRepo = new HashMap<>();
         for (NotificationThread n : notifications) {
@@ -119,22 +119,22 @@ public class SingleFactory {
 
     public static Single<List<Feed>> loadFeed(String relativeUrl) {
         return RetrofitHelper.feedService()
-                .getFeed(relativeUrl)
-                .map(ApiHelpers::throwOnFailure)
-                .map(feed -> feed.feed);
+               .getFeed(relativeUrl)
+               .map(ApiHelpers::throwOnFailure)
+               .map(feed -> feed.feed);
     }
 
     public static Single<List<Feed>> loadBlogFeed() {
         return RetrofitHelper.feedService()
-                .getBlogFeed()
-                .map(ApiHelpers::throwOnFailure)
-                .map(feed -> feed.feed);
+               .getBlogFeed()
+               .map(ApiHelpers::throwOnFailure)
+               .map(feed -> feed.feed);
     }
 
     public static Single<List<Trend>> loadTrends(String type) {
         return RetrofitHelper.trendService()
-                .getTrends(type)
-                .map(ApiHelpers::throwOnFailure);
+               .getTrends(type)
+               .map(ApiHelpers::throwOnFailure);
     }
 
     private static class RetrofitHelper {
@@ -159,7 +159,7 @@ public class SingleFactory {
             RegistryMatcher matcher = new RegistryMatcher();
             matcher.bind(Date.class, new Transform<Date>() {
                 private final DateFormat mFormat =
-                        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+                    new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
 
                 @Override
                 public Date read(String value) throws Exception {
@@ -173,22 +173,22 @@ public class SingleFactory {
             });
 
             OkHttpClient client = ServiceFactory.getHttpClientBuilder()
-                    .followRedirects(false)
-                    .build();
+                                  .followRedirects(false)
+                                  .build();
 
             sFeedService = new Retrofit.Builder()
-                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                    .addConverterFactory(SimpleXmlConverterFactory.create(new Persister(matcher)))
-                    .baseUrl("https://github.com/")
-                    .client(client)
-                    .build()
-                    .create(GitHubFeedService.class);
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .addConverterFactory(SimpleXmlConverterFactory.create(new Persister(matcher)))
+            .baseUrl("https://github.com/")
+            .client(client)
+            .build()
+            .create(GitHubFeedService.class);
             sTrendService = new Retrofit.Builder()
-                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                    .addConverterFactory(MoshiConverterFactory.create(ServiceGenerator.moshi))
-                    .baseUrl("https://raw.githubusercontent.com/Unpublished/GithubTrending/")
-                    .build()
-                    .create(TrendService.class);
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .addConverterFactory(MoshiConverterFactory.create(ServiceGenerator.moshi))
+            .baseUrl("https://raw.githubusercontent.com/Unpublished/GithubTrending/")
+            .build()
+            .create(TrendService.class);
         }
     }
 

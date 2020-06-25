@@ -7,7 +7,7 @@ import com.gh4a.R;
 import com.gh4a.model.TimelineItem;
 
 class ReplyViewHolder extends TimelineItemAdapter.TimelineItemViewHolder<TimelineItem.Reply>
-        implements View.OnClickListener {
+    implements View.OnClickListener {
 
     public interface Callback {
         long getSelectedCommentId();
@@ -38,7 +38,7 @@ class ReplyViewHolder extends TimelineItemAdapter.TimelineItemViewHolder<Timelin
     public void onClick(final View v) {
         if (v.getId() == R.id.btn_reply) {
             TimelineItem.TimelineComment timelineComment =
-                    (TimelineItem.TimelineComment) v.getTag();
+                (TimelineItem.TimelineComment) v.getTag();
             mCallback.reply(timelineComment.comment().id());
         }
     }

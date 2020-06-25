@@ -57,19 +57,19 @@ import java.util.List;
 import java.util.Locale;
 
 public class IssueListActivity extends BaseFragmentPagerActivity implements
-        View.OnClickListener, LoadingListFragmentBase.OnRecyclerViewCreatedListener,
-        SearchView.OnCloseListener, SearchView.OnQueryTextListener,
-        MenuItem.OnActionExpandListener {
+    View.OnClickListener, LoadingListFragmentBase.OnRecyclerViewCreatedListener,
+    SearchView.OnCloseListener, SearchView.OnQueryTextListener,
+    MenuItem.OnActionExpandListener {
     public static Intent makeIntent(Context context, String repoOwner, String repoName) {
         return makeIntent(context, repoOwner, repoName, false);
     }
 
     public static Intent makeIntent(Context context, String repoOwner, String repoName,
-            boolean isPullRequest) {
+                                    boolean isPullRequest) {
         return new Intent(context, IssueListActivity.class)
-                .putExtra("owner", repoOwner)
-                .putExtra("repo", repoName)
-                .putExtra("is_pull_request", isPullRequest);
+               .putExtra("owner", repoOwner)
+               .putExtra("repo", repoName)
+               .putExtra("is_pull_request", isPullRequest);
     }
 
     private static final int REQUEST_ISSUE_CREATE = 1001;
@@ -98,7 +98,7 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
     private List<User> mAssignees;
 
     private final IssueListFragment.SortDrawerHelper mSortHelper =
-            new IssueListFragment.SortDrawerHelper();
+        new IssueListFragment.SortDrawerHelper();
 
     private static final String STATE_KEY_SEARCH_QUERY = "search_query";
     private static final String STATE_KEY_SEARCH_MODE = "search_mode";
@@ -138,13 +138,13 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
             mSelectedLabel = savedInstanceState.getString(STATE_KEY_SELECTED_LABEL);
             mSelectedAssignee = savedInstanceState.getString(STATE_KEY_SELECTED_ASSIGNEE);
             mSelectedParticipatingStatus =
-                    savedInstanceState.getInt(STATE_KEY_PARTICIPATING_STATUS);
+                savedInstanceState.getInt(STATE_KEY_PARTICIPATING_STATUS);
         }
 
         if (!mIsPullRequest && Gh4Application.get().isAuthorized()) {
             CoordinatorLayout rootLayout = getRootLayout();
             mCreateFab = (FloatingActionButton) getLayoutInflater().inflate(
-                    R.layout.add_fab, rootLayout, false);
+                             R.layout.add_fab, rootLayout, false);
             mCreateFab.setOnClickListener(this);
             rootLayout.addView(mCreateFab);
         }
@@ -230,25 +230,25 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
 
         if (mSearchMode) {
             query = String.format(Locale.US, SEARCH_QUERY,
-                    mIsPullRequest ? "pr" : "issue",
-                    getIssueType(position), mRepoOwner, mRepoName, mSearchQuery);
+                                  mIsPullRequest ? "pr" : "issue",
+                                  getIssueType(position), mRepoOwner, mRepoName, mSearchQuery);
             emptyTextResId = mIsPullRequest
-                    ? R.string.no_search_pull_requests_found : R.string.no_search_issues_found;
+                             ? R.string.no_search_pull_requests_found : R.string.no_search_issues_found;
         } else {
             query = String.format(Locale.US, LIST_QUERY,
-                    mIsPullRequest ? "pr" : "issue",
-                    getIssueType(position), mRepoOwner, mRepoName,
-                    buildFilterItem("assignee", mSelectedAssignee),
-                    buildFilterItem("label", mSelectedLabel),
-                    buildFilterItem("milestone", mSelectedMilestone),
-                    buildParticipatingFilterItem()).trim();
+                                  mIsPullRequest ? "pr" : "issue",
+                                  getIssueType(position), mRepoOwner, mRepoName,
+                                  buildFilterItem("assignee", mSelectedAssignee),
+                                  buildFilterItem("label", mSelectedLabel),
+                                  buildFilterItem("milestone", mSelectedMilestone),
+                                  buildParticipatingFilterItem()).trim();
             emptyTextResId = mIsPullRequest
-                    ? R.string.no_pull_requests_found : R.string.no_issues_found;
+                             ? R.string.no_pull_requests_found : R.string.no_issues_found;
         }
 
         return IssueListFragment.newInstance(query,
-                mSortHelper.getSortMode(), mSortHelper.getSortOrder(),
-                getIssueState(position), emptyTextResId, false);
+                                             mSortHelper.getSortMode(), mSortHelper.getSortOrder(),
+                                             getIssueState(position), emptyTextResId, false);
     }
 
     @Override
@@ -276,7 +276,7 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
             if (resultCode == Activity.RESULT_OK && data.hasExtra("issue")) {
                 Issue issue = data.getParcelableExtra("issue");
                 Intent intent = IssueActivity.makeIntent(this, mRepoOwner, mRepoName,
-                        issue.number());
+                                issue.number());
                 startActivityForResult(intent, REQUEST_ISSUE_AFTER_CREATE);
             }
         } else if (requestCode == REQUEST_ISSUE_AFTER_CREATE) {
@@ -294,7 +294,7 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
         menuResIds[0] = IssueListFragment.SortDrawerHelper.getMenuResId();
         if (!mSearchMode) {
             menuResIds[1] = mIsCollaborator != null && mIsCollaborator
-                    ? R.menu.issue_list_filter_collab : R.menu.issue_list_filter;
+                            ? R.menu.issue_list_filter_collab : R.menu.issue_list_filter;
         }
         return menuResIds;
     }
@@ -310,36 +310,36 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
         MenuItem milestoneFilterItem = menu.findItem(R.id.filter_by_milestone);
         if (milestoneFilterItem != null) {
             final String subtitle =
-                    mSelectedMilestone == null ? getString(R.string.issue_filter_by_any_milestone) :
-                    mSelectedMilestone.isEmpty() ? getString(R.string.issue_filter_by_no_milestone) :
-                    mSelectedMilestone;
+                mSelectedMilestone == null ? getString(R.string.issue_filter_by_any_milestone) :
+                mSelectedMilestone.isEmpty() ? getString(R.string.issue_filter_by_no_milestone) :
+                mSelectedMilestone;
             UiUtils.setMenuItemText(this, milestoneFilterItem,
-                    getString(R.string.issue_filter_by_milestone), subtitle);
+                                    getString(R.string.issue_filter_by_milestone), subtitle);
         }
         MenuItem labelFilterItem = menu.findItem(R.id.filter_by_label);
         if (labelFilterItem != null) {
             final String subtitle =
-                    mSelectedLabel == null ? getString(R.string.issue_filter_by_any_label) :
-                    mSelectedLabel.isEmpty() ? getString(R.string.issue_filter_by_no_label) :
-                    mSelectedLabel;
+                mSelectedLabel == null ? getString(R.string.issue_filter_by_any_label) :
+                mSelectedLabel.isEmpty() ? getString(R.string.issue_filter_by_no_label) :
+                mSelectedLabel;
             UiUtils.setMenuItemText(this, labelFilterItem,
-                    getString(R.string.issue_filter_by_labels), subtitle);
+                                    getString(R.string.issue_filter_by_labels), subtitle);
         }
         MenuItem assigneeFilterItem = menu.findItem(R.id.filter_by_assignee);
         if (assigneeFilterItem != null) {
             final String subtitle =
-                    mSelectedAssignee == null ? getString(R.string.issue_filter_by_any_assignee) :
-                    mSelectedAssignee.isEmpty() ? getString(R.string.issue_filter_by_no_assignee) :
-                    mSelectedAssignee;
+                mSelectedAssignee == null ? getString(R.string.issue_filter_by_any_assignee) :
+                mSelectedAssignee.isEmpty() ? getString(R.string.issue_filter_by_no_assignee) :
+                mSelectedAssignee;
             UiUtils.setMenuItemText(this, assigneeFilterItem,
-                    getString(R.string.issue_filter_by_assignee), subtitle);
+                                    getString(R.string.issue_filter_by_assignee), subtitle);
         }
         MenuItem participatingFilterItem = menu.findItem(R.id.filter_by_participating);
         if (participatingFilterItem != null) {
             String[] valueStrings = getResources().getStringArray(R.array.filter_participating);
             UiUtils.setMenuItemText(this, participatingFilterItem,
-                    getString(R.string.issue_filter_by_participating),
-                    valueStrings[mSelectedParticipatingStatus]);
+                                    getString(R.string.issue_filter_by_participating),
+                                    valueStrings[mSelectedParticipatingStatus]);
         }
     }
 
@@ -353,26 +353,26 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
         }
 
         switch (item.getItemId()) {
-            case R.id.filter_by_assignee:
-                filterAssignee();
-                return true;
-            case R.id.filter_by_label:
-                filterLabel();
-                return true;
-            case R.id.filter_by_milestone:
-                filterMilestone();
-                return true;
-            case R.id.filter_by_participating:
-                filterParticipating();
-                return true;
-            case R.id.manage_labels:
-                startActivity(IssueLabelListActivity.makeIntent(this,
-                        mRepoOwner, mRepoName, mIsPullRequest));
-                return true;
-            case R.id.manage_milestones:
-                startActivity(IssueMilestoneListActivity.makeIntent(this,
-                        mRepoOwner, mRepoName, mIsPullRequest));
-                return true;
+        case R.id.filter_by_assignee:
+            filterAssignee();
+            return true;
+        case R.id.filter_by_label:
+            filterLabel();
+            return true;
+        case R.id.filter_by_milestone:
+            filterMilestone();
+            return true;
+        case R.id.filter_by_participating:
+            filterParticipating();
+            return true;
+        case R.id.manage_labels:
+            startActivity(IssueLabelListActivity.makeIntent(this,
+                          mRepoOwner, mRepoName, mIsPullRequest));
+            return true;
+        case R.id.manage_milestones:
+            startActivity(IssueMilestoneListActivity.makeIntent(this,
+                          mRepoOwner, mRepoName, mIsPullRequest));
+            return true;
         }
 
         return false;
@@ -482,12 +482,12 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
 
     private String getIssueState(int position) {
         switch (position) {
-            case 1:
-                return ApiHelpers.IssueState.CLOSED;
-            case 2:
-                return ApiHelpers.IssueState.MERGED;
-            default:
-                return ApiHelpers.IssueState.OPEN;
+        case 1:
+            return ApiHelpers.IssueState.CLOSED;
+        case 2:
+            return ApiHelpers.IssueState.MERGED;
+        default:
+            return ApiHelpers.IssueState.OPEN;
         }
     }
 
@@ -542,11 +542,11 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
         };
 
         new AlertDialog.Builder(this)
-                .setCancelable(true)
-                .setTitle(R.string.issue_filter_by_labels)
-                .setSingleChoiceItems(labels, selected, selectCb)
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+        .setCancelable(true)
+        .setTitle(R.string.issue_filter_by_labels)
+        .setSingleChoiceItems(labels, selected, selectCb)
+        .setNegativeButton(R.string.cancel, null)
+        .show();
     }
 
     private void showMilestonesDialog() {
@@ -565,17 +565,17 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
 
         DialogInterface.OnClickListener selectCb = (dialog, which) -> {
             mSelectedMilestone =
-                    which == 0 ? null : which == 1 ? "" : milestones[which];
+            which == 0 ? null : which == 1 ? "" : milestones[which];
             dialog.dismiss();
             onFilterUpdated();
         };
 
         new AlertDialog.Builder(this)
-                .setCancelable(true)
-                .setTitle(R.string.issue_filter_by_milestone)
-                .setSingleChoiceItems(milestones, selected, selectCb)
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+        .setCancelable(true)
+        .setTitle(R.string.issue_filter_by_milestone)
+        .setSingleChoiceItems(milestones, selected, selectCb)
+        .setNegativeButton(R.string.cancel, null)
+        .show();
     }
 
     private void onFilterUpdated() {
@@ -601,17 +601,17 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
 
         DialogInterface.OnClickListener selectCb = (dialog, which) -> {
             mSelectedAssignee =
-                    which == 0 ? null : which == 1 ? "" : mAssignees.get(which - 2).login();
+            which == 0 ? null : which == 1 ? "" : mAssignees.get(which - 2).login();
             dialog.dismiss();
             onFilterUpdated();
         };
 
         new AlertDialog.Builder(this)
-                .setCancelable(true)
-                .setTitle(R.string.issue_filter_by_assignee)
-                .setSingleChoiceItems(assignees, selected, selectCb)
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+        .setCancelable(true)
+        .setTitle(R.string.issue_filter_by_assignee)
+        .setSingleChoiceItems(assignees, selected, selectCb)
+        .setNegativeButton(R.string.cancel, null)
+        .show();
     }
 
     private void filterAssignee() {
@@ -620,13 +620,13 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
         } else {
             final IssueAssigneeService service = ServiceFactory.get(IssueAssigneeService.class, false);
             registerTemporarySubscription(ApiHelpers.PageIterator
-                    .toSingle(page -> service.getAssignees(mRepoOwner, mRepoName, page))
-                    .compose(RxUtils::doInBackground)
-                    .compose(RxUtils.wrapWithProgressDialog(this, R.string.loading_msg))
-                    .subscribe(assignees -> {
-                        mAssignees = assignees;
-                        showAssigneesDialog();
-                    }, this::handleLoadFailure));
+                                          .toSingle(page -> service.getAssignees(mRepoOwner, mRepoName, page))
+                                          .compose(RxUtils::doInBackground)
+                                          .compose(RxUtils.wrapWithProgressDialog(this, R.string.loading_msg))
+            .subscribe(assignees -> {
+                mAssignees = assignees;
+                showAssigneesDialog();
+            }, this::handleLoadFailure));
         }
     }
 
@@ -636,13 +636,13 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
         } else {
             final IssueMilestoneService service = ServiceFactory.get(IssueMilestoneService.class, false);
             registerTemporarySubscription(ApiHelpers.PageIterator
-                    .toSingle(page -> service.getRepositoryMilestones(mRepoOwner, mRepoName, "open", page))
-                    .compose(RxUtils::doInBackground)
-                    .compose(RxUtils.wrapWithProgressDialog(this, R.string.loading_msg))
-                    .subscribe(milestones -> {
-                        mMilestones = milestones;
-                        showMilestonesDialog();
-                    }, this::handleLoadFailure));
+                                          .toSingle(page -> service.getRepositoryMilestones(mRepoOwner, mRepoName, "open", page))
+                                          .compose(RxUtils::doInBackground)
+                                          .compose(RxUtils.wrapWithProgressDialog(this, R.string.loading_msg))
+            .subscribe(milestones -> {
+                mMilestones = milestones;
+                showMilestonesDialog();
+            }, this::handleLoadFailure));
         }
     }
 
@@ -652,13 +652,13 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
         } else {
             final IssueLabelService service = ServiceFactory.get(IssueLabelService.class, false);
             registerTemporarySubscription(ApiHelpers.PageIterator
-                    .toSingle(page -> service.getRepositoryLabels(mRepoOwner, mRepoName, page))
-                    .compose(RxUtils::doInBackground)
-                    .compose(RxUtils.wrapWithProgressDialog(this, R.string.loading_msg))
-                    .subscribe(labels -> {
-                        mLabels = labels;
-                        showLabelsDialog();
-                    }, this::handleLoadFailure));
+                                          .toSingle(page -> service.getRepositoryLabels(mRepoOwner, mRepoName, page))
+                                          .compose(RxUtils::doInBackground)
+                                          .compose(RxUtils.wrapWithProgressDialog(this, R.string.loading_msg))
+            .subscribe(labels -> {
+                mLabels = labels;
+                showLabelsDialog();
+            }, this::handleLoadFailure));
         }
     }
 
@@ -670,24 +670,24 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
         };
 
         new AlertDialog.Builder(this)
-                .setCancelable(true)
-                .setTitle(R.string.issue_filter_by_participating)
-                .setSingleChoiceItems(R.array.filter_participating, mSelectedParticipatingStatus,
-                        selectCb)
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+        .setCancelable(true)
+        .setTitle(R.string.issue_filter_by_participating)
+        .setSingleChoiceItems(R.array.filter_participating, mSelectedParticipatingStatus,
+                              selectCb)
+        .setNegativeButton(R.string.cancel, null)
+        .show();
     }
 
     private void loadCollaboratorStatus(boolean force) {
         SingleFactory.isAppUserRepoCollaborator(mRepoOwner, mRepoName, force)
-                .compose(makeLoaderSingle(ID_LOADER_COLLABORATOR_STATUS, force))
-                .subscribe(result -> {
-                    if (mIsCollaborator == null) {
-                        mIsCollaborator = result;
-                        if (mIsCollaborator) {
-                            updateRightNavigationDrawer();
-                        }
-                    }
-                }, this::handleLoadFailure);
+        .compose(makeLoaderSingle(ID_LOADER_COLLABORATOR_STATUS, force))
+        .subscribe(result -> {
+            if (mIsCollaborator == null) {
+                mIsCollaborator = result;
+                if (mIsCollaborator) {
+                    updateRightNavigationDrawer();
+                }
+            }
+        }, this::handleLoadFailure);
     }
 }

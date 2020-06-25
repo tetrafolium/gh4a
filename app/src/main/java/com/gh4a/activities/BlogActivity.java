@@ -26,8 +26,8 @@ import com.gh4a.model.Feed;
 public class BlogActivity extends WebViewerActivity {
     public static Intent makeIntent(Context context, Feed blog) {
         return new Intent(context, BlogActivity.class)
-                .putExtra("title", blog.getTitle())
-                .putExtra("content", blog.getContent());
+               .putExtra("title", blog.getTitle())
+               .putExtra("content", blog.getContent());
     }
 
     @Override

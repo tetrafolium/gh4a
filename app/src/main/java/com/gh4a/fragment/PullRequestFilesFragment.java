@@ -100,11 +100,11 @@ public class PullRequestFilesFragment extends CommitFragment {
         final Intent intent;
         if (FileUtils.isImage(file.filename())) {
             intent = FileViewerActivity.makeIntent(getActivity(),
-                    mRepoOwner, mRepoName, mHeadSha, file.filename());
+                                                   mRepoOwner, mRepoName, mHeadSha, file.filename());
         } else {
             intent = PullRequestDiffViewerActivity.makeIntent(getActivity(),
-                    mRepoOwner, mRepoName, mPullRequestNumber, mHeadSha, file.filename(),
-                    file.patch(), mComments, -1, -1, -1, false, null);
+                     mRepoOwner, mRepoName, mPullRequestNumber, mHeadSha, file.filename(),
+                     file.patch(), mComments, -1, -1, -1, false, null);
         }
 
         startActivityForResult(intent, REQUEST_DIFF_VIEWER);
@@ -130,26 +130,26 @@ public class PullRequestFilesFragment extends CommitFragment {
     private void loadFiles(boolean force) {
         final PullRequestService service = ServiceFactory.get(PullRequestService.class, force);
         ApiHelpers.PageIterator
-                .toSingle(page -> service.getPullRequestFiles(
-                        mRepoOwner, mRepoName, mPullRequestNumber, page))
-                .compose(makeLoaderSingle(ID_LOADER_FILES, force))
-                .subscribe(result -> {
-                    mFiles = result;
-                    populateUiIfReady();
-                }, this::handleLoadFailure);
+        .toSingle(page -> service.getPullRequestFiles(
+                      mRepoOwner, mRepoName, mPullRequestNumber, page))
+        .compose(makeLoaderSingle(ID_LOADER_FILES, force))
+        .subscribe(result -> {
+            mFiles = result;
+            populateUiIfReady();
+        }, this::handleLoadFailure);
     }
 
     private void loadComments(boolean force) {
         final PullRequestReviewCommentService service =
-                ServiceFactory.get(PullRequestReviewCommentService.class, force);
+            ServiceFactory.get(PullRequestReviewCommentService.class, force);
         ApiHelpers.PageIterator
-                .toSingle(page -> service.getPullRequestComments(
-                        mRepoOwner, mRepoName, mPullRequestNumber, page))
-                .compose(RxUtils.filter(c -> c.position() != null && c.position() >= 0))
-                .compose(makeLoaderSingle(ID_LOADER_COMMENTS, force))
-                .subscribe(result -> {
-                    mComments = result;
-                    populateUiIfReady();
-                }, this::handleLoadFailure);
+        .toSingle(page -> service.getPullRequestComments(
+                      mRepoOwner, mRepoName, mPullRequestNumber, page))
+        .compose(RxUtils.filter(c -> c.position() != null && c.position() >= 0))
+        .compose(makeLoaderSingle(ID_LOADER_COMMENTS, force))
+        .subscribe(result -> {
+            mComments = result;
+            populateUiIfReady();
+        }, this::handleLoadFailure);
     }
 }

@@ -41,7 +41,7 @@ public class ColorPickerDialog extends AlertDialog {
             if (mColorChangedListener != null) {
                 int colorValue = mColorPicker.getColor();
                 String color1 = String.format(Locale.US, "%02x%02x%02x",
-                        Color.red(colorValue), Color.green(colorValue), Color.blue(colorValue));
+                                              Color.red(colorValue), Color.green(colorValue), Color.blue(colorValue));
                 mColorChangedListener.colorChanged(color1);
             }
         });

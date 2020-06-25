@@ -38,7 +38,7 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class NotificationListFragment extends LoadingListFragmentBase implements
-        RootAdapter.OnItemClickListener<NotificationHolder>,NotificationAdapter.OnNotificationActionCallback {
+    RootAdapter.OnItemClickListener<NotificationHolder>,NotificationAdapter.OnNotificationActionCallback {
     public static final String EXTRA_INITIAL_REPO_OWNER = "initial_notification_repo_owner";
     public static final String EXTRA_INITIAL_REPO_NAME = "initial_notification_repo_name";
 
@@ -132,7 +132,7 @@ public class NotificationListFragment extends LoadingListFragmentBase implements
             if (url != null) {
                 Uri uri = ApiHelpers.normalizeUri(Uri.parse(url));
                 intent = BrowseFilter.makeRedirectionIntent(getActivity(), uri,
-                        new IntentUtils.InitialCommentMarker(item.notification.lastReadAt()));
+                         new IntentUtils.InitialCommentMarker(item.notification.lastReadAt()));
             } else {
                 intent = null;
             }
@@ -156,21 +156,21 @@ public class NotificationListFragment extends LoadingListFragmentBase implements
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         switch (itemId) {
-            case R.id.mark_all_as_read:
-                new AlertDialog.Builder(getActivity())
-                        .setMessage(R.string.mark_all_as_read_question)
-                        .setPositiveButton(R.string.mark_all_as_read, (dialog, which) -> markAsRead(null, null))
-                        .setNegativeButton(R.string.cancel, null)
-                        .show();
-                return true;
-            case R.id.notification_filter_unread:
-            case R.id.notification_filter_all:
-            case R.id.notification_filter_participating:
-                mAll = itemId == R.id.notification_filter_all;
-                mParticipating = itemId == R.id.notification_filter_participating;
-                item.setChecked(true);
-                reloadNotification();
-                return true;
+        case R.id.mark_all_as_read:
+            new AlertDialog.Builder(getActivity())
+            .setMessage(R.string.mark_all_as_read_question)
+            .setPositiveButton(R.string.mark_all_as_read, (dialog, which) -> markAsRead(null, null))
+            .setNegativeButton(R.string.cancel, null)
+            .show();
+            return true;
+        case R.id.notification_filter_unread:
+        case R.id.notification_filter_all:
+        case R.id.notification_filter_participating:
+            mAll = itemId == R.id.notification_filter_all;
+            mParticipating = itemId == R.id.notification_filter_participating;
+            item.setChecked(true);
+            reloadNotification();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -192,13 +192,13 @@ public class NotificationListFragment extends LoadingListFragmentBase implements
 
             String login = ApiHelpers.getUserLogin(getActivity(), repository.owner());
             String title = getString(R.string.mark_repository_as_read_question,
-                    login + "/" + repository.name());
+                                     login + "/" + repository.name());
 
             new AlertDialog.Builder(getActivity())
-                    .setMessage(title)
-                    .setPositiveButton(R.string.mark_as_read, (dialog, which) -> markAsRead(repository, null))
-                    .setNegativeButton(R.string.cancel, null)
-                    .show();
+            .setMessage(title)
+            .setPositiveButton(R.string.mark_as_read, (dialog, which) -> markAsRead(repository, null))
+            .setNegativeButton(R.string.cancel, null)
+            .show();
         } else {
             markAsRead(null, notificationHolder.notification);
         }
@@ -209,12 +209,12 @@ public class NotificationListFragment extends LoadingListFragmentBase implements
         NotificationThread notification = notificationHolder.notification;
         NotificationService service = ServiceFactory.get(NotificationService.class, false);
         SubscriptionRequest request = SubscriptionRequest.builder()
-                .ignored(true)
-                .build();
+                                      .ignored(true)
+                                      .build();
         service.setNotificationThreadSubscription(notification.id(), request)
-                .map(ApiHelpers::throwOnFailure)
-                .compose(RxUtils::doInBackground)
-                .subscribe(result -> handleMarkAsRead(null, notification));
+        .map(ApiHelpers::throwOnFailure)
+        .compose(RxUtils::doInBackground)
+        .subscribe(result -> handleMarkAsRead(null, notification));
     }
 
     private void updateMenuItemVisibility() {
@@ -260,21 +260,21 @@ public class NotificationListFragment extends LoadingListFragmentBase implements
             responseSingle = service.markNotificationRead(notification.id());
         } else {
             NotificationReadRequest request = NotificationReadRequest.builder()
-                    .lastReadAt(mNotificationsLoadTime)
-                    .build();
+                                              .lastReadAt(mNotificationsLoadTime)
+                                              .build();
             if (repository != null) {
                 responseSingle = service.markAllRepositoryNotificationsRead(
-                        repository.owner().login(), repository.name(), request);
+                                     repository.owner().login(), repository.name(), request);
             } else {
                 responseSingle = service.markAllNotificationsRead(request);
             }
         }
 
         responseSingle
-                .map(ApiHelpers::mapToBooleanOrThrowOnFailure)
-                .compose(RxUtils::doInBackground)
-                .subscribe(result -> handleMarkAsRead(repository, notification),
-                        error -> handleActionFailure("Mark notifications as read failed", error));
+        .map(ApiHelpers::mapToBooleanOrThrowOnFailure)
+        .compose(RxUtils::doInBackground)
+        .subscribe(result -> handleMarkAsRead(repository, notification),
+                   error -> handleActionFailure("Mark notifications as read failed", error));
     }
 
     private void handleMarkAsRead(Repository repository, NotificationThread notification) {
@@ -288,19 +288,19 @@ public class NotificationListFragment extends LoadingListFragmentBase implements
 
     private void loadNotifications(boolean force) {
         SingleFactory.getNotifications(mAll, mParticipating, force)
-                .compose(makeLoaderSingle(ID_LOADER_NOTIFICATIONS, force))
-                .subscribe(result -> {
-                    mNotificationsLoadTime = result.loadTime;
-                    mAdapter.clear();
-                    mAdapter.addAll(result.notifications);
-                    setContentShown(true);
-                    mAdapter.notifyDataSetChanged();
-                    updateEmptyState();
-                    updateMenuItemVisibility();
-                    if (!mAll && !mParticipating) {
-                        mCallback.setNotificationsIndicatorVisible(!result.notifications.isEmpty());
-                    }
-                    scrollToInitialNotification(result.notifications);
-                }, this::handleLoadFailure);
+        .compose(makeLoaderSingle(ID_LOADER_NOTIFICATIONS, force))
+        .subscribe(result -> {
+            mNotificationsLoadTime = result.loadTime;
+            mAdapter.clear();
+            mAdapter.addAll(result.notifications);
+            setContentShown(true);
+            mAdapter.notifyDataSetChanged();
+            updateEmptyState();
+            updateMenuItemVisibility();
+            if (!mAll && !mParticipating) {
+                mCallback.setNotificationsIndicatorVisible(!result.notifications.isEmpty());
+            }
+            scrollToInitialNotification(result.notifications);
+        }, this::handleLoadFailure);
     }
 }

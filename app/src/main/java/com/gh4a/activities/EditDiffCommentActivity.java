@@ -18,17 +18,17 @@ import io.reactivex.Single;
 
 public class EditDiffCommentActivity extends EditCommentActivity {
     public static Intent makeIntent(Context context, String repoOwner, String repoName,
-            String commitId, String path, String line, int leftLine, int rightLine, int position,
-            long id, String body) {
+                                    String commitId, String path, String line, int leftLine, int rightLine, int position,
+                                    long id, String body) {
         Intent intent = new Intent(context, EditDiffCommentActivity.class)
-                .putExtra("commit_id", commitId)
-                .putExtra("path", path)
-                .putExtra("line", line)
-                .putExtra("left_line", leftLine)
-                .putExtra("right_line", rightLine)
-                .putExtra("position", position);
+        .putExtra("commit_id", commitId)
+        .putExtra("path", path)
+        .putExtra("line", line)
+        .putExtra("left_line", leftLine)
+        .putExtra("right_line", rightLine)
+        .putExtra("position", position);
         return EditCommentActivity.fillInIntent(intent,
-                repoOwner, repoName, id, 0L, body, R.attr.colorIssueOpen);
+                                                repoOwner, repoName, id, 0L, body, R.attr.colorIssueOpen);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class EditDiffCommentActivity extends EditCommentActivity {
 
         TextView title = header.findViewById(R.id.title);
         title.setText(getString(R.string.commit_comment_dialog_title, extras.getInt("left_line"),
-                extras.getInt("right_line")));
+                                extras.getInt("right_line")));
     }
 
     @Override
@@ -54,12 +54,12 @@ public class EditDiffCommentActivity extends EditCommentActivity {
         String commitId = extras.getString("commit_id");
         RepositoryCommentService service = ServiceFactory.get(RepositoryCommentService.class, false);
         CreateCommitComment request = CreateCommitComment.builder()
-                .body(body)
-                .path(extras.getString("path"))
-                .position(extras.getInt("position"))
-                .build();
+                                      .body(body)
+                                      .path(extras.getString("path"))
+                                      .position(extras.getInt("position"))
+                                      .build();
         return service.createCommitComment(repoOwner, repoName, commitId, request)
-                .map(ApiHelpers::throwOnFailure);
+               .map(ApiHelpers::throwOnFailure);
     }
 
     @Override
@@ -68,6 +68,6 @@ public class EditDiffCommentActivity extends EditCommentActivity {
         RepositoryCommentService service = ServiceFactory.get(RepositoryCommentService.class, false);
         CommentRequest request = CommentRequest.builder().body(body).build();
         return service.editCommitComment(repoOwner, repoName, commentId, request)
-                .map(ApiHelpers::throwOnFailure);
+               .map(ApiHelpers::throwOnFailure);
     }
 }

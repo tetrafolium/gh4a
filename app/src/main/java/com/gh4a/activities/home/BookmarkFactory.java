@@ -9,7 +9,7 @@ import com.gh4a.fragment.StarredRepositoryListFragment;
 
 public class BookmarkFactory extends FragmentFactory {
     private static final int[] TAB_TITLES = new int[] {
-            R.string.bookmarks, R.string.starred
+        R.string.bookmarks, R.string.starred
     };
 
     private final String mUserLogin;

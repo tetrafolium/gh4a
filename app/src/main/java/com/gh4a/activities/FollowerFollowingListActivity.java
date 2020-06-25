@@ -27,8 +27,8 @@ import com.gh4a.fragment.FollowersFollowingListFragment;
 public class FollowerFollowingListActivity extends FragmentContainerActivity {
     public static Intent makeIntent(Context context, String user, boolean showFollowers) {
         return new Intent(context, FollowerFollowingListActivity.class)
-                .putExtra("user", user)
-                .putExtra("show_followers", showFollowers);
+               .putExtra("user", user)
+               .putExtra("show_followers", showFollowers);
     }
 
     private String mUserLogin;

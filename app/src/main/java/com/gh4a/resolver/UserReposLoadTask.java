@@ -22,8 +22,8 @@ public class UserReposLoadTask extends UserLoadTask {
     protected Intent getIntent(User user) {
         boolean isOrg = user.type() == UserType.Organization;
         String filter = mShowStars && !isOrg
-                ? RepositoryListContainerFragment.FILTER_TYPE_STARRED
-                : null;
+                        ? RepositoryListContainerFragment.FILTER_TYPE_STARRED
+                        : null;
         return RepositoryListActivity.makeIntent(mActivity, user.login(), isOrg, filter);
     }
 }

@@ -33,7 +33,7 @@ import com.vdurmont.emoji.EmojiParser;
 import java.util.Locale;
 
 public class RepositoryAdapter extends RootAdapter<Repository, RepositoryAdapter.ViewHolder>
-        implements Filterable {
+    implements Filterable {
     public RepositoryAdapter(Context context) {
         super(context);
     }
@@ -51,13 +51,13 @@ public class RepositoryAdapter extends RootAdapter<Repository, RepositoryAdapter
         if (!StringUtils.isBlank(repository.description())) {
             holder.tvDesc.setVisibility(View.VISIBLE);
             holder.tvDesc.setText(
-                    EmojiParser.parseToUnicode(StringUtils.doTeaser(repository.description())));
+                EmojiParser.parseToUnicode(StringUtils.doTeaser(repository.description())));
         } else {
             holder.tvDesc.setVisibility(View.GONE);
         }
 
         holder.tvLanguage.setText(repository.language() != null
-                ? repository.language() : mContext.getString(R.string.unknown));
+                                  ? repository.language() : mContext.getString(R.string.unknown));
         holder.tvForks.setText(String.valueOf(repository.forksCount()));
         holder.tvStars.setText(String.valueOf(repository.stargazersCount()));
         holder.tvSize.setText(Formatter.formatFileSize(mContext, 1024L * repository.size()));
@@ -73,7 +73,7 @@ public class RepositoryAdapter extends RootAdapter<Repository, RepositoryAdapter
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
-            View.OnTouchListener {
+        View.OnTouchListener {
         private ViewHolder(View view) {
             super(view);
             tvTitle = view.findViewById(R.id.tv_title);

@@ -26,12 +26,12 @@ import com.gh4a.fragment.CommitCompareFragment;
 
 public class CompareActivity extends FragmentContainerActivity {
     public static Intent makeIntent(Context context, String repoOwner, String repoName,
-            String baseRef, String headRef) {
+                                    String baseRef, String headRef) {
         return new Intent(context, CompareActivity.class)
-                .putExtra("owner", repoOwner)
-                .putExtra("repo", repoName)
-                .putExtra("base", baseRef)
-                .putExtra("head", headRef);
+               .putExtra("owner", repoOwner)
+               .putExtra("repo", repoName)
+               .putExtra("base", baseRef)
+               .putExtra("head", headRef);
     }
 
     private String mRepoOwner;

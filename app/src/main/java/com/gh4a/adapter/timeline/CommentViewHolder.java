@@ -37,9 +37,9 @@ import java.util.List;
 import io.reactivex.Single;
 
 class CommentViewHolder
-        extends TimelineItemAdapter.TimelineItemViewHolder<TimelineItem.TimelineComment>
-        implements View.OnClickListener, ReactionBar.Item, ReactionBar.Callback,
-        PopupMenu.OnMenuItemClickListener {
+    extends TimelineItemAdapter.TimelineItemViewHolder<TimelineItem.TimelineComment>
+    implements View.OnClickListener, ReactionBar.Item, ReactionBar.Callback,
+    PopupMenu.OnMenuItemClickListener {
 
     private final Context mContext;
     private final HttpImageGetter mImageGetter;
@@ -70,7 +70,7 @@ class CommentViewHolder
     }
 
     public CommentViewHolder(View view, HttpImageGetter imageGetter, String repoOwner,
-            ReactionBar.ReactionDetailsCache reactionDetailsCache, Callback callback) {
+                             ReactionBar.ReactionDetailsCache reactionDetailsCache, Callback callback) {
         super(view);
 
         mContext = view.getContext();
@@ -166,10 +166,10 @@ class CommentViewHolder
 
         String ourLogin = Gh4Application.get().getAuthLogin();
         boolean canEdit = ApiHelpers.loginEquals(user, ourLogin)
-                || ApiHelpers.loginEquals(mRepoOwner, ourLogin);
+                          || ApiHelpers.loginEquals(mRepoOwner, ourLogin);
 
         int position = item.getReviewComment() != null && item.getReviewComment().position() != null
-                ? item.getReviewComment().position() : -1;
+                       ? item.getReviewComment().position() : -1;
 
         Menu menu = mPopupMenu.getMenu();
         menu.findItem(R.id.edit).setVisible(canEdit);
@@ -184,43 +184,43 @@ class CommentViewHolder
             return null;
         }
         switch (authorAssociation) {
-            case Collaborator:
-                return mContext.getString(R.string.collaborator);
-            case Contributor:
-                return mContext.getString(R.string.contributor);
-            case FirstTimeContributor:
-                return mContext.getString(R.string.first_time_contributor);
-            case FirstTimer:
-                return mContext.getString(R.string.first_timer);
-            case Member:
-                return mContext.getString(R.string.member);
-            case Owner:
-                return mContext.getString(R.string.owner);
-            default:
-                return null;
+        case Collaborator:
+            return mContext.getString(R.string.collaborator);
+        case Contributor:
+            return mContext.getString(R.string.contributor);
+        case FirstTimeContributor:
+            return mContext.getString(R.string.first_time_contributor);
+        case FirstTimer:
+            return mContext.getString(R.string.first_timer);
+        case Member:
+            return mContext.getString(R.string.member);
+        case Owner:
+            return mContext.getString(R.string.owner);
+        default:
+            return null;
         }
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.iv_menu:
-                mReactionMenuHelper.startLoadingIfNeeded();
-                mPopupMenu.show();
-                break;
-            case R.id.iv_gravatar: {
-                User user = (User) v.getTag();
-                Intent intent = UserActivity.makeIntent(mContext, user);
-                if (intent != null) {
-                    mContext.startActivity(intent);
-                }
-                break;
+        case R.id.iv_menu:
+            mReactionMenuHelper.startLoadingIfNeeded();
+            mPopupMenu.show();
+            break;
+        case R.id.iv_gravatar: {
+            User user = (User) v.getTag();
+            Intent intent = UserActivity.makeIntent(mContext, user);
+            if (intent != null) {
+                mContext.startActivity(intent);
             }
-            case R.id.tv_extra: {
-                User user = (User) v.getTag();
-                mCallback.addText(StringUtils.formatMention(mContext, user));
-                break;
-            }
+            break;
+        }
+        case R.id.tv_extra: {
+            User user = (User) v.getTag();
+            mCallback.addText(StringUtils.formatMention(mContext, user));
+            break;
+        }
         }
     }
 

@@ -16,7 +16,7 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class OrganizationMemberListFragment extends PagedDataBaseFragment<User> implements
-        RootAdapter.OnItemClickListener<User> {
+    RootAdapter.OnItemClickListener<User> {
     public static OrganizationMemberListFragment newInstance(String organization) {
         OrganizationMemberListFragment f = new OrganizationMemberListFragment();
         Bundle args = new Bundle();
@@ -29,7 +29,7 @@ public class OrganizationMemberListFragment extends PagedDataBaseFragment<User> 
     protected Single<Response<Page<User>>> loadPage(int page, boolean bypassCache) {
         String organization = getArguments().getString("org");
         final OrganizationMemberService service =
-                ServiceFactory.get(OrganizationMemberService.class, bypassCache);
+            ServiceFactory.get(OrganizationMemberService.class, bypassCache);
         return service.getMembers(organization, page);
     }
 

@@ -49,7 +49,7 @@ import io.reactivex.Single;
  * The Github4Android activity.
  */
 public class Github4AndroidActivity extends BaseActivity implements
-        View.OnClickListener, UserPasswordLoginDialogFragment.ParentCallback {
+    View.OnClickListener, UserPasswordLoginDialogFragment.ParentCallback {
     private static final String OAUTH_URL = "https://github.com/login/oauth/authorize";
     private static final String PARAM_CLIENT_ID = "client_id";
     private static final String PARAM_CODE = "code";
@@ -106,23 +106,23 @@ public class Github4AndroidActivity extends BaseActivity implements
                 && data.getHost().equals(CALLBACK_URI.getHost())) {
             OAuthService service = ServiceGenerator.createAuthService();
             RequestToken request = RequestToken.builder()
-                    .clientId(BuildConfig.CLIENT_ID)
-                    .clientSecret(BuildConfig.CLIENT_SECRET)
-                    .code(data.getQueryParameter(PARAM_CODE))
-                    .build();
+                                   .clientId(BuildConfig.CLIENT_ID)
+                                   .clientSecret(BuildConfig.CLIENT_SECRET)
+                                   .code(data.getQueryParameter(PARAM_CODE))
+                                   .build();
 
             service.getToken(request)
-                    .map(ApiHelpers::throwOnFailure)
-                    .flatMap(token -> {
-                        UserService userService = ServiceFactory.get(UserService.class, true,
-                                null, token.accessToken(), null);
-                        Single<User> userSingle = userService.getUser()
-                                .map(ApiHelpers::throwOnFailure);
-                        return Single.zip(Single.just(token), userSingle,
-                                (t, user) -> Pair.create(t.accessToken(), user));
-                    })
-                    .compose(RxUtils::doInBackground)
-                    .subscribe(pair -> onLoginFinished(pair.first, pair.second), this::handleLoadFailure);
+            .map(ApiHelpers::throwOnFailure)
+            .flatMap(token -> {
+                UserService userService = ServiceFactory.get(UserService.class, true,
+                        null, token.accessToken(), null);
+                Single<User> userSingle = userService.getUser()
+                .map(ApiHelpers::throwOnFailure);
+                return Single.zip(Single.just(token), userSingle,
+                                  (t, user) -> Pair.create(t.accessToken(), user));
+            })
+            .compose(RxUtils::doInBackground)
+            .subscribe(pair -> onLoginFinished(pair.first, pair.second), this::handleLoadFailure);
             return true;
         }
 
@@ -146,24 +146,24 @@ public class Github4AndroidActivity extends BaseActivity implements
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         super.onNavigationItemSelected(item);
         switch (item.getItemId()) {
-            case R.id.settings:
-                startActivityForResult(new Intent(this, SettingsActivity.class), REQUEST_SETTINGS);
-                return true;
-            case R.id.search:
-                startActivity(SearchActivity.makeIntent(this));
-                return true;
-            case R.id.bookmarks:
-                startActivity(new Intent(this, BookmarkListActivity.class));
-                return true;
-            case R.id.pub_timeline:
-                startActivity(new Intent(this, TimelineActivity.class));
-                return true;
-            case R.id.blog:
-                startActivity(new Intent(this, BlogListActivity.class));
-                return true;
-            case R.id.trend:
-                startActivity(new Intent(this, TrendingActivity.class));
-                return true;
+        case R.id.settings:
+            startActivityForResult(new Intent(this, SettingsActivity.class), REQUEST_SETTINGS);
+            return true;
+        case R.id.search:
+            startActivity(SearchActivity.makeIntent(this));
+            return true;
+        case R.id.bookmarks:
+            startActivity(new Intent(this, BookmarkListActivity.class));
+            return true;
+        case R.id.pub_timeline:
+            startActivity(new Intent(this, TimelineActivity.class));
+            return true;
+        case R.id.blog:
+            startActivity(new Intent(this, BlogListActivity.class));
+            return true;
+        case R.id.trend:
+            startActivity(new Intent(this, TrendingActivity.class));
+            return true;
         }
         return false;
     }
@@ -177,7 +177,7 @@ public class Github4AndroidActivity extends BaseActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SETTINGS) {
             boolean themeChange = data != null
-                    && data.getBooleanExtra(SettingsActivity.RESULT_EXTRA_THEME_CHANGED, false);
+                                  && data.getBooleanExtra(SettingsActivity.RESULT_EXTRA_THEME_CHANGED, false);
             if (themeChange) {
                 Intent intent = new Intent(getIntent());
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -197,7 +197,7 @@ public class Github4AndroidActivity extends BaseActivity implements
             mProgress.setVisibility(View.VISIBLE);
         } else if (view.getId() == R.id.user_pw_login_button) {
             UserPasswordLoginDialogFragment.newInstance(SCOPES)
-                    .show(getSupportFragmentManager(), "foo");
+            .show(getSupportFragmentManager(), "foo");
         }
     }
 
@@ -215,11 +215,11 @@ public class Github4AndroidActivity extends BaseActivity implements
 
     public static void launchOauthLogin(Activity activity) {
         Uri uri = Uri.parse(OAUTH_URL)
-                .buildUpon()
-                .appendQueryParameter(PARAM_CLIENT_ID, BuildConfig.CLIENT_ID)
-                .appendQueryParameter(PARAM_SCOPE, SCOPES)
-                .appendQueryParameter(PARAM_CALLBACK_URI, CALLBACK_URI.toString())
-                .build();
+                  .buildUpon()
+                  .appendQueryParameter(PARAM_CLIENT_ID, BuildConfig.CLIENT_ID)
+                  .appendQueryParameter(PARAM_SCOPE, SCOPES)
+                  .appendQueryParameter(PARAM_CALLBACK_URI, CALLBACK_URI.toString())
+                  .build();
         IntentUtils.openInCustomTabOrBrowser(activity, uri);
     }
 }

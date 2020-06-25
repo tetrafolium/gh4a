@@ -109,8 +109,8 @@ public class NewsFeedFactory extends FragmentFactory implements Spinner.OnItemSe
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         User selectedOrganization = position != 0 ? mUserScopes.get(position - 1) : null;
         boolean isSameUser = selectedOrganization == null || mSelectedOrganization == null
-                ? selectedOrganization == mSelectedOrganization
-                : selectedOrganization.equals(mSelectedOrganization);
+                             ? selectedOrganization == mSelectedOrganization
+                             : selectedOrganization.equals(mSelectedOrganization);
         if (!isSameUser) {
             mSelectedOrganization = selectedOrganization;
             mActivity.invalidateFragments();
@@ -130,14 +130,14 @@ public class NewsFeedFactory extends FragmentFactory implements Spinner.OnItemSe
         final Gh4Application app = Gh4Application.get();
         final OrganizationService service = ServiceFactory.get(OrganizationService.class, force);
         mOrganizationSubscription = ApiHelpers.PageIterator
-                .toSingle(page -> ApiHelpers.loginEquals(mUserLogin, app.getAuthLogin())
-                        ? service.getMyOrganizations(page)
-                        : service.getUserPublicOrganizations(mUserLogin, page))
-                .compose(mActivity.makeLoaderSingle(ID_LOADER_ORGS, force))
-                .subscribe(result -> {
-                    mUserScopes = result.isEmpty() ? null : result;
-                    mActivity.supportInvalidateOptionsMenu();
-                }, mActivity::handleLoadFailure);
+                                    .toSingle(page -> ApiHelpers.loginEquals(mUserLogin, app.getAuthLogin())
+                                              ? service.getMyOrganizations(page)
+                                              : service.getUserPublicOrganizations(mUserLogin, page))
+                                    .compose(mActivity.makeLoaderSingle(ID_LOADER_ORGS, force))
+        .subscribe(result -> {
+            mUserScopes = result.isEmpty() ? null : result;
+            mActivity.supportInvalidateOptionsMenu();
+        }, mActivity::handleLoadFailure);
     }
 
     private static class UserAdapter extends BaseAdapter {

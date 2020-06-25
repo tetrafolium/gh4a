@@ -36,8 +36,8 @@ import java.util.Set;
 import io.reactivex.Single;
 
 public class CommitNoteFragment extends ListDataBaseFragment<GitComment> implements
-        CommitNoteAdapter.OnCommentAction<GitComment>,
-        EditorBottomSheet.Callback, EditorBottomSheet.Listener {
+    CommitNoteAdapter.OnCommentAction<GitComment>,
+    EditorBottomSheet.Callback, EditorBottomSheet.Listener {
 
     public static CommitNoteFragment newInstance(String repoOwner, String repoName,
             String commitSha, Commit commit,
@@ -228,11 +228,11 @@ public class CommitNoteFragment extends ListDataBaseFragment<GitComment> impleme
     @Override
     protected Single<List<GitComment>> onCreateDataSingle(boolean bypassCache) {
         final RepositoryCommentService service =
-                ServiceFactory.get(RepositoryCommentService.class, bypassCache);
+            ServiceFactory.get(RepositoryCommentService.class, bypassCache);
 
         return ApiHelpers.PageIterator
-                .toSingle(page -> service.getCommitComments(mRepoOwner, mRepoName, mObjectSha, page))
-                .compose(RxUtils.filter(comment -> comment.position() == null));
+               .toSingle(page -> service.getCommitComments(mRepoOwner, mRepoName, mObjectSha, page))
+               .compose(RxUtils.filter(comment -> comment.position() == null));
     }
 
     @Override
@@ -255,17 +255,17 @@ public class CommitNoteFragment extends ListDataBaseFragment<GitComment> impleme
     @Override
     public void editComment(GitComment comment) {
         Intent intent = EditCommitCommentActivity.makeIntent(getActivity(),
-                mRepoOwner, mRepoName, mObjectSha, comment.id(), comment.body());
+                        mRepoOwner, mRepoName, mObjectSha, comment.id(), comment.body());
         startActivityForResult(intent, REQUEST_EDIT);
     }
 
     @Override
     public void deleteComment(final GitComment comment) {
         new AlertDialog.Builder(getActivity())
-                .setMessage(R.string.delete_comment_message)
-                .setPositiveButton(R.string.delete, (dialog, which) -> deleteComment(comment.id()))
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+        .setMessage(R.string.delete_comment_message)
+        .setPositiveButton(R.string.delete, (dialog, which) -> deleteComment(comment.id()))
+        .setNegativeButton(R.string.cancel, null)
+        .show();
     }
 
     @Override
@@ -288,7 +288,7 @@ public class CommitNoteFragment extends ListDataBaseFragment<GitComment> impleme
         RepositoryCommentService service = ServiceFactory.get(RepositoryCommentService.class, false);
         CreateCommitComment request = CreateCommitComment.builder().body(comment).build();
         return service.createCommitComment(mRepoOwner, mRepoName, mObjectSha, request)
-                .map(ApiHelpers::throwOnFailure);
+               .map(ApiHelpers::throwOnFailure);
     }
 
     @Override
@@ -310,10 +310,10 @@ public class CommitNoteFragment extends ListDataBaseFragment<GitComment> impleme
     private void deleteComment(long id) {
         RepositoryCommentService service = ServiceFactory.get(RepositoryCommentService.class, false);
         service.deleteCommitComment(mRepoOwner, mRepoName, id)
-                .map(ApiHelpers::throwOnFailure)
-                .compose(RxUtils.wrapForBackgroundTask(getBaseActivity(),
-                        R.string.deleting_msg, R.string.error_delete_comment))
-                .subscribe(result -> refreshComments(),
-                        error -> handleActionFailure("Deleting comment failed", error));
+        .map(ApiHelpers::throwOnFailure)
+        .compose(RxUtils.wrapForBackgroundTask(getBaseActivity(),
+                                               R.string.deleting_msg, R.string.error_delete_comment))
+        .subscribe(result -> refreshComments(),
+                   error -> handleActionFailure("Deleting comment failed", error));
     }
 }

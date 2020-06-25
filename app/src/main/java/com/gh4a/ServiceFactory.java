@@ -50,27 +50,27 @@ import retrofit2.http.Path;
 
 public class ServiceFactory {
     private static final String DEFAULT_HEADER_ACCEPT =
-            "application/vnd.github.squirrel-girl-preview,application/vnd.github.v3.full+json";
+        "application/vnd.github.squirrel-girl-preview,application/vnd.github.v3.full+json";
 
     private final static HttpLoggingInterceptor LOGGING_INTERCEPTOR = new HttpLoggingInterceptor()
-            .setLevel(HttpLoggingInterceptor.Level.BASIC);
+    .setLevel(HttpLoggingInterceptor.Level.BASIC);
 
     private final static Interceptor PAGINATION_INTRCEPTOR = new GitHubPaginationInterceptor();
 
     private final static Interceptor CACHE_STATUS_INTERCEPTOR = chain -> {
         Response response = chain.proceed(chain.request());
         Log.d("OkHttp", String.format(Locale.US, "For %s: network return code %d, cache %d",
-                response.request().url().toString(),
-                response.networkResponse() != null ? response.networkResponse().code() : -1,
-                response.cacheResponse() != null ? response.cacheResponse().code() : -1));
+                                      response.request().url().toString(),
+                                      response.networkResponse() != null ? response.networkResponse().code() : -1,
+                                      response.cacheResponse() != null ? response.cacheResponse().code() : -1));
         return response;
     };
 
     private final static Interceptor CACHE_BYPASS_INTERCEPTOR = chain -> {
         Request request = chain.request()
-                .newBuilder()
-                .addHeader("Cache-Control", "no-cache")
-                .build();
+        .newBuilder()
+        .addHeader("Cache-Control", "no-cache")
+        .build();
         return chain.proceed(request);
     };
 
@@ -81,14 +81,14 @@ public class ServiceFactory {
     //        We thus check for the invalid ETag and prevent caching if we found it.
     //        Once this is fixed on server side, this interceptor should be removed.
     private final static CacheControl NO_STORE_CACHE_CONTROL =
-            new CacheControl.Builder().noStore().build();
+        new CacheControl.Builder().noStore().build();
     private final static Interceptor ETAG_WORKAROUND_INTERCEPTOR = chain -> {
         Response response = chain.proceed(chain.request());
         String etag = response.header("ETag");
         if (etag != null && etag.contains("\"\"")) {
             return response.newBuilder()
-                    .header("Cache-Control", NO_STORE_CACHE_CONTROL.toString())
-                    .build();
+            .header("Cache-Control", NO_STORE_CACHE_CONTROL.toString())
+            .build();
         }
         return response;
     };
@@ -104,7 +104,7 @@ public class ServiceFactory {
             return response;
         }
         CacheControl.Builder newBuilder = new CacheControl.Builder()
-                .maxAge(2, TimeUnit.SECONDS);
+        .maxAge(2, TimeUnit.SECONDS);
         if (origCacheControl.maxStaleSeconds() >= 0) {
             newBuilder.maxStale(origCacheControl.maxStaleSeconds(), TimeUnit.SECONDS);
         }
@@ -121,14 +121,14 @@ public class ServiceFactory {
             newBuilder.noTransform();
         }
         return response.newBuilder()
-                .header("Cache-Control", newBuilder.build().toString())
-                .build();
+        .header("Cache-Control", newBuilder.build().toString())
+        .build();
     };
 
     private final static Retrofit.Builder RETROFIT_BUILDER = new Retrofit.Builder()
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .addConverterFactory(new StringResponseConverterFactory())
-            .addConverterFactory(MoshiConverterFactory.create(ServiceGenerator.moshi));
+    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+    .addConverterFactory(new StringResponseConverterFactory())
+    .addConverterFactory(MoshiConverterFactory.create(ServiceGenerator.moshi));
 
     private static OkHttpClient sApiHttpClient;
     private static OkHttpClient sImageHttpClient;
@@ -140,7 +140,7 @@ public class ServiceFactory {
     }
 
     public static <S> S get(Class<S> serviceClass, boolean bypassCache, String acceptHeader,
-            String token, Integer pageSize) {
+                            String token, Integer pageSize) {
         String key = makeKey(serviceClass, bypassCache, acceptHeader, token, pageSize);
         S service = (S) sCache.get(key);
         if (service == null) {
@@ -151,42 +151,42 @@ public class ServiceFactory {
     }
 
     private static String makeKey(Class<?> serviceClass, boolean bypassCache,
-            String acceptHeader, String token, Integer pageSize) {
+                                  String acceptHeader, String token, Integer pageSize) {
         return String.format(Locale.US, "%s-%d-%s-%s-%d",
-                serviceClass.getSimpleName(), bypassCache ? 1 : 0,
-                acceptHeader != null ? acceptHeader : "",
-                token != null ? token : "", pageSize != null ? pageSize : 0);
+                             serviceClass.getSimpleName(), bypassCache ? 1 : 0,
+                             acceptHeader != null ? acceptHeader : "",
+                             token != null ? token : "", pageSize != null ? pageSize : 0);
     }
 
     private static <S> S createService(Class<S> serviceClass, final boolean bypassCache,
-            final String acceptHeader, final String token, final Integer pageSize) {
+                                       final String acceptHeader, final String token, final Integer pageSize) {
         OkHttpClient.Builder clientBuilder = sApiHttpClient.newBuilder()
-                .addInterceptor(PAGINATION_INTRCEPTOR)
-                .addNetworkInterceptor(ETAG_WORKAROUND_INTERCEPTOR)
-                .addNetworkInterceptor(CACHE_MAX_AGE_INTERCEPTOR)
-                .addInterceptor(chain -> {
-                    Request original = chain.request();
+                                             .addInterceptor(PAGINATION_INTRCEPTOR)
+                                             .addNetworkInterceptor(ETAG_WORKAROUND_INTERCEPTOR)
+                                             .addNetworkInterceptor(CACHE_MAX_AGE_INTERCEPTOR)
+        .addInterceptor(chain -> {
+            Request original = chain.request();
 
-                    Request.Builder requestBuilder = original.newBuilder()
-                            .method(original.method(), original.body());
+            Request.Builder requestBuilder = original.newBuilder()
+            .method(original.method(), original.body());
 
-                    String tokenToUse = token != null
-                            ? token : Gh4Application.get().getAuthToken();
-                    if (tokenToUse != null) {
-                        requestBuilder.header("Authorization", "Token " + tokenToUse);
-                    }
-                    if (pageSize != null) {
-                        requestBuilder.url(original.url().newBuilder()
-                                .addQueryParameter("per_page", String.valueOf(pageSize))
-                                .build());
-                    }
-                    if (original.header("Accept") == null) {
-                        requestBuilder.addHeader("Accept", acceptHeader != null
-                                ? acceptHeader : DEFAULT_HEADER_ACCEPT);
-                    }
+            String tokenToUse = token != null
+            ? token : Gh4Application.get().getAuthToken();
+            if (tokenToUse != null) {
+                requestBuilder.header("Authorization", "Token " + tokenToUse);
+            }
+            if (pageSize != null) {
+                requestBuilder.url(original.url().newBuilder()
+                                   .addQueryParameter("per_page", String.valueOf(pageSize))
+                                   .build());
+            }
+            if (original.header("Accept") == null) {
+                requestBuilder.addHeader("Accept", acceptHeader != null
+                                         ? acceptHeader : DEFAULT_HEADER_ACCEPT);
+            }
 
-                    return chain.proceed(requestBuilder.build());
-                });
+            return chain.proceed(requestBuilder.build());
+        });
 
         if (BuildConfig.DEBUG) {
             clientBuilder.addInterceptor(LOGGING_INTERCEPTOR);
@@ -197,33 +197,33 @@ public class ServiceFactory {
         }
 
         Retrofit retrofit = RETROFIT_BUILDER
-                .baseUrl("https://api.github.com")
-                .client(clientBuilder.build())
-                .build();
+                            .baseUrl("https://api.github.com")
+                            .client(clientBuilder.build())
+                            .build();
         return retrofit.create(serviceClass);
     }
 
     public static LoginService createLoginService(String userName, String password,
             Optional.Supplier<String> otpCodeSupplier) {
         OkHttpClient.Builder clientBuilder = sApiHttpClient.newBuilder()
-                .addInterceptor(chain -> {
-                    String otpCode = otpCodeSupplier.get();
-                    Request request = chain.request();
-                    if (otpCode != null) {
-                        request = request.newBuilder()
-                                .header("X-GitHub-OTP", otpCode)
-                                .build();
-                    }
-                    return chain.proceed(request);
-                })
-                .authenticator((route, response) -> {
-                    if (response.priorResponse() != null) {
-                        return null;
-                    }
-                    return response.request().newBuilder()
-                            .header("Authorization", Credentials.basic(userName, password))
-                            .build();
-                });
+        .addInterceptor(chain -> {
+            String otpCode = otpCodeSupplier.get();
+            Request request = chain.request();
+            if (otpCode != null) {
+                request = request.newBuilder()
+                .header("X-GitHub-OTP", otpCode)
+                .build();
+            }
+            return chain.proceed(request);
+        })
+        .authenticator((route, response) -> {
+            if (response.priorResponse() != null) {
+                return null;
+            }
+            return response.request().newBuilder()
+            .header("Authorization", Credentials.basic(userName, password))
+            .build();
+        });
 
         if (BuildConfig.DEBUG) {
             clientBuilder.addInterceptor(LOGGING_INTERCEPTOR);
@@ -232,9 +232,9 @@ public class ServiceFactory {
         clientBuilder.addInterceptor(CACHE_BYPASS_INTERCEPTOR);
 
         Retrofit retrofit = RETROFIT_BUILDER
-                .baseUrl("https://api.github.com")
-                .client(clientBuilder.build())
-                .build();
+                            .baseUrl("https://api.github.com")
+                            .client(clientBuilder.build())
+                            .build();
         return retrofit.create(LoginService.class);
     }
 
@@ -248,11 +248,11 @@ public class ServiceFactory {
 
     static void initClient(Context context) {
         sApiHttpClient = enableTls12IfNeeded(new OkHttpClient.Builder())
-                .cache(new Cache(new File(context.getCacheDir(), "api-http"), 20 * 1024 * 1024))
-                .build();
+                         .cache(new Cache(new File(context.getCacheDir(), "api-http"), 20 * 1024 * 1024))
+                         .build();
         sImageHttpClient = new OkHttpClient.Builder()
-                .cache(new Cache(new File(context.getCacheDir(), "image-http"), 20 * 1024 * 1024))
-                .build();
+        .cache(new Cache(new File(context.getCacheDir(), "image-http"), 20 * 1024 * 1024))
+        .build();
     }
 
     private static OkHttpClient.Builder enableTls12IfNeeded(OkHttpClient.Builder builder) {
@@ -262,18 +262,18 @@ public class ServiceFactory {
                 sc.init(null, null, null);
 
                 TrustManagerFactory tmf = TrustManagerFactory.getInstance(
-                        TrustManagerFactory.getDefaultAlgorithm());
+                                              TrustManagerFactory.getDefaultAlgorithm());
                 tmf.init((KeyStore) null);
                 TrustManager[] trustManagers = tmf.getTrustManagers();
                 if (trustManagers.length != 1 || !(trustManagers[0] instanceof X509TrustManager)) {
                     throw new IllegalStateException("Unexpected default trust managers:"
-                            + Arrays.toString(trustManagers));
+                                                    + Arrays.toString(trustManagers));
                 }
                 X509TrustManager tm = (X509TrustManager) trustManagers[0];
 
                 ConnectionSpec cs = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-                        .tlsVersions(TlsVersion.TLS_1_2)
-                        .build();
+                .tlsVersions(TlsVersion.TLS_1_2)
+                .build();
 
                 List<ConnectionSpec> specs = new ArrayList<>();
                 specs.add(cs);
@@ -294,7 +294,7 @@ public class ServiceFactory {
         Single<retrofit2.Response<List<AuthorizationResponse>>> getAuthorizations();
         @POST("/authorizations")
         Single<retrofit2.Response<AuthorizationResponse>> createAuthorization(
-                @Body AuthorizationRequest request);
+            @Body AuthorizationRequest request);
         @DELETE("/authorizations/{id}")
         Single<retrofit2.Response<Void>> deleteAuthorization(@Path("id") int id);
 
@@ -352,7 +352,7 @@ public class ServiceFactory {
 
         @Override
         public Socket createSocket(Socket s, String host, int port, boolean autoClose)
-                throws IOException {
+        throws IOException {
             return patch(delegate.createSocket(s, host, port, autoClose));
         }
 
@@ -363,7 +363,7 @@ public class ServiceFactory {
 
         @Override
         public Socket createSocket(String host, int port, InetAddress localHost, int localPort)
-                throws IOException {
+        throws IOException {
             return patch(delegate.createSocket(host, port, localHost, localPort));
         }
 
@@ -374,7 +374,7 @@ public class ServiceFactory {
 
         @Override
         public Socket createSocket(InetAddress address, int port,
-                InetAddress localAddress, int localPort) throws IOException {
+                                   InetAddress localAddress, int localPort) throws IOException {
             return patch(delegate.createSocket(address, port, localAddress, localPort));
         }
 

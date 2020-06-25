@@ -22,7 +22,7 @@ import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import io.reactivex.SingleTransformer;
 
 public abstract class LoadingFragmentBase extends Fragment implements
-        BaseActivity.RefreshableChild, SwipeRefreshLayout.ChildScrollDelegate {
+    BaseActivity.RefreshableChild, SwipeRefreshLayout.ChildScrollDelegate {
     private ViewGroup mContentContainer;
     private View mContentView;
     private SmoothProgressBar mProgress;
@@ -41,7 +41,7 @@ public abstract class LoadingFragmentBase extends Fragment implements
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.loading_fragment, container, false);
 
         mContentContainer = view.findViewById(R.id.content_container);
@@ -81,8 +81,8 @@ public abstract class LoadingFragmentBase extends Fragment implements
 
     protected <T> SingleTransformer<T, T> makeLoaderSingle(int id, boolean force) {
         return upstream -> upstream
-                .compose(RxUtils::doInBackground)
-                .compose(mRxLoader.makeSingleTransformer(id, force));
+               .compose(RxUtils::doInBackground)
+               .compose(mRxLoader.makeSingleTransformer(id, force));
     }
 
     protected void handleLoadFailure(Throwable error) {

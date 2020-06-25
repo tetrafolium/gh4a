@@ -49,7 +49,7 @@ import retrofit2.Response;
 public class GistActivity extends BaseActivity implements View.OnClickListener {
     public static Intent makeIntent(Context context, String gistId) {
         return new Intent(context, GistActivity.class)
-                .putExtra("id", gistId);
+               .putExtra("id", gistId);
     }
 
     private static final int ID_LOADER_GIST = 0;
@@ -101,7 +101,7 @@ public class GistActivity extends BaseActivity implements View.OnClickListener {
 
         TextView tvDesc = findViewById(R.id.tv_desc);
         tvDesc.setText(TextUtils.isEmpty(gist.description())
-                ? getString(R.string.gist_no_description) : gist.description());
+                       ? getString(R.string.gist_no_description) : gist.description());
 
         TextView tvCreatedAt = findViewById(R.id.tv_created_at);
         tvCreatedAt.setText(StringUtils.formatRelativeTime(this, gist.createdAt(), true));
@@ -114,7 +114,7 @@ public class GistActivity extends BaseActivity implements View.OnClickListener {
             container.removeAllViews();
             for (GistFile gistFile : files.values()) {
                 TextView rowView = (TextView) inflater.inflate(R.layout.selectable_label,
-                        container, false);
+                                   container, false);
 
                 rowView.setText(gistFile.filename());
                 rowView.setTextColor(UiUtils.resolveColor(this, android.R.attr.textColorPrimary));
@@ -171,16 +171,16 @@ public class GistActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.share:
-                String login = ApiHelpers.getUserLogin(this, mGist.owner());
-                IntentUtils.share(this, getString(R.string.share_gist_subject, mGistId, login),
-                        Uri.parse(mGist.htmlUrl()));
-                return true;
-            case R.id.star:
-                item.setActionView(R.layout.ab_loading);
-                item.expandActionView();
-                updateStarringState();
-                return true;
+        case R.id.share:
+            String login = ApiHelpers.getUserLogin(this, mGist.owner());
+            IntentUtils.share(this, getString(R.string.share_gist_subject, mGistId, login),
+                              Uri.parse(mGist.htmlUrl()));
+            return true;
+        case R.id.star:
+            item.setActionView(R.layout.ab_loading);
+            item.expandActionView();
+            updateStarringState();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -188,45 +188,45 @@ public class GistActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected Intent navigateUp() {
         String login = mGist != null && mGist.owner() != null
-                ? mGist.owner().login() : null;
+                       ? mGist.owner().login() : null;
         return login != null ? GistListActivity.makeIntent(this, login) : null;
     }
 
     private void updateStarringState() {
         GistService service = ServiceFactory.get(GistService.class, false);
         Single<Response<Void>> responseSingle = mIsStarred
-                ? service.unstarGist(mGistId) : service.starGist(mGistId);
+                                                ? service.unstarGist(mGistId) : service.starGist(mGistId);
         responseSingle.map(ApiHelpers::mapToBooleanOrThrowOnFailure)
-                .compose(RxUtils::doInBackground)
-                .subscribe(result -> {
-                    mIsStarred = !mIsStarred;
-                    supportInvalidateOptionsMenu();
-                }, error -> {
-                    handleActionFailure("Updating gist starring state failed", error);
-                    supportInvalidateOptionsMenu();
-                });
+        .compose(RxUtils::doInBackground)
+        .subscribe(result -> {
+            mIsStarred = !mIsStarred;
+            supportInvalidateOptionsMenu();
+        }, error -> {
+            handleActionFailure("Updating gist starring state failed", error);
+            supportInvalidateOptionsMenu();
+        });
     }
 
     private void loadGist(boolean force) {
         GistService service = ServiceFactory.get(GistService.class, force);
         service.getGist(mGistId)
-                .map(ApiHelpers::throwOnFailure)
-                .compose(makeLoaderSingle(ID_LOADER_GIST, force))
-                .subscribe(result -> {
-                    fillData(result);
-                    setContentShown(true);
-                    supportInvalidateOptionsMenu();
-                }, this::handleLoadFailure);
+        .map(ApiHelpers::throwOnFailure)
+        .compose(makeLoaderSingle(ID_LOADER_GIST, force))
+        .subscribe(result -> {
+            fillData(result);
+            setContentShown(true);
+            supportInvalidateOptionsMenu();
+        }, this::handleLoadFailure);
     }
 
     private void loadStarredState(boolean force) {
         GistService service = ServiceFactory.get(GistService.class, force);
         service.checkIfGistIsStarred(mGistId)
-                .map(ApiHelpers::mapToBooleanOrThrowOnFailure)
-                .compose(makeLoaderSingle(ID_LOADER_STARRED, force))
-                .subscribe(result -> {
-                    mIsStarred = result;
-                    supportInvalidateOptionsMenu();
-                }, this::handleLoadFailure);
+        .map(ApiHelpers::mapToBooleanOrThrowOnFailure)
+        .compose(makeLoaderSingle(ID_LOADER_STARRED, force))
+        .subscribe(result -> {
+            mIsStarred = result;
+            supportInvalidateOptionsMenu();
+        }, this::handleLoadFailure);
     }
 }

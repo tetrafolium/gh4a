@@ -40,7 +40,7 @@ public abstract class TimelineItem {
 
     public static class TimelineComment extends TimelineItem {
         private static final Pattern PULL_REQUEST_PATTERN =
-                Pattern.compile(".*github\\.com/repos/([^/]+)/([^/]+)/pulls/(\\d+)");
+            Pattern.compile(".*github\\.com/repos/([^/]+)/([^/]+)/pulls/(\\d+)");
 
         @NonNull
         private GitHubCommentBase comment;
@@ -185,7 +185,7 @@ public abstract class TimelineItem {
          * @param addNewDiffHunk {@code true} if new diff hunk should be created if it's not found.
          */
         public void addComment(@NonNull ReviewComment comment, @Nullable GitHubFile file,
-                boolean addNewDiffHunk) {
+                               boolean addNewDiffHunk) {
             // Comments are grouped by a special diff hunk id which is a combination of these 3
             // fields. By using this id we can display comments and their replies together under
             // a single diff hunk.
@@ -236,7 +236,7 @@ public abstract class TimelineItem {
          */
         public static String getDiffHunkId(ReviewComment comment) {
             return comment.originalCommitId() + comment.path() +
-                    comment.originalPosition();
+                   comment.originalPosition();
         }
 
         public Diff(TimelineComment timelineComment) {

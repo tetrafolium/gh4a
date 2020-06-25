@@ -61,12 +61,12 @@ public class IssueActivity extends BaseActivity implements View.OnClickListener 
         return makeIntent(context, login, repoName, number, null);
     }
     public static Intent makeIntent(Context context, String login, String repoName,
-            int number, IntentUtils.InitialCommentMarker initialComment) {
+                                    int number, IntentUtils.InitialCommentMarker initialComment) {
         return new Intent(context, IssueActivity.class)
-                .putExtra("owner", login)
-                .putExtra("repo", repoName)
-                .putExtra("number", number)
-                .putExtra("initial_comment", initialComment);
+               .putExtra("owner", login)
+               .putExtra("repo", repoName)
+               .putExtra("number", number)
+               .putExtra("initial_comment", initialComment);
     }
 
     private static final int ID_LOADER_ISSUE = 0;
@@ -137,15 +137,15 @@ public class IssueActivity extends BaseActivity implements View.OnClickListener 
         }
         FragmentManager fm = getSupportFragmentManager();
         IssueFragment newFragment = IssueFragment.newInstance(mRepoOwner, mRepoName,
-                mIssue, mIsCollaborator, mInitialComment);
+                                    mIssue, mIsCollaborator, mInitialComment);
         if (mFragment != null) {
             Fragment.SavedState state = fm.saveFragmentInstanceState(mFragment);
             newFragment.setInitialSavedState(state);
         }
         setFragment(newFragment);
         fm.beginTransaction()
-                .replace(R.id.details, mFragment)
-                .commitAllowingStateLoss();
+        .replace(R.id.details, mFragment)
+        .commitAllowingStateLoss();
         mInitialComment = null;
 
         updateHeader();
@@ -166,7 +166,7 @@ public class IssueActivity extends BaseActivity implements View.OnClickListener 
 
         tvState.setText(getString(stateTextResId).toUpperCase(Locale.getDefault()));
         transitionHeaderToColor(stateColorAttributeId,
-                closed ? R.attr.colorIssueClosedDark : R.attr.colorIssueOpenDark);
+                                closed ? R.attr.colorIssueClosedDark : R.attr.colorIssueOpenDark);
 
         TextView tvTitle = mHeader.findViewById(R.id.tv_title);
         tvTitle.setText(mIssue.title());
@@ -181,11 +181,11 @@ public class IssueActivity extends BaseActivity implements View.OnClickListener 
 
         boolean authorized = Gh4Application.get().isAuthorized();
         boolean isCreator = mIssue != null && authorized &&
-                ApiHelpers.loginEquals(mIssue.user(), Gh4Application.get().getAuthLogin());
+                            ApiHelpers.loginEquals(mIssue.user(), Gh4Application.get().getAuthLogin());
         boolean isClosed = mIssue != null && mIssue.state() == IssueState.Closed;
         boolean isCollaborator = mIsCollaborator != null && mIsCollaborator;
         boolean closerIsCreator = mIssue != null
-                && ApiHelpers.userEquals(mIssue.user(), mIssue.closedBy());
+                                  && ApiHelpers.userEquals(mIssue.user(), mIssue.closedBy());
         boolean canClose = mIssue != null && authorized && (isCreator || isCollaborator);
         boolean canOpen = canClose && (isCollaborator || closerIsCreator);
 
@@ -219,24 +219,24 @@ public class IssueActivity extends BaseActivity implements View.OnClickListener 
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         switch (itemId) {
-            case R.id.issue_close:
-            case R.id.issue_reopen:
-                if (checkForAuthOrExit()) {
-                    showOpenCloseConfirmDialog(itemId == R.id.issue_reopen);
-                }
-                return true;
-            case R.id.share:
-                IntentUtils.share(this, getString(R.string.share_issue_subject,
-                        mIssueNumber, mIssue.title(), mRepoOwner + "/" + mRepoName),
-                        Uri.parse(mIssue.htmlUrl()));
-                return true;
-            case R.id.browser:
-                IntentUtils.launchBrowser(this, Uri.parse(mIssue.htmlUrl()));
-                return true;
-            case R.id.copy_number:
-                IntentUtils.copyToClipboard(this, "Issue #" + mIssueNumber,
-                        String.valueOf(mIssueNumber));
-                return true;
+        case R.id.issue_close:
+        case R.id.issue_reopen:
+            if (checkForAuthOrExit()) {
+                showOpenCloseConfirmDialog(itemId == R.id.issue_reopen);
+            }
+            return true;
+        case R.id.share:
+            IntentUtils.share(this, getString(R.string.share_issue_subject,
+                                              mIssueNumber, mIssue.title(), mRepoOwner + "/" + mRepoName),
+                              Uri.parse(mIssue.htmlUrl()));
+            return true;
+        case R.id.browser:
+            IntentUtils.launchBrowser(this, Uri.parse(mIssue.htmlUrl()));
+            return true;
+        case R.id.copy_number:
+            IntentUtils.copyToClipboard(this, "Issue #" + mIssueNumber,
+                                        String.valueOf(mIssueNumber));
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -252,8 +252,8 @@ public class IssueActivity extends BaseActivity implements View.OnClickListener 
 
         if (mFragment != null) {
             getSupportFragmentManager().beginTransaction()
-                    .remove(mFragment)
-                    .commit();
+            .remove(mFragment)
+            .commit();
             setFragment(null);
         }
 
@@ -277,55 +277,55 @@ public class IssueActivity extends BaseActivity implements View.OnClickListener 
 
     private void showOpenCloseConfirmDialog(final boolean reopen) {
         @StringRes int messageResId = reopen
-                ? R.string.reopen_issue_confirm : R.string.close_issue_confirm;
+                                      ? R.string.reopen_issue_confirm : R.string.close_issue_confirm;
         @StringRes int buttonResId = reopen
-                ? R.string.pull_request_reopen : R.string.pull_request_close;
+                                     ? R.string.pull_request_reopen : R.string.pull_request_close;
         new AlertDialog.Builder(this)
-                .setMessage(messageResId)
-                .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setCancelable(false)
-                .setPositiveButton(buttonResId, (dialog, which) -> updateIssueState(reopen))
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+        .setMessage(messageResId)
+        .setIconAttribute(android.R.attr.alertDialogIcon)
+        .setCancelable(false)
+        .setPositiveButton(buttonResId, (dialog, which) -> updateIssueState(reopen))
+        .setNegativeButton(R.string.cancel, null)
+        .show();
     }
 
     private void updateIssueState(boolean reopen) {
         IssueService service = ServiceFactory.get(IssueService.class, false);
         IssueRequest request = IssueRequest.builder()
-                .state(reopen ? IssueState.Open : IssueState.Closed)
-                .build();
+                               .state(reopen ? IssueState.Open : IssueState.Closed)
+                               .build();
         @StringRes int dialogResId = reopen ? R.string.opening_msg : R.string.closing_msg;
         @StringRes int errorMessageResId =
-                reopen ? R.string.issue_error_reopen : R.string.issue_error_close;
+            reopen ? R.string.issue_error_reopen : R.string.issue_error_close;
 
         service.editIssue(mRepoOwner, mRepoName, mIssueNumber, request)
-                .map(ApiHelpers::throwOnFailure)
-                .compose(RxUtils.wrapForBackgroundTask(this, dialogResId, getString(errorMessageResId, mIssueNumber)))
-                .subscribe(result -> {
-                    mIssue = result;
+        .map(ApiHelpers::throwOnFailure)
+        .compose(RxUtils.wrapForBackgroundTask(this, dialogResId, getString(errorMessageResId, mIssueNumber)))
+        .subscribe(result -> {
+            mIssue = result;
 
-                    updateHeader();
-                    if (mEditFab != null) {
-                        mEditFab.setState(mIssue.state());
-                    }
-                    if (mFragment != null) {
-                        mFragment.updateState(mIssue);
-                    }
-                    setResult(RESULT_OK);
-                    supportInvalidateOptionsMenu();
-                }, error -> handleActionFailure("Updating issue state failed", error));
+            updateHeader();
+            if (mEditFab != null) {
+                mEditFab.setState(mIssue.state());
+            }
+            if (mFragment != null) {
+                mFragment.updateState(mIssue);
+            }
+            setResult(RESULT_OK);
+            supportInvalidateOptionsMenu();
+        }, error -> handleActionFailure("Updating issue state failed", error));
     }
 
     private void updateFabVisibility() {
         boolean isIssueOwner = mIssue != null
-                && ApiHelpers.loginEquals(mIssue.user(), Gh4Application.get().getAuthLogin());
+                               && ApiHelpers.loginEquals(mIssue.user(), Gh4Application.get().getAuthLogin());
         boolean isCollaborator = mIsCollaborator != null && mIsCollaborator;
         boolean shouldHaveFab = (isIssueOwner || isCollaborator) && mIssue != null;
         CoordinatorLayout rootLayout = getRootLayout();
 
         if (shouldHaveFab && mEditFab == null) {
             mEditFab = (IssueStateTrackingFloatingActionButton)
-                    getLayoutInflater().inflate(R.layout.issue_edit_fab, rootLayout, false);
+                       getLayoutInflater().inflate(R.layout.issue_edit_fab, rootLayout, false);
             mEditFab.setOnClickListener(this);
             rootLayout.addView(mEditFab);
         } else if (!shouldHaveFab && mEditFab != null) {
@@ -351,7 +351,7 @@ public class IssueActivity extends BaseActivity implements View.OnClickListener 
     public void onClick(View v) {
         if (v.getId() == R.id.edit_fab && checkForAuthOrExit()) {
             Intent editIntent = IssueEditActivity.makeEditIntent(this,
-                    mRepoOwner, mRepoName, mIssue);
+                                mRepoOwner, mRepoName, mIssue);
             startActivityForResult(editIntent, REQUEST_EDIT_ISSUE);
         }
     }
@@ -371,22 +371,22 @@ public class IssueActivity extends BaseActivity implements View.OnClickListener 
     private void loadIssue(boolean force) {
         IssueService service = ServiceFactory.get(IssueService.class, force);
         service.getIssue(mRepoOwner, mRepoName, mIssueNumber)
-                .map(ApiHelpers::throwOnFailure)
-                .compose(makeLoaderSingle(ID_LOADER_ISSUE, force))
-                .subscribe(result -> {
-                    mIssue = result;
-                    showUiIfDone();
-                    supportInvalidateOptionsMenu();
-                }, this::handleLoadFailure);
+        .map(ApiHelpers::throwOnFailure)
+        .compose(makeLoaderSingle(ID_LOADER_ISSUE, force))
+        .subscribe(result -> {
+            mIssue = result;
+            showUiIfDone();
+            supportInvalidateOptionsMenu();
+        }, this::handleLoadFailure);
     }
 
     private void loadCollaboratorStatus(boolean force) {
         SingleFactory.isAppUserRepoCollaborator(mRepoOwner, mRepoName, force)
-                .compose(makeLoaderSingle(ID_LOADER_COLLABORATOR_STATUS, force))
-                .subscribe(result -> {
-                    mIsCollaborator = result;
-                    showUiIfDone();
-                    supportInvalidateOptionsMenu();
-                }, this::handleLoadFailure);
+        .compose(makeLoaderSingle(ID_LOADER_COLLABORATOR_STATUS, force))
+        .subscribe(result -> {
+            mIsCollaborator = result;
+            showUiIfDone();
+            supportInvalidateOptionsMenu();
+        }, this::handleLoadFailure);
     }
 }

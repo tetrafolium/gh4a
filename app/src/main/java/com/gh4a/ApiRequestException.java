@@ -61,7 +61,7 @@ public class ApiRequestException extends RuntimeException {
 
         if (!TextUtils.isEmpty(message) && !errors.isEmpty()) {
             return String.format(Locale.US, "%1$s (%2$d) [%3$s]",
-                    message, mStatus, TextUtils.join(", ", errors));
+                                 message, mStatus, TextUtils.join(", ", errors));
         } else if (!TextUtils.isEmpty(message)) {
             return String.format(Locale.US, "%1$s (%2$d)", message, mStatus);
         } else {
@@ -71,20 +71,20 @@ public class ApiRequestException extends RuntimeException {
 
     private String formatFieldError(ClientErrorResponse.FieldError error) {
         switch (error.reason()) {
-            case Invalid:
-                return String.format("Value for field %1$s is invalid", error.field());
-            case MissingField:
-                return String.format("Value for required field %1$s is missing", error.field());
-            case MissingResource:
-                return String.format("Resource %1$s does not exist", error.resource());
-            case AlreadyExists:
-                return String.format(
-                        "A resource of type '%1$s' with the same value in field %2$s already exists",
-                        error.resource(), error.field());
-            case TooLarge:
-                return String.format("The field %1$s was too large", error.field());
-            case Custom:
-                return error.message();
+        case Invalid:
+            return String.format("Value for field %1$s is invalid", error.field());
+        case MissingField:
+            return String.format("Value for required field %1$s is missing", error.field());
+        case MissingResource:
+            return String.format("Resource %1$s does not exist", error.resource());
+        case AlreadyExists:
+            return String.format(
+                       "A resource of type '%1$s' with the same value in field %2$s already exists",
+                       error.resource(), error.field());
+        case TooLarge:
+            return String.format("The field %1$s was too large", error.field());
+        case Custom:
+            return error.message();
         }
         return null;
     }

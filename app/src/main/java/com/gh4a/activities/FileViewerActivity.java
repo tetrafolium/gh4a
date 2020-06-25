@@ -52,16 +52,16 @@ import java.util.Locale;
 import io.reactivex.Single;
 
 public class FileViewerActivity extends WebViewerActivity
-        implements PopupMenu.OnMenuItemClickListener {
+    implements PopupMenu.OnMenuItemClickListener {
     public static Intent makeIntent(Context context, String repoOwner, String repoName,
-            String ref, String fullPath) {
+                                    String ref, String fullPath) {
         return makeIntent(context, repoOwner, repoName, ref, fullPath, -1, -1, null);
     }
 
     public static Intent makeIntentWithHighlight(Context context, String repoOwner, String repoName,
             String ref, String fullPath, int highlightStart, int highlightEnd) {
         return makeIntent(context, repoOwner, repoName, ref, fullPath, highlightStart, highlightEnd,
-                null);
+                          null);
     }
 
     public static Intent makeIntentWithSearchMatch(Context context, String repoOwner,
@@ -70,15 +70,15 @@ public class FileViewerActivity extends WebViewerActivity
     }
 
     private static Intent makeIntent(Context context, String repoOwner, String repoName, String ref,
-            String fullPath, int highlightStart, int highlightEnd, TextMatch textMatch) {
+                                     String fullPath, int highlightStart, int highlightEnd, TextMatch textMatch) {
         return new Intent(context, FileViewerActivity.class)
-                .putExtra("owner", repoOwner)
-                .putExtra("repo", repoName)
-                .putExtra("path", fullPath)
-                .putExtra("ref", ref)
-                .putExtra("highlight_start", highlightStart)
-                .putExtra("highlight_end", highlightEnd)
-                .putExtra("text_match", textMatch);
+               .putExtra("owner", repoOwner)
+               .putExtra("repo", repoName)
+               .putExtra("path", fullPath)
+               .putExtra("ref", ref)
+               .putExtra("highlight_start", highlightStart)
+               .putExtra("highlight_end", highlightEnd)
+               .putExtra("text_match", textMatch);
     }
 
     private String mRepoName;
@@ -150,16 +150,16 @@ public class FileViewerActivity extends WebViewerActivity
         if (base64Data != null && FileUtils.isImage(mPath)) {
             String title = addTitleHeader ? getDocumentTitle() : null;
             String imageUrl = "data:" + FileUtils.getMimeTypeFor(mPath) +
-                    ";base64," + base64Data;
+                              ";base64," + base64Data;
             return highlightImage(imageUrl, cssTheme, title);
         } else if (base64Data != null && FileUtils.isMarkdown(mPath) && !mViewRawText) {
             return generateMarkdownHtml(base64Data,
-                    mRepoOwner, mRepoName, mRef, cssTheme, addTitleHeader);
+                                        mRepoOwner, mRepoName, mRef, cssTheme, addTitleHeader);
         } else {
             String data = base64Data != null ? StringUtils.fromBase64(base64Data) : "";
             findMatchingLines(data);
             return generateCodeHtml(data, mPath,
-                    mHighlightStart, mHighlightEnd, cssTheme, addTitleHeader);
+                                    mHighlightStart, mHighlightEnd, cssTheme, addTitleHeader);
         }
     }
 
@@ -178,7 +178,7 @@ public class FileViewerActivity extends WebViewerActivity
     @Override
     protected String getDocumentTitle() {
         @StringRes int titleResId = TextUtils.isEmpty(mRef)
-                ? R.string.file_print_document_title : R.string.file_print_document_at_ref_title;
+                                    ? R.string.file_print_document_title : R.string.file_print_document_at_ref_title;
         return getString(titleResId, FileUtils.getFileName(mPath), mRepoOwner, mRepoName, mRef);
     }
 
@@ -216,7 +216,7 @@ public class FileViewerActivity extends WebViewerActivity
         }
 
         menu.add(0, MENU_ITEM_HISTORY, Menu.NONE, R.string.history)
-                .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER);
+        .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -224,33 +224,33 @@ public class FileViewerActivity extends WebViewerActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Uri.Builder urlBuilder = IntentUtils.createBaseUriForRepo(mRepoOwner, mRepoName)
-                .appendPath("blob")
-                .appendPath(mRef);
+                                 .appendPath("blob")
+                                 .appendPath(mRef);
         for (String element: mPath.split("\\/")) {
             urlBuilder.appendPath(element);
         }
         Uri url = urlBuilder.build();
 
         switch (item.getItemId()) {
-            case R.id.browser:
-                IntentUtils.launchBrowser(this, url);
-                return true;
-            case R.id.share:
-                IntentUtils.share(this, getString(R.string.share_file_subject,
-                        FileUtils.getFileName(mPath), mRepoOwner + "/" + mRepoName), url);
-                return true;
-            case MENU_ITEM_HISTORY:
-                startActivity(CommitHistoryActivity.makeIntent(this,
-                        mRepoOwner, mRepoName, mRef, mPath, false));
-                return true;
-            case R.id.view_raw:
-                mViewRawText = !mViewRawText;
-                item.setChecked(mViewRawText);
-                onRefresh();
-                return true;
-         }
-         return super.onOptionsItemSelected(item);
-     }
+        case R.id.browser:
+            IntentUtils.launchBrowser(this, url);
+            return true;
+        case R.id.share:
+            IntentUtils.share(this, getString(R.string.share_file_subject,
+                                              FileUtils.getFileName(mPath), mRepoOwner + "/" + mRepoName), url);
+            return true;
+        case MENU_ITEM_HISTORY:
+            startActivity(CommitHistoryActivity.makeIntent(this,
+                          mRepoOwner, mRepoName, mRef, mPath, false));
+            return true;
+        case R.id.view_raw:
+            mViewRawText = !mViewRawText;
+            item.setChecked(mViewRawText);
+            onRefresh();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected Intent navigateUp() {
@@ -260,13 +260,13 @@ public class FileViewerActivity extends WebViewerActivity
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.share:
-                if (mLastTouchedLine > 0) {
-                    String subject = getString(R.string.share_line_subject, mLastTouchedLine, mPath,
-                            mRepoOwner + "/" + mRepoName);
-                    IntentUtils.share(this, subject, createUrl());
-                }
-                return true;
+        case R.id.share:
+            if (mLastTouchedLine > 0) {
+                String subject = getString(R.string.share_line_subject, mLastTouchedLine, mPath,
+                                           mRepoOwner + "/" + mRepoName);
+                IntentUtils.share(this, subject, createUrl());
+            }
+            return true;
         }
         return false;
     }
@@ -295,8 +295,8 @@ public class FileViewerActivity extends WebViewerActivity
 
     private Uri createUrl() {
         Uri.Builder builder = IntentUtils.createBaseUriForRepo(mRepoOwner, mRepoName)
-                .appendPath("blob")
-                .appendPath(mRef);
+                              .appendPath("blob")
+                              .appendPath(mRef);
         for (String element: mPath.split("\\/")) {
             builder.appendPath(element);
         }
@@ -334,34 +334,34 @@ public class FileViewerActivity extends WebViewerActivity
     private void loadFile(boolean force) {
         RepositoryContentService service = ServiceFactory.get(RepositoryContentService.class, force);
         service.getContents(mRepoOwner, mRepoName, mPath, mRef)
-                .map(ApiHelpers::throwOnFailure)
-                .map(Optional::of)
-                .onErrorResumeNext(error -> {
-                    if (error instanceof ApiRequestException) {
-                        ClientErrorResponse response = ((ApiRequestException) error).getResponse();
-                        List<ClientErrorResponse.FieldError> errors =
-                                response != null ? response.errors() : null;
-                        if (errors != null) {
-                            for (ClientErrorResponse.FieldError fe : errors) {
-                                if (fe.reason() == ClientErrorResponse.FieldError.Reason.TooLarge) {
-                                    openUnsuitableFileAndFinish();
-                                    return Single.just(Optional.absent());
-                                }
-                            }
+        .map(ApiHelpers::throwOnFailure)
+        .map(Optional::of)
+        .onErrorResumeNext(error -> {
+            if (error instanceof ApiRequestException) {
+                ClientErrorResponse response = ((ApiRequestException) error).getResponse();
+                List<ClientErrorResponse.FieldError> errors =
+                response != null ? response.errors() : null;
+                if (errors != null) {
+                    for (ClientErrorResponse.FieldError fe : errors) {
+                        if (fe.reason() == ClientErrorResponse.FieldError.Reason.TooLarge) {
+                            openUnsuitableFileAndFinish();
+                            return Single.just(Optional.absent());
                         }
                     }
-                    return Single.error(error);
-                })
-                .compose(makeLoaderSingle(ID_LOADER_FILE, force))
-                .subscribe(result -> {
-                    if (result.isPresent()) {
-                        mContent = result.get();
-                        onDataReady();
-                        setContentEmpty(false);
-                    } else {
-                        setContentEmpty(true);
-                        setContentShown(true);
-                    }
-                }, this::handleLoadFailure);
+                }
+            }
+            return Single.error(error);
+        })
+        .compose(makeLoaderSingle(ID_LOADER_FILE, force))
+        .subscribe(result -> {
+            if (result.isPresent()) {
+                mContent = result.get();
+                onDataReady();
+                setContentEmpty(false);
+            } else {
+                setContentEmpty(true);
+                setContentShown(true);
+            }
+        }, this::handleLoadFailure);
     }
 }

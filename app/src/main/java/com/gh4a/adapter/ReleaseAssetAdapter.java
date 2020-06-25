@@ -34,7 +34,7 @@ public class ReleaseAssetAdapter extends RootAdapter<ReleaseAsset, ReleaseAssetA
         }
 
         holder.tvCreatedAt.setText(mContext.getString(R.string.download_created,
-                StringUtils.formatRelativeTime(mContext, asset.createdAt(), true)));
+                                   StringUtils.formatRelativeTime(mContext, asset.createdAt(), true)));
         holder.tvSize.setText(Formatter.formatFileSize(mContext, asset.size()));
         holder.tvDownloads.setText(String.valueOf(asset.downloadCount()));
     }

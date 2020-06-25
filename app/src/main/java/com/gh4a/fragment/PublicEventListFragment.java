@@ -36,7 +36,7 @@ public class PublicEventListFragment extends EventListFragment {
     protected Single<Response<Page<GitHubEvent>>> loadPage(int page, boolean bypassCache) {
         final EventService service = ServiceFactory.get(EventService.class, bypassCache);
         return mIsOrganization
-                ? service.getPublicOrganizationEvents(mLogin, page)
-                : service.getPublicUserPerformedEvents(mLogin, page);
+               ? service.getPublicOrganizationEvents(mLogin, page)
+               : service.getPublicUserPerformedEvents(mLogin, page);
     }
 }

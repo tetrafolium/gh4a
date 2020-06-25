@@ -31,7 +31,7 @@ public class EventReceiver extends BroadcastReceiver {
             try {
                 Intent downloadManagerIntent = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
                 downloadManagerIntent.addFlags(
-                        Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 context.startActivity(downloadManagerIntent);
             } catch (ActivityNotFoundException e) {
                 // ignore, there's nothing we can do about this

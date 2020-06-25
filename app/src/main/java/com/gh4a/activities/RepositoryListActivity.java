@@ -28,17 +28,17 @@ import com.gh4a.R;
 import com.gh4a.fragment.RepositoryListContainerFragment;
 
 public class RepositoryListActivity extends FragmentContainerActivity implements
-        RepositoryListContainerFragment.Callback {
+    RepositoryListContainerFragment.Callback {
     public static Intent makeIntent(Context context, String user, boolean userIsOrg) {
         return makeIntent(context, user, userIsOrg, null);
     }
 
     public static Intent makeIntent(Context context, String user, boolean userIsOrg,
-            String defaultFilter) {
+                                    String defaultFilter) {
         return new Intent(context, RepositoryListActivity.class)
-                .putExtra("user", user)
-                .putExtra("is_org", userIsOrg)
-                .putExtra("filter_type", defaultFilter);
+               .putExtra("user", user)
+               .putExtra("is_org", userIsOrg)
+               .putExtra("filter_type", defaultFilter);
     }
 
     private String mUserLogin;
@@ -78,7 +78,7 @@ public class RepositoryListActivity extends FragmentContainerActivity implements
         mFilterType = data.getString("filter_type");
 
         mFilterDrawerHelper = RepositoryListContainerFragment.FilterDrawerHelper.create(
-                mUserLogin, mUserIsOrg);
+                                  mUserLogin, mUserIsOrg);
         mSortDrawerHelper = new RepositoryListContainerFragment.SortDrawerHelper();
         if (mFilterType != null) {
             mSortDrawerHelper.setFilterType(mFilterType);
@@ -106,7 +106,7 @@ public class RepositoryListActivity extends FragmentContainerActivity implements
         if (mFragment != null) {
             mFilterDrawerHelper.selectFilterType(menu, mFragment.getFilterType());
             mSortDrawerHelper.selectSortType(menu, mFragment.getSortOrder(),
-                    mFragment.getSortDirection(), false);
+                                             mFragment.getSortDirection(), false);
         }
     }
 

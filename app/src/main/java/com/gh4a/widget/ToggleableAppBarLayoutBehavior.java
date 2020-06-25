@@ -15,16 +15,16 @@ public class ToggleableAppBarLayoutBehavior extends AppBarLayout.Behavior {
 
     @Override
     public boolean onStartNestedScroll(@NonNull CoordinatorLayout parent,
-            @NonNull AppBarLayout child, @NonNull View directTargetChild,
-            @NonNull View target, int nestedScrollAxes, int type) {
+                                       @NonNull AppBarLayout child, @NonNull View directTargetChild,
+                                       @NonNull View target, int nestedScrollAxes, int type) {
         return mEnabled && super.onStartNestedScroll(parent, child, directTargetChild, target,
                 nestedScrollAxes, type);
     }
 
     @Override
     public void onNestedPreScroll(@NonNull CoordinatorLayout coordinatorLayout,
-            @NonNull AppBarLayout child, @NonNull View target,
-            int dx, int dy, @NonNull int[] consumed, int type) {
+                                  @NonNull AppBarLayout child, @NonNull View target,
+                                  int dx, int dy, @NonNull int[] consumed, int type) {
         if (mEnabled) {
             super.onNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed, type);
         }
@@ -32,17 +32,17 @@ public class ToggleableAppBarLayoutBehavior extends AppBarLayout.Behavior {
 
     @Override
     public void onNestedScroll(@NonNull CoordinatorLayout coordinatorLayout,
-            @NonNull AppBarLayout child, @NonNull View target,
-            int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type) {
+                               @NonNull AppBarLayout child, @NonNull View target,
+                               int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type) {
         if (mEnabled) {
             super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed,
-                    dxUnconsumed, dyUnconsumed, type);
+                                 dxUnconsumed, dyUnconsumed, type);
         }
     }
 
     @Override
     public void onStopNestedScroll(@NonNull CoordinatorLayout coordinatorLayout,
-            @NonNull AppBarLayout child, @NonNull View target, int type) {
+                                   @NonNull AppBarLayout child, @NonNull View target, int type) {
         if (mEnabled) {
             super.onStopNestedScroll(coordinatorLayout, child, target, type);
         }
@@ -50,7 +50,7 @@ public class ToggleableAppBarLayoutBehavior extends AppBarLayout.Behavior {
 
     @Override
     public boolean onInterceptTouchEvent(CoordinatorLayout parent,
-            AppBarLayout child, MotionEvent ev) {
+                                         AppBarLayout child, MotionEvent ev) {
         return mEnabled && super.onInterceptTouchEvent(parent, child, ev);
     }
 }

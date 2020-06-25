@@ -19,7 +19,7 @@ import com.gh4a.utils.UiUtils;
 import java.lang.reflect.Field;
 
 public abstract class BasePagerActivity extends BaseActivity implements
-        ViewPager.OnPageChangeListener {
+    ViewPager.OnPageChangeListener {
     private PagerAdapter mAdapter;
     private TabLayout mTabs;
     private ViewPager mPager;
@@ -49,7 +49,7 @@ public abstract class BasePagerActivity extends BaseActivity implements
 
     protected void adjustTabsForHeaderAlignedFab(boolean fabPresent) {
         int margin = fabPresent
-                ? getResources().getDimensionPixelSize(R.dimen.mini_fab_size_with_margin) : 0;
+                     ? getResources().getDimensionPixelSize(R.dimen.mini_fab_size_with_margin) : 0;
 
         ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mTabs.getLayoutParams();
         lp.rightMargin = margin;
@@ -118,8 +118,8 @@ public abstract class BasePagerActivity extends BaseActivity implements
         if (hasTabsInToolbar()) {
             Toolbar toolbar = findViewById(R.id.toolbar);
             toolbar.addView(mTabs, new Toolbar.LayoutParams(
-                    Toolbar.LayoutParams.WRAP_CONTENT,
-                    Toolbar.LayoutParams.MATCH_PARENT));
+                                Toolbar.LayoutParams.WRAP_CONTENT,
+                                Toolbar.LayoutParams.MATCH_PARENT));
         } else {
             addHeaderView(mTabs, false);
         }
@@ -203,9 +203,9 @@ public abstract class BasePagerActivity extends BaseActivity implements
         if (mTabHeaderColors != null) {
             int nextIndex = Math.max(0, Math.min(position + 1, mTabHeaderColors.length - 1));
             int headerColor = UiUtils.mixColors(mTabHeaderColors[position][0],
-                    mTabHeaderColors[nextIndex][0], fraction);
+                                                mTabHeaderColors[nextIndex][0], fraction);
             int statusBarColor = UiUtils.mixColors(mTabHeaderColors[position][1],
-                    mTabHeaderColors[nextIndex][1], fraction);
+                                                   mTabHeaderColors[nextIndex][1], fraction);
             setHeaderColor(headerColor, statusBarColor);
         }
     }
@@ -213,7 +213,7 @@ public abstract class BasePagerActivity extends BaseActivity implements
     private void tryUpdatePagerColor() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ViewPagerEdgeColorHelper helper =
-                    (ViewPagerEdgeColorHelper) mPager.getTag(R.id.EdgeColorHelper);
+                (ViewPagerEdgeColorHelper) mPager.getTag(R.id.EdgeColorHelper);
             if (helper == null) {
                 helper = new ViewPagerEdgeColorHelper(mPager);
                 mPager.setTag(R.id.EdgeColorHelper, helper);
@@ -259,7 +259,7 @@ public abstract class BasePagerActivity extends BaseActivity implements
             if (effect != null) {
                 final int alpha = Color.alpha(effect.getColor());
                 effect.setColor(Color.argb(alpha, Color.red(mColor),
-                        Color.green(mColor), Color.blue(mColor)));
+                                           Color.green(mColor), Color.blue(mColor)));
             }
         }
 

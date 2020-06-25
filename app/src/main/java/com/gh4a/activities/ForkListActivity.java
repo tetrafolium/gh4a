@@ -27,8 +27,8 @@ import com.gh4a.fragment.ForkListFragment;
 public class ForkListActivity extends FragmentContainerActivity {
     public static Intent makeIntent(Context context, String repoOwner, String repoName) {
         return new Intent(context, ForkListActivity.class)
-                .putExtra("owner", repoOwner)
-                .putExtra("repo", repoName);
+               .putExtra("owner", repoOwner)
+               .putExtra("repo", repoName);
     }
 
     private String mRepoOwner;

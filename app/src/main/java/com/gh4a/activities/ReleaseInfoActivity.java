@@ -53,21 +53,21 @@ import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
 
 public class ReleaseInfoActivity extends BaseActivity implements
-        View.OnClickListener, SwipeRefreshLayout.ChildScrollDelegate,
-        RootAdapter.OnItemClickListener<ReleaseAsset> {
+    View.OnClickListener, SwipeRefreshLayout.ChildScrollDelegate,
+    RootAdapter.OnItemClickListener<ReleaseAsset> {
     public static Intent makeIntent(Context context, String repoOwner, String repoName, long id) {
         return new Intent(context, ReleaseInfoActivity.class)
-                .putExtra("owner", repoOwner)
-                .putExtra("repo", repoName)
-                .putExtra("id", id);
+               .putExtra("owner", repoOwner)
+               .putExtra("repo", repoName)
+               .putExtra("id", id);
     }
 
     public static Intent makeIntent(Context context, String repoOwner, String repoName,
                                     Release release) {
         return new Intent(context, ReleaseInfoActivity.class)
-                .putExtra("owner", repoOwner)
-                .putExtra("repo", repoName)
-                .putExtra("release", release);
+               .putExtra("owner", repoOwner)
+               .putExtra("repo", repoName)
+               .putExtra("release", release);
     }
 
     private static final int ID_LOADER_RELEASE = 0;
@@ -195,8 +195,8 @@ public class ReleaseInfoActivity extends BaseActivity implements
 
         StyleableTextView details = findViewById(R.id.tv_releaseinfo);
         String detailsText = getString(R.string.release_details,
-                ApiHelpers.getUserLogin(this, mRelease.author()),
-                StringUtils.formatRelativeTime(this, mRelease.createdAt(), true));
+                                       ApiHelpers.getUserLogin(this, mRelease.author()),
+                                       StringUtils.formatRelativeTime(this, mRelease.createdAt(), true));
         StringUtils.applyBoldTagsAndSetText(details, detailsText);
 
         TextView releaseType = findViewById(R.id.tv_releasetype);
@@ -250,13 +250,13 @@ public class ReleaseInfoActivity extends BaseActivity implements
         Intent intent = null;
 
         switch (v.getId()) {
-            case R.id.tv_releasetag:
-                intent = RepositoryActivity.makeIntent(this,
-                        mRepoOwner, mRepoName, mRelease.tagName());
-                break;
-            case R.id.iv_gravatar:
-                intent = UserActivity.makeIntent(this, mRelease.author());
-                break;
+        case R.id.tv_releasetag:
+            intent = RepositoryActivity.makeIntent(this,
+                                                   mRepoOwner, mRepoName, mRelease.tagName());
+            break;
+        case R.id.iv_gravatar:
+            intent = UserActivity.makeIntent(this, mRelease.author());
+            break;
         }
 
         if (intent != null) {
@@ -268,13 +268,13 @@ public class ReleaseInfoActivity extends BaseActivity implements
         RepositoryReleaseService service = ServiceFactory.get(RepositoryReleaseService.class, force);
 
         service.getRelease(mRepoOwner, mRepoName, mReleaseId)
-                .map(ApiHelpers::throwOnFailure)
-                .compose(makeLoaderSingle(ID_LOADER_RELEASE, force))
-                .subscribe(result -> {
-                    mRelease = result;
-                    handleReleaseReady();
-                    setContentShown(true);
-                }, this::handleLoadFailure);
+        .map(ApiHelpers::throwOnFailure)
+        .compose(makeLoaderSingle(ID_LOADER_RELEASE, force))
+        .subscribe(result -> {
+            mRelease = result;
+            handleReleaseReady();
+            setContentShown(true);
+        }, this::handleLoadFailure);
     }
 
     private void loadBody() {
@@ -284,16 +284,16 @@ public class ReleaseInfoActivity extends BaseActivity implements
         } else {
             MarkdownService service = ServiceFactory.get(MarkdownService.class, false);
             RequestMarkdown request = RequestMarkdown.builder()
-                    .context(mRepoOwner + "/" + mRepoName)
-                    .mode("gfm")
-                    .text(mRelease.body())
-                    .build();
+                                      .context(mRepoOwner + "/" + mRepoName)
+                                      .mode("gfm")
+                                      .text(mRelease.body())
+                                      .build();
             htmlSingle = service.renderMarkdown(request)
-                    .map(ApiHelpers::throwOnFailure)
-                    .map(Optional::of);
+                         .map(ApiHelpers::throwOnFailure)
+                         .map(Optional::of);
         }
         mBodySubscription = htmlSingle
-                .compose(makeLoaderSingle(ID_LOADER_BODY, false))
-                .subscribe(this::fillNotes, this::handleLoadFailure);
+                            .compose(makeLoaderSingle(ID_LOADER_BODY, false))
+                            .subscribe(this::fillNotes, this::handleLoadFailure);
     }
 }

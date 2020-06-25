@@ -24,14 +24,14 @@ public class PullRequestDiffLoadTask extends DiffLoadTask<ReviewComment> {
     protected final int mPullRequestNumber;
 
     public PullRequestDiffLoadTask(FragmentActivity activity, String repoOwner, String repoName,
-            DiffHighlightId diffId, int pullRequestNumber) {
+                                   DiffHighlightId diffId, int pullRequestNumber) {
         super(activity, repoOwner, repoName, diffId);
         mPullRequestNumber = pullRequestNumber;
     }
 
     @Override
     protected @NonNull Intent getLaunchIntent(String sha, @NonNull GitHubFile file,
-                           List<ReviewComment> comments, DiffHighlightId diffId) {
+            List<ReviewComment> comments, DiffHighlightId diffId) {
         return PullRequestDiffViewerActivity.makeIntent(mActivity, mRepoOwner,
                 mRepoName, mPullRequestNumber, sha, file.filename(), file.patch(),
                 comments, -1, diffId.startLine, diffId.endLine, diffId.right, null);
@@ -41,31 +41,31 @@ public class PullRequestDiffLoadTask extends DiffLoadTask<ReviewComment> {
     @Override
     protected Intent getFallbackIntent(String sha) {
         return PullRequestActivity.makeIntent(mActivity, mRepoOwner, mRepoName,
-                mPullRequestNumber);
+                                              mPullRequestNumber);
     }
 
     @Override
     protected Single<String> getSha() {
         PullRequestService service = ServiceFactory.get(PullRequestService.class, false);
         return service.getPullRequest(mRepoOwner, mRepoName, mPullRequestNumber)
-                .map(ApiHelpers::throwOnFailure)
-                .map(pr -> pr.head().sha());
+               .map(ApiHelpers::throwOnFailure)
+               .map(pr -> pr.head().sha());
     }
 
     @Override
     protected Single<List<GitHubFile>> getFiles() {
         final PullRequestService service = ServiceFactory.get(PullRequestService.class, false);
         return ApiHelpers.PageIterator
-                .toSingle(page -> service.getPullRequestFiles(mRepoOwner, mRepoName, mPullRequestNumber, page));
+               .toSingle(page -> service.getPullRequestFiles(mRepoOwner, mRepoName, mPullRequestNumber, page));
     }
 
     @Override
     protected Single<List<ReviewComment>> getComments() {
         final PullRequestReviewCommentService service =
-                ServiceFactory.get(PullRequestReviewCommentService.class, false);
+            ServiceFactory.get(PullRequestReviewCommentService.class, false);
         return ApiHelpers.PageIterator
-                .toSingle(page -> service.getPullRequestComments(
-                        mRepoOwner, mRepoName, mPullRequestNumber, page))
-                .compose(RxUtils.filter(c -> c.position() != null));
+               .toSingle(page -> service.getPullRequestComments(
+                             mRepoOwner, mRepoName, mPullRequestNumber, page))
+               .compose(RxUtils.filter(c -> c.position() != null));
     }
 }

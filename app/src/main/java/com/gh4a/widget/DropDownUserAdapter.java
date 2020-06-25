@@ -128,7 +128,7 @@ public class DropDownUserAdapter extends BaseAdapter implements Filterable {
                 results.count = 0;
             } else {
                 final String constraintString =
-                        constraint.toString().substring(1).toLowerCase();
+                    constraint.toString().substring(1).toLowerCase();
 
                 final ArrayList<User> values;
                 synchronized (mLock) {

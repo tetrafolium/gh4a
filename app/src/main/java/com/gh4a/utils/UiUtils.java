@@ -59,12 +59,12 @@ public class UiUtils {
     public static final LinkMovementMethod CHECKING_LINK_METHOD = new LinkMovementMethod() {
         @Override
         public boolean onTouchEvent(@NonNull TextView widget,
-                @NonNull Spannable buffer, @NonNull MotionEvent event) {
+                                    @NonNull Spannable buffer, @NonNull MotionEvent event) {
             try {
                 return super.onTouchEvent(widget, buffer, event);
             } catch (ActivityNotFoundException e) {
                 Toast.makeText(widget.getContext(), R.string.link_not_openable, Toast.LENGTH_LONG)
-                        .show();
+                .show();
                 return true;
             } catch (SecurityException e) {
                 // some apps have intent filters set for the VIEW action for
@@ -80,7 +80,7 @@ public class UiUtils {
             return;
         }
         InputMethodManager imm = (InputMethodManager)
-                view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                 view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
@@ -89,7 +89,7 @@ public class UiUtils {
             return;
         }
         InputMethodManager imm = (InputMethodManager)
-                view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                 view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
     }
 
@@ -108,7 +108,7 @@ public class UiUtils {
     public static void trySetListOverscrollColor(RecyclerView view, int color) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             RecyclerViewEdgeColorHelper helper =
-                    (RecyclerViewEdgeColorHelper) view.getTag(R.id.EdgeColorHelper);
+                (RecyclerViewEdgeColorHelper) view.getTag(R.id.EdgeColorHelper);
             if (helper == null) {
                 helper = new RecyclerViewEdgeColorHelper(view);
                 view.setTag(R.id.EdgeColorHelper, helper);
@@ -168,7 +168,7 @@ public class UiUtils {
             if (effect != null) {
                 final int alpha = Color.alpha(effect.getColor());
                 effect.setColor(Color.argb(alpha, Color.red(mColor),
-                        Color.green(mColor), Color.blue(mColor)));
+                                           Color.green(mColor), Color.blue(mColor)));
             }
         }
 
@@ -206,9 +206,9 @@ public class UiUtils {
         int endB = endColor & 0xff;
 
         return ((startA + (int)(fraction * (endA - startA))) << 24) |
-                ((startR + (int)(fraction * (endR - startR))) << 16) |
-                ((startG + (int)(fraction * (endG - startG))) << 8) |
-                ((startB + (int)(fraction * (endB - startB))));
+               ((startR + (int)(fraction * (endR - startR))) << 16) |
+               ((startG + (int)(fraction * (endG - startG))) << 8) |
+               ((startB + (int)(fraction * (endB - startB))));
     }
 
     public static boolean canViewScrollUp(View view) {
@@ -232,14 +232,14 @@ public class UiUtils {
 
         message.setText(messageResId);
         return new AlertDialog.Builder(context)
-                .setView(content)
-                .create();
+               .setView(content)
+               .create();
     }
 
     public static int resolveDrawable(Context context, @AttrRes int styledAttributeId) {
         TypedArray a = context.obtainStyledAttributes(new int[] {
-            styledAttributeId
-        });
+                           styledAttributeId
+                       });
         int resource = a.getResourceId(0, 0);
         a.recycle();
         return resource;
@@ -247,21 +247,21 @@ public class UiUtils {
 
     public static @ColorInt int resolveColor(Context context, @AttrRes int styledAttributeId) {
         TypedArray a = context.obtainStyledAttributes(new int[] {
-            styledAttributeId
-        });
+                           styledAttributeId
+                       });
         int color = a.getColor(0, 0);
         a.recycle();
         return color;
     }
 
     private static void enqueueDownload(Context context, Uri uri, String fileName,
-            String description, String mimeType, String mediaType, boolean wifiOnly) {
+                                        String description, String mimeType, String mediaType, boolean wifiOnly) {
         final DownloadManager dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         DownloadManager.Request request = new DownloadManager.Request(uri)
-                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
-                .setDescription(description)
-                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                .setAllowedOverRoaming(false);
+        .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
+        .setDescription(description)
+        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+        .setAllowedOverRoaming(false);
 
         if (mediaType != null) {
             request.addRequestHeader("Accept", mediaType);
@@ -280,24 +280,24 @@ public class UiUtils {
             final String url, final String mimeType, final String fileName,
             final String description, final String mediaType) {
         final ActivityCompat.OnRequestPermissionsResultCallback cb =
-                (requestCode, permissions, grantResults) -> {
-                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        enqueueDownload(activity, url, mimeType, fileName, description, mediaType);
-                    }
-                };
+        (requestCode, permissions, grantResults) -> {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                enqueueDownload(activity, url, mimeType, fileName, description, mediaType);
+            }
+        };
         activity.requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, cb,
-                R.string.download_permission_rationale);
+                                   R.string.download_permission_rationale);
     }
 
     private static void enqueueDownload(final Context context, String url, final String mimeType,
-            final String fileName, final String description, final String mediaType) {
+                                        final String fileName, final String description, final String mediaType) {
         if (url == null) {
             return;
         }
 
         final Uri uri = Uri.parse(url).buildUpon()
-                .appendQueryParameter("access_token", Gh4Application.get().getAuthToken())
-                .build();
+                        .appendQueryParameter("access_token", Gh4Application.get().getAuthToken())
+                        .build();
 
         if (!downloadNeedsWarning(context)) {
             enqueueDownload(context, uri, fileName, description, mimeType, mediaType, false);
@@ -307,22 +307,22 @@ public class UiUtils {
         DialogInterface.OnClickListener buttonListener = (dialog, which) -> {
             boolean wifiOnly = which == DialogInterface.BUTTON_NEUTRAL;
             enqueueDownload(context, uri, fileName, description,
-                    mimeType, mediaType, wifiOnly);
+                            mimeType, mediaType, wifiOnly);
         };
 
         new AlertDialog.Builder(context)
-                .setTitle(R.string.download_mobile_warning_title)
-                .setMessage(R.string.download_mobile_warning_message)
-                .setPositiveButton(R.string.download_now_button, buttonListener)
-                .setNeutralButton(R.string.download_wifi_button, buttonListener)
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+        .setTitle(R.string.download_mobile_warning_title)
+        .setMessage(R.string.download_mobile_warning_message)
+        .setPositiveButton(R.string.download_now_button, buttonListener)
+        .setNeutralButton(R.string.download_wifi_button, buttonListener)
+        .setNegativeButton(R.string.cancel, null)
+        .show();
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean downloadNeedsWarning(Context context) {
         ConnectivityManager cm =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         return cm.isActiveNetworkMetered();
     }
 
@@ -459,22 +459,22 @@ public class UiUtils {
         int heightMode = View.MeasureSpec.getMode(heightMeasureSpec);
 
         switch (heightMode) {
-            case View.MeasureSpec.AT_MOST:
-            case View.MeasureSpec.EXACTLY:
-                heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(
-                        Math.min(heightSize, maxHeight), heightMode);
-                break;
-            case View.MeasureSpec.UNSPECIFIED:
-                heightMeasureSpec =
-                        View.MeasureSpec.makeMeasureSpec(maxHeight, View.MeasureSpec.AT_MOST);
-                break;
+        case View.MeasureSpec.AT_MOST:
+        case View.MeasureSpec.EXACTLY:
+            heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(
+                                    Math.min(heightSize, maxHeight), heightMode);
+            break;
+        case View.MeasureSpec.UNSPECIFIED:
+            heightMeasureSpec =
+                View.MeasureSpec.makeMeasureSpec(maxHeight, View.MeasureSpec.AT_MOST);
+            break;
         }
 
         return heightMeasureSpec;
     }
 
     public static void setMenuItemText(Context context, MenuItem item, String title,
-            String subtitle) {
+                                       String subtitle) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         builder.append(title).append("\n");
 

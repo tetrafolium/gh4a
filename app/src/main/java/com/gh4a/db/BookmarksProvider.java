@@ -25,7 +25,7 @@ public class BookmarksProvider extends ContentProvider {
 
     public interface Columns extends BaseColumns {
         Uri CONTENT_URI = Uri.parse(String.format(Locale.US,
-                "content://%s/bookmarks", BuildConfig.APPLICATION_ID));
+                                    "content://%s/bookmarks", BuildConfig.APPLICATION_ID));
 
         String NAME = "name";
         String TYPE = "type";
@@ -41,7 +41,7 @@ public class BookmarksProvider extends ContentProvider {
     private static final int MATCH_ID = 1;
 
     private static final UriMatcher
-            sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+    sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
         sURIMatcher.addURI(BuildConfig.APPLICATION_ID, "bookmarks", MATCH_ALL);
@@ -52,7 +52,7 @@ public class BookmarksProvider extends ContentProvider {
 
     // url must be resolvable by BrowseFilter!
     public static void saveBookmark(Context context, String name, int type, String url,
-            String extraData, boolean showToast) {
+                                    String extraData, boolean showToast) {
         ContentResolver cr = context.getContentResolver();
 
         ContentValues cv = new ContentValues();
@@ -69,8 +69,8 @@ public class BookmarksProvider extends ContentProvider {
 
     private static int getNextOrderId(ContentResolver cr) {
         Cursor query = cr.query(Columns.CONTENT_URI,
-                new String[] { "COUNT(*)" },
-                null, null, null);
+                                new String[] { "COUNT(*)" },
+                                null, null, null);
 
         int orderId = 0;
         if (query != null) {
@@ -84,8 +84,8 @@ public class BookmarksProvider extends ContentProvider {
 
     public static void removeBookmark(Context context, String url) {
         int removedRows = context.getContentResolver().delete(Columns.CONTENT_URI,
-                Columns.URI + " = ?",
-                new String[] { url });
+                          Columns.URI + " = ?",
+                          new String[] { url });
         if (removedRows > 0) {
             Toast.makeText(context, R.string.bookmark_removed, Toast.LENGTH_SHORT).show();
         }
@@ -93,10 +93,10 @@ public class BookmarksProvider extends ContentProvider {
 
     public static boolean hasBookmarked(Context context, String url) {
         Cursor cursor = context.getContentResolver().query(Columns.CONTENT_URI,
-                new String[] { Columns._ID },
-                Columns.URI + " = ?",
-                new String[] { url },
-                null);
+                        new String[] { Columns._ID },
+                        Columns.URI + " = ?",
+                        new String[] { url },
+                        null);
 
         boolean hasBookmarked = false;
         if (cursor != null) {
@@ -121,21 +121,21 @@ public class BookmarksProvider extends ContentProvider {
 
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection,
-            String[] selectionArgs, String sortOrder) {
+                        String[] selectionArgs, String sortOrder) {
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         int match = sURIMatcher.match(uri);
 
         qb.setTables(DbHelper.BOOKMARKS_TABLE);
 
         switch (match) {
-            case MATCH_ALL:
-                break;
-            case MATCH_ID:
-                qb.appendWhere(Columns._ID + " = " + uri.getLastPathSegment());
-                break;
-            default:
-                Log.e(TAG, "query: invalid request: " + uri);
-                return null;
+        case MATCH_ALL:
+            break;
+        case MATCH_ID:
+            qb.appendWhere(Columns._ID + " = " + uri.getLastPathSegment());
+            break;
+        default:
+            Log.e(TAG, "query: invalid request: " + uri);
+            return null;
         }
 
         if (sortOrder == null) {
@@ -174,25 +174,25 @@ public class BookmarksProvider extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, ContentValues values, String selection,
-            String[] selectionArgs) {
+                      String[] selectionArgs) {
         int count;
         int match = sURIMatcher.match(uri);
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         switch (match) {
-            case MATCH_ALL:
-                count = db.update(DbHelper.BOOKMARKS_TABLE, values, selection, selectionArgs);
-                break;
-            case MATCH_ID:
-                if (selection != null || selectionArgs != null) {
-                    throw new UnsupportedOperationException(
-                            "Cannot update URI " + uri + " with a where clause");
-                }
-                count = db.update(DbHelper.BOOKMARKS_TABLE, values, Columns._ID + " = ?",
-                        new String[] { uri.getLastPathSegment() });
-                break;
-            default:
-                throw new UnsupportedOperationException("Cannot update that URI: " + uri);
+        case MATCH_ALL:
+            count = db.update(DbHelper.BOOKMARKS_TABLE, values, selection, selectionArgs);
+            break;
+        case MATCH_ID:
+            if (selection != null || selectionArgs != null) {
+                throw new UnsupportedOperationException(
+                    "Cannot update URI " + uri + " with a where clause");
+            }
+            count = db.update(DbHelper.BOOKMARKS_TABLE, values, Columns._ID + " = ?",
+                              new String[] { uri.getLastPathSegment() });
+            break;
+        default:
+            throw new UnsupportedOperationException("Cannot update that URI: " + uri);
         }
 
         if (count > 0) {
@@ -208,18 +208,18 @@ public class BookmarksProvider extends ContentProvider {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         switch (match) {
-            case MATCH_ALL:
-                break;
-            case MATCH_ID:
-                if (selection != null || selectionArgs != null) {
-                    throw new UnsupportedOperationException(
-                            "Cannot delete URI " + uri + " with a where clause");
-                }
-                selection = Columns._ID + " = ?";
-                selectionArgs = new String[] { uri.getLastPathSegment() };
-                break;
-            default:
-                throw new UnsupportedOperationException("Cannot delete the URI " + uri);
+        case MATCH_ALL:
+            break;
+        case MATCH_ID:
+            if (selection != null || selectionArgs != null) {
+                throw new UnsupportedOperationException(
+                    "Cannot delete URI " + uri + " with a where clause");
+            }
+            selection = Columns._ID + " = ?";
+            selectionArgs = new String[] { uri.getLastPathSegment() };
+            break;
+        default:
+            throw new UnsupportedOperationException("Cannot delete the URI " + uri);
         }
 
         int count = db.delete(DbHelper.BOOKMARKS_TABLE, selection, selectionArgs);

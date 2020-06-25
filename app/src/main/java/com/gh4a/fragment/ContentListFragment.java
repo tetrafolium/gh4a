@@ -50,7 +50,7 @@ import java.util.Set;
 import io.reactivex.Single;
 
 public class ContentListFragment extends ListDataBaseFragment<Content> implements
-        RootAdapter.OnItemClickListener<Content> {
+    RootAdapter.OnItemClickListener<Content> {
     private static final int MENU_HISTORY = Menu.FIRST + 1;
     private static final int REQUEST_FILE_HISTORY = 1000;
 
@@ -146,7 +146,7 @@ public class ContentListFragment extends ListDataBaseFragment<Content> implement
         super.onCreateContextMenu(menu, v, menuInfo);
 
         ContextMenuAwareRecyclerView.RecyclerContextMenuInfo info =
-                (ContextMenuAwareRecyclerView.RecyclerContextMenuInfo) menuInfo;
+            (ContextMenuAwareRecyclerView.RecyclerContextMenuInfo) menuInfo;
         Content contents = mAdapter.getItemFromAdapterPosition(info.position);
         Set<String> subModules = mCallback.getSubModuleNames(this);
 
@@ -158,7 +158,7 @@ public class ContentListFragment extends ListDataBaseFragment<Content> implement
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         ContextMenuAwareRecyclerView.RecyclerContextMenuInfo info =
-                (ContextMenuAwareRecyclerView.RecyclerContextMenuInfo) item.getMenuInfo();
+            (ContextMenuAwareRecyclerView.RecyclerContextMenuInfo) item.getMenuInfo();
         if (info.position >= mAdapter.getItemCount()) {
             return false;
         }
@@ -167,8 +167,8 @@ public class ContentListFragment extends ListDataBaseFragment<Content> implement
         if (id == MENU_HISTORY) {
             Content contents = mAdapter.getItemFromAdapterPosition(info.position);
             Intent intent = CommitHistoryActivity.makeIntent(getActivity(),
-                    mRepository.owner().login(), mRepository.name(),
-                    mRef, contents.path(), true);
+                            mRepository.owner().login(), mRepository.name(),
+                            mRef, contents.path(), true);
             startActivityForResult(intent, REQUEST_FILE_HISTORY);
             return true;
         }
@@ -210,15 +210,15 @@ public class ContentListFragment extends ListDataBaseFragment<Content> implement
     @Override
     protected Single<List<Content>> onCreateDataSingle(boolean bypassCache) {
         RepositoryContentService contentService =
-                ServiceFactory.get(RepositoryContentService.class, bypassCache);
+            ServiceFactory.get(RepositoryContentService.class, bypassCache);
         String repoOwner = mRepository.owner().login();
         String repoName = mRepository.name();
         String ref = mRef != null ? mRef : mRepository.defaultBranch();
 
         return ApiHelpers.PageIterator
-                .toSingle(page -> contentService.getDirectoryContents(repoOwner, repoName, mPath, ref, page))
-                .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, new ArrayList<Content>()))
-                .compose(RxUtils.sortList(COMPARATOR));
+               .toSingle(page -> contentService.getDirectoryContents(repoOwner, repoName, mPath, ref, page))
+               .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, new ArrayList<Content>()))
+               .compose(RxUtils.sortList(COMPARATOR));
     }
 
     @Override

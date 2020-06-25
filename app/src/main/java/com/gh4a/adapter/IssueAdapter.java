@@ -55,7 +55,7 @@ public class IssueAdapter extends RootAdapter<Issue, IssueAdapter.ViewHolder> {
         holder.tvDesc.setText(issue.title());
         holder.tvCreator.setText(ApiHelpers.getUserLogin(mContext, issue.user()));
         holder.tvTimestamp.setText(StringUtils.formatRelativeTime(mContext,
-                issue.createdAt(), true));
+                                   issue.createdAt(), true));
 
         if (issue.comments() > 0) {
             holder.tvComments.setVisibility(View.VISIBLE);

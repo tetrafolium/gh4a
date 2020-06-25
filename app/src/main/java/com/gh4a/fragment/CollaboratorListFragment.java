@@ -17,7 +17,7 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class CollaboratorListFragment extends PagedDataBaseFragment<User> implements
-        RootAdapter.OnItemClickListener<User> {
+    RootAdapter.OnItemClickListener<User> {
     public static CollaboratorListFragment newInstance(String owner, String repo) {
         CollaboratorListFragment f = new CollaboratorListFragment();
         Bundle args = new Bundle();
@@ -32,7 +32,7 @@ public class CollaboratorListFragment extends PagedDataBaseFragment<User> implem
         String owner = getArguments().getString("owner");
         String repo = getArguments().getString("repo");
         final RepositoryCollaboratorService service =
-                ServiceFactory.get(RepositoryCollaboratorService.class, bypassCache);
+            ServiceFactory.get(RepositoryCollaboratorService.class, bypassCache);
         return service.getCollaborators(owner, repo, page);
     }
 

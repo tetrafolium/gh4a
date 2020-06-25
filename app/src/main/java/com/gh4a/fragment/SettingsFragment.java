@@ -25,7 +25,7 @@ import com.gh4a.job.NotificationsJob;
 import com.gh4a.widget.IntegerListPreference;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements
-        Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
+    Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
     public interface OnStateChangeListener {
         void onThemeChanged();
     }
@@ -81,7 +81,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         mNotificationsPref.setOnPreferenceChangeListener(this);
 
         mNotificationIntervalPref =
-                (IntegerListPreference) findPreference(KEY_NOTIFICATION_INTERVAL);
+            (IntegerListPreference) findPreference(KEY_NOTIFICATION_INTERVAL);
         mNotificationIntervalPref.setOnPreferenceChangeListener(this);
     }
 
@@ -166,18 +166,18 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
             if (id == R.id.btn_by_email) {
                 Intent sendIntent = new Intent(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{
-                        context.getString(R.string.my_email)
-                });
+                sendIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {
+                                        context.getString(R.string.my_email)
+                                    });
                 sendIntent.setType("message/rfc822");
 
                 Intent chooserIntent = Intent.createChooser(sendIntent,
-                        context.getString(R.string.send_email_title));
+                                       context.getString(R.string.send_email_title));
                 context.startActivity(chooserIntent);
             } else if (id == R.id.btn_by_gh4a) {
                 Intent intent = IssueListActivity.makeIntent(context,
-                        context.getString(R.string.my_username),
-                        context.getString(R.string.my_repo));
+                                context.getString(R.string.my_username),
+                                context.getString(R.string.my_repo));
                 context.startActivity(intent);
             }
         }
@@ -194,7 +194,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             setView(lv);
             setTitle(R.string.open_source_components);
             setButton(DialogInterface.BUTTON_POSITIVE, context.getString(R.string.ok),
-                    (DialogInterface.OnClickListener) null);
+                      (DialogInterface.OnClickListener) null);
         }
     }
 

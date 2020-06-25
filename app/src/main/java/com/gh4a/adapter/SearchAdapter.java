@@ -57,9 +57,9 @@ public class SearchAdapter extends RootAdapter<Object, RecyclerView.ViewHolder> 
     public RecyclerView.ViewHolder onCreateViewHolder(LayoutInflater inflater,
             ViewGroup parent, int viewType) {
         RootAdapter<?, ? extends RecyclerView.ViewHolder> adapter =
-                mMode == SearchFragment.SEARCH_TYPE_REPO ? mRepoAdapter :
-                mMode == SearchFragment.SEARCH_TYPE_USER ? mUserAdapter :
-                mCodeAdapter;
+            mMode == SearchFragment.SEARCH_TYPE_REPO ? mRepoAdapter :
+            mMode == SearchFragment.SEARCH_TYPE_USER ? mUserAdapter :
+            mCodeAdapter;
         return adapter.onCreateViewHolder(inflater, parent, viewType % 10000);
     }
 
@@ -84,7 +84,7 @@ public class SearchAdapter extends RootAdapter<Object, RecyclerView.ViewHolder> 
 
         @Override
         public ViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent,
-                int viewType) {
+                                             int viewType) {
             View v = inflater.inflate(R.layout.row_code_search, parent, false);
             return new ViewHolder(v);
         }
@@ -117,7 +117,7 @@ public class SearchAdapter extends RootAdapter<Object, RecyclerView.ViewHolder> 
                     View row = holder.matchesContainer.getChildAt(i);
                     if (row == null) {
                         row = inflater.inflate(R.layout.row_search_match,
-                                holder.matchesContainer, false);
+                                               holder.matchesContainer, false);
                         holder.matchesContainer.addView(row);
                     }
 
@@ -142,7 +142,7 @@ public class SearchAdapter extends RootAdapter<Object, RecyclerView.ViewHolder> 
             if (view.getId() == R.id.tv_match) {
                 SearchCode searchResult = (SearchCode) view.getTag();
                 mCallback.onSearchFragmentClick(searchResult,
-                        (int) view.getTag(R.id.search_match_index));
+                                                (int) view.getTag(R.id.search_match_index));
                 return;
             }
 

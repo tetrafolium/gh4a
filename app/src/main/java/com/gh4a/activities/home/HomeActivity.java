@@ -51,8 +51,8 @@ import com.meisolsson.githubsdk.service.users.UserService;
 import java.util.HashMap;
 
 public class HomeActivity extends BaseFragmentPagerActivity implements
-        View.OnClickListener, RepositoryListContainerFragment.Callback,
-        NotificationListFragment.ParentCallback, UserPasswordLoginDialogFragment.ParentCallback {
+    View.OnClickListener, RepositoryListContainerFragment.Callback,
+    NotificationListFragment.ParentCallback, UserPasswordLoginDialogFragment.ParentCallback {
     public static Intent makeIntent(Context context, @IdRes int initialPageId) {
         String initialPage = START_PAGE_MAPPING.get(initialPageId);
         Intent intent = new Intent(context, HomeActivity.class);
@@ -65,8 +65,8 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
     public static Intent makeNotificationsIntent(Context context, String repoOwner,
             String repoName) {
         return makeIntent(context, R.id.notifications)
-                .putExtra(NotificationListFragment.EXTRA_INITIAL_REPO_OWNER, repoOwner)
-                .putExtra(NotificationListFragment.EXTRA_INITIAL_REPO_NAME, repoName);
+               .putExtra(NotificationListFragment.EXTRA_INITIAL_REPO_OWNER, repoOwner)
+               .putExtra(NotificationListFragment.EXTRA_INITIAL_REPO_NAME, repoName);
     }
 
     private static final int REQUEST_SETTINGS = 10000;
@@ -117,7 +117,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
         mFactory = getFactoryForItem(mSelectedFactoryId);
 
         mNotificationsIndicatorIcon =
-                DrawableCompat.wrap(ContextCompat.getDrawable(this, R.drawable.circle).mutate());
+            DrawableCompat.wrap(ContextCompat.getDrawable(this, R.drawable.circle).mutate());
 
         super.onCreate(savedInstanceState);
 
@@ -142,7 +142,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
         }
 
         @AttrRes int colorResId = checkedItemId == R.id.notifications
-                ? R.attr.colorAccent : android.R.attr.textColorPrimary;
+                                  ? R.attr.colorAccent : android.R.attr.textColorPrimary;
         @ColorInt int tint = UiUtils.resolveColor(this, colorResId);
         DrawableCompat.setTint(mNotificationsIndicatorIcon, tint);
         mNotificationsIndicator.setImageDrawable(mNotificationsIndicatorIcon);
@@ -152,8 +152,8 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
         if (mNotificationsIndicator != null) {
             mNotificationsIndicator.setVisibility(visible ? View.VISIBLE : View.GONE);
             mNotificationsMenuItem.setIcon(visible
-                    ? R.drawable.icon_notifications_unread
-                    : R.drawable.icon_notifications);
+                                           ? R.drawable.icon_notifications_unread
+                                           : R.drawable.icon_notifications);
         }
     }
 
@@ -252,21 +252,21 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
         }
 
         switch (id) {
-            case R.id.profile:
-                startActivity(UserActivity.makeIntent(this, mUserLogin));
-                updateDrawerMode(false);
-                return true;
-            case R.id.logout:
-                Gh4Application.get().logout();
-                goToToplevelActivity();
-                finish();
-                return true;
-            case R.id.add_account:
-                new LoginModeChooserFragment().show(getSupportFragmentManager(), "loginmode");
-                return true;
-            case R.id.settings:
-                startActivityForResult(new Intent(this, SettingsActivity.class), REQUEST_SETTINGS);
-                return true;
+        case R.id.profile:
+            startActivity(UserActivity.makeIntent(this, mUserLogin));
+            updateDrawerMode(false);
+            return true;
+        case R.id.logout:
+            Gh4Application.get().logout();
+            goToToplevelActivity();
+            finish();
+            return true;
+        case R.id.add_account:
+            new LoginModeChooserFragment().show(getSupportFragmentManager(), "loginmode");
+            return true;
+        case R.id.settings:
+            startActivityForResult(new Intent(this, SettingsActivity.class), REQUEST_SETTINGS);
+            return true;
         }
 
         int accountCount = Gh4Application.get().getAccounts().size();
@@ -297,28 +297,28 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
 
     private FragmentFactory getFactoryForItem(int id) {
         switch (id) {
-            case R.id.news_feed:
-                return new NewsFeedFactory(this, mUserLogin);
-            case R.id.notifications:
-                return new NotificationListFactory(this);
-            case R.id.my_repos:
-                return new RepositoryFactory(this, mUserLogin, getPrefs());
-            case R.id.my_issues:
-                return new IssueListFactory(this, mUserLogin, false);
-            case R.id.my_prs:
-                return new IssueListFactory(this, mUserLogin, true);
-            case R.id.my_gists:
-                return new GistFactory(this, mUserLogin);
-            case R.id.search:
-                return new SearchFactory(this);
-            case R.id.bookmarks:
-                return new BookmarkFactory(this, mUserLogin);
-            case R.id.pub_timeline:
-                return new TimelineFactory(this);
-            case R.id.blog:
-                return new BlogFactory(this);
-            case R.id.trend:
-                return new TrendingFactory(this);
+        case R.id.news_feed:
+            return new NewsFeedFactory(this, mUserLogin);
+        case R.id.notifications:
+            return new NotificationListFactory(this);
+        case R.id.my_repos:
+            return new RepositoryFactory(this, mUserLogin, getPrefs());
+        case R.id.my_issues:
+            return new IssueListFactory(this, mUserLogin, false);
+        case R.id.my_prs:
+            return new IssueListFactory(this, mUserLogin, true);
+        case R.id.my_gists:
+            return new GistFactory(this, mUserLogin);
+        case R.id.search:
+            return new SearchFactory(this);
+        case R.id.bookmarks:
+            return new BookmarkFactory(this, mUserLogin);
+        case R.id.pub_timeline:
+            return new TimelineFactory(this);
+        case R.id.blog:
+            return new BlogFactory(this);
+        case R.id.trend:
+            return new TrendingFactory(this);
         }
         return null;
     }
@@ -455,8 +455,8 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
 
     private int determineInitialPage() {
         String initialPage = getIntent().hasExtra("initial_page")
-                ? getIntent().getStringExtra("initial_page")
-                : getPrefs().getString(SettingsFragment.KEY_START_PAGE, "newsfeed");
+                             ? getIntent().getStringExtra("initial_page")
+                             : getPrefs().getString(SettingsFragment.KEY_START_PAGE, "newsfeed");
         if (TextUtils.equals(initialPage, "last")) {
             initialPage = getPrefs().getString("last_selected_home_page", "newsfeed");
         }
@@ -519,7 +519,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
         }
 
         mDrawerSwitcher.setImageResource(accountMode
-                ? R.drawable.drop_up_arrow_white : R.drawable.drop_down_arrow_white);
+                                         ? R.drawable.drop_up_arrow_white : R.drawable.drop_down_arrow_white);
         mDrawerInAccountMode = accountMode;
     }
 
@@ -533,8 +533,8 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
         mFactory.onStartLoadingData();
 
         getPrefs().edit()
-                .putString("last_selected_home_page", START_PAGE_MAPPING.get(mSelectedFactoryId))
-                .apply();
+        .putString("last_selected_home_page", START_PAGE_MAPPING.get(mSelectedFactoryId))
+        .apply();
 
         updateRightNavigationDrawer();
         super.supportInvalidateOptionsMenu();
@@ -547,40 +547,40 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
     private void loadUserInfo(boolean force) {
         UserService service = ServiceFactory.get(UserService.class, force);
         service.getUser(mUserLogin)
-                .map(ApiHelpers::throwOnFailure)
-                .compose(makeLoaderSingle(ID_LOADER_USER, force))
-                .subscribe(result -> {
-                    Gh4Application.get().setCurrentAccountInfo(result);
-                    mUserInfo = result;
-                    updateUserInfo();
-                }, this::handleLoadFailure);
+        .map(ApiHelpers::throwOnFailure)
+        .compose(makeLoaderSingle(ID_LOADER_USER, force))
+        .subscribe(result -> {
+            Gh4Application.get().setCurrentAccountInfo(result);
+            mUserInfo = result;
+            updateUserInfo();
+        }, this::handleLoadFailure);
     }
 
     private void loadNotificationIndicator(boolean force) {
         NotificationService service = ServiceFactory.get(
-                NotificationService.class, force, null, null, 1);
+                                          NotificationService.class, force, null, null, 1);
         HashMap<String, Object> options = new HashMap<>();
         options.put("all", false);
         options.put("participating", false);
 
         service.getNotifications(options, 1)
-                .map(ApiHelpers::throwOnFailure)
-                .map(result -> !result.items().isEmpty())
-                .compose(makeLoaderSingle(ID_LOADER_NOTIFICATIONS_INDICATOR, force))
-                .subscribe(this::setNotificationsIndicatorVisible, this::handleLoadFailure);
+        .map(ApiHelpers::throwOnFailure)
+        .map(result -> !result.items().isEmpty())
+        .compose(makeLoaderSingle(ID_LOADER_NOTIFICATIONS_INDICATOR, force))
+        .subscribe(this::setNotificationsIndicatorVisible, this::handleLoadFailure);
     }
 
     public static class LoginModeChooserFragment extends DialogFragment implements
-            DialogInterface.OnClickListener {
+        DialogInterface.OnClickListener {
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             return new AlertDialog.Builder(getActivity())
-                    .setMessage(R.string.login_mode_dialog_text)
-                    .setPositiveButton(R.string.login_mode_button_oauth, this)
-                    .setNegativeButton(R.string.login_mode_button_user_pw, this)
-                    .setNeutralButton(R.string.cancel, null)
-                    .create();
+                   .setMessage(R.string.login_mode_dialog_text)
+                   .setPositiveButton(R.string.login_mode_button_oauth, this)
+                   .setNegativeButton(R.string.login_mode_button_user_pw, this)
+                   .setNeutralButton(R.string.cancel, null)
+                   .create();
         }
 
         @Override
@@ -589,22 +589,22 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
                 new BrowserLogoutDialogFragment().show(getFragmentManager(), "browserlogout");
             } else {
                 UserPasswordLoginDialogFragment.newInstance(Github4AndroidActivity.SCOPES)
-                        .show(getFragmentManager(), "login");
+                .show(getFragmentManager(), "login");
             }
         }
     }
 
     public static class BrowserLogoutDialogFragment extends DialogFragment implements
-            DialogInterface.OnClickListener {
+        DialogInterface.OnClickListener {
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             return new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.browser_logout_dialog_title)
-                    .setMessage(R.string.browser_logout_dialog_text)
-                    .setPositiveButton(R.string.go_to_logout_page, this)
-                    .setNeutralButton(R.string.continue_login, this)
-                    .create();
+                   .setTitle(R.string.browser_logout_dialog_title)
+                   .setMessage(R.string.browser_logout_dialog_text)
+                   .setPositiveButton(R.string.go_to_logout_page, this)
+                   .setNeutralButton(R.string.continue_login, this)
+                   .create();
         }
 
         @Override
@@ -621,14 +621,14 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
     }
 
     public static class BrowserLogoutCompletedDialogFragment extends DialogFragment implements
-            DialogInterface.OnClickListener {
+        DialogInterface.OnClickListener {
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             return new AlertDialog.Builder(getActivity())
-                    .setMessage(R.string.browser_logout_completed_dialog_text)
-                    .setPositiveButton(R.string.continue_login, this)
-                    .create();
+                   .setMessage(R.string.browser_logout_completed_dialog_text)
+                   .setPositiveButton(R.string.continue_login, this)
+                   .create();
         }
 
         @Override

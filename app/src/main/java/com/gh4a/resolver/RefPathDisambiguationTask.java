@@ -38,7 +38,7 @@ public class RefPathDisambiguationTask extends UrlLoadTask {
     protected final boolean mGoToFileViewer;
 
     public RefPathDisambiguationTask(FragmentActivity activity, String repoOwner,
-            String repoName, String refAndPath, int initialPage) {
+                                     String repoName, String refAndPath, int initialPage) {
         super(activity);
         mRepoOwner = repoOwner;
         mRepoName = repoName;
@@ -49,7 +49,7 @@ public class RefPathDisambiguationTask extends UrlLoadTask {
     }
 
     public RefPathDisambiguationTask(FragmentActivity activity, String repoOwner,
-            String repoName, String refAndPath, String fragment) {
+                                     String repoName, String refAndPath, String fragment) {
         super(activity);
         mRepoOwner = repoOwner;
         mRepoName = repoName;
@@ -62,38 +62,38 @@ public class RefPathDisambiguationTask extends UrlLoadTask {
     @Override
     protected Single<Optional<Intent>> getSingle() {
         return resolve()
-                .map(refAndPathOpt -> {
-                    if (!refAndPathOpt.isPresent()) {
-                        return Optional.absent();
-                    }
-                    Pair<String, String> refAndPath = refAndPathOpt.get();
-                    if (mGoToFileViewer && refAndPath.second != null) {
-                        // parse line numbers from fragment
-                        int highlightStart = -1, highlightEnd = -1;
-                        // Line numbers are encoded either in the form #L12 or #L12-14
-                        if (mFragment != null && mFragment.startsWith("L")) {
-                            try {
-                                int dashPos = mFragment.indexOf("-L");
-                                if (dashPos > 0) {
-                                    highlightStart = Integer.valueOf(mFragment.substring(1, dashPos));
-                                    highlightEnd = Integer.valueOf(mFragment.substring(dashPos + 2));
-                                } else {
-                                    highlightStart = Integer.valueOf(mFragment.substring(1));
-                                }
-                            } catch (NumberFormatException e) {
-                                // ignore
-                            }
+        .map(refAndPathOpt -> {
+            if (!refAndPathOpt.isPresent()) {
+                return Optional.absent();
+            }
+            Pair<String, String> refAndPath = refAndPathOpt.get();
+            if (mGoToFileViewer && refAndPath.second != null) {
+                // parse line numbers from fragment
+                int highlightStart = -1, highlightEnd = -1;
+                // Line numbers are encoded either in the form #L12 or #L12-14
+                if (mFragment != null && mFragment.startsWith("L")) {
+                    try {
+                        int dashPos = mFragment.indexOf("-L");
+                        if (dashPos > 0) {
+                            highlightStart = Integer.valueOf(mFragment.substring(1, dashPos));
+                            highlightEnd = Integer.valueOf(mFragment.substring(dashPos + 2));
+                        } else {
+                            highlightStart = Integer.valueOf(mFragment.substring(1));
                         }
-                        return Optional.of(FileViewerActivity.makeIntentWithHighlight(mActivity,
-                                mRepoOwner, mRepoName, refAndPath.first, refAndPath.second,
-                                highlightStart, highlightEnd));
-                    } else if (!mGoToFileViewer) {
-                        return Optional.of(RepositoryActivity.makeIntent(mActivity,
-                                mRepoOwner, mRepoName, refAndPath.first,
-                                refAndPath.second, mInitialPage));
+                    } catch (NumberFormatException e) {
+                        // ignore
                     }
-                    return Optional.absent();
-                });
+                }
+                return Optional.of(FileViewerActivity.makeIntentWithHighlight(mActivity,
+                                   mRepoOwner, mRepoName, refAndPath.first, refAndPath.second,
+                                   highlightStart, highlightEnd));
+            } else if (!mGoToFileViewer) {
+                return Optional.of(RepositoryActivity.makeIntent(mActivity,
+                                   mRepoOwner, mRepoName, refAndPath.first,
+                                   refAndPath.second, mInitialPage));
+            }
+            return Optional.absent();
+        });
     }
 
     private Single<Optional<Pair<String, String>>> matchBranch(Single<List<Branch>> input) {
@@ -105,7 +105,7 @@ public class RefPathDisambiguationTask extends UrlLoadTask {
                     String nameWithSlash = branch.name() + "/";
                     if (mRefAndPath.startsWith(nameWithSlash)) {
                         return Optional.of(Pair.create(branch.name(),
-                                mRefAndPath.substring(nameWithSlash.length())));
+                                                       mRefAndPath.substring(nameWithSlash.length())));
                     }
                 }
             }
@@ -118,32 +118,32 @@ public class RefPathDisambiguationTask extends UrlLoadTask {
         // first check whether the path redirects to HEAD
         if (mRefAndPath.startsWith("HEAD")) {
             return Single.just(Optional.of(Pair.create("HEAD",
-                    mRefAndPath.startsWith("HEAD/") ? mRefAndPath.substring(5) : null)));
+                                           mRefAndPath.startsWith("HEAD/") ? mRefAndPath.substring(5) : null)));
         }
 
         final RepositoryBranchService branchService =
-                ServiceFactory.get(RepositoryBranchService.class, false);
+            ServiceFactory.get(RepositoryBranchService.class, false);
         final RepositoryService repoService = ServiceFactory.get(RepositoryService.class, false);
 
         // then look for matching branches
         return ApiHelpers.PageIterator
-                .toSingle(page -> branchService.getBranches(mRepoOwner, mRepoName, page))
-                .compose(this::matchBranch)
-                // and tags after that
-                .flatMap(result -> result.orOptionalSingle(() -> ApiHelpers.PageIterator
+               .toSingle(page -> branchService.getBranches(mRepoOwner, mRepoName, page))
+               .compose(this::matchBranch)
+               // and tags after that
+               .flatMap(result -> result.orOptionalSingle(() -> ApiHelpers.PageIterator
                         .toSingle(page -> repoService.getTags(mRepoOwner, mRepoName, page))
                         .compose(this::matchBranch))
-                )
-                .map(resultOpt -> resultOpt.orOptional(() -> {
-                    // at this point, the first item may still be a SHA1 - check with a simple regex
-                    int slashPos = mRefAndPath.indexOf('/');
-                    String potentialSha = slashPos > 0
-                            ? mRefAndPath.substring(0, slashPos) : mRefAndPath;
-                    if (SHA1_PATTERN.matcher(potentialSha).matches()) {
-                        return Optional.of(Pair.create(potentialSha,
-                                slashPos > 0 ? mRefAndPath.substring(slashPos + 1) : ""));
-                    }
-                    return Optional.absent();
-                }));
+                       )
+        .map(resultOpt -> resultOpt.orOptional(() -> {
+            // at this point, the first item may still be a SHA1 - check with a simple regex
+            int slashPos = mRefAndPath.indexOf('/');
+            String potentialSha = slashPos > 0
+            ? mRefAndPath.substring(0, slashPos) : mRefAndPath;
+            if (SHA1_PATTERN.matcher(potentialSha).matches()) {
+                return Optional.of(Pair.create(potentialSha,
+                                               slashPos > 0 ? mRefAndPath.substring(slashPos + 1) : ""));
+            }
+            return Optional.absent();
+        }));
     }
 }

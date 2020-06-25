@@ -82,16 +82,16 @@ public class IssueListFragment extends PagedDataBaseFragment<Issue> {
         super.onViewCreated(view, savedInstanceState);
 
         switch (mIssueState) {
-            case ApiHelpers.IssueState.CLOSED:
-                setHighlightColors(R.attr.colorIssueClosed, R.attr.colorIssueClosedDark);
-                break;
-            case ApiHelpers.IssueState.MERGED:
-                setHighlightColors(R.attr.colorPullRequestMerged,
-                        R.attr.colorPullRequestMergedDark);
-                break;
-            default:
-                setHighlightColors(R.attr.colorIssueOpen, R.attr.colorIssueOpenDark);
-                break;
+        case ApiHelpers.IssueState.CLOSED:
+            setHighlightColors(R.attr.colorIssueClosed, R.attr.colorIssueClosedDark);
+            break;
+        case ApiHelpers.IssueState.MERGED:
+            setHighlightColors(R.attr.colorPullRequestMerged,
+                               R.attr.colorPullRequestMergedDark);
+            break;
+        default:
+            setHighlightColors(R.attr.colorIssueOpen, R.attr.colorIssueOpenDark);
+            break;
         }
     }
 
@@ -99,8 +99,8 @@ public class IssueListFragment extends PagedDataBaseFragment<Issue> {
     public void onItemClick(Issue issue) {
         String[] urlPart = issue.url().split("/");
         Intent intent = issue.pullRequest() != null
-                ? PullRequestActivity.makeIntent(getActivity(), urlPart[4], urlPart[5], issue.number())
-                : IssueActivity.makeIntent(getActivity(), urlPart[4], urlPart[5], issue.number());
+                        ? PullRequestActivity.makeIntent(getActivity(), urlPart[4], urlPart[5], issue.number())
+                        : IssueActivity.makeIntent(getActivity(), urlPart[4], urlPart[5], issue.number());
         startActivityForResult(intent, REQUEST_ISSUE);
     }
 
@@ -119,8 +119,8 @@ public class IssueListFragment extends PagedDataBaseFragment<Issue> {
     @Override
     protected RootAdapter<Issue, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
         return mShowRepository
-                ? new RepositoryIssueAdapter(getActivity())
-                : new IssueAdapter(getActivity());
+               ? new RepositoryIssueAdapter(getActivity())
+               : new IssueAdapter(getActivity());
     }
 
     @Override
@@ -132,7 +132,7 @@ public class IssueListFragment extends PagedDataBaseFragment<Issue> {
     protected Single<Response<Page<Issue>>> loadPage(int page, boolean bypassCache) {
         final SearchService service = ServiceFactory.get(SearchService.class, bypassCache);
         return service.searchIssues(mQuery, mSortMode, mOrder, page)
-                .compose(RxUtils::searchPageAdapter);
+               .compose(RxUtils::searchPageAdapter);
     }
 
     public static class SortDrawerHelper {
@@ -162,24 +162,24 @@ public class IssueListFragment extends PagedDataBaseFragment<Issue> {
 
         public boolean handleItemSelection(MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.sort_created_asc:
-                    updateSortMode(SORT_MODE_CREATED, true);
-                    return true;
-                case R.id.sort_created_desc:
-                    updateSortMode(SORT_MODE_CREATED, false);
-                    return true;
-                case R.id.sort_updated_asc:
-                    updateSortMode(SORT_MODE_UPDATED, true);
-                    return true;
-                case R.id.sort_updated_desc:
-                    updateSortMode(SORT_MODE_UPDATED, false);
-                    return true;
-                case R.id.sort_comments_asc:
-                    updateSortMode(SORT_MODE_COMMENTS, true);
-                    return true;
-                case R.id.sort_comments_desc:
-                    updateSortMode(SORT_MODE_COMMENTS, false);
-                    return true;
+            case R.id.sort_created_asc:
+                updateSortMode(SORT_MODE_CREATED, true);
+                return true;
+            case R.id.sort_created_desc:
+                updateSortMode(SORT_MODE_CREATED, false);
+                return true;
+            case R.id.sort_updated_asc:
+                updateSortMode(SORT_MODE_UPDATED, true);
+                return true;
+            case R.id.sort_updated_desc:
+                updateSortMode(SORT_MODE_UPDATED, false);
+                return true;
+            case R.id.sort_comments_asc:
+                updateSortMode(SORT_MODE_COMMENTS, true);
+                return true;
+            case R.id.sort_comments_desc:
+                updateSortMode(SORT_MODE_COMMENTS, false);
+                return true;
             }
 
             return false;

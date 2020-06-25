@@ -17,7 +17,7 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class ReleaseListFragment extends PagedDataBaseFragment<Release> implements
-        RootAdapter.OnItemClickListener<Release> {
+    RootAdapter.OnItemClickListener<Release> {
     private String mUserLogin;
     private String mRepoName;
 
@@ -40,7 +40,7 @@ public class ReleaseListFragment extends PagedDataBaseFragment<Release> implemen
     @Override
     protected Single<Response<Page<Release>>> loadPage(int page, boolean bypassCache) {
         final RepositoryReleaseService service =
-                ServiceFactory.get(RepositoryReleaseService.class, bypassCache);
+            ServiceFactory.get(RepositoryReleaseService.class, bypassCache);
         return service.getReleases(mUserLogin, mRepoName, page);
     }
 

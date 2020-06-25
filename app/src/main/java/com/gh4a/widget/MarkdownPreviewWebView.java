@@ -41,7 +41,7 @@ public class MarkdownPreviewWebView extends WebView implements NestedScrollingCh
         setNestedScrollingEnabled(true);
 
         mCssTheme = Gh4Application.THEME == R.style.DarkTheme
-                ? WebViewerActivity.DARK_CSS_THEME : WebViewerActivity.LIGHT_CSS_THEME;
+                    ? WebViewerActivity.DARK_CSS_THEME : WebViewerActivity.LIGHT_CSS_THEME;
 
         if (!isInEditMode()) {
             initWebViewSettings(getSettings());
@@ -80,34 +80,34 @@ public class MarkdownPreviewWebView extends WebView implements NestedScrollingCh
         event.offsetLocation(0, mNestedOffsetY);
 
         switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                mLastY = eventY;
-                startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL, ViewCompat.TYPE_TOUCH);
-                result = super.onTouchEvent(event);
-                break;
-            case MotionEvent.ACTION_MOVE:
-                int deltaY = mLastY - eventY;
-                if (dispatchNestedPreScroll(0, deltaY, mScrollConsumed,
-                        mScrollOffset, ViewCompat.TYPE_TOUCH)) {
-                    deltaY -= mScrollConsumed[1];
-                    mLastY = eventY - mScrollOffset[1];
-                    event.offsetLocation(0, -mScrollOffset[1]);
-                    mNestedOffsetY += mScrollOffset[1];
-                }
+        case MotionEvent.ACTION_DOWN:
+            mLastY = eventY;
+            startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL, ViewCompat.TYPE_TOUCH);
+            result = super.onTouchEvent(event);
+            break;
+        case MotionEvent.ACTION_MOVE:
+            int deltaY = mLastY - eventY;
+            if (dispatchNestedPreScroll(0, deltaY, mScrollConsumed,
+                                        mScrollOffset, ViewCompat.TYPE_TOUCH)) {
+                deltaY -= mScrollConsumed[1];
+                mLastY = eventY - mScrollOffset[1];
+                event.offsetLocation(0, -mScrollOffset[1]);
+                mNestedOffsetY += mScrollOffset[1];
+            }
 
-                result = super.onTouchEvent(event);
+            result = super.onTouchEvent(event);
 
-                if (dispatchNestedScroll(0, mScrollOffset[1], 0, deltaY,
-                        mScrollOffset, ViewCompat.TYPE_TOUCH)) {
-                    event.offsetLocation(0, mScrollOffset[1]);
-                    mNestedOffsetY += mScrollOffset[1];
-                    mLastY -= mScrollOffset[1];
-                }
-                break;
-            default:
-                stopNestedScroll(ViewCompat.TYPE_TOUCH);
-                result = super.onTouchEvent(event);
-                break;
+            if (dispatchNestedScroll(0, mScrollOffset[1], 0, deltaY,
+                                     mScrollOffset, ViewCompat.TYPE_TOUCH)) {
+                event.offsetLocation(0, mScrollOffset[1]);
+                mNestedOffsetY += mScrollOffset[1];
+                mLastY -= mScrollOffset[1];
+            }
+            break;
+        default:
+            stopNestedScroll(ViewCompat.TYPE_TOUCH);
+            result = super.onTouchEvent(event);
+            break;
         }
 
         return result;
@@ -140,14 +140,14 @@ public class MarkdownPreviewWebView extends WebView implements NestedScrollingCh
 
     @Override
     public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed,
-            int dxUnconsumed, int dyUnconsumed,  int[] offsetInWindow, int type) {
+                                        int dxUnconsumed, int dyUnconsumed,  int[] offsetInWindow, int type) {
         return mChildHelper.dispatchNestedScroll(dxConsumed, dyConsumed,
                 dxUnconsumed, dyUnconsumed, offsetInWindow, type);
     }
 
     @Override
     public boolean dispatchNestedPreScroll(int dx, int dy, int[] consumed,
-            int[] offsetInWindow, int type) {
+                                           int[] offsetInWindow, int type) {
         return mChildHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow, type);
     }
 

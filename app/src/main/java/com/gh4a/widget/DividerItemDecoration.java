@@ -13,10 +13,10 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
     public DividerItemDecoration(Context context) {
         final TypedArray a = context.obtainStyledAttributes(null, new int[] {
-                android.R.attr.listDivider
-        });
-		mDivider = a.getDrawable(0);
-		a.recycle();
+                                 android.R.attr.listDivider
+                             });
+        mDivider = a.getDrawable(0);
+        a.recycle();
     }
 
     @Override

@@ -28,19 +28,19 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class CreateReviewActivity extends AppCompatActivity implements
-        EditorBottomSheet.Callback {
+    EditorBottomSheet.Callback {
     private static final String EXTRA_OWNER = "owner";
     private static final String EXTRA_REPO = "repo";
     private static final String EXTRA_PR_NUMBER = "pr_number";
     private static final String EXTRA_PENDING_REVIEW = "pending_review";
 
     protected static Intent makeIntent(Context context, String repoOwner, String repoName,
-            int pullRequestNumber, Review pendingReview) {
+                                       int pullRequestNumber, Review pendingReview) {
         return new Intent(context, CreateReviewActivity.class)
-                .putExtra(EXTRA_OWNER, repoOwner)
-                .putExtra(EXTRA_REPO, repoName)
-                .putExtra(EXTRA_PR_NUMBER, pullRequestNumber)
-                .putExtra(EXTRA_PENDING_REVIEW, pendingReview);
+               .putExtra(EXTRA_OWNER, repoOwner)
+               .putExtra(EXTRA_REPO, repoName)
+               .putExtra(EXTRA_PR_NUMBER, pullRequestNumber)
+               .putExtra(EXTRA_PENDING_REVIEW, pendingReview);
     }
 
     private ArrayAdapter<ReviewEventDesc> mReviewEventAdapter;
@@ -56,7 +56,7 @@ public class CreateReviewActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setTheme(Gh4Application.THEME == R.style.DarkTheme
-                ? R.style.BottomSheetDarkTheme : R.style.BottomSheetLightTheme);
+                 ? R.style.BottomSheetDarkTheme : R.style.BottomSheetLightTheme);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.comment_editor);
@@ -75,11 +75,11 @@ public class CreateReviewActivity extends AppCompatActivity implements
 
         mReviewEventAdapter = new ArrayAdapter<>(this, R.layout.spinner_item);
         mReviewEventAdapter.add(new ReviewEventDesc(R.string.pull_request_review_event_comment,
-                CreateReview.Event.Comment, SubmitReview.Event.Comment));
+                                CreateReview.Event.Comment, SubmitReview.Event.Comment));
         mReviewEventAdapter.add(new ReviewEventDesc(R.string.pull_request_review_event_approve,
-                CreateReview.Event.Approve, SubmitReview.Event.Approve));
+                                CreateReview.Event.Approve, SubmitReview.Event.Approve));
         mReviewEventAdapter.add(new ReviewEventDesc(R.string.pull_request_review_event_request_changes,
-                CreateReview.Event.RequestChanges, SubmitReview.Event.RequestChanges));
+                                CreateReview.Event.RequestChanges, SubmitReview.Event.RequestChanges));
 
         mReviewEventSpinner = header.findViewById(R.id.pull_request_review_event);
         mReviewEventSpinner.setAdapter(mReviewEventAdapter);
@@ -111,17 +111,17 @@ public class CreateReviewActivity extends AppCompatActivity implements
 
         if (mPendingReview == null) {
             CreateReview request = CreateReview.builder()
-                    .body(body)
-                    .event(desc.mCreateEvent)
-                    .build();
+                                   .body(body)
+                                   .event(desc.mCreateEvent)
+                                   .build();
             resultSingle = service.createReview(mRepoOwner, mRepoName, mPullRequestNumber, request);
         } else {
             SubmitReview request = SubmitReview.builder()
-                    .body(body)
-                    .event(desc.mSubmitEvent)
-                    .build();
+                                   .body(body)
+                                   .event(desc.mSubmitEvent)
+                                   .build();
             resultSingle = service.submitReview(mRepoOwner, mRepoName,
-                    mPullRequestNumber, mPendingReview.id(), request);
+                                                mPullRequestNumber, mPendingReview.id(), request);
         }
         return resultSingle.map(ApiHelpers::throwOnFailure);
     }
@@ -154,7 +154,7 @@ public class CreateReviewActivity extends AppCompatActivity implements
         public final SubmitReview.Event mSubmitEvent;
 
         public ReviewEventDesc(@StringRes int textResId, CreateReview.Event createEvent,
-                SubmitReview.Event submitEvent) {
+                               SubmitReview.Event submitEvent) {
             mTextResId = textResId;
             mCreateEvent = createEvent;
             mSubmitEvent = submitEvent;

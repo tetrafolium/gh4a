@@ -21,7 +21,7 @@ public class SuggestionsProvider extends ContentProvider {
 
     public interface Columns extends BaseColumns {
         Uri CONTENT_URI = Uri.parse(String.format(Locale.US,
-                "content://%s.SuggestionsProvider/suggestions", BuildConfig.APPLICATION_ID));
+                                    "content://%s.SuggestionsProvider/suggestions", BuildConfig.APPLICATION_ID));
 
         String TYPE = "type";
         String SUGGESTION = "suggestion";
@@ -35,12 +35,12 @@ public class SuggestionsProvider extends ContentProvider {
     private static final int MATCH_ALL = 0;
 
     private static final UriMatcher
-            sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+    sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
         sURIMatcher.addURI(
-                String.format(Locale.US, "%s.SuggestionsProvider", BuildConfig.APPLICATION_ID),
-                "suggestions", MATCH_ALL);
+            String.format(Locale.US, "%s.SuggestionsProvider", BuildConfig.APPLICATION_ID),
+            "suggestions", MATCH_ALL);
     }
 
     private DbHelper mDbHelper;
@@ -60,11 +60,11 @@ public class SuggestionsProvider extends ContentProvider {
         qb.setTables(DbHelper.SUGGESTIONS_TABLE);
 
         switch (match) {
-            case MATCH_ALL:
-                break;
-            default:
-                Log.e(TAG, "query: invalid request: " + uri);
-                return null;
+        case MATCH_ALL:
+            break;
+        default:
+            Log.e(TAG, "query: invalid request: " + uri);
+            return null;
         }
 
         if (sortOrder == null) {
@@ -108,11 +108,11 @@ public class SuggestionsProvider extends ContentProvider {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         switch (match) {
-            case MATCH_ALL:
-                count = db.update(DbHelper.SUGGESTIONS_TABLE, values, selection, selectionArgs);
-                break;
-            default:
-                throw new UnsupportedOperationException("Cannot update that URI: " + uri);
+        case MATCH_ALL:
+            count = db.update(DbHelper.SUGGESTIONS_TABLE, values, selection, selectionArgs);
+            break;
+        default:
+            throw new UnsupportedOperationException("Cannot update that URI: " + uri);
         }
 
         if (count > 0) {
@@ -128,10 +128,10 @@ public class SuggestionsProvider extends ContentProvider {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         switch (match) {
-            case MATCH_ALL:
-                break;
-            default:
-                throw new UnsupportedOperationException("Cannot delete the URI " + uri);
+        case MATCH_ALL:
+            break;
+        default:
+            throw new UnsupportedOperationException("Cannot delete the URI " + uri);
         }
 
         int count = db.delete(DbHelper.SUGGESTIONS_TABLE, selection, selectionArgs);

@@ -84,35 +84,35 @@ public class RxUtils {
 
     public static <T> Single<T> doInBackground(Single<T> upstream) {
         return upstream.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread());
+               .observeOn(AndroidSchedulers.mainThread());
     }
 
     public static <T> SingleTransformer<T, T> wrapForBackgroundTask(final BaseActivity activity,
             final @StringRes int dialogMessageResId, final @StringRes int errorMessageResId) {
         return wrapForBackgroundTask(activity, activity.getRootLayout(), dialogMessageResId,
-                activity.getString(errorMessageResId));
+                                     activity.getString(errorMessageResId));
     }
 
     public static <T> SingleTransformer<T, T> wrapForBackgroundTask(final BaseActivity activity,
             final @StringRes int dialogMessageResId, final String errorMessage) {
         return wrapForBackgroundTask(activity, activity.getRootLayout(),
-                dialogMessageResId, errorMessage);
+                                     dialogMessageResId, errorMessage);
     }
 
     public static <T> SingleTransformer<T, T> wrapForBackgroundTask(final FragmentActivity activity,
             final CoordinatorLayout rootLayout, final @StringRes int dialogMessageResId,
             final @StringRes int errorMessageResId) {
         return wrapForBackgroundTask(activity, rootLayout, dialogMessageResId,
-                activity.getString(errorMessageResId));
+                                     activity.getString(errorMessageResId));
     }
 
     public static <T> SingleTransformer<T, T> wrapForBackgroundTask(final FragmentActivity activity,
             final CoordinatorLayout rootLayout, final @StringRes int dialogMessageResId,
             final String errorMessage) {
         return upstream -> upstream
-                .compose(RxUtils::doInBackground)
-                .compose(wrapWithProgressDialog(activity, dialogMessageResId))
-                .compose(wrapWithRetrySnackbar(rootLayout, errorMessage));
+               .compose(RxUtils::doInBackground)
+               .compose(wrapWithProgressDialog(activity, dialogMessageResId))
+               .compose(wrapWithRetrySnackbar(rootLayout, errorMessage));
     }
 
     public static <T> SingleTransformer<T, T> wrapWithProgressDialog(final FragmentActivity activity,
@@ -123,9 +123,9 @@ public class RxUtils {
             @Override
             public SingleSource<T> apply(Single<T> upstream) {
                 return upstream
-                        .doOnSubscribe(disposable -> showDialog())
-                        .doOnError(throwable -> hideDialog())
-                        .doOnSuccess(result -> hideDialog());
+                       .doOnSubscribe(disposable -> showDialog())
+                       .doOnError(throwable -> hideDialog())
+                       .doOnSuccess(result -> hideDialog());
             }
 
             private void showDialog() {
@@ -146,30 +146,30 @@ public class RxUtils {
     }
 
     public static <T> SingleTransformer<T, T> wrapWithRetrySnackbar(
-            final CoordinatorLayout rootLayout, final String errorMessage) {
+        final CoordinatorLayout rootLayout, final String errorMessage) {
         return new SingleTransformer<T, T>() {
             private final PublishProcessor<Integer> mRetryProcessor = PublishProcessor.create();
             @Override
             public SingleSource<T> apply(Single<T> upstream) {
                 return upstream
-                        .doOnError(error -> showSnackbar(error))
-                        .retryWhen(handler -> handler.flatMap(error -> mRetryProcessor));
+                       .doOnError(error -> showSnackbar(error))
+                       .retryWhen(handler -> handler.flatMap(error -> mRetryProcessor));
             }
 
             private void showSnackbar(Throwable error) {
                 Snackbar.make(rootLayout, errorMessage, Snackbar.LENGTH_LONG)
-                        .addCallback(new Snackbar.BaseCallback<Snackbar>() {
-                            @Override
-                            public void onDismissed(Snackbar snackbar, int event) {
-                                // Propagate error if opportunity to retry isn't used, either
-                                // by dismissing the Snackbar or letting it time out
-                                if (event == DISMISS_EVENT_SWIPE || event == DISMISS_EVENT_TIMEOUT) {
-                                    mRetryProcessor.onError(error);
-                                }
-                            }
-                        })
-                        .setAction(R.string.retry, view -> mRetryProcessor.onNext(0))
-                        .show();
+                .addCallback(new Snackbar.BaseCallback<Snackbar>() {
+                    @Override
+                    public void onDismissed(Snackbar snackbar, int event) {
+                        // Propagate error if opportunity to retry isn't used, either
+                        // by dismissing the Snackbar or letting it time out
+                        if (event == DISMISS_EVENT_SWIPE || event == DISMISS_EVENT_TIMEOUT) {
+                            mRetryProcessor.onError(error);
+                        }
+                    }
+                })
+                .setAction(R.string.retry, view -> mRetryProcessor.onNext(0))
+                .show();
             }
         };
     }

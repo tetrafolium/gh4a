@@ -19,13 +19,13 @@ public class ReviewActivity extends FragmentContainerActivity {
     private String mTitle;
 
     public static Intent makeIntent(Context context, String repoOwner, String repoName,
-            int issueNumber, Review review, IntentUtils.InitialCommentMarker initialComment) {
+                                    int issueNumber, Review review, IntentUtils.InitialCommentMarker initialComment) {
         return new Intent(context, ReviewActivity.class)
-                .putExtra("repo_owner", repoOwner)
-                .putExtra("repo_name", repoName)
-                .putExtra("issue_number", issueNumber)
-                .putExtra("review", review)
-                .putExtra("initial_comment", initialComment);
+               .putExtra("repo_owner", repoOwner)
+               .putExtra("repo_name", repoName)
+               .putExtra("issue_number", issueNumber)
+               .putExtra("review", review)
+               .putExtra("initial_comment", initialComment);
     }
 
     private String mRepoOwner;
@@ -67,13 +67,13 @@ public class ReviewActivity extends FragmentContainerActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.share:
-                IntentUtils.share(this, mTitle, Uri.parse(mReview.htmlUrl()));
-                return true;
+        case R.id.share:
+            IntentUtils.share(this, mTitle, Uri.parse(mReview.htmlUrl()));
+            return true;
 
-            case R.id.browser:
-                IntentUtils.launchBrowser(this, Uri.parse(mReview.htmlUrl()));
-                return true;
+        case R.id.browser:
+            IntentUtils.launchBrowser(this, Uri.parse(mReview.htmlUrl()));
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -82,13 +82,13 @@ public class ReviewActivity extends FragmentContainerActivity {
     @Override
     protected Fragment onCreateFragment() {
         return ReviewFragment.newInstance(mRepoOwner, mRepoName, mIssueNumber, mReview,
-                mInitialComment);
+                                          mInitialComment);
     }
 
     @Override
     protected Intent navigateUp() {
         return PullRequestActivity.makeIntent(this, mRepoOwner, mRepoName, mIssueNumber,
-                PullRequestActivity.PAGE_CONVERSATION,
-                new IntentUtils.InitialCommentMarker(mReview.id()));
+                                              PullRequestActivity.PAGE_CONVERSATION,
+                                              new IntentUtils.InitialCommentMarker(mReview.id()));
     }
 }

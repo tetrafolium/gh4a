@@ -18,7 +18,7 @@ import com.gh4a.db.BookmarksProvider;
 import com.gh4a.resolver.BrowseFilter;
 
 public class BookmarkListFragment extends LoadingListFragmentBase implements
-        LoaderManager.LoaderCallbacks<Cursor>, BookmarkAdapter.OnItemInteractListener {
+    LoaderManager.LoaderCallbacks<Cursor>, BookmarkAdapter.OnItemInteractListener {
 
     private ItemTouchHelper mItemTouchHelper;
 
@@ -42,7 +42,7 @@ public class BookmarkListFragment extends LoadingListFragmentBase implements
         view.setAdapter(mAdapter);
 
         BookmarkDragHelperCallback callback =
-                new BookmarkDragHelperCallback(getBaseActivity(), mAdapter);
+            new BookmarkDragHelperCallback(getBaseActivity(), mAdapter);
         mItemTouchHelper = new ItemTouchHelper(callback);
         mItemTouchHelper.attachToRecyclerView(view);
 
@@ -52,7 +52,7 @@ public class BookmarkListFragment extends LoadingListFragmentBase implements
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(getActivity(), BookmarksProvider.Columns.CONTENT_URI,
-                null, null, null, BookmarksProvider.Columns.ORDER_ID + " ASC");
+                                null, null, null, BookmarksProvider.Columns.ORDER_ID + " ASC");
     }
 
     @Override
@@ -106,14 +106,14 @@ public class BookmarkListFragment extends LoadingListFragmentBase implements
 
         public BookmarkDragHelperCallback(BaseActivity baseActivity, BookmarkAdapter adapter) {
             super(ItemTouchHelper.UP | ItemTouchHelper.DOWN,
-                    ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
+                  ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
             mBaseActivity = baseActivity;
             mAdapter = adapter;
         }
 
         @Override
         public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
-                RecyclerView.ViewHolder target) {
+                              RecyclerView.ViewHolder target) {
             int fromPos = viewHolder.getAdapterPosition();
             int toPos = target.getAdapterPosition();
 

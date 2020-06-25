@@ -17,8 +17,8 @@ import java.util.Locale;
 
 public class FileUtils {
     private static final List<String> MARKDOWN_EXTS = Arrays.asList(
-        "markdown", "md", "mdown", "mkdn", "mkd"
-    );
+                "markdown", "md", "mdown", "mkdn", "mkd"
+            );
 
     private static final HashMap<String, String> MIME_TYPE_OVERRIDES = new HashMap<>();
     static {
@@ -86,8 +86,8 @@ public class FileUtils {
     public static boolean isBinaryFormat(String filename) {
         String mime = getMimeTypeFor(filename);
         return mime != null && !mime.startsWith("text/")
-                // cover cases like application/xhtml+xml or image/svg+xml
-                && !mime.endsWith("+xml");
+               // cover cases like application/xhtml+xml or image/svg+xml
+               && !mime.endsWith("+xml");
     }
 
     public static boolean isMarkdown(String filename) {

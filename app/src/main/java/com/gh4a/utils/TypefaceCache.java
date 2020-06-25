@@ -45,17 +45,23 @@ public class TypefaceCache {
 
     public static Typeface getTypeface(int typeface, int style) {
         switch (style) {
-            case Typeface.BOLD:
-                switch (typeface) {
-                    case TF_REGULAR: typeface = TF_BOLD; break;
-                    case TF_CONDENSED: typeface = TF_BOLDCONDENSED; break;
-                }
+        case Typeface.BOLD:
+            switch (typeface) {
+            case TF_REGULAR:
+                typeface = TF_BOLD;
                 break;
-            case Typeface.ITALIC:
-                switch (typeface) {
-                    case TF_REGULAR: typeface = TF_ITALIC; break;
-                }
+            case TF_CONDENSED:
+                typeface = TF_BOLDCONDENSED;
                 break;
+            }
+            break;
+        case Typeface.ITALIC:
+            switch (typeface) {
+            case TF_REGULAR:
+                typeface = TF_ITALIC;
+                break;
+            }
+            break;
         }
         return getTypeface(typeface);
     }

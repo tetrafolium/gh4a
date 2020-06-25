@@ -17,16 +17,16 @@ import com.meisolsson.githubsdk.model.GitHubCommentBase;
 import io.reactivex.Single;
 
 public abstract class EditCommentActivity extends AppCompatActivity implements
-        EditorBottomSheet.Callback {
+    EditorBottomSheet.Callback {
 
     protected static Intent fillInIntent(Intent baseIntent, String repoOwner, String repoName,
-            long id, long replyToId, String body, @AttrRes int highlightColorAttr) {
+                                         long id, long replyToId, String body, @AttrRes int highlightColorAttr) {
         return baseIntent.putExtra("owner", repoOwner)
-                .putExtra("repo", repoName)
-                .putExtra("id", id)
-                .putExtra("reply_to", replyToId)
-                .putExtra("body", body)
-                .putExtra("highlight_color_attr", highlightColorAttr);
+               .putExtra("repo", repoName)
+               .putExtra("id", id)
+               .putExtra("reply_to", replyToId)
+               .putExtra("body", body)
+               .putExtra("highlight_color_attr", highlightColorAttr);
     }
 
     private CoordinatorLayout mRootLayout;
@@ -35,7 +35,7 @@ public abstract class EditCommentActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setTheme(Gh4Application.THEME == R.style.DarkTheme
-                ? R.style.BottomSheetDarkTheme : R.style.BottomSheetLightTheme);
+                 ? R.style.BottomSheetDarkTheme : R.style.BottomSheetLightTheme);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.comment_editor);
@@ -103,7 +103,7 @@ public abstract class EditCommentActivity extends AppCompatActivity implements
     }
 
     protected abstract Single<GitHubCommentBase> createComment(
-            String repoOwner, String repoName, String body, long replyToCommentId);
+        String repoOwner, String repoName, String body, long replyToCommentId);
     protected abstract Single<GitHubCommentBase> editComment(
-            String repoOwner, String repoName, long commentId, String body);
+        String repoOwner, String repoName, long commentId, String body);
 }

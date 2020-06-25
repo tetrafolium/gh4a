@@ -32,7 +32,7 @@ public class ReleaseAdapter extends RootAdapter<Release, ReleaseAdapter.ViewHold
         holder.tvTitle.setText(name);
         holder.tvType.setText(formatReleaseType(release));
         holder.tvCreatedAt.setText(mContext.getString(R.string.download_created,
-                StringUtils.formatRelativeTime(mContext, release.createdAt(), true)));
+                                   StringUtils.formatRelativeTime(mContext, release.createdAt(), true)));
     }
 
     private String formatReleaseType(Release release) {

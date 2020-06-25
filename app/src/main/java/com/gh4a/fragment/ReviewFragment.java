@@ -48,8 +48,8 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
-        implements TimelineItemAdapter.OnCommentAction,
-        EditorBottomSheet.Callback, EditorBottomSheet.Listener {
+    implements TimelineItemAdapter.OnCommentAction,
+    EditorBottomSheet.Callback, EditorBottomSheet.Listener {
 
     private static final int REQUEST_EDIT = 1000;
     private static final String EXTRA_SELECTED_REPLY_COMMENT_ID = "selected_reply_comment_id";
@@ -97,7 +97,7 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         View listContent = super.onCreateView(inflater, container, savedInstanceState);
         View v = inflater.inflate(R.layout.comment_list, container, false);
 
@@ -154,49 +154,49 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
     protected Single<List<TimelineItem>> onCreateDataSingle(boolean bypassCache) {
         final PullRequestService prService = ServiceFactory.get(PullRequestService.class, bypassCache);
         final PullRequestReviewService reviewService =
-                ServiceFactory.get(PullRequestReviewService.class, bypassCache);
+            ServiceFactory.get(PullRequestReviewService.class, bypassCache);
         final PullRequestReviewCommentService commentService =
-                ServiceFactory.get(PullRequestReviewCommentService.class, bypassCache);
+            ServiceFactory.get(PullRequestReviewCommentService.class, bypassCache);
 
         Single<TimelineItem.TimelineReview> reviewItemSingle =
-                reviewService.getReview(mRepoOwner, mRepoName, mIssueNumber, mReview.id())
-                .map(ApiHelpers::throwOnFailure)
-                .map(TimelineItem.TimelineReview::new);
+            reviewService.getReview(mRepoOwner, mRepoName, mIssueNumber, mReview.id())
+            .map(ApiHelpers::throwOnFailure)
+            .map(TimelineItem.TimelineReview::new);
 
         Single<List<ReviewComment>> reviewCommentsSingle = ApiHelpers.PageIterator
                 .toSingle(page -> reviewService.getReviewComments(
-                        mRepoOwner, mRepoName, mIssueNumber, mReview.id()))
+                              mRepoOwner, mRepoName, mIssueNumber, mReview.id()))
                 .compose(RxUtils.sortList(ApiHelpers.COMMENT_COMPARATOR))
                 .cache(); // single is used multiple times -> avoid refetching data
 
         Single<Boolean> hasCommentsSingle = reviewCommentsSingle
-                .map(comments -> !comments.isEmpty());
+                                            .map(comments -> !comments.isEmpty());
 
         Single<Optional<List<GitHubFile>>> filesSingle = hasCommentsSingle
-                .flatMap(hasComments -> {
-                    if (!hasComments) {
-                        return Single.just(Optional.absent());
-                    }
-                    return ApiHelpers.PageIterator
-                            .toSingle(page -> prService.getPullRequestFiles(
-                                    mRepoOwner, mRepoName, mIssueNumber, page))
-                            .map(Optional::of);
-                });
+        .flatMap(hasComments -> {
+            if (!hasComments) {
+                return Single.just(Optional.absent());
+            }
+            return ApiHelpers.PageIterator
+            .toSingle(page -> prService.getPullRequestFiles(
+                          mRepoOwner, mRepoName, mIssueNumber, page))
+            .map(Optional::of);
+        });
 
         Single<Optional<List<ReviewComment>>> commentsSingle = hasCommentsSingle
-                .flatMap(hasComments -> {
-                    if (!hasComments) {
-                        return Single.just(Optional.absent());
-                    }
-                    return ApiHelpers.PageIterator
-                            .toSingle(page -> commentService.getPullRequestComments(
-                                    mRepoOwner, mRepoName, mIssueNumber, page))
-                            .compose(RxUtils.sortList(ApiHelpers.COMMENT_COMPARATOR))
-                            .map(Optional::of);
-                });
+        .flatMap(hasComments -> {
+            if (!hasComments) {
+                return Single.just(Optional.absent());
+            }
+            return ApiHelpers.PageIterator
+            .toSingle(page -> commentService.getPullRequestComments(
+                          mRepoOwner, mRepoName, mIssueNumber, page))
+            .compose(RxUtils.sortList(ApiHelpers.COMMENT_COMPARATOR))
+            .map(Optional::of);
+        });
 
         return Single.zip(reviewItemSingle, reviewCommentsSingle, filesSingle, commentsSingle,
-                (reviewItem, reviewComments, filesOpt, commentsOpt) -> {
+        (reviewItem, reviewComments, filesOpt, commentsOpt) -> {
             if (!reviewComments.isEmpty()) {
                 HashMap<String, GitHubFile> filesByName = new HashMap<>();
                 if (filesOpt.isPresent()) {
@@ -247,7 +247,7 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
     @Override
     protected RootAdapter<TimelineItem, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
         mAdapter = new TimelineItemAdapter(getActivity(), mRepoOwner, mRepoName, mIssueNumber,
-                true, false, this);
+                                           true, false, this);
         return mAdapter;
     }
 
@@ -257,7 +257,7 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
 
         // Lock the bottom sheet if there is no selected reply group
         mBottomSheet.setLocked(mSelectedReplyCommentId <= 0,
-                R.string.no_reply_group_selected_hint);
+                               R.string.no_reply_group_selected_hint);
 
         mCommentEditorHintResId = R.string.reply;
         for (TimelineItem item : data) {
@@ -348,10 +348,10 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
         Intent intent;
         if (comment instanceof ReviewComment) {
             intent = EditPullRequestCommentActivity.makeIntent(getActivity(), mRepoOwner, mRepoName,
-                    mIssueNumber, comment.id(), 0L, comment.body(), 0);
+                     mIssueNumber, comment.id(), 0L, comment.body(), 0);
         } else {
             intent = EditIssueCommentActivity.makeIntent(getActivity(), mRepoOwner, mRepoName,
-                    mIssueNumber, comment.id(), comment.body(), 0);
+                     mIssueNumber, comment.id(), comment.body(), 0);
         }
 
         startActivityForResult(intent, REQUEST_EDIT);
@@ -360,10 +360,10 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
     @Override
     public void deleteComment(final GitHubCommentBase comment) {
         new AlertDialog.Builder(getActivity())
-                .setMessage(R.string.delete_comment_message)
-                .setPositiveButton(R.string.delete, (dialog, which) -> handleDeleteComment(comment))
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+        .setMessage(R.string.delete_comment_message)
+        .setPositiveButton(R.string.delete, (dialog, which) -> handleDeleteComment(comment))
+        .setNegativeButton(R.string.cancel, null)
+        .show();
     }
 
     @Override
@@ -408,11 +408,11 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
             boolean bypassCache) {
         final ReactionService service = ServiceFactory.get(ReactionService.class, bypassCache);
         return ApiHelpers.PageIterator
-                .toSingle(page -> comment instanceof ReviewComment
-                        ? service.getPullRequestReviewCommentReactions(
-                                mRepoOwner, mRepoName, comment.id(), page)
-                        : service.getIssueCommentReactions(
-                                mRepoOwner, mRepoName, comment.id(), page));
+               .toSingle(page -> comment instanceof ReviewComment
+                         ? service.getPullRequestReviewCommentReactions(
+                             mRepoOwner, mRepoName, comment.id(), page)
+                         : service.getIssueCommentReactions(
+                             mRepoOwner, mRepoName, comment.id(), page));
     }
 
     @Override
@@ -438,13 +438,13 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
     @Override
     public Single<?> onEditorDoSend(String comment) {
         PullRequestReviewCommentService service =
-                ServiceFactory.get(PullRequestReviewCommentService.class, false);
+            ServiceFactory.get(PullRequestReviewCommentService.class, false);
         CreateReviewComment request = CreateReviewComment.builder()
-                .body(comment)
-                .inReplyTo(mSelectedReplyCommentId)
-                .build();
+                                      .body(comment)
+                                      .inReplyTo(mSelectedReplyCommentId)
+                                      .build();
         return service.createReviewComment(mRepoOwner, mRepoName, mIssueNumber, request)
-                .map(ApiHelpers::throwOnFailure);
+               .map(ApiHelpers::throwOnFailure);
     }
 
     @Override
@@ -461,7 +461,7 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
         final Single<Response<Void>> responseSingle;
         if (comment instanceof ReviewComment) {
             PullRequestReviewCommentService service =
-                    ServiceFactory.get(PullRequestReviewCommentService.class, false);
+                ServiceFactory.get(PullRequestReviewCommentService.class, false);
             responseSingle = service.deleteComment(mRepoOwner, mRepoName, comment.id());
         } else {
             IssueCommentService service = ServiceFactory.get(IssueCommentService.class, false);
@@ -469,10 +469,10 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
         }
 
         responseSingle
-                .map(ApiHelpers::mapToBooleanOrThrowOnFailure)
-                .compose(RxUtils.wrapForBackgroundTask(getBaseActivity(),
-                        R.string.deleting_msg, R.string.error_delete_comment))
-                .subscribe(result -> reloadComments(false),
-                        error -> handleActionFailure("Deleting comment failed", error));
+        .map(ApiHelpers::mapToBooleanOrThrowOnFailure)
+        .compose(RxUtils.wrapForBackgroundTask(getBaseActivity(),
+                                               R.string.deleting_msg, R.string.error_delete_comment))
+        .subscribe(result -> reloadComments(false),
+                   error -> handleActionFailure("Deleting comment failed", error));
     }
 }

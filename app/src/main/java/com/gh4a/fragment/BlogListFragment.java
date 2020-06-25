@@ -36,7 +36,7 @@ import com.gh4a.utils.SingleFactory;
 import io.reactivex.Single;
 
 public class BlogListFragment extends ListDataBaseFragment<Feed> implements
-        RootAdapter.OnItemClickListener<Feed> {
+    RootAdapter.OnItemClickListener<Feed> {
     public static BlogListFragment newInstance() {
         return new BlogListFragment();
     }
@@ -56,9 +56,9 @@ public class BlogListFragment extends ListDataBaseFragment<Feed> implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.browser:
-                IntentUtils.launchBrowser(getActivity(), Uri.parse("https://blog.github.com"));
-                return true;
+        case R.id.browser:
+            IntentUtils.launchBrowser(getActivity(), Uri.parse("https://blog.github.com"));
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

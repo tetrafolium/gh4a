@@ -17,26 +17,26 @@ public class HeightLimitedNestedScrollView extends NestedScrollView {
     }
 
     public HeightLimitedNestedScrollView(Context context,
-            @Nullable AttributeSet attrs) {
+                                         @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
     public HeightLimitedNestedScrollView(Context context,
-            @Nullable AttributeSet attrs, int defStyleAttr) {
+                                         @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         if (attrs != null) {
             TypedArray a = context.obtainStyledAttributes(attrs,
-                    R.styleable.HeightLimitedNestedScrollView, defStyleAttr, 0);
+                           R.styleable.HeightLimitedNestedScrollView, defStyleAttr, 0);
             int n = a.getIndexCount();
 
             for (int i = 0; i < n; i++) {
                 int attr = a.getIndex(i);
 
                 switch (attr) {
-                    case R.styleable.HeightLimitedNestedScrollView_maxHeight:
-                        mMaxHeight = a.getDimensionPixelSize(attr, -1);
-                        break;
+                case R.styleable.HeightLimitedNestedScrollView_maxHeight:
+                    mMaxHeight = a.getDimensionPixelSize(attr, -1);
+                    break;
                 }
             }
             a.recycle();

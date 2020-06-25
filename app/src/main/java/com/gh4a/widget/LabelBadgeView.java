@@ -30,9 +30,9 @@ public class LabelBadgeView extends View {
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.LabelBadgeView, defStyle, 0);
         mBadgeSize = a.getDimensionPixelSize(R.styleable.LabelBadgeView_badgeSize,
-                getResources().getDimensionPixelSize(R.dimen.default_label_badge_size));
+                                             getResources().getDimensionPixelSize(R.dimen.default_label_badge_size));
         mBadgeSpacing = a.getDimensionPixelSize(R.styleable.LabelBadgeView_badgeSpacing,
-                getResources().getDimensionPixelSize(R.dimen.default_label_badge_spacing));
+                                                getResources().getDimensionPixelSize(R.dimen.default_label_badge_spacing));
 
         a.recycle();
 
@@ -55,12 +55,12 @@ public class LabelBadgeView extends View {
         int maxWidth = Integer.MAX_VALUE;
 
         switch (MeasureSpec.getMode(widthMeasureSpec)) {
-            case MeasureSpec.UNSPECIFIED:
-                break;
-            case MeasureSpec.AT_MOST:
-            case MeasureSpec.EXACTLY:
-                maxWidth = specWidth;
-                break;
+        case MeasureSpec.UNSPECIFIED:
+            break;
+        case MeasureSpec.AT_MOST:
+        case MeasureSpec.EXACTLY:
+            maxWidth = specWidth;
+            break;
         }
 
         maxWidth -= getPaddingLeft() + getPaddingRight();
@@ -68,12 +68,12 @@ public class LabelBadgeView extends View {
         int rows = getBadgeRows();
 
         int desiredWidth = mBadgesPerRow * mBadgeSize + (mBadgesPerRow - 1) * mBadgeSpacing
-                + getPaddingLeft() + getPaddingRight();
+                           + getPaddingLeft() + getPaddingRight();
         int desiredHeight = rows * mBadgeSize + (rows - 1) * mBadgeSpacing
-                + getPaddingTop() + getPaddingBottom();
+                            + getPaddingTop() + getPaddingBottom();
 
         setMeasuredDimension(View.resolveSizeAndState(desiredWidth, widthMeasureSpec, 0),
-                View.resolveSizeAndState(desiredHeight, heightMeasureSpec, 0));
+                             View.resolveSizeAndState(desiredHeight, heightMeasureSpec, 0));
     }
 
     @Override
@@ -94,7 +94,7 @@ public class LabelBadgeView extends View {
         float availableHorizontal = canvas.getWidth() - pl - pr - horizontalSpacing;
         float availableVertical = canvas.getHeight() - pt - pb - verticalSpacing;
         float badgeSize = Math.min(availableHorizontal / mBadgesPerRow,
-                availableVertical / getBadgeRows());
+                                   availableVertical / getBadgeRows());
 
         for (int row = 0, col = 0, i = 0; i < mColors.length; i++) {
             float centerX = pl + col * (mBadgeSpacing + badgeSize) + (badgeSize / 2);

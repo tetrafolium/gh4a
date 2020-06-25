@@ -63,7 +63,7 @@ public class CommitListFragment extends PagedDataBaseFragment<Commit> {
 
     public static CommitListFragment newInstance(Repository repo, String ref) {
         return newInstance(repo.owner().login(), repo.name(),
-                StringUtils.isBlank(ref) ? repo.defaultBranch() : ref, null);
+                           StringUtils.isBlank(ref) ? repo.defaultBranch() : ref, null);
     }
 
     public static CommitListFragment newInstance(String repoOwner, String repoName,
@@ -93,7 +93,7 @@ public class CommitListFragment extends PagedDataBaseFragment<Commit> {
     public void onAttach(Context context) {
         super.onAttach(context);
         mCallback = context instanceof ContextSelectionCallback
-                ? (ContextSelectionCallback) context : null;
+                    ? (ContextSelectionCallback) context : null;
     }
 
     @Override
@@ -118,7 +118,7 @@ public class CommitListFragment extends PagedDataBaseFragment<Commit> {
     public void onItemClick(Commit commit) {
         String[] urlPart = commit.url().split("/");
         Intent intent = CommitActivity.makeIntent(getActivity(),
-                urlPart[4], urlPart[5], commit.sha());
+                        urlPart[4], urlPart[5], commit.sha());
         startActivityForResult(intent, REQUEST_COMMIT);
     }
 
@@ -132,7 +132,7 @@ public class CommitListFragment extends PagedDataBaseFragment<Commit> {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         ContextMenuAwareRecyclerView.RecyclerContextMenuInfo info =
-                (ContextMenuAwareRecyclerView.RecyclerContextMenuInfo) item.getMenuInfo();
+            (ContextMenuAwareRecyclerView.RecyclerContextMenuInfo) item.getMenuInfo();
         if (info.position >= mAdapter.getItemCount()) {
             return false;
         }
@@ -161,14 +161,14 @@ public class CommitListFragment extends PagedDataBaseFragment<Commit> {
     @Override
     protected Single<Response<Page<Commit>>> loadPage(int page, boolean bypassCache) {
         final RepositoryCommitService service =
-                ServiceFactory.get(RepositoryCommitService.class, bypassCache);
+            ServiceFactory.get(RepositoryCommitService.class, bypassCache);
         return service.getCommits(mRepoOwner, mRepoName, mRef, mFilePath, page)
-                .map(response -> {
-                    // 409 is returned for empty repos
-                    if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
-                        return Response.success(new ApiHelpers.DummyPage<>());
-                    }
-                    return response;
-                });
+        .map(response -> {
+            // 409 is returned for empty repos
+            if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
+                return Response.success(new ApiHelpers.DummyPage<>());
+            }
+            return response;
+        });
     }
 }

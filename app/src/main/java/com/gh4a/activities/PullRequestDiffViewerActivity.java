@@ -40,25 +40,25 @@ import retrofit2.Response;
 
 public class PullRequestDiffViewerActivity extends DiffViewerActivity<ReviewComment> {
     public static Intent makeIntent(Context context, String repoOwner, String repoName, int number,
-            String commitSha, String path, String diff, List<ReviewComment> comments,
-            int initialLine, int highlightStartLine, int highlightEndLine, boolean highlightIsRight,
-            IntentUtils.InitialCommentMarker initialComment) {
+                                    String commitSha, String path, String diff, List<ReviewComment> comments,
+                                    int initialLine, int highlightStartLine, int highlightEndLine, boolean highlightIsRight,
+                                    IntentUtils.InitialCommentMarker initialComment) {
         Intent intent = new Intent(context, PullRequestDiffViewerActivity.class)
-                .putExtra("number", number);
+        .putExtra("number", number);
         return DiffViewerActivity.fillInIntent(intent, repoOwner, repoName, commitSha, path,
-                diff, comments, initialLine, highlightStartLine, highlightEndLine,
-                highlightIsRight, initialComment);
+                                               diff, comments, initialLine, highlightStartLine, highlightEndLine,
+                                               highlightIsRight, initialComment);
     }
 
     private int mPullRequestNumber;
 
     @Override
     protected void openCommentDialog(long id, long replyToId, String line, int position,
-            int leftLine, int rightLine, PositionalCommentBase commitComment) {
+                                     int leftLine, int rightLine, PositionalCommentBase commitComment) {
         String body = commitComment == null ? "" : commitComment.body();
         Intent intent = EditPullRequestDiffCommentActivity.makeIntent(this,
-                mRepoOwner, mRepoName, mSha, mPath, line, leftLine, rightLine,
-                position, id, body, mPullRequestNumber, replyToId);
+                        mRepoOwner, mRepoName, mSha, mPath, line, leftLine, rightLine,
+                        position, id, body, mPullRequestNumber, replyToId);
         startActivityForResult(intent, REQUEST_EDIT);
     }
 
@@ -71,19 +71,19 @@ public class PullRequestDiffViewerActivity extends DiffViewerActivity<ReviewComm
     @Override
     protected Single<List<ReviewComment>> createCommentSingle(boolean bypassCache) {
         final PullRequestReviewCommentService service =
-                ServiceFactory.get(PullRequestReviewCommentService.class, bypassCache);
+            ServiceFactory.get(PullRequestReviewCommentService.class, bypassCache);
         return ApiHelpers.PageIterator
-                .toSingle(page -> service.getPullRequestComments(
-                        mRepoOwner, mRepoName, mPullRequestNumber, page))
-                .compose(RxUtils.filter(c -> c.position() != null));
+               .toSingle(page -> service.getPullRequestComments(
+                             mRepoOwner, mRepoName, mPullRequestNumber, page))
+               .compose(RxUtils.filter(c -> c.position() != null));
     }
 
     @Override
     protected Uri createUrl(String lineId, long replyId) {
         Uri.Builder builder = IntentUtils.createBaseUriForRepo(mRepoOwner, mRepoName)
-                .appendPath("pull")
-                .appendPath(String.valueOf(mPullRequestNumber))
-                .appendPath("files");
+                              .appendPath("pull")
+                              .appendPath(String.valueOf(mPullRequestNumber))
+                              .appendPath("files");
         if (replyId > 0L) {
             builder.fragment("r" + replyId);
         } else {
@@ -106,14 +106,14 @@ public class PullRequestDiffViewerActivity extends DiffViewerActivity<ReviewComm
     protected PositionalCommentBase onUpdateReactions(PositionalCommentBase comment,
             Reactions reactions) {
         return ((ReviewComment) comment).toBuilder()
-                .reactions(reactions)
-                .build();
+               .reactions(reactions)
+               .build();
     }
 
     @Override
     protected Single<Response<Void>> doDeleteComment(long id) {
         PullRequestReviewCommentService service =
-                ServiceFactory.get(PullRequestReviewCommentService.class, false);
+            ServiceFactory.get(PullRequestReviewCommentService.class, false);
         return service.deleteComment(mRepoOwner, mRepoName, id);
     }
 
@@ -122,8 +122,8 @@ public class PullRequestDiffViewerActivity extends DiffViewerActivity<ReviewComm
         final CommitCommentWrapper comment = (CommitCommentWrapper) item;
         final ReactionService service = ServiceFactory.get(ReactionService.class, bypassCache);
         return ApiHelpers.PageIterator
-                .toSingle(page -> service.getPullRequestReviewCommentReactions(
-                        mRepoOwner, mRepoName, comment.comment.id(), page));
+               .toSingle(page -> service.getPullRequestReviewCommentReactions(
+                             mRepoOwner, mRepoName, comment.comment.id(), page));
     }
 
     @Override
@@ -133,6 +133,6 @@ public class PullRequestDiffViewerActivity extends DiffViewerActivity<ReviewComm
         ReactionRequest request = ReactionRequest.builder().content(content).build();
 
         return service.createPullRequestReviewCommentReaction(mRepoOwner, mRepoName, comment.comment.id(), request)
-                .map(ApiHelpers::throwOnFailure);
+               .map(ApiHelpers::throwOnFailure);
     }
 }

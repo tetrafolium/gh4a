@@ -56,9 +56,9 @@ public class GistAdapter extends RootAdapter<Gist, GistAdapter.ViewHolder> {
         }
 
         holder.tvTimestamp.setText(
-                StringUtils.formatRelativeTime(mContext, gist.createdAt(), false));
+            StringUtils.formatRelativeTime(mContext, gist.createdAt(), false));
         holder.tvTitle.setText(TextUtils.isEmpty(gist.description())
-                ? mContext.getString(R.string.gist_no_description) : gist.description());
+                               ? mContext.getString(R.string.gist_no_description) : gist.description());
         holder.tvSha.setText(gist.id());
         holder.tvFiles.setText(String.valueOf(gist.files().size()));
         holder.tvPrivate.setVisibility(gist.isPublic() ? View.GONE : View.VISIBLE);

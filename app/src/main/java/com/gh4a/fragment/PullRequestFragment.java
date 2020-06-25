@@ -89,7 +89,7 @@ public class PullRequestFragment extends IssueFragmentBase {
 
         Repository repo = pr.base().repo();
         Bundle args = buildArgs(repo.owner().login(), repo.name(),
-                issue, isCollaborator, initialComment);
+                                issue, isCollaborator, initialComment);
         args.putParcelable("pr", pr);
         f.setArguments(args);
 
@@ -99,9 +99,9 @@ public class PullRequestFragment extends IssueFragmentBase {
     public void updateState(PullRequest pr) {
         mIssue = mIssue.toBuilder().state(pr.state()).build();
         mPullRequest = mPullRequest.toBuilder()
-                .state(pr.state())
-                .merged(pr.merged())
-                .build();
+                       .state(pr.state())
+                       .merged(pr.merged())
+                       .build();
 
         assignHighlightColor();
         loadCommitStatusesIfOpen(false);
@@ -142,9 +142,9 @@ public class PullRequestFragment extends IssueFragmentBase {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.delete_branch:
-                showDeleteRestoreBranchConfirmDialog(mHeadReference == null);
-                break;
+        case R.id.delete_branch:
+            showDeleteRestoreBranchConfirmDialog(mHeadReference == null);
+            break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -183,24 +183,24 @@ public class PullRequestFragment extends IssueFragmentBase {
         }
     }
 
-   private void fillStatus(List<Status> statuses) {
-       CommitStatusBox commitStatusBox = mListHeaderView.findViewById(R.id.commit_status_box);
-       commitStatusBox.fillStatus(statuses, mPullRequest.mergeableState());
-   }
+    private void fillStatus(List<Status> statuses) {
+        CommitStatusBox commitStatusBox = mListHeaderView.findViewById(R.id.commit_status_box);
+        commitStatusBox.fillStatus(statuses, mPullRequest.mergeableState());
+    }
 
     @Override
     protected Single<List<TimelineItem>> onCreateDataSingle(boolean bypassCache) {
         final int issueNumber = mIssue.number();
         final IssueEventService eventService =
-                ServiceFactory.get(IssueEventService.class, bypassCache);
+            ServiceFactory.get(IssueEventService.class, bypassCache);
         final IssueCommentService commentService =
-                ServiceFactory.get(IssueCommentService.class, bypassCache);
+            ServiceFactory.get(IssueCommentService.class, bypassCache);
 
         final PullRequestService prService = ServiceFactory.get(PullRequestService.class, bypassCache);
         final PullRequestReviewService reviewService =
-                ServiceFactory.get(PullRequestReviewService.class, bypassCache);
+            ServiceFactory.get(PullRequestReviewService.class, bypassCache);
         final PullRequestReviewCommentService prCommentService =
-                ServiceFactory.get(PullRequestReviewCommentService.class, bypassCache);
+            ServiceFactory.get(PullRequestReviewCommentService.class, bypassCache);
 
         Single<List<TimelineItem>> issueCommentItemSingle = ApiHelpers.PageIterator
                 .toSingle(page -> commentService.getIssueComments(mRepoOwner, mRepoName, issueNumber, page))
@@ -211,50 +211,50 @@ public class PullRequestFragment extends IssueFragmentBase {
                 .compose((RxUtils.mapList(TimelineItem.TimelineEvent::new)));
         Single<Map<String, GitHubFile>> filesByNameSingle = ApiHelpers.PageIterator
                 .toSingle(page -> prService.getPullRequestFiles(mRepoOwner, mRepoName, issueNumber, page))
-                .map(files -> {
-                    Map<String, GitHubFile> filesByName = new HashMap<>();
-                    for (GitHubFile file : files) {
-                        filesByName.put(file.filename(), file);
-                    }
-                    return filesByName;
-                })
-                .cache(); // single is used multiple times -> avoid refetching data
+        .map(files -> {
+            Map<String, GitHubFile> filesByName = new HashMap<>();
+            for (GitHubFile file : files) {
+                filesByName.put(file.filename(), file);
+            }
+            return filesByName;
+        })
+        .cache(); // single is used multiple times -> avoid refetching data
 
         Single<List<Review>> reviewSingle = ApiHelpers.PageIterator
-                .toSingle(page -> reviewService.getReviews(mRepoOwner, mRepoName, issueNumber, page))
-                .cache(); // single is used multiple times -> avoid refetching data
+                                            .toSingle(page -> reviewService.getReviews(mRepoOwner, mRepoName, issueNumber, page))
+                                            .cache(); // single is used multiple times -> avoid refetching data
         Single<List<ReviewComment>> prCommentSingle = ApiHelpers.PageIterator
                 .toSingle(page -> prCommentService.getPullRequestComments(
-                        mRepoOwner, mRepoName, issueNumber, page))
+                              mRepoOwner, mRepoName, issueNumber, page))
                 .compose(RxUtils.sortList(ApiHelpers.COMMENT_COMPARATOR))
                 .cache(); // single is used multiple times -> avoid refetching data
 
         Single<LongSparseArray<List<ReviewComment>>> reviewCommentsByIdSingle = reviewSingle
                 .compose(RxUtils.filter(r -> r.state() == ReviewState.Pending))
                 .toObservable()
-                .flatMap(reviews -> {
-                    List<Observable<Pair<Long, List<ReviewComment>>>> obsList = new ArrayList<>();
-                    for (Review r : reviews) {
-                        Single<List<ReviewComment>> single = ApiHelpers.PageIterator
-                                .toSingle(page -> reviewService.getReviewComments(mRepoOwner,
-                                        mRepoName, issueNumber, r.id()));
-                        obsList.add(Single.zip(Single.just(r.id()), single, Pair::create)
-                                .toObservable());
-                    }
-                    return Observable.concat(obsList);
-                })
-                .toList()
-                .map(list -> {
-                    LongSparseArray<List<ReviewComment>> result = new LongSparseArray<>();
-                    for (Pair<Long, List<ReviewComment>> pair : list) {
-                        result.put(pair.first, pair.second);
-                    }
-                    return result;
-                });
+        .flatMap(reviews -> {
+            List<Observable<Pair<Long, List<ReviewComment>>>> obsList = new ArrayList<>();
+            for (Review r : reviews) {
+                Single<List<ReviewComment>> single = ApiHelpers.PageIterator
+                .toSingle(page -> reviewService.getReviewComments(mRepoOwner,
+                          mRepoName, issueNumber, r.id()));
+                obsList.add(Single.zip(Single.just(r.id()), single, Pair::create)
+                            .toObservable());
+            }
+            return Observable.concat(obsList);
+        })
+        .toList()
+        .map(list -> {
+            LongSparseArray<List<ReviewComment>> result = new LongSparseArray<>();
+            for (Pair<Long, List<ReviewComment>> pair : list) {
+                result.put(pair.first, pair.second);
+            }
+            return result;
+        });
 
         Single<List<TimelineItem.TimelineReview>> reviewTimelineSingle = Single.zip(
-                reviewSingle, filesByNameSingle, prCommentSingle, reviewCommentsByIdSingle,
-                (prReviews, filesByName, commitComments, pendingCommentsById) -> {
+                    reviewSingle, filesByNameSingle, prCommentSingle, reviewCommentsByIdSingle,
+        (prReviews, filesByName, commitComments, pendingCommentsById) -> {
             LongSparseArray<TimelineItem.TimelineReview> reviewsById = new LongSparseArray<>();
             List<TimelineItem.TimelineReview> reviews = new ArrayList<>();
 
@@ -293,27 +293,27 @@ public class PullRequestFragment extends IssueFragmentBase {
         .compose(RxUtils.filter(item -> {
             //noinspection CodeBlock2Expr
             return item.review().state() != ReviewState.Commented
-                    || !TextUtils.isEmpty(item.review().body())
-                    || !item.getDiffHunks().isEmpty();
+            || !TextUtils.isEmpty(item.review().body())
+            || !item.getDiffHunks().isEmpty();
         }));
 
         Single<List<TimelineItem.TimelineComment>> commitCommentWithoutReviewSingle = Single.zip(
-                prCommentSingle.compose(RxUtils.filter(comment -> comment.pullRequestReviewId() == null)),
-                filesByNameSingle,
-                (comments, files) -> {
-                    List<TimelineItem.TimelineComment> items = new ArrayList<>();
-                    for (ReviewComment comment : comments) {
-                        items.add(new TimelineItem.TimelineComment(comment, files.get(comment.path())));
-                    }
-                    return items;
-                });
+                    prCommentSingle.compose(RxUtils.filter(comment -> comment.pullRequestReviewId() == null)),
+                    filesByNameSingle,
+        (comments, files) -> {
+            List<TimelineItem.TimelineComment> items = new ArrayList<>();
+            for (ReviewComment comment : comments) {
+                items.add(new TimelineItem.TimelineComment(comment, files.get(comment.path())));
+            }
+            return items;
+        });
 
         return Single.zip(
-                issueCommentItemSingle,
-                eventItemSingle,
-                reviewTimelineSingle,
-                commitCommentWithoutReviewSingle,
-                (comments, events, reviewItems, commentsWithoutReview) -> {
+                   issueCommentItemSingle,
+                   eventItemSingle,
+                   reviewTimelineSingle,
+                   commitCommentWithoutReviewSingle,
+        (comments, events, reviewItems, commentsWithoutReview) -> {
             ArrayList<TimelineItem> result = new ArrayList<>();
             result.addAll(comments);
             result.addAll(events);
@@ -327,14 +327,14 @@ public class PullRequestFragment extends IssueFragmentBase {
     @Override
     public void editComment(GitHubCommentBase comment) {
         final @AttrRes int highlightColorAttr = mPullRequest.merged()
-                ? R.attr.colorPullRequestMerged
-                : mPullRequest.state() == IssueState.Closed
-                        ? R.attr.colorIssueClosed : R.attr.colorIssueOpen;
+                                                ? R.attr.colorPullRequestMerged
+                                                : mPullRequest.state() == IssueState.Closed
+                                                ? R.attr.colorIssueClosed : R.attr.colorIssueOpen;
         Intent intent = comment instanceof ReviewComment
-                ? EditPullRequestCommentActivity.makeIntent(getActivity(), mRepoOwner, mRepoName,
-                mPullRequest.number(), comment.id(), 0L, comment.body(), highlightColorAttr)
-                : EditIssueCommentActivity.makeIntent(getActivity(), mRepoOwner, mRepoName,
-                        mIssue.number(), comment.id(), comment.body(), highlightColorAttr);
+                        ? EditPullRequestCommentActivity.makeIntent(getActivity(), mRepoOwner, mRepoName,
+                                mPullRequest.number(), comment.id(), 0L, comment.body(), highlightColorAttr)
+                        : EditIssueCommentActivity.makeIntent(getActivity(), mRepoOwner, mRepoName,
+                                mIssue.number(), comment.id(), comment.body(), highlightColorAttr);
         startActivityForResult(intent, REQUEST_EDIT);
     }
 
@@ -343,7 +343,7 @@ public class PullRequestFragment extends IssueFragmentBase {
     protected Single<Response<Void>> doDeleteComment(GitHubCommentBase comment) {
         if (comment instanceof ReviewComment) {
             PullRequestReviewCommentService service =
-                    ServiceFactory.get(PullRequestReviewCommentService.class, false);
+                ServiceFactory.get(PullRequestReviewCommentService.class, false);
             return service.deleteComment(mRepoOwner, mRepoName, comment.id());
         } else {
             IssueCommentService service = ServiceFactory.get(IssueCommentService.class, false);
@@ -360,17 +360,17 @@ public class PullRequestFragment extends IssueFragmentBase {
         int message = restore ? R.string.restore_branch_question : R.string.delete_branch_question;
         int buttonText = restore ? R.string.restore : R.string.delete;
         new AlertDialog.Builder(getContext())
-                .setMessage(message)
-                .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setPositiveButton(buttonText, (dialog, which) -> {
-                    if (restore) {
-                        restorePullRequestBranch();
-                    } else {
-                        deletePullRequestBranch();
-                    }
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+        .setMessage(message)
+        .setIconAttribute(android.R.attr.alertDialogIcon)
+        .setPositiveButton(buttonText, (dialog, which) -> {
+            if (restore) {
+                restorePullRequestBranch();
+            } else {
+                deletePullRequestBranch();
+            }
+        })
+        .setNegativeButton(R.string.cancel, null)
+        .show();
     }
 
     private void onHeadReferenceUpdated() {
@@ -388,18 +388,18 @@ public class PullRequestFragment extends IssueFragmentBase {
 
         GitService service = ServiceFactory.get(GitService.class, false);
         CreateGitReference request = CreateGitReference.builder()
-                .ref("refs/heads/" + head.ref())
-                .sha(head.sha())
-                .build();
+                                     .ref("refs/heads/" + head.ref())
+                                     .sha(head.sha())
+                                     .build();
 
         service.createGitReference(owner, repo, request)
-                .map(ApiHelpers::throwOnFailure)
-                .compose(RxUtils.wrapForBackgroundTask(getBaseActivity(),
-                        R.string.saving_msg, R.string.restore_branch_error))
-                .subscribe(result -> {
-                    mHeadReference = result;
-                    onHeadReferenceUpdated();
-                }, error -> handleActionFailure("Restoring PR branch failed", error));
+        .map(ApiHelpers::throwOnFailure)
+        .compose(RxUtils.wrapForBackgroundTask(getBaseActivity(),
+                                               R.string.saving_msg, R.string.restore_branch_error))
+        .subscribe(result -> {
+            mHeadReference = result;
+            onHeadReferenceUpdated();
+        }, error -> handleActionFailure("Restoring PR branch failed", error));
     }
 
     private void deletePullRequestBranch() {
@@ -410,17 +410,17 @@ public class PullRequestFragment extends IssueFragmentBase {
         String repo = head.repo().name();
 
         service.deleteGitReference(owner, repo, "heads/" + head.ref())
-                .map(ApiHelpers::mapToBooleanOrThrowOnFailure)
-                .compose(RxUtils.wrapForBackgroundTask(getBaseActivity(),
-                        R.string.deleting_msg, R.string.delete_branch_error))
-                .subscribe(result -> {
-                    mHeadReference = null;
-                    onHeadReferenceUpdated();
-                }, error -> handleActionFailure("Deleting PR branch failed", error));
+        .map(ApiHelpers::mapToBooleanOrThrowOnFailure)
+        .compose(RxUtils.wrapForBackgroundTask(getBaseActivity(),
+                                               R.string.deleting_msg, R.string.delete_branch_error))
+        .subscribe(result -> {
+            mHeadReference = null;
+            onHeadReferenceUpdated();
+        }, error -> handleActionFailure("Deleting PR branch failed", error));
     }
 
     private static final Comparator<Status> STATUS_TIMESTAMP_COMPARATOR =
-            (lhs, rhs) -> rhs.updatedAt().compareTo(lhs.updatedAt());
+        (lhs, rhs) -> rhs.updatedAt().compareTo(lhs.updatedAt());
     private static final Comparator<Status> STATUS_AND_CONTEXT_COMPARATOR = new Comparator<Status>() {
         @Override
         public int compare(Status lhs, Status rhs) {
@@ -435,10 +435,13 @@ public class PullRequestFragment extends IssueFragmentBase {
 
         private int getStateSeverity(Status status) {
             switch (status.state()) {
-                case Success: return 0;
-                case Error:
-                case Failure: return 2;
-                default: return 1;
+            case Success:
+                return 0;
+            case Error:
+            case Failure:
+                return 2;
+            default:
+                return 1;
             }
         }
     };
@@ -452,27 +455,27 @@ public class PullRequestFragment extends IssueFragmentBase {
         String sha = mPullRequest.head().sha();
 
         ApiHelpers.PageIterator
-                    .toSingle(page -> service.getStatuses(mRepoOwner, mRepoName, sha, page))
-                    // Sort by timestamps first, so the removal logic below keeps the newest status
-                    .compose(RxUtils.sortList(STATUS_TIMESTAMP_COMPARATOR))
-                    // Filter out outdated statuses, only keep the newest status per context
-                    .map(statuses -> {
-                        Set<String> seenContexts = new HashSet<>();
-                        Iterator<Status> iter = statuses.iterator();
-                        while (iter.hasNext()) {
-                            Status status = iter.next();
-                            if (seenContexts.contains(status.context())) {
-                                iter.remove();
-                            } else {
-                                seenContexts.add(status.context());
-                            }
-                        }
-                        return statuses;
-                    })
-                    // sort by status, then context
-                    .compose(RxUtils.sortList(STATUS_AND_CONTEXT_COMPARATOR))
-                    .compose(makeLoaderSingle(ID_LOADER_STATUS, force))
-                    .subscribe(this::fillStatus, this::handleLoadFailure);
+        .toSingle(page -> service.getStatuses(mRepoOwner, mRepoName, sha, page))
+        // Sort by timestamps first, so the removal logic below keeps the newest status
+        .compose(RxUtils.sortList(STATUS_TIMESTAMP_COMPARATOR))
+        // Filter out outdated statuses, only keep the newest status per context
+        .map(statuses -> {
+            Set<String> seenContexts = new HashSet<>();
+            Iterator<Status> iter = statuses.iterator();
+            while (iter.hasNext()) {
+                Status status = iter.next();
+                if (seenContexts.contains(status.context())) {
+                    iter.remove();
+                } else {
+                    seenContexts.add(status.context());
+                }
+            }
+            return statuses;
+        })
+        // sort by status, then context
+        .compose(RxUtils.sortList(STATUS_AND_CONTEXT_COMPARATOR))
+        .compose(makeLoaderSingle(ID_LOADER_STATUS, force))
+        .subscribe(this::fillStatus, this::handleLoadFailure);
     }
 
     private void loadHeadReference(boolean force) {
@@ -483,10 +486,10 @@ public class PullRequestFragment extends IssueFragmentBase {
         Single<Optional<GitReference>> refSingle = repo == null
                 ? Single.just(Optional.absent())
                 : service.getGitReference(repo.owner().login(), repo.name(), head.ref())
-                        .map(ApiHelpers::throwOnFailure)
-                        .map(Optional::of)
-                        .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, Optional.<GitReference>absent()))
-                        .compose(makeLoaderSingle(ID_LOADER_HEAD_REF, force));
+                .map(ApiHelpers::throwOnFailure)
+                .map(Optional::of)
+                .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, Optional.<GitReference>absent()))
+                .compose(makeLoaderSingle(ID_LOADER_HEAD_REF, force));
 
         refSingle.subscribe(refOpt -> {
             mHeadReference = refOpt.orNull();

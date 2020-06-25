@@ -56,7 +56,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public abstract class WebViewerActivity extends BaseActivity implements
-        SwipeRefreshLayout.ChildScrollDelegate, View.OnTouchListener {
+    SwipeRefreshLayout.ChildScrollDelegate, View.OnTouchListener {
 
     protected final Point mLastTouchDown = new Point();
 
@@ -340,7 +340,7 @@ public abstract class WebViewerActivity extends BaseActivity implements
     @SuppressLint("AddJavascriptInterface")
     protected void onDataReady() {
         final String cssTheme = Gh4Application.THEME == R.style.DarkTheme
-                ? DARK_CSS_THEME : LIGHT_CSS_THEME;
+                                ? DARK_CSS_THEME : LIGHT_CSS_THEME;
         final String html = generateHtml(cssTheme, false);
         if (mRequiresJsInterface) {
             mWebView.addJavascriptInterface(new DisplayJavascriptInterface(), "NativeClient");
@@ -373,8 +373,8 @@ public abstract class WebViewerActivity extends BaseActivity implements
     }
 
     protected String generateMarkdownHtml(String base64Data,
-            String repoOwner, String repoName, String ref,
-            String cssTheme, boolean addTitleHeader) {
+                                          String repoOwner, String repoName, String ref,
+                                          String cssTheme, boolean addTitleHeader) {
         String title = addTitleHeader ? getDocumentTitle() : null;
         StringBuilder content = new StringBuilder();
         content.append("<html><head><title>");
@@ -401,7 +401,7 @@ public abstract class WebViewerActivity extends BaseActivity implements
         content.append("converter.setFlavor('github');\n");
         if (repoOwner != null && repoName != null) {
             String urlPrefix = "https://raw.github.com/"
-                    + repoOwner + "/" + repoName + "/" + (ref != null ? ref : "master");
+                               + repoOwner + "/" + repoName + "/" + (ref != null ? ref : "master");
             content.append("converter.setOption('fixupRelativeUrls', true);\n");
             content.append("converter.setOption('relativeUrlFixupPrefix','");
             content.append(urlPrefix).append("');\n");
@@ -417,8 +417,8 @@ public abstract class WebViewerActivity extends BaseActivity implements
     }
 
     protected String generateCodeHtml(String data, String fileName,
-                int highlightStart, int highlightEnd,
-                String cssTheme, boolean addTitleHeader) {
+                                      int highlightStart, int highlightEnd,
+                                      String cssTheme, boolean addTitleHeader) {
         String ext = FileUtils.getFileExtension(fileName);
         String title = addTitleHeader ? getDocumentTitle() : null;
         StringBuilder content = new StringBuilder();
@@ -455,10 +455,10 @@ public abstract class WebViewerActivity extends BaseActivity implements
 
     protected static String wrapUnthemedHtml(String html, String cssTheme, String title) {
         String style = TextUtils.equals(cssTheme, DARK_CSS_THEME)
-                ? "<style type=\"text/css\">" +
-                    "body { color: #A3A3A5 !important }" +
-                    "a { color: #4183C4 !important }</style>"
-                : "";
+                       ? "<style type=\"text/css\">" +
+                       "body { color: #A3A3A5 !important }" +
+                       "a { color: #4183C4 !important }</style>"
+                       : "";
         String titleHeader = title != null ? "<h2>" + title + "</h2>" : "";
         return style + "<body>" + titleHeader + html + "</body>";
     }

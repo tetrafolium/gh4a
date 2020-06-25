@@ -66,19 +66,19 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class IssueMilestoneEditActivity extends BasePagerActivity implements
-        View.OnClickListener, View.OnFocusChangeListener, AppBarLayout.OnOffsetChangedListener {
+    View.OnClickListener, View.OnFocusChangeListener, AppBarLayout.OnOffsetChangedListener {
     public static Intent makeEditIntent(Context context, String repoOwner, String repoName,
-            Milestone milestone, boolean fromPullRequest) {
+                                        Milestone milestone, boolean fromPullRequest) {
         return makeCreateIntent(context, repoOwner, repoName, fromPullRequest)
-                .putExtra("milestone", milestone);
+               .putExtra("milestone", milestone);
     }
 
     public static Intent makeCreateIntent(Context context, String repoOwner, String repoName,
-            boolean fromPullRequest) {
+                                          boolean fromPullRequest) {
         return new Intent(context, IssueMilestoneEditActivity.class)
-                .putExtra("owner", repoOwner)
-                .putExtra("repo", repoName)
-                .putExtra("from_pr", fromPullRequest);
+               .putExtra("owner", repoOwner)
+               .putExtra("repo", repoName)
+               .putExtra("from_pr", fromPullRequest);
     }
 
     private static final int[] TITLES = {
@@ -129,7 +129,7 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
 
         CoordinatorLayout rootLayout = getRootLayout();
         mSaveFab = (IssueStateTrackingFloatingActionButton)
-                getLayoutInflater().inflate(R.layout.accept_fab, rootLayout, false);
+                   getLayoutInflater().inflate(R.layout.accept_fab, rootLayout, false);
         mSaveFab.setOnClickListener(this);
         rootLayout.addView(mSaveFab);
 
@@ -166,8 +166,8 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
     @Override
     protected String getActionBarTitle() {
         return getString(isInEditMode()
-                ? R.string.issue_milestone_edit
-                : R.string.issue_milestone_new);
+                         ? R.string.issue_milestone_edit
+                         : R.string.issue_milestone_new);
     }
 
     @Nullable
@@ -231,7 +231,7 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
         } else if (view == mSaveFab) {
             String title = mTitleView.getText().toString();
             String desc = mDescriptionView.getText() != null ?
-                    mDescriptionView.getText().toString() : null;
+                          mDescriptionView.getText().toString() : null;
 
             saveMilestone(title, desc);
         }
@@ -249,24 +249,24 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
         // Set the bottom padding to make the bottom appear as not moving while the
         // AppBarLayout pushes it down or up.
         mRootView.setPadding(mRootView.getPaddingLeft(), mRootView.getPaddingTop(),
-                mRootView.getPaddingRight(), appBarLayout.getTotalScrollRange() + verticalOffset);
+                             mRootView.getPaddingRight(), appBarLayout.getTotalScrollRange() + verticalOffset);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.milestone_close:
-            case R.id.milestone_reopen:
-                showOpenCloseConfirmDialog(item.getItemId() == R.id.milestone_reopen);
-                return true;
-            case R.id.delete:
-                new AlertDialog.Builder(this)
-                        .setMessage(getString(R.string.issue_dialog_delete_message,
-                                mMilestone.title()))
-                        .setPositiveButton(R.string.delete, (dialog, which) -> deleteMilestone())
-                        .setNegativeButton(R.string.cancel, null)
-                        .show();
-                return true;
+        case R.id.milestone_close:
+        case R.id.milestone_reopen:
+            showOpenCloseConfirmDialog(item.getItemId() == R.id.milestone_reopen);
+            return true;
+        case R.id.delete:
+            new AlertDialog.Builder(this)
+            .setMessage(getString(R.string.issue_dialog_delete_message,
+                                  mMilestone.title()))
+            .setPositiveButton(R.string.delete, (dialog, which) -> deleteMilestone())
+            .setNegativeButton(R.string.cancel, null)
+            .show();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -274,20 +274,20 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
 
     private void showOpenCloseConfirmDialog(final boolean reopen) {
         @StringRes int messageResId = reopen
-                ? R.string.issue_milestone_reopen_message : R.string.issue_milestone_close_message;
+                                      ? R.string.issue_milestone_reopen_message : R.string.issue_milestone_close_message;
         @StringRes int buttonResId = reopen
-                ? R.string.pull_request_reopen : R.string.pull_request_close;
+                                     ? R.string.pull_request_reopen : R.string.pull_request_close;
         new AlertDialog.Builder(this)
-                .setMessage(messageResId)
-                .setPositiveButton(buttonResId, (dialog, which) -> setMilestoneState(reopen))
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+        .setMessage(messageResId)
+        .setPositiveButton(buttonResId, (dialog, which) -> setMilestoneState(reopen))
+        .setNegativeButton(R.string.cancel, null)
+        .show();
     }
 
     private void updateHighlightColor() {
         boolean closed = mMilestone.state() == IssueState.Closed;
         transitionHeaderToColor(closed ? R.attr.colorIssueClosed : R.attr.colorIssueOpen,
-                closed ? R.attr.colorIssueClosedDark : R.attr.colorIssueOpenDark);
+                                closed ? R.attr.colorIssueClosedDark : R.attr.colorIssueOpenDark);
         mSaveFab.setState(mMilestone.state());
     }
 
@@ -301,15 +301,15 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
         cal.set(Calendar.SECOND, 0);
 
         mMilestone = mMilestone.toBuilder()
-                .dueOn(cal.getTime())
-                .build();
+                     .dueOn(cal.getTime())
+                     .build();
         updateLabels();
     }
 
     private void resetDueOn() {
         mMilestone = mMilestone.toBuilder()
-                .dueOn(null)
-                .build();
+                     .dueOn(null)
+                     .build();
         updateLabels();
     }
 
@@ -326,11 +326,11 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
     private Single<Response<Milestone>> createMilestone(String title, String desc,
             IssueMilestoneService service) {
         CreateMilestone request = CreateMilestone.builder()
-                .title(title)
-                .description(desc)
-                .state(mMilestone.state())
-                .dueOn(mMilestone.dueOn())
-                .build();
+                                  .title(title)
+                                  .description(desc)
+                                  .state(mMilestone.state())
+                                  .dueOn(mMilestone.dueOn())
+                                  .build();
 
         return service.createMilestone(mRepoOwner, mRepoName, request);
     }
@@ -338,67 +338,67 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
     private Single<Response<Milestone>> editMilestone(String title, String desc,
             IssueMilestoneService service) {
         EditMilestone request = EditMilestone.builder()
-                .title(title)
-                .description(desc)
-                .state(mMilestone.state())
-                .dueOn(mMilestone.dueOn())
-                .build();
+                                .title(title)
+                                .description(desc)
+                                .state(mMilestone.state())
+                                .dueOn(mMilestone.dueOn())
+                                .build();
 
         return service.editMilestone(mRepoOwner, mRepoName, mMilestone.number(), request);
     }
 
     private void saveMilestone(String title, String desc) {
         @StringRes int errorMessageResId = isInEditMode()
-                ? R.string.issue_error_edit_milestone : R.string.issue_error_create_milestone;
+                                           ? R.string.issue_error_edit_milestone : R.string.issue_error_create_milestone;
         String errorMessage = getString(errorMessageResId, title);
         IssueMilestoneService service = ServiceFactory.get(IssueMilestoneService.class, false);
         Single<Response<Milestone>> responseSingle = isInEditMode()
                 ? editMilestone(title, desc, service) : createMilestone(title, desc, service);
 
         responseSingle
-                .map(ApiHelpers::throwOnFailure)
-                .compose(RxUtils.wrapForBackgroundTask(this, R.string.saving_msg, errorMessage))
-                .subscribe(result -> {
-                    mMilestone = result;
-                    setResult(RESULT_OK);
-                    finish();
-                }, error -> handleActionFailure("Saving milestone failed", error));
+        .map(ApiHelpers::throwOnFailure)
+        .compose(RxUtils.wrapForBackgroundTask(this, R.string.saving_msg, errorMessage))
+        .subscribe(result -> {
+            mMilestone = result;
+            setResult(RESULT_OK);
+            finish();
+        }, error -> handleActionFailure("Saving milestone failed", error));
     }
 
     private void deleteMilestone() {
         IssueMilestoneService service = ServiceFactory.get(IssueMilestoneService.class, false);
         service.deleteMilestone(mRepoOwner, mRepoName, mMilestone.number())
-                .map(ApiHelpers::throwOnFailure)
-                .compose(RxUtils.wrapForBackgroundTask(this, R.string.deleting_msg, R.string.issue_error_delete_milestone))
-                .subscribe(result -> {
-                    setResult(RESULT_OK);
-                    finish();
-                }, error -> handleActionFailure("Deleting milestone failed", error));
+        .map(ApiHelpers::throwOnFailure)
+        .compose(RxUtils.wrapForBackgroundTask(this, R.string.deleting_msg, R.string.issue_error_delete_milestone))
+        .subscribe(result -> {
+            setResult(RESULT_OK);
+            finish();
+        }, error -> handleActionFailure("Deleting milestone failed", error));
     }
 
     private void setMilestoneState(boolean open) {
         @StringRes int dialogMessageResId = open ? R.string.opening_msg : R.string.closing_msg;
         String errorMessage = getString(
-                open ? R.string.issue_milestone_reopen_error : R.string.issue_milestone_close_error,
-                mMilestone.title());
+                                  open ? R.string.issue_milestone_reopen_error : R.string.issue_milestone_close_error,
+                                  mMilestone.title());
         IssueMilestoneService service = ServiceFactory.get(IssueMilestoneService.class, false);
         EditMilestone request = EditMilestone.builder()
-                .state(open ? IssueState.Open : IssueState.Closed)
-                .build();
+                                .state(open ? IssueState.Open : IssueState.Closed)
+                                .build();
 
         service.editMilestone(mRepoOwner, mRepoName, mMilestone.number(), request)
-                .map(ApiHelpers::throwOnFailure)
-                .compose(RxUtils.wrapForBackgroundTask(this, dialogMessageResId, errorMessage))
-                .subscribe(result -> {
-                    mMilestone = result;
-                    updateHighlightColor();
-                    supportInvalidateOptionsMenu();
-                    setResult(RESULT_OK);
-                }, error -> handleActionFailure("Updating milestone failed", error));
+        .map(ApiHelpers::throwOnFailure)
+        .compose(RxUtils.wrapForBackgroundTask(this, dialogMessageResId, errorMessage))
+        .subscribe(result -> {
+            mMilestone = result;
+            updateHighlightColor();
+            supportInvalidateOptionsMenu();
+            setResult(RESULT_OK);
+        }, error -> handleActionFailure("Updating milestone failed", error));
     }
 
     public static class DatePickerFragment extends DialogFragment
-            implements DatePickerDialog.OnDateSetListener, DialogInterface.OnClickListener {
+        implements DatePickerDialog.OnDateSetListener, DialogInterface.OnClickListener {
         private boolean mStopping;
 
         @Override
@@ -453,9 +453,15 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
         public Object instantiateItem(ViewGroup container, int position) {
             @IdRes int resId = 0;
             switch (position) {
-                case 0: resId = R.id.editor_container; break;
-                case 1: resId = R.id.preview; break;
-                case 2: resId = R.id.options; break;
+            case 0:
+                resId = R.id.editor_container;
+                break;
+            case 1:
+                resId = R.id.preview;
+                break;
+            case 2:
+                resId = R.id.options;
+                break;
             }
             return container.findViewById(resId);
         }

@@ -70,7 +70,7 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class RepositoryFragment extends LoadingFragmentBase implements
-        OverviewRow.OnIconClickListener, View.OnClickListener {
+    OverviewRow.OnIconClickListener, View.OnClickListener {
     public static RepositoryFragment newInstance(Repository repository, String ref) {
         RepositoryFragment f = new RepositoryFragment();
 
@@ -222,7 +222,7 @@ public class RepositoryFragment extends LoadingFragmentBase implements
     private void fillData() {
         TextView tvRepoName = mContentView.findViewById(R.id.tv_repo_name);
         IntentSpan repoSpan = new IntentSpan(tvRepoName.getContext(),
-                context -> UserActivity.makeIntent(context, mRepository.owner()));
+                                             context -> UserActivity.makeIntent(context, mRepository.owner()));
         SpannableStringBuilder repoName = new SpannableStringBuilder();
         repoName.append(mRepository.owner().login());
         repoName.append("/");
@@ -252,14 +252,14 @@ public class RepositoryFragment extends LoadingFragmentBase implements
 
         OverviewRow languageRow = mContentView.findViewById(R.id.language_row);
         languageRow.setVisibility(StringUtils.isBlank(mRepository.language())
-                ? View.GONE : View.VISIBLE);
+                                  ? View.GONE : View.VISIBLE);
         languageRow.setText(getString(R.string.repo_language, mRepository.language()));
 
         boolean showOverviewRowDivider = forkParentRow.getVisibility() == View.VISIBLE
-                || privateRow.getVisibility() == View.VISIBLE
-                || languageRow.getVisibility() == View.VISIBLE;
+                                         || privateRow.getVisibility() == View.VISIBLE
+                                         || languageRow.getVisibility() == View.VISIBLE;
         mContentView.findViewById(R.id.repository_overview_row_divider)
-                .setVisibility(showOverviewRowDivider ? View.VISIBLE : View.GONE);
+        .setVisibility(showOverviewRowDivider ? View.VISIBLE : View.GONE);
 
         OverviewRow issuesRow = mContentView.findViewById(R.id.issues_row);
         issuesRow.setVisibility(mRepository.hasIssues() ? View.VISIBLE : View.GONE);
@@ -270,7 +270,7 @@ public class RepositoryFragment extends LoadingFragmentBase implements
 
         OverviewRow forksRow = mContentView.findViewById(R.id.forks_row);
         forksRow.setText(getResources().getQuantityString(R.plurals.fork,
-                mRepository.forksCount(), mRepository.forksCount()));
+                         mRepository.forksCount(), mRepository.forksCount()));
         forksRow.setClickIntent(ForkListActivity.makeIntent(getActivity(), owner, name));
 
         mStarsRow = mContentView.findViewById(R.id.stars_row);
@@ -293,7 +293,7 @@ public class RepositoryFragment extends LoadingFragmentBase implements
 
         Permissions permissions = mRepository.permissions();
         updateClickableLabel(R.id.tv_collaborators_label,
-                permissions != null && permissions.push());
+                             permissions != null && permissions.push());
         updateClickableLabel(R.id.tv_wiki_label, mRepository.hasWiki());
     }
 
@@ -333,13 +333,13 @@ public class RepositoryFragment extends LoadingFragmentBase implements
 
     private void updateStargazerUi() {
         mStarsRow.setText(getResources().getQuantityString(R.plurals.star,
-                mRepository.stargazersCount(), mRepository.stargazersCount()));
+                          mRepository.stargazersCount(), mRepository.stargazersCount()));
         mStarsRow.setToggleState(mIsStarring != null && mIsStarring);
     }
 
     private void updateWatcherUi() {
         mWatcherRow.setText(getResources().getQuantityString(R.plurals.watcher,
-                mRepository.subscribersCount(), mRepository.subscribersCount()));
+                            mRepository.subscribersCount(), mRepository.subscribersCount()));
         mWatcherRow.setToggleState(mIsWatching != null && mIsWatching);
     }
 
@@ -397,7 +397,7 @@ public class RepositoryFragment extends LoadingFragmentBase implements
     private void updateReadmeVisibility() {
         mReadmeView.setVisibility(mIsReadmeExpanded && mIsReadmeLoaded ? View.VISIBLE : View.GONE);
         mLoadingView.setVisibility(
-                mIsReadmeExpanded && !mIsReadmeLoaded ? View.VISIBLE : View.GONE);
+            mIsReadmeExpanded && !mIsReadmeLoaded ? View.VISIBLE : View.GONE);
 
         int drawableAttr = mIsReadmeExpanded ? R.attr.dropUpArrowIcon : R.attr.dropDownArrowIcon;
         int drawableRes = UiUtils.resolveDrawable(getContext(), drawableAttr);
@@ -413,75 +413,75 @@ public class RepositoryFragment extends LoadingFragmentBase implements
         RepositoryContentService service = ServiceFactory.get(RepositoryContentService.class, force);
 
         service.getReadmeHtml(repoOwner, repoName, mRef)
-                .map(ApiHelpers::throwOnFailure)
-                .map(Optional::of)
-                .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, Optional.<String>absent()))
-                .map(htmlOpt -> {
-                    if (htmlOpt.isPresent()) {
-                        String html = HtmlUtils.rewriteRelativeUrls(htmlOpt.get(),
-                                repoOwner, repoName, mRef != null ? mRef : mRepository.defaultBranch());
-                        mImageGetter.encode(context, id, html);
-                        return Optional.of(html);
-                    }
-                    return Optional.<String>absent();
-                })
-                .compose(makeLoaderSingle(ID_LOADER_README, force))
-                .doOnSubscribe(disposable -> {
-                    mIsReadmeLoaded = false;
-                    updateReadmeVisibility();
-                })
-                .subscribe(readmeOpt -> {
-                    if (readmeOpt.isPresent()) {
-                        mReadmeView.setMovementMethod(UiUtils.CHECKING_LINK_METHOD);
-                        mImageGetter.bind(mReadmeView, readmeOpt.get(), id);
-                    } else {
-                        mReadmeView.setText(R.string.repo_no_readme);
-                        mReadmeView.setTypeface(Typeface.DEFAULT, Typeface.ITALIC);
-                    }
-                    mIsReadmeLoaded = true;
-                    updateReadmeVisibility();
-                }, this::handleLoadFailure);
+        .map(ApiHelpers::throwOnFailure)
+        .map(Optional::of)
+        .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, Optional.<String>absent()))
+        .map(htmlOpt -> {
+            if (htmlOpt.isPresent()) {
+                String html = HtmlUtils.rewriteRelativeUrls(htmlOpt.get(),
+                        repoOwner, repoName, mRef != null ? mRef : mRepository.defaultBranch());
+                mImageGetter.encode(context, id, html);
+                return Optional.of(html);
+            }
+            return Optional.<String>absent();
+        })
+        .compose(makeLoaderSingle(ID_LOADER_README, force))
+        .doOnSubscribe(disposable -> {
+            mIsReadmeLoaded = false;
+            updateReadmeVisibility();
+        })
+        .subscribe(readmeOpt -> {
+            if (readmeOpt.isPresent()) {
+                mReadmeView.setMovementMethod(UiUtils.CHECKING_LINK_METHOD);
+                mImageGetter.bind(mReadmeView, readmeOpt.get(), id);
+            } else {
+                mReadmeView.setText(R.string.repo_no_readme);
+                mReadmeView.setTypeface(Typeface.DEFAULT, Typeface.ITALIC);
+            }
+            mIsReadmeLoaded = true;
+            updateReadmeVisibility();
+        }, this::handleLoadFailure);
     }
 
     private void loadPullRequestCount(boolean force) {
         SearchService service = ServiceFactory.get(SearchService.class, force, null, null, 1);
         String query = String.format(Locale.US, "type:pr repo:%s/%s state:open",
-                mRepository.owner().login(), mRepository.name());
+                                     mRepository.owner().login(), mRepository.name());
 
         service.searchIssues(query, null, null, 0)
-                .map(ApiHelpers::throwOnFailure)
-                .map(SearchPage::totalCount)
-                .compose(makeLoaderSingle(ID_LOADER_PULL_REQUEST_COUNT, force))
-                .subscribe(count -> {
-                    int issueCount = mRepository.openIssuesCount() - count;
+        .map(ApiHelpers::throwOnFailure)
+        .map(SearchPage::totalCount)
+        .compose(makeLoaderSingle(ID_LOADER_PULL_REQUEST_COUNT, force))
+        .subscribe(count -> {
+            int issueCount = mRepository.openIssuesCount() - count;
 
-                    OverviewRow issuesRow = mContentView.findViewById(R.id.issues_row);
-                    issuesRow.setText(getResources().getQuantityString(R.plurals.issue, issueCount, issueCount));
+            OverviewRow issuesRow = mContentView.findViewById(R.id.issues_row);
+            issuesRow.setText(getResources().getQuantityString(R.plurals.issue, issueCount, issueCount));
 
-                    OverviewRow pullsRow = mContentView.findViewById(R.id.pulls_row);
-                    pullsRow.setText(getResources().getQuantityString(R.plurals.pull_request, count, count));
-                }, this::handleLoadFailure);
+            OverviewRow pullsRow = mContentView.findViewById(R.id.pulls_row);
+            pullsRow.setText(getResources().getQuantityString(R.plurals.pull_request, count, count));
+        }, this::handleLoadFailure);
     }
 
     private void toggleStarringState() {
         StarringService service = ServiceFactory.get(StarringService.class, false);
         Single<Response<Void>> responseSingle = mIsStarring
-                ? service.unstarRepository(mRepository.owner().login(), mRepository.name())
-                : service.starRepository(mRepository.owner().login(), mRepository.name());
+                                                ? service.unstarRepository(mRepository.owner().login(), mRepository.name())
+                                                : service.starRepository(mRepository.owner().login(), mRepository.name());
         responseSingle.map(ApiHelpers::mapToBooleanOrThrowOnFailure)
-                .compose(RxUtils::doInBackground)
-                .subscribe(result -> {
-                    if (mIsStarring != null) {
-                        mIsStarring = !mIsStarring;
-                        mRepository = mRepository.toBuilder()
-                                .stargazersCount(mRepository.stargazersCount() + (mIsStarring ? 1 : -1))
-                                .build();
-                        updateStargazerUi();
-                    }
-                }, error -> {
-                    handleActionFailure("Updating repo starring state failed", error);
-                    updateStargazerUi();
-                });
+        .compose(RxUtils::doInBackground)
+        .subscribe(result -> {
+            if (mIsStarring != null) {
+                mIsStarring = !mIsStarring;
+                mRepository = mRepository.toBuilder()
+                .stargazersCount(mRepository.stargazersCount() + (mIsStarring ? 1 : -1))
+                .build();
+                updateStargazerUi();
+            }
+        }, error -> {
+            handleActionFailure("Updating repo starring state failed", error);
+            updateStargazerUi();
+        });
 
     }
 
@@ -492,28 +492,28 @@ public class RepositoryFragment extends LoadingFragmentBase implements
 
         if (mIsWatching) {
             responseSingle = service.deleteRepositorySubscription(repoOwner, repoName)
-                    .map(ApiHelpers::throwOnFailure);
+                             .map(ApiHelpers::throwOnFailure);
         } else {
             SubscriptionRequest request = SubscriptionRequest.builder()
-                    .subscribed(true)
-                    .build();
+                                          .subscribed(true)
+                                          .build();
             responseSingle = service.setRepositorySubscription(repoOwner, repoName, request)
-                    .map(ApiHelpers::throwOnFailure);
+                             .map(ApiHelpers::throwOnFailure);
         }
 
         responseSingle.compose(RxUtils::doInBackground)
-                .subscribe(result -> {
-                    if (mIsWatching != null) {
-                        mIsWatching = !mIsWatching;
-                        mRepository = mRepository.toBuilder()
-                                .subscribersCount(mRepository.subscribersCount() + (mIsWatching ? 1 : -1))
-                                .build();
-                        updateWatcherUi();
-                    }
-                }, error -> {
-                    handleActionFailure("Updating repo watching state failed", error);
-                    updateWatcherUi();
-                });
+        .subscribe(result -> {
+            if (mIsWatching != null) {
+                mIsWatching = !mIsWatching;
+                mRepository = mRepository.toBuilder()
+                .subscribersCount(mRepository.subscribersCount() + (mIsWatching ? 1 : -1))
+                .build();
+                updateWatcherUi();
+            }
+        }, error -> {
+            handleActionFailure("Updating repo watching state failed", error);
+            updateWatcherUi();
+        });
     }
 
 
@@ -523,15 +523,15 @@ public class RepositoryFragment extends LoadingFragmentBase implements
         }
         StarringService service = ServiceFactory.get(StarringService.class, force);
         service.checkIfRepositoryIsStarred(mRepository.owner().login(), mRepository.name())
-                // success response means 'starred'
-                .map(ApiHelpers::mapToTrueOnSuccess)
-                // 404 means 'not starred'
-                .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, false))
-                .compose(makeLoaderSingle(ID_LOADER_STARRING, force))
-                .subscribe(result -> {
-                    mIsStarring = result;
-                    updateStargazerUi();
-                }, this::handleLoadFailure);
+        // success response means 'starred'
+        .map(ApiHelpers::mapToTrueOnSuccess)
+        // 404 means 'not starred'
+        .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, false))
+        .compose(makeLoaderSingle(ID_LOADER_STARRING, force))
+        .subscribe(result -> {
+            mIsStarring = result;
+            updateStargazerUi();
+        }, this::handleLoadFailure);
     }
 
     private void loadWatchingState(boolean force) {
@@ -540,15 +540,15 @@ public class RepositoryFragment extends LoadingFragmentBase implements
         }
         WatchingService service = ServiceFactory.get(WatchingService.class, force);
         service.getRepositorySubscription(mRepository.owner().login(), mRepository.name())
-                .map(ApiHelpers::throwOnFailure)
-                .map(Subscription::subscribed)
-                // 404 means 'not subscribed'
-                .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, false))
-                .compose(makeLoaderSingle(ID_LOADER_WATCHING, force))
-                .subscribe(result -> {
-                    mIsWatching = result;
-                    updateWatcherUi();
-                }, this::handleLoadFailure);
+        .map(ApiHelpers::throwOnFailure)
+        .map(Subscription::subscribed)
+        // 404 means 'not subscribed'
+        .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, false))
+        .compose(makeLoaderSingle(ID_LOADER_WATCHING, force))
+        .subscribe(result -> {
+            mIsWatching = result;
+            updateWatcherUi();
+        }, this::handleLoadFailure);
     }
 
 

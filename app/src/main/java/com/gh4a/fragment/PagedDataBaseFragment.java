@@ -40,7 +40,7 @@ import io.reactivex.subjects.Subject;
 import retrofit2.Response;
 
 public abstract class PagedDataBaseFragment<T> extends LoadingListFragmentBase implements
-        RootAdapter.OnItemClickListener<T>, RootAdapter.OnScrolledToFooterListener {
+    RootAdapter.OnItemClickListener<T>, RootAdapter.OnScrolledToFooterListener {
     private RootAdapter<T, ? extends RecyclerView.ViewHolder> mAdapter;
     private RxLoader mRxLoader;
     private Subject<Integer> mPageSubject;
@@ -110,28 +110,28 @@ public abstract class PagedDataBaseFragment<T> extends LoadingListFragmentBase i
 
     private void load(boolean force) {
         mSubscription = mPageSubject
-                .flatMap(page -> loadPage(page, force)
-                        .map(response -> {
-                            if (response.code() == HttpURLConnection.HTTP_NO_CONTENT) {
-                                return Response.success(new ApiHelpers.DummyPage<T>());
-                            }
-                            return response;
-                        })
-                        .map(ApiHelpers::throwOnFailure)
-                        .compose(RxUtils::doInBackground)
-                        .toObservable())
-                .scan(Pair.create(new ArrayList<T>(), 0), (pair, page) -> {
-                    pair.first.addAll(page.items());
-                    return Pair.create(pair.first, page.next());
-                })
-                // filter out initial value
-                .filter(pair -> pair.second == null || pair.second != 0)
-                .compose(mRxLoader.makeObservableTransformer(0, force))
-                .subscribe(result -> {
-                    fillData(result.first, result.second);
-                    setContentShown(true);
-                    updateEmptyState();
-                }, this::handleLoadFailure);
+                        .flatMap(page -> loadPage(page, force)
+        .map(response -> {
+            if (response.code() == HttpURLConnection.HTTP_NO_CONTENT) {
+                return Response.success(new ApiHelpers.DummyPage<T>());
+            }
+            return response;
+        })
+        .map(ApiHelpers::throwOnFailure)
+        .compose(RxUtils::doInBackground)
+        .toObservable())
+        .scan(Pair.create(new ArrayList<T>(), 0), (pair, page) -> {
+            pair.first.addAll(page.items());
+            return Pair.create(pair.first, page.next());
+        })
+        // filter out initial value
+        .filter(pair -> pair.second == null || pair.second != 0)
+        .compose(mRxLoader.makeObservableTransformer(0, force))
+        .subscribe(result -> {
+            fillData(result.first, result.second);
+            setContentShown(true);
+            updateEmptyState();
+        }, this::handleLoadFailure);
     }
 
     private void fillData(List<T> data, Integer nextPage) {

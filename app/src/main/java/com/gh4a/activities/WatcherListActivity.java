@@ -29,8 +29,8 @@ import com.gh4a.fragment.WatcherListFragment;
 public class WatcherListActivity extends FragmentContainerActivity {
     public static Intent makeIntent(Context context, String repoOwner, String repoName) {
         return new Intent(context, WatcherListActivity.class)
-                .putExtra("owner", repoOwner)
-                .putExtra("repo", repoName);
+               .putExtra("owner", repoOwner)
+               .putExtra("repo", repoName);
     }
 
     private String mRepoOwner;

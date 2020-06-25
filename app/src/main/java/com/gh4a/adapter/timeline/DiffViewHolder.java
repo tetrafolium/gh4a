@@ -28,9 +28,9 @@ import com.gh4a.utils.UiUtils;
 import com.meisolsson.githubsdk.model.ReviewComment;
 
 class DiffViewHolder extends TimelineItemAdapter.TimelineItemViewHolder<TimelineItem.Diff>
-        implements View.OnClickListener {
+    implements View.OnClickListener {
     private static final float[] DIFF_SIZE_MULTIPLIERS = new float[] {
-            0.667F, 0.833F, 1F, 1.5F, 2F
+        0.667F, 0.833F, 1F, 1.5F, 2F
     };
 
     private final int mAddedLineBackgroundColor;
@@ -61,13 +61,13 @@ class DiffViewHolder extends TimelineItemAdapter.TimelineItemViewHolder<Timeline
         mAddedLineBackgroundColor = UiUtils.resolveColor(context, R.attr.colorDiffAddBackground);
         mRemovedLineBackgroundColor = UiUtils.resolveColor(context, R.attr.colorDiffRemoveBackground);
         mAddedLineNumberBackgroundColor =
-                UiUtils.resolveColor(context, R.attr.colorDiffAddLineNumberBackground);
+            UiUtils.resolveColor(context, R.attr.colorDiffAddLineNumberBackground);
         mRemovedLineNumberBackgroundColor =
-                UiUtils.resolveColor(context, R.attr.colorDiffRemoveLineNumberBackground);
+            UiUtils.resolveColor(context, R.attr.colorDiffRemoveLineNumberBackground);
         mSecondaryTextColor = UiUtils.resolveColor(context, android.R.attr.textColorSecondary);
         mDefaultBackgroundColor = ContextCompat.getColor(context, R.color.diff_default_background);
         mDefaultLineNumberBackgroundColor =
-                ContextCompat.getColor(context, R.color.diff_default_line_number_background);
+            ContextCompat.getColor(context, R.color.diff_default_line_number_background);
         mAccentColor = UiUtils.resolveColor(context, R.attr.colorAccent);
         mPadding = context.getResources().getDimensionPixelSize(R.dimen.code_diff_padding);
 
@@ -87,8 +87,8 @@ class DiffViewHolder extends TimelineItemAdapter.TimelineItemViewHolder<Timeline
 
         boolean isOutdated = comment.position() == null;
         mFileTextView.setPaintFlags(isOutdated
-                ? mFileTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG
-                : mFileTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                                    ? mFileTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG
+                                    : mFileTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
         mFileTextView.setClickable(!isOutdated);
         mFileTextView.setTextColor(isOutdated ? mSecondaryTextColor : mAccentColor);
 
@@ -155,25 +155,25 @@ class DiffViewHolder extends TimelineItemAdapter.TimelineItemViewHolder<Timeline
             }
 
             DiffLineSpan span = new DiffLineSpan(backgroundColor, lineNumberBackgroundColor, mPadding, i == start,
-                    i == lines.length - 1, lineNumberLength);
+                                                 i == lines.length - 1, lineNumberLength);
             builder.setSpan(span, spanStart, builder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         mDiffHunkTextView.setText(builder);
         mDiffHunkTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                mInitialDiffTextSize * getDiffSizeMultiplier());
+                                      mInitialDiffTextSize * getDiffSizeMultiplier());
     }
 
     private float getDiffSizeMultiplier() {
         Context context = itemView.getContext();
         SharedPreferences prefs = context.getSharedPreferences(SettingsFragment.PREF_NAME,
-                Context.MODE_PRIVATE);
+                                  Context.MODE_PRIVATE);
         int textSizeSetting = prefs.getInt(SettingsFragment.KEY_TEXT_SIZE, 2);
         return textSizeSetting >= 0 && textSizeSetting < DIFF_SIZE_MULTIPLIERS.length
-                ? DIFF_SIZE_MULTIPLIERS[textSizeSetting] : 1F;
+               ? DIFF_SIZE_MULTIPLIERS[textSizeSetting] : 1F;
     }
 
     private void appendLineNumber(SpannableStringBuilder builder, int maxLength, String numberText,
-            final int number, final TimelineItem.Diff diff, final boolean isRightNumber) {
+                                  final int number, final TimelineItem.Diff diff, final boolean isRightNumber) {
         int start = builder.length();
 
         // Add padding at the start of text
@@ -205,7 +205,7 @@ class DiffViewHolder extends TimelineItemAdapter.TimelineItemViewHolder<Timeline
     public void onClick(View view) {
         if (view.getId() == R.id.tv_file) {
             TimelineItem.TimelineComment timelineComment =
-                    (TimelineItem.TimelineComment) view.getTag();
+                (TimelineItem.TimelineComment) view.getTag();
             Intent intent = timelineComment.makeDiffIntent(mContext);
 
             if (intent != null) {
@@ -218,14 +218,14 @@ class DiffViewHolder extends TimelineItemAdapter.TimelineItemViewHolder<Timeline
         ReviewComment comment = diff.getInitialComment();
         String fragment = "discussion-diff-" + comment.id() + (isRightLine ? "R" : "L") + line;
         return IntentUtils.createBaseUriForRepo(mRepoOwner, mRepoName)
-                .appendPath("pull")
-                .appendPath(String.valueOf(mIssueNumber))
-                .fragment(fragment)
-                .build();
+               .appendPath("pull")
+               .appendPath(String.valueOf(mIssueNumber))
+               .fragment(fragment)
+               .build();
     }
 
     private void showPopupMenu(final TimelineItem.Diff diff, final int line,
-            final boolean isRightLine) {
+                               final boolean isRightLine) {
         PopupMenu popupMenu = new PopupMenu(mContext, mDiffHunkTextView);
 
         Menu menu = popupMenu.getMenu();
@@ -235,14 +235,14 @@ class DiffViewHolder extends TimelineItemAdapter.TimelineItemViewHolder<Timeline
 
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
-                case R.id.share:
-                    IntentUtils.share(mContext, "Line", createUrl(diff, line, isRightLine));
-                    return true;
-                case R.id.view_in_file:
-                    Intent intent = diff.getInitialTimelineComment()
-                            .makeDiffIntent(mContext, line, isRightLine);
-                    mContext.startActivity(intent);
-                    return true;
+            case R.id.share:
+                IntentUtils.share(mContext, "Line", createUrl(diff, line, isRightLine));
+                return true;
+            case R.id.view_in_file:
+                Intent intent = diff.getInitialTimelineComment()
+                .makeDiffIntent(mContext, line, isRightLine);
+                mContext.startActivity(intent);
+                return true;
             }
             return false;
         });
@@ -258,7 +258,7 @@ class DiffViewHolder extends TimelineItemAdapter.TimelineItemViewHolder<Timeline
         private final int mLineNumberLength;
 
         public DiffLineSpan(int backgroundColor, int numberBackgroundColor, int padding,
-                boolean isFirstLine, boolean isLastLine, int lineNumberLength) {
+                            boolean isFirstLine, boolean isLastLine, int lineNumberLength) {
             super();
             mBackgroundColor = backgroundColor;
             mLineNumberBackgroundColor = numberBackgroundColor;
@@ -270,7 +270,7 @@ class DiffViewHolder extends TimelineItemAdapter.TimelineItemViewHolder<Timeline
 
         @Override
         public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline,
-                int bottom, CharSequence text, int start, int end, int lnum) {
+                                   int bottom, CharSequence text, int start, int end, int lnum) {
             final int paintColor = p.getColor();
             float width = p.measureText(text, start, start + mLineNumberLength);
             int bgTop = top - (mIsFirstLine ? mPadding : 0);

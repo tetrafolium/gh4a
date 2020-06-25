@@ -69,7 +69,7 @@ public class IntentUtils {
     private static Intent createBrowserIntent(Context context, Uri uri) {
         final Uri dummyUri = buildDummyUri(uri);
         final Intent browserIntent = new Intent(Intent.ACTION_VIEW, dummyUri)
-                .addCategory(Intent.CATEGORY_BROWSABLE);
+        .addCategory(Intent.CATEGORY_BROWSABLE);
         return createActivityChooserIntent(context, browserIntent, uri);
     }
 
@@ -88,8 +88,8 @@ public class IntentUtils {
         if (pkg != null) {
             int color = UiUtils.resolveColor(activity, R.attr.colorPrimary);
             CustomTabsIntent i = new CustomTabsIntent.Builder()
-                    .setToolbarColor(color)
-                    .build();
+            .setToolbarColor(color)
+            .build();
             i.intent.setPackage(pkg);
             i.intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             i.launchUrl(activity, uri);
@@ -100,14 +100,14 @@ public class IntentUtils {
 
     public static Uri.Builder createBaseUriForUser(String user) {
         return new Uri.Builder()
-                .scheme("https")
-                .authority("github.com")
-                .appendPath(user);
+               .scheme("https")
+               .authority("github.com")
+               .appendPath(user);
     }
 
     public static Uri.Builder createBaseUriForRepo(String repoOwner, String repoName) {
         return createBaseUriForUser(repoOwner)
-                .appendPath(repoName);
+               .appendPath(repoName);
     }
 
     public static void share(Context context, String subject, Uri url) {
@@ -116,12 +116,12 @@ public class IntentUtils {
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
         shareIntent.putExtra(Intent.EXTRA_TEXT, url.toString());
         context.startActivity(
-                Intent.createChooser(shareIntent, context.getString(R.string.share_title)));
+            Intent.createChooser(shareIntent, context.getString(R.string.share_title)));
     }
 
     public static void copyToClipboard(Context context, CharSequence label, CharSequence text) {
         ClipboardManager clipboardManager =
-                (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clipData = ClipData.newPlainText(label, text);
         clipboardManager.setPrimaryClip(clipData);
     }
@@ -129,7 +129,7 @@ public class IntentUtils {
     private static Intent createActivityChooserIntent(Context context, Intent intent, Uri uri) {
         final PackageManager pm = context.getPackageManager();
         final List<ResolveInfo> activities = pm.queryIntentActivities(intent,
-                PackageManager.MATCH_DEFAULT_ONLY);
+                                             PackageManager.MATCH_DEFAULT_ONLY);
         final ArrayList<Intent> chooserIntents = new ArrayList<>();
         final String ourPackageName = context.getPackageName();
 
@@ -162,7 +162,7 @@ public class IntentUtils {
 
         Intent chooserIntent = Intent.createChooser(lastIntent, null);
         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
-                chooserIntents.toArray(new Intent[chooserIntents.size()]));
+                               chooserIntents.toArray(new Intent[chooserIntents.size()]));
         return chooserIntent;
     }
 
@@ -191,7 +191,7 @@ public class IntentUtils {
 
         if (bytes.length > thresholdBytes) {
             try (ByteArrayOutputStream baos = new ByteArrayOutputStream(bytes.length);
-                    GZIPOutputStream gzos = new GZIPOutputStream(baos)) {
+                        GZIPOutputStream gzos = new GZIPOutputStream(baos)) {
                 gzos.write(bytes);
                 gzos.close();
                 bundle.putByteArray(key + "_compressed", baos.toByteArray());
@@ -209,8 +209,8 @@ public class IntentUtils {
         if (bundle.containsKey(key + "_compressed")) {
             byte[] compressedData = bundle.getByteArray(key + "_compressed");
             try (ByteArrayInputStream bais = new ByteArrayInputStream(compressedData);
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    GZIPInputStream gzis = new GZIPInputStream(bais)) {
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        GZIPInputStream gzis = new GZIPInputStream(bais)) {
                 byte[] buffer = new byte[2048];
                 int len;
                 while ((len = gzis.read(buffer)) != -1) {
@@ -273,7 +273,7 @@ public class IntentUtils {
         }
 
         public static final Parcelable.Creator<InitialCommentMarker> CREATOR =
-                new Parcelable.ClassLoaderCreator<InitialCommentMarker>() {
+        new Parcelable.ClassLoaderCreator<InitialCommentMarker>() {
             @Override
             public InitialCommentMarker createFromParcel(Parcel in, ClassLoader loader) {
                 return createFromParcel(in);
@@ -284,7 +284,7 @@ public class IntentUtils {
                 long commentId = in.readLong();
                 long timeMillis = in.readLong();
                 return new InitialCommentMarker(commentId,
-                        timeMillis != -1 ? new Date(timeMillis) : null);
+                                                timeMillis != -1 ? new Date(timeMillis) : null);
             }
             @Override
             public InitialCommentMarker[] newArray(int size) {

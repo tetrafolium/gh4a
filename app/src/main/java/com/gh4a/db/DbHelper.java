@@ -41,26 +41,26 @@ public class DbHelper extends SQLiteOpenHelper {
 
     private void createBookmarksTable(SQLiteDatabase db, String tableName) {
         db.execSQL("create table " + tableName + " ("
-                + "_id integer primary key autoincrement, "
-                + "name text not null, "
-                + "type integer not null, "
-                + "uri text not null, "
-                + "extra_data text, "
-                + "order_id integer not null);");
+                   + "_id integer primary key autoincrement, "
+                   + "name text not null, "
+                   + "type integer not null, "
+                   + "uri text not null, "
+                   + "extra_data text, "
+                   + "order_id integer not null);");
     }
 
     private void createSuggestionsTable(SQLiteDatabase db) {
         db.execSQL("create table " + SUGGESTIONS_TABLE + " ("
-                + "_id integer primary key autoincrement, "
-                + "type integer not null, "
-                + "suggestion text, "
-                + "date long, "
-                + "unique (type, suggestion) on conflict replace);");
+                   + "_id integer primary key autoincrement, "
+                   + "type integer not null, "
+                   + "suggestion text, "
+                   + "date long, "
+                   + "unique (type, suggestion) on conflict replace);");
     }
 
     private void updateBookmarkUris(SQLiteDatabase db) {
         Cursor c = db.query(BOOKMARKS_TABLE, new String[] { "_id", "uri", "extra_data" },
-                null, null, null, null, null);
+                            null, null, null, null, null);
         if (c == null) {
             return;
         }
@@ -96,7 +96,7 @@ public class DbHelper extends SQLiteOpenHelper {
                     }
                     if (url != null) {
                         cv.put("uri", url);
-                        db.update(BOOKMARKS_TABLE, cv, "_id = ?", new String[]{Long.toString(id)});
+                        db.update(BOOKMARKS_TABLE, cv, "_id = ?", new String[] {Long.toString(id)});
                     }
                 } catch (URISyntaxException e) {
                     // ignore
@@ -111,9 +111,9 @@ public class DbHelper extends SQLiteOpenHelper {
         String tempName = "temp_bookmarks";
         createBookmarksTable(db, tempName);
         db.execSQL("INSERT INTO temp_bookmarks (_id, name, type, uri, extra_data, order_id) " +
-                "SELECT _id, name, type, uri, extra_data, " +
-                "(SELECT COUNT(*) - 1 FROM " + BOOKMARKS_TABLE + " b WHERE a._id >= b._id) " +
-                "FROM " + BOOKMARKS_TABLE + " a;");
+                   "SELECT _id, name, type, uri, extra_data, " +
+                   "(SELECT COUNT(*) - 1 FROM " + BOOKMARKS_TABLE + " b WHERE a._id >= b._id) " +
+                   "FROM " + BOOKMARKS_TABLE + " a;");
         db.execSQL("DROP TABLE " + BOOKMARKS_TABLE + ";");
         db.execSQL("ALTER TABLE " + tempName + " RENAME TO " + BOOKMARKS_TABLE + ";");
     }

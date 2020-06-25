@@ -28,8 +28,8 @@ import java.util.Set;
 import io.reactivex.Single;
 
 public class TimelineItemAdapter
-        extends RootAdapter<TimelineItem, TimelineItemAdapter.TimelineItemViewHolder>
-        implements ReactionBar.ReactionDetailsCache.Listener {
+    extends RootAdapter<TimelineItem, TimelineItemAdapter.TimelineItemViewHolder>
+    implements ReactionBar.ReactionDetailsCache.Listener {
 
     private static final int VIEW_TYPE_COMMENT = CUSTOM_VIEW_TYPE_START + 1;
     private static final int VIEW_TYPE_EVENT = CUSTOM_VIEW_TYPE_START + 2;
@@ -44,7 +44,7 @@ public class TimelineItemAdapter
     private final boolean mIsPullRequest;
     private final boolean mDisplayReviewDetails;
     private final ReactionBar.ReactionDetailsCache mReactionDetailsCache =
-            new ReactionBar.ReactionDetailsCache(this);
+        new ReactionBar.ReactionDetailsCache(this);
     private final OnCommentAction mActionCallback;
 
     private boolean mDontClearCacheOnClear;
@@ -93,25 +93,25 @@ public class TimelineItemAdapter
         @Override
         public boolean onMenItemClick(TimelineItem.TimelineComment comment, MenuItem menuItem) {
             switch (menuItem.getItemId()) {
-                case R.id.edit:
-                    mActionCallback.editComment(comment.comment());
-                    return true;
+            case R.id.edit:
+                mActionCallback.editComment(comment.comment());
+                return true;
 
-                case R.id.delete:
-                    mActionCallback.deleteComment(comment.comment());
-                    return true;
+            case R.id.delete:
+                mActionCallback.deleteComment(comment.comment());
+                return true;
 
-                case R.id.share:
-                    IntentUtils.share(mContext, mActionCallback.getShareSubject(comment.comment()),
-                            Uri.parse(comment.comment().htmlUrl()));
-                    return true;
+            case R.id.share:
+                IntentUtils.share(mContext, mActionCallback.getShareSubject(comment.comment()),
+                                  Uri.parse(comment.comment().htmlUrl()));
+                return true;
 
-                case R.id.view_in_file:
-                    Intent intent = comment.makeDiffIntent(mContext);
-                    if (intent != null) {
-                        mContext.startActivity(intent);
-                    }
-                    return true;
+            case R.id.view_in_file:
+                Intent intent = comment.makeDiffIntent(mContext);
+                if (intent != null) {
+                    mContext.startActivity(intent);
+                }
+                return true;
             }
 
             return false;
@@ -143,7 +143,7 @@ public class TimelineItemAdapter
     };
 
     public TimelineItemAdapter(Context context, String repoOwner, String repoName, int issueNumber,
-            boolean isPullRequest, boolean displayReviewDetails, OnCommentAction callback) {
+                               boolean isPullRequest, boolean displayReviewDetails, OnCommentAction callback) {
         super(context);
         mImageGetter = new HttpImageGetter(context);
         mRepoOwner = repoOwner;
@@ -207,30 +207,30 @@ public class TimelineItemAdapter
         View view;
         TimelineItemViewHolder holder;
         switch (viewType) {
-            case VIEW_TYPE_COMMENT:
-                view = inflater.inflate(R.layout.row_timeline_comment, parent, false);
-                holder = new CommentViewHolder(view, mImageGetter, mRepoOwner,
-                        mReactionDetailsCache, mCommentCallback);
-                break;
-            case VIEW_TYPE_EVENT:
-                view = inflater.inflate(R.layout.row_timeline_event, parent, false);
-                holder = new EventViewHolder(view, mRepoOwner, mRepoName, mIsPullRequest);
-                break;
-            case VIEW_TYPE_REVIEW:
-                view = inflater.inflate(R.layout.row_timeline_review, parent, false);
-                holder = new ReviewViewHolder(view, mImageGetter, mRepoOwner, mRepoName,
-                        mIssueNumber, mDisplayReviewDetails, mReviewCallback);
-                break;
-            case VIEW_TYPE_DIFF:
-                view = inflater.inflate(R.layout.row_timeline_diff, parent, false);
-                holder = new DiffViewHolder(view, mRepoOwner, mRepoName, mIssueNumber);
-                break;
-            case VIEW_TYPE_REPLY:
-                view = inflater.inflate(R.layout.row_timeline_reply, parent, false);
-                holder = new ReplyViewHolder(view, mReplyCallback);
-                break;
-            default:
-                throw new IllegalArgumentException("viewType: Unknown timeline item type.");
+        case VIEW_TYPE_COMMENT:
+            view = inflater.inflate(R.layout.row_timeline_comment, parent, false);
+            holder = new CommentViewHolder(view, mImageGetter, mRepoOwner,
+                                           mReactionDetailsCache, mCommentCallback);
+            break;
+        case VIEW_TYPE_EVENT:
+            view = inflater.inflate(R.layout.row_timeline_event, parent, false);
+            holder = new EventViewHolder(view, mRepoOwner, mRepoName, mIsPullRequest);
+            break;
+        case VIEW_TYPE_REVIEW:
+            view = inflater.inflate(R.layout.row_timeline_review, parent, false);
+            holder = new ReviewViewHolder(view, mImageGetter, mRepoOwner, mRepoName,
+                                          mIssueNumber, mDisplayReviewDetails, mReviewCallback);
+            break;
+        case VIEW_TYPE_DIFF:
+            view = inflater.inflate(R.layout.row_timeline_diff, parent, false);
+            holder = new DiffViewHolder(view, mRepoOwner, mRepoName, mIssueNumber);
+            break;
+        case VIEW_TYPE_REPLY:
+            view = inflater.inflate(R.layout.row_timeline_reply, parent, false);
+            holder = new ReplyViewHolder(view, mReplyCallback);
+            break;
+        default:
+            throw new IllegalArgumentException("viewType: Unknown timeline item type.");
         }
         return holder;
     }
@@ -258,15 +258,15 @@ public class TimelineItemAdapter
     @Override
     public void onBindViewHolder(TimelineItemViewHolder holder, TimelineItem item) {
         switch (getItemViewType(item)) {
-            case VIEW_TYPE_COMMENT:
-            case VIEW_TYPE_EVENT:
-            case VIEW_TYPE_REVIEW:
-            case VIEW_TYPE_DIFF:
-            case VIEW_TYPE_REPLY:
-                //noinspection unchecked
-                holder.bind(item);
-                holder.itemView.setAlpha(shouldFadeReplyGroup(item) ? 0.5f : 1f);
-                break;
+        case VIEW_TYPE_COMMENT:
+        case VIEW_TYPE_EVENT:
+        case VIEW_TYPE_REVIEW:
+        case VIEW_TYPE_DIFF:
+        case VIEW_TYPE_REPLY:
+            //noinspection unchecked
+            holder.bind(item);
+            holder.itemView.setAlpha(shouldFadeReplyGroup(item) ? 0.5f : 1f);
+            break;
         }
     }
 
@@ -295,7 +295,7 @@ public class TimelineItemAdapter
     }
 
     public static abstract class TimelineItemViewHolder<TItem extends TimelineItem> extends
-            RecyclerView.ViewHolder {
+        RecyclerView.ViewHolder {
 
         protected final Context mContext;
 

@@ -57,9 +57,9 @@ public class StyleableTextView extends AppCompatTextView {
                 int attr = appearance.getIndex(i);
 
                 switch (attr) {
-                    case R.styleable.StyleableTextView_ghFont:
-                        mTypefaceValue = appearance.getInt(attr, -1);
-                        break;
+                case R.styleable.StyleableTextView_ghFont:
+                    mTypefaceValue = appearance.getInt(attr, -1);
+                    break;
                 }
             }
         }
@@ -71,9 +71,9 @@ public class StyleableTextView extends AppCompatTextView {
             int attr = a.getIndex(i);
 
             switch (attr) {
-                case R.styleable.StyleableTextView_ghFont:
-                    mTypefaceValue = a.getInt(attr, -1);
-                    break;
+            case R.styleable.StyleableTextView_ghFont:
+                mTypefaceValue = a.getInt(attr, -1);
+                break;
             }
         }
 

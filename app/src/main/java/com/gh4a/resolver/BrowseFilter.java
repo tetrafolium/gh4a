@@ -23,7 +23,7 @@ public class BrowseFilter extends AppCompatActivity {
 
     public void onCreate(Bundle savedInstanceState) {
         setTheme(Gh4Application.THEME == R.style.DarkTheme
-                ? R.style.TransparentDarkTheme : R.style.TransparentLightTheme);
+                 ? R.style.TransparentDarkTheme : R.style.TransparentLightTheme);
 
         super.onCreate(savedInstanceState);
 
@@ -34,7 +34,7 @@ public class BrowseFilter extends AppCompatActivity {
         }
 
         IntentUtils.InitialCommentMarker initialComment =
-                getIntent().getParcelableExtra(EXTRA_INITIAL_COMMENT);
+            getIntent().getParcelableExtra(EXTRA_INITIAL_COMMENT);
 
         LinkParser.ParseResult result = LinkParser.parseUri(this, uri, initialComment);
         if (result == null) {

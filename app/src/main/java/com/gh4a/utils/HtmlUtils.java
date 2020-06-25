@@ -85,8 +85,8 @@ public class HtmlUtils {
         }
 
         public void drawLeadingMargin(Canvas c, Paint p, int x, int dir,
-                int top, int baseline, int bottom, CharSequence text,
-                int start, int end, boolean first, Layout layout) {
+                                      int top, int baseline, int bottom, CharSequence text,
+                                      int start, int end, boolean first, Layout layout) {
             final Style style = p.getStyle();
             final int color = p.getColor();
 
@@ -109,7 +109,7 @@ public class HtmlUtils {
 
         @Override
         public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline,
-                int bottom, CharSequence text, int start, int end, int lnum) {
+                                   int bottom, CharSequence text, int start, int end, int lnum) {
             final int paintColor = p.getColor();
             p.setColor(mColor);
             c.drawRect(left, top, right, bottom, p);
@@ -196,7 +196,7 @@ public class HtmlUtils {
         }
 
         public static Spanned fromHtml(Context context,
-                String source, android.text.Html.ImageGetter imageGetter) {
+                                       String source, android.text.Html.ImageGetter imageGetter) {
             Parser parser = new Parser();
             try {
                 parser.setProperty(Parser.schemaProperty, HtmlParser.schema);
@@ -206,7 +206,7 @@ public class HtmlUtils {
             }
 
             HtmlToSpannedConverter converter =
-                    new HtmlToSpannedConverter(context, source, imageGetter, parser);
+                new HtmlToSpannedConverter(context, source, imageGetter, parser);
             return converter.convert();
         }
     }
@@ -242,7 +242,7 @@ public class HtmlUtils {
         private static Pattern getForegroundColorPattern() {
             if (sForegroundColorPattern == null) {
                 sForegroundColorPattern = Pattern.compile(
-                        "(?:\\s+|\\A)color\\s*:\\s*(\\S*)\\b");
+                                              "(?:\\s+|\\A)color\\s*:\\s*(\\S*)\\b");
             }
             return sForegroundColorPattern;
         }
@@ -250,7 +250,7 @@ public class HtmlUtils {
         private static Pattern getBackgroundColorPattern() {
             if (sBackgroundColorPattern == null) {
                 sBackgroundColorPattern = Pattern.compile(
-                        "(?:\\s+|\\A)background(?:-color)?\\s*:\\s*(\\S*)\\b");
+                                              "(?:\\s+|\\A)background(?:-color)?\\s*:\\s*(\\S*)\\b");
             }
             return sBackgroundColorPattern;
         }
@@ -258,13 +258,13 @@ public class HtmlUtils {
         private static Pattern getTextDecorationPattern() {
             if (sTextDecorationPattern == null) {
                 sTextDecorationPattern = Pattern.compile(
-                        "(?:\\s+|\\A)text-decoration\\s*:\\s*(\\S*)\\b");
+                                             "(?:\\s+|\\A)text-decoration\\s*:\\s*(\\S*)\\b");
             }
             return sTextDecorationPattern;
         }
 
         public HtmlToSpannedConverter(Context context, String source,
-                android.text.Html.ImageGetter imageGetter, Parser parser) {
+                                      android.text.Html.ImageGetter imageGetter, Parser parser) {
             final Resources res = context.getResources();
             mDividerHeight = res.getDimension(R.dimen.divider_span_height);
             mBulletMargin = res.getDimensionPixelSize(R.dimen.bullet_span_margin);
@@ -294,7 +294,7 @@ public class HtmlUtils {
             // Replace the placeholders for leading margin spans in reverse order, so the leading
             // margins are drawn in order of tag start
             Object[] obj = mSpannableStringBuilder.getSpans(0,
-                    mSpannableStringBuilder.length(), NeedsReversingSpan.class);
+                           mSpannableStringBuilder.length(), NeedsReversingSpan.class);
             for (int i = obj.length - 1; i >= 0; i--) {
                 NeedsReversingSpan span = (NeedsReversingSpan) obj[i];
                 int start = mSpannableStringBuilder.getSpanStart(span);
@@ -302,7 +302,7 @@ public class HtmlUtils {
 
                 mSpannableStringBuilder.removeSpan(span);
                 mSpannableStringBuilder.setSpan(span.mActualSpan, start, end,
-                        Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                                                Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
             }
 
             // Fix flags and range for paragraph-type markup.
@@ -361,16 +361,16 @@ public class HtmlUtils {
             } else if (tag.equalsIgnoreCase("input")) {
                 if ("checkbox".equalsIgnoreCase(attributes.getValue("", "type"))) {
                     @AttrRes int drawableAttrResId = attributes.getIndex("", "checked") >= 0
-                            ? R.attr.checkboxCheckedSmallIcon
-                            : R.attr.checkboxUncheckedSmallIcon;
+                                                     ? R.attr.checkboxCheckedSmallIcon
+                                                     : R.attr.checkboxUncheckedSmallIcon;
                     Drawable d = ContextCompat.getDrawable(mContext,
-                            UiUtils.resolveDrawable(mContext, drawableAttrResId));
+                                                           UiUtils.resolveDrawable(mContext, drawableAttrResId));
                     d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
                     ImageSpan span = new ImageSpan(d, ImageSpan.ALIGN_BOTTOM);
 
                     mSpannableStringBuilder.append("  ");
                     mSpannableStringBuilder.setSpan(span, mSpannableStringBuilder.length() - 2,
-                            mSpannableStringBuilder.length() - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                                    mSpannableStringBuilder.length() - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
             } else if (tag.equalsIgnoreCase("div")) {
                 startBlockElement(mSpannableStringBuilder, attributes);
@@ -440,8 +440,8 @@ public class HtmlUtils {
                 }
                 start(mSpannableStringBuilder, new Code(inPre));
             } else if (tag.length() == 2 &&
-                    Character.toLowerCase(tag.charAt(0)) == 'h' &&
-                    tag.charAt(1) >= '1' && tag.charAt(1) <= '6') {
+                       Character.toLowerCase(tag.charAt(0)) == 'h' &&
+                       tag.charAt(1) >= '1' && tag.charAt(1) <= '6') {
                 startHeading(mSpannableStringBuilder, attributes, tag.charAt(1) - '1');
             } else if (tag.equalsIgnoreCase("img")) {
                 startImg(mSpannableStringBuilder, attributes, mImageGetter);
@@ -516,16 +516,16 @@ public class HtmlUtils {
                 Code code = getLast(mSpannableStringBuilder, Code.class);
                 if (code != null) {
                     Object backgroundSpan = code.mInPre
-                            ? new CodeBlockSpan(0x30aaaaaa) : new BackgroundColorSpan(0x30aaaaaa);
+                                            ? new CodeBlockSpan(0x30aaaaaa) : new BackgroundColorSpan(0x30aaaaaa);
                     if (code.mInPre) {
                         appendNewlines(mSpannableStringBuilder, 1);
                     }
                     setSpanFromMark(mSpannableStringBuilder, code,
-                            new TypefaceSpan("monospace"), backgroundSpan);
+                                    new TypefaceSpan("monospace"), backgroundSpan);
                 }
             } else if (tag.length() == 2 &&
-                    Character.toLowerCase(tag.charAt(0)) == 'h' &&
-                    tag.charAt(1) >= '1' && tag.charAt(1) <= '6') {
+                       Character.toLowerCase(tag.charAt(0)) == 'h' &&
+                       tag.charAt(1) >= '1' && tag.charAt(1) <= '6') {
                 endHeading(mSpannableStringBuilder);
             }
         }
@@ -632,17 +632,17 @@ public class HtmlUtils {
             Heading h = getLast(text, Heading.class);
             if (h != null) {
                 setSpanFromMark(text, h, new RelativeSizeSpan(HEADING_SIZES[h.mLevel]),
-                        new StyleSpan(Typeface.BOLD));
+                                new StyleSpan(Typeface.BOLD));
             }
 
             endBlockElement(text);
         }
 
         private static <T> T getLast(Spanned text, Class<T> kind) {
-        /*
-         * This knows that the last returned object from getSpans()
-         * will be the most recently added.
-         */
+            /*
+             * This knows that the last returned object from getSpans()
+             * will be the most recently added.
+             */
             T[] objs = text.getSpans(0, text.length(), kind);
 
             if (objs.length == 0) {
@@ -737,7 +737,7 @@ public class HtmlUtils {
         }
 
         private static void startImg(Editable text, Attributes attributes,
-                android.text.Html.ImageGetter img) {
+                                     android.text.Html.ImageGetter img) {
             String src = attributes.getValue("", "src");
             Drawable d = img.getDrawable(src);
 
@@ -745,7 +745,7 @@ public class HtmlUtils {
             text.append("\uFFFC");
 
             text.setSpan(new ImageSpan(d, src), len, text.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
 
         private void startFont(Editable text, Attributes attributes) {
@@ -773,7 +773,7 @@ public class HtmlUtils {
             Foreground foreground = getLast(text, Foreground.class);
             if (foreground != null) {
                 setSpanFromMark(text, foreground,
-                        new ForegroundColorSpan(foreground.mForegroundColor));
+                                new ForegroundColorSpan(foreground.mForegroundColor));
             }
         }
 
@@ -807,7 +807,7 @@ public class HtmlUtils {
         }
 
         public void startElement(String uri, String localName, String qName, Attributes attributes)
-                throws SAXException {
+        throws SAXException {
             handleStartTag(localName, attributes);
         }
 

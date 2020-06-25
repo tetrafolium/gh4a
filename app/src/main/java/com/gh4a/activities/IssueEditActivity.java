@@ -73,21 +73,21 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class IssueEditActivity extends BasePagerActivity implements
-        AppBarLayout.OnOffsetChangedListener, View.OnClickListener,
-        View.OnFocusChangeListener {
+    AppBarLayout.OnOffsetChangedListener, View.OnClickListener,
+    View.OnFocusChangeListener {
     public static Intent makeCreateIntent(Context context, String repoOwner, String repoName) {
         // can't reuse makeEditIntent here, because even a null extra counts for hasExtra()
         return new Intent(context, IssueEditActivity.class)
-                .putExtra("owner", repoOwner)
-                .putExtra("repo", repoName);
+               .putExtra("owner", repoOwner)
+               .putExtra("repo", repoName);
     }
 
     public static Intent makeEditIntent(Context context, String repoOwner,
-            String repoName, Issue issue) {
+                                        String repoName, Issue issue) {
         return new Intent(context, IssueEditActivity.class)
-                .putExtra("owner", repoOwner)
-                .putExtra("repo", repoName)
-                .putExtra("issue", issue);
+               .putExtra("owner", repoOwner)
+               .putExtra("repo", repoName)
+               .putExtra("issue", issue);
     }
 
     private static final int REQUEST_MANAGE_LABELS = 1000;
@@ -173,7 +173,7 @@ public class IssueEditActivity extends BasePagerActivity implements
 
         CoordinatorLayout rootLayout = getRootLayout();
         mFab = (FloatingActionButton)
-                getLayoutInflater().inflate(R.layout.accept_fab, rootLayout, false);
+               getLayoutInflater().inflate(R.layout.accept_fab, rootLayout, false);
         mFab.setOnClickListener(this);
         rootLayout.addView(mFab);
 
@@ -213,10 +213,10 @@ public class IssueEditActivity extends BasePagerActivity implements
     protected String getActionBarTitle() {
         boolean isPullRequest = mEditIssue.pullRequest() != null;
         return !isInEditMode()
-                ? getString(R.string.issue_create)
-                : isPullRequest
-                        ? getString(R.string.pull_request_edit_title, mEditIssue.number())
-                        : getString(R.string.issue_edit_title, mEditIssue.number());
+               ? getString(R.string.issue_create)
+               : isPullRequest
+               ? getString(R.string.pull_request_edit_title, mEditIssue.number())
+               : getString(R.string.issue_edit_title, mEditIssue.number());
     }
 
     @Nullable
@@ -243,12 +243,12 @@ public class IssueEditActivity extends BasePagerActivity implements
                 mEditIssue = extras.getParcelable("issue");
                 // Save only editable fields
                 mOriginalIssue = Issue.builder()
-                        .title(mEditIssue.title())
-                        .body(mEditIssue.body())
-                        .milestone(mEditIssue.milestone())
-                        .assignees(mEditIssue.assignees())
-                        .labels(mEditIssue.labels())
-                        .build();
+                                 .title(mEditIssue.title())
+                                 .body(mEditIssue.body())
+                                 .milestone(mEditIssue.milestone())
+                                 .assignees(mEditIssue.assignees())
+                                 .labels(mEditIssue.labels())
+                                 .build();
             } else {
                 mEditIssue = Issue.builder().build();
                 mOriginalIssue = Issue.builder().build();
@@ -278,7 +278,7 @@ public class IssueEditActivity extends BasePagerActivity implements
         // Set the bottom padding to make the bottom appear as not moving while the
         // AppBarLayout pushes it down or up.
         mRootView.setPadding(mRootView.getPaddingLeft(), mRootView.getPaddingTop(),
-                mRootView.getPaddingRight(), appBarLayout.getTotalScrollRange() + verticalOffset);
+                             mRootView.getPaddingRight(), appBarLayout.getTotalScrollRange() + verticalOffset);
     }
 
     private boolean isInEditMode() {
@@ -296,9 +296,9 @@ public class IssueEditActivity extends BasePagerActivity implements
             showLabelDialog();
         } else if (view instanceof FloatingActionButton) {
             mEditIssue = mEditIssue.toBuilder()
-                    .title(mTitleView.getText().toString())
-                    .body(mDescView.getText().toString())
-                    .build();
+                         .title(mTitleView.getText().toString())
+                         .body(mDescView.getText().toString())
+                         .build();
             saveIssue();
         }
     }
@@ -324,7 +324,7 @@ public class IssueEditActivity extends BasePagerActivity implements
         }
         if (mEditIssue.pullRequest() != null) {
             return PullRequestActivity.makeIntent(this, mRepoOwner, mRepoName,
-                    mEditIssue.number());
+                                                  mEditIssue.number());
         }
         return IssueActivity.makeIntent(this, mRepoOwner, mRepoName, mEditIssue.number());
     }
@@ -365,24 +365,24 @@ public class IssueEditActivity extends BasePagerActivity implements
 
             final DialogInterface.OnClickListener selectCb = (dialog, which) -> {
                 mEditIssue = mEditIssue.toBuilder()
-                        .milestone(which == 0 ? null : mAllMilestone.get(which - 1))
-                        .build();
+                .milestone(which == 0 ? null : mAllMilestone.get(which - 1))
+                .build();
                 updateOptionViews();
                 dialog.dismiss();
             };
 
             new AlertDialog.Builder(this)
-                    .setCancelable(true)
-                    .setTitle(R.string.issue_milestone_hint)
-                    .setSingleChoiceItems(milestones, selected, selectCb)
-                    .setNegativeButton(R.string.cancel, null)
-                    .setNeutralButton(R.string.issue_manage_milestones, (dialog, which) -> {
-                        Intent intent = IssueMilestoneListActivity.makeIntent(
-                                IssueEditActivity.this, mRepoOwner, mRepoName,
-                                mEditIssue.pullRequest() != null);
-                        startActivityForResult(intent, REQUEST_MANAGE_MILESTONES);
-                    })
-                    .show();
+            .setCancelable(true)
+            .setTitle(R.string.issue_milestone_hint)
+            .setSingleChoiceItems(milestones, selected, selectCb)
+            .setNegativeButton(R.string.cancel, null)
+            .setNeutralButton(R.string.issue_manage_milestones, (dialog, which) -> {
+                Intent intent = IssueMilestoneListActivity.makeIntent(
+                    IssueEditActivity.this, mRepoOwner, mRepoName,
+                    mEditIssue.pullRequest() != null);
+                startActivityForResult(intent, REQUEST_MANAGE_MILESTONES);
+            })
+            .show();
         }
     }
 
@@ -393,7 +393,7 @@ public class IssueEditActivity extends BasePagerActivity implements
             final String[] assigneeNames = new String[mAllAssignee.size()];
             final boolean[] selection = new boolean[mAllAssignee.size()];
             final List<User> oldAssigneeList = mEditIssue.assignees() != null
-                    ? mEditIssue.assignees() : new ArrayList<>();
+                                               ? mEditIssue.assignees() : new ArrayList<>();
             List<String> assigneeLogins = new ArrayList<>();
             for (User assignee : oldAssigneeList) {
                 assigneeLogins.add(assignee.login());
@@ -406,7 +406,7 @@ public class IssueEditActivity extends BasePagerActivity implements
             }
 
             DialogInterface.OnMultiChoiceClickListener selectCb =
-                    (dialogInterface, which, isChecked) -> selection[which] = isChecked;
+                (dialogInterface, which, isChecked) -> selection[which] = isChecked;
             DialogInterface.OnClickListener okCb = (dialog, which) -> {
                 List<User> newAssigneeList = new ArrayList<>();
                 for (int i = 0; i < selection.length; i++) {
@@ -415,19 +415,19 @@ public class IssueEditActivity extends BasePagerActivity implements
                     }
                 }
                 mEditIssue = mEditIssue.toBuilder()
-                        .assignees(newAssigneeList)
-                        .build();
+                             .assignees(newAssigneeList)
+                             .build();
                 updateOptionViews();
                 dialog.dismiss();
             };
 
             new AlertDialog.Builder(this)
-                    .setCancelable(true)
-                    .setTitle(R.string.issue_assignee_hint)
-                    .setMultiChoiceItems(assigneeNames, selection, selectCb)
-                    .setPositiveButton(R.string.ok, okCb)
-                    .setNegativeButton(R.string.cancel, null)
-                    .show();
+            .setCancelable(true)
+            .setTitle(R.string.issue_assignee_hint)
+            .setMultiChoiceItems(assigneeNames, selection, selectCb)
+            .setPositiveButton(R.string.ok, okCb)
+            .setNegativeButton(R.string.cancel, null)
+            .show();
         }
     }
 
@@ -437,7 +437,7 @@ public class IssueEditActivity extends BasePagerActivity implements
         } else {
             LayoutInflater inflater = getLayoutInflater();
             final List<Label> selectedLabels = mEditIssue.labels() != null
-                    ? new ArrayList<>(mEditIssue.labels()) : new ArrayList<>();
+                                               ? new ArrayList<>(mEditIssue.labels()) : new ArrayList<>();
             View labelContainerView = inflater.inflate(R.layout.generic_linear_container, null);
             ViewGroup container = labelContainerView.findViewById(R.id.container);
 
@@ -467,23 +467,23 @@ public class IssueEditActivity extends BasePagerActivity implements
             }
 
             new AlertDialog.Builder(this)
-                    .setCancelable(true)
-                    .setTitle(R.string.issue_labels)
-                    .setView(labelContainerView)
-                    .setNegativeButton(R.string.cancel, null)
-                    .setPositiveButton(R.string.ok, (dialog, which) -> {
-                        mEditIssue = mEditIssue.toBuilder()
-                                .labels(selectedLabels)
-                                .build();
-                        updateOptionViews();
-                    })
-                    .setNeutralButton(R.string.issue_manage_labels, (dialog, which) -> {
-                        Intent intent = IssueLabelListActivity.makeIntent(
-                                IssueEditActivity.this, mRepoOwner, mRepoName,
-                                mEditIssue.pullRequest() != null);
-                        startActivityForResult(intent, REQUEST_MANAGE_LABELS);
-                    })
-                    .show();
+            .setCancelable(true)
+            .setTitle(R.string.issue_labels)
+            .setView(labelContainerView)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.ok, (dialog, which) -> {
+                mEditIssue = mEditIssue.toBuilder()
+                .labels(selectedLabels)
+                .build();
+                updateOptionViews();
+            })
+            .setNeutralButton(R.string.issue_manage_labels, (dialog, which) -> {
+                Intent intent = IssueLabelListActivity.makeIntent(
+                    IssueEditActivity.this, mRepoOwner, mRepoName,
+                    mEditIssue.pullRequest() != null);
+                startActivityForResult(intent, REQUEST_MANAGE_LABELS);
+            })
+            .show();
         }
     }
 
@@ -498,7 +498,7 @@ public class IssueEditActivity extends BasePagerActivity implements
             view.setTypeface(view.getTypeface(), 0);
             view.setBackgroundColor(0);
             view.setTextColor(ContextCompat.getColor(this, Gh4Application.THEME != R.style.LightTheme
-                    ? R.color.label_fg_light : R.color.label_fg_dark));
+                              ? R.color.label_fg_light : R.color.label_fg_dark));
         }
     }
 
@@ -570,105 +570,105 @@ public class IssueEditActivity extends BasePagerActivity implements
 
         Integer issueNumber = mEditIssue.number();
         String errorMessage = issueNumber != null
-                ? getString(R.string.issue_error_edit, issueNumber)
-                : getString(R.string.issue_error_create);
+                              ? getString(R.string.issue_error_edit, issueNumber)
+                              : getString(R.string.issue_error_create);
 
         IssueService service = ServiceFactory.get(IssueService.class, false);
         Single<Response<Issue>> single = isInEditMode()
-                ? service.editIssue(mRepoOwner, mRepoName, issueNumber, builder.build())
-                : service.createIssue(mRepoOwner, mRepoName, builder.build());
+                                         ? service.editIssue(mRepoOwner, mRepoName, issueNumber, builder.build())
+                                         : service.createIssue(mRepoOwner, mRepoName, builder.build());
 
         single.map(ApiHelpers::throwOnFailure)
-                .compose(RxUtils.wrapForBackgroundTask(this, R.string.saving_msg, errorMessage))
-                .subscribe(result -> {
-                    Intent data = new Intent();
-                    Bundle extras = new Bundle();
-                    extras.putParcelable("issue", result);
-                    data.putExtras(extras);
-                    setResult(RESULT_OK, data);
-                    finish();
-                }, error -> handleActionFailure("Saving issue failed", error));
+        .compose(RxUtils.wrapForBackgroundTask(this, R.string.saving_msg, errorMessage))
+        .subscribe(result -> {
+            Intent data = new Intent();
+            Bundle extras = new Bundle();
+            extras.putParcelable("issue", result);
+            data.putExtras(extras);
+            setResult(RESULT_OK, data);
+            finish();
+        }, error -> handleActionFailure("Saving issue failed", error));
     }
 
     private void loadCollaboratorStatus(boolean force) {
         SingleFactory.isAppUserRepoCollaborator(mRepoOwner, mRepoName, force)
-                .compose(makeLoaderSingle(ID_LOADER_COLLABORATOR_STATUS, force))
-                .subscribe(result -> {
-                    mIsCollaborator = result;
-                    invalidatePages();
-                }, this::handleLoadFailure);
+        .compose(makeLoaderSingle(ID_LOADER_COLLABORATOR_STATUS, force))
+        .subscribe(result -> {
+            mIsCollaborator = result;
+            invalidatePages();
+        }, this::handleLoadFailure);
     }
 
     private void loadLabels() {
         final IssueLabelService service = ServiceFactory.get(IssueLabelService.class, false);
         registerTemporarySubscription(ApiHelpers.PageIterator
-                .toSingle(page -> service.getRepositoryLabels(mRepoOwner, mRepoName, page))
-                .compose(RxUtils::doInBackground)
-                .compose(RxUtils.wrapWithProgressDialog(this, R.string.loading_msg))
-                .subscribe(result -> {
-                    mAllLabels = result;
-                    showLabelDialog();
-                }, this::handleLoadFailure));
+                                      .toSingle(page -> service.getRepositoryLabels(mRepoOwner, mRepoName, page))
+                                      .compose(RxUtils::doInBackground)
+                                      .compose(RxUtils.wrapWithProgressDialog(this, R.string.loading_msg))
+        .subscribe(result -> {
+            mAllLabels = result;
+            showLabelDialog();
+        }, this::handleLoadFailure));
     }
 
     private void loadMilestones() {
         final IssueMilestoneService service = ServiceFactory.get(IssueMilestoneService.class, false);
         registerTemporarySubscription(ApiHelpers.PageIterator
-                .toSingle(page -> service.getRepositoryMilestones(mRepoOwner, mRepoName, "open", page))
-                .compose(RxUtils::doInBackground)
-                .compose(RxUtils.wrapWithProgressDialog(this, R.string.loading_msg))
-                .subscribe(result -> {
-                    mAllMilestone = result;
-                    showMilestonesDialog();
-                }, this::handleLoadFailure));
+                                      .toSingle(page -> service.getRepositoryMilestones(mRepoOwner, mRepoName, "open", page))
+                                      .compose(RxUtils::doInBackground)
+                                      .compose(RxUtils.wrapWithProgressDialog(this, R.string.loading_msg))
+        .subscribe(result -> {
+            mAllMilestone = result;
+            showMilestonesDialog();
+        }, this::handleLoadFailure));
     }
 
     private void loadPotentialAssignees() {
         final RepositoryCollaboratorService service =
-                ServiceFactory.get(RepositoryCollaboratorService.class, false);
+            ServiceFactory.get(RepositoryCollaboratorService.class, false);
         registerTemporarySubscription(ApiHelpers.PageIterator
-                .toSingle(page -> service.getCollaborators(mRepoOwner, mRepoName, page))
-                .compose(RxUtils::doInBackground)
-                .compose(RxUtils.wrapWithProgressDialog(this, R.string.loading_msg))
-                .subscribe(result -> {
-                    mAllAssignee = result;
-                    User creator = mEditIssue.user();
-                    if (creator != null && !mAllAssignee.contains(creator)) {
-                        mAllAssignee.add(creator);
-                    }
-                    showAssigneesDialog();
-                }, this::handleLoadFailure));
+                                      .toSingle(page -> service.getCollaborators(mRepoOwner, mRepoName, page))
+                                      .compose(RxUtils::doInBackground)
+                                      .compose(RxUtils.wrapWithProgressDialog(this, R.string.loading_msg))
+        .subscribe(result -> {
+            mAllAssignee = result;
+            User creator = mEditIssue.user();
+            if (creator != null && !mAllAssignee.contains(creator)) {
+                mAllAssignee.add(creator);
+            }
+            showAssigneesDialog();
+        }, this::handleLoadFailure));
     }
 
     private void loadIssueTemplate() {
         RepositoryContentService service = ServiceFactory.get(RepositoryContentService.class, false);
 
         registerTemporarySubscription(getIssueTemplateContentSingle("/.github")
-                .flatMap(opt -> opt.orOptionalSingle(() -> getIssueTemplateContentSingle("")))
-                .flatMap(opt -> opt.orOptionalSingle(() -> getIssueTemplateContentSingle("/docs")))
-                .flatMap(opt -> opt.flatMap(c -> {
-                    //noinspection CodeBlock2Expr
-                    return service.getContents(mRepoOwner, mRepoName, c.path(), null)
-                            .map(ApiHelpers::throwOnFailure)
-                            .compose(RxUtils::doInBackground);
-                }))
-                .map(opt -> opt.map(c -> StringUtils.fromBase64(c.content())))
-                .compose(RxUtils.wrapWithProgressDialog(this, R.string.loading_msg))
-                .subscribe(result -> {
-                    mDescView.setHint(null);
-                    mDescView.setEnabled(true);
-                    mDescView.setText(result.orNull());
-                }, this::handleLoadFailure));
+                                      .flatMap(opt -> opt.orOptionalSingle(() -> getIssueTemplateContentSingle("")))
+                                      .flatMap(opt -> opt.orOptionalSingle(() -> getIssueTemplateContentSingle("/docs")))
+        .flatMap(opt -> opt.flatMap(c -> {
+            //noinspection CodeBlock2Expr
+            return service.getContents(mRepoOwner, mRepoName, c.path(), null)
+            .map(ApiHelpers::throwOnFailure)
+            .compose(RxUtils::doInBackground);
+        }))
+        .map(opt -> opt.map(c -> StringUtils.fromBase64(c.content())))
+        .compose(RxUtils.wrapWithProgressDialog(this, R.string.loading_msg))
+        .subscribe(result -> {
+            mDescView.setHint(null);
+            mDescView.setEnabled(true);
+            mDescView.setText(result.orNull());
+        }, this::handleLoadFailure));
     }
 
     private Single<Optional<Content>> getIssueTemplateContentSingle(String path) {
         RepositoryContentService service = ServiceFactory.get(RepositoryContentService.class, false);
         return ApiHelpers.PageIterator
-                .toSingle(page -> service.getDirectoryContents(mRepoOwner, mRepoName, path, null, page))
-                .compose(RxUtils::doInBackground)
-                .compose(RxUtils.filterAndMapToFirst(
-                        c -> c.type() == ContentType.File && c.name().toLowerCase(Locale.US).startsWith("issue_template")))
-                .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, Optional.absent()));
+               .toSingle(page -> service.getDirectoryContents(mRepoOwner, mRepoName, path, null, page))
+               .compose(RxUtils::doInBackground)
+               .compose(RxUtils.filterAndMapToFirst(
+                            c -> c.type() == ContentType.File && c.name().toLowerCase(Locale.US).startsWith("issue_template")))
+               .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, Optional.absent()));
     }
 
     private class EditPagerAdapter extends PagerAdapter {
@@ -676,9 +676,15 @@ public class IssueEditActivity extends BasePagerActivity implements
         public Object instantiateItem(ViewGroup container, int position) {
             @IdRes int resId = 0;
             switch (position) {
-                case 0: resId = R.id.editor_container; break;
-                case 1: resId = R.id.preview; break;
-                case 2: resId = R.id.options; break;
+            case 0:
+                resId = R.id.editor_container;
+                break;
+            case 1:
+                resId = R.id.preview;
+                break;
+            case 2:
+                resId = R.id.options;
+                break;
             }
             return container.findViewById(resId);
         }

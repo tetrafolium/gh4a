@@ -27,7 +27,7 @@ import com.gh4a.fragment.OrganizationMemberListFragment;
 public class OrganizationMemberListActivity extends FragmentContainerActivity {
     public static Intent makeIntent(Context context, String org) {
         return new Intent(context, OrganizationMemberListActivity.class)
-                .putExtra("login", org);
+               .putExtra("login", org);
     }
 
     private String mUserLogin;

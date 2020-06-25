@@ -27,9 +27,12 @@ public class TrendingActivity extends BaseFragmentPagerActivity {
     @Override
     protected Fragment makeFragment(int position) {
         switch (position) {
-            case 0: return TrendingFragment.newInstance(TrendingFragment.TYPE_DAILY);
-            case 1: return TrendingFragment.newInstance(TrendingFragment.TYPE_WEEKLY);
-            case 2: return TrendingFragment.newInstance(TrendingFragment.TYPE_MONTHLY);
+        case 0:
+            return TrendingFragment.newInstance(TrendingFragment.TYPE_DAILY);
+        case 1:
+            return TrendingFragment.newInstance(TrendingFragment.TYPE_WEEKLY);
+        case 2:
+            return TrendingFragment.newInstance(TrendingFragment.TYPE_MONTHLY);
         }
         return null;
     }

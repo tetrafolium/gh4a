@@ -32,10 +32,10 @@ import java.util.List;
 
 public class LinkParser {
     private static final List<String> RESERVED_NAMES = Arrays.asList(
-            "apps", "integrations", "login", "logout", "marketplace", "sessions", "settings",
-            "updates", "support", "contact", "about", "personal", "open-source",
-            "business", "site", "security", "features", "topics"
-    );
+                "apps", "integrations", "login", "logout", "marketplace", "sessions", "settings",
+                "updates", "support", "contact", "about", "personal", "open-source",
+                "business", "site", "security", "features", "topics"
+            );
 
     private LinkParser() {
     }
@@ -50,7 +50,7 @@ public class LinkParser {
      */
     @Nullable
     public static ParseResult parseUri(FragmentActivity activity, @NonNull Uri uri,
-            IntentUtils.InitialCommentMarker initialCommentFallback) {
+                                       IntentUtils.InitialCommentMarker initialCommentFallback) {
         List<String> parts = new ArrayList<>(uri.getPathSegments());
 
         if ("gist.github.com".equals(uri.getHost())) {
@@ -70,14 +70,14 @@ public class LinkParser {
         }
 
         switch (first) {
-            case "explore":
-                return new ParseResult(new Intent(activity, TrendingActivity.class));
-            case "blog":
-                return parseBlogLink(activity, parts);
-            case "orgs":
-                return parseOrganizationLink(activity, parts);
-            case "search":
-                return parseSearchLink(activity, uri);
+        case "explore":
+            return new ParseResult(new Intent(activity, TrendingActivity.class));
+        case "blog":
+            return parseBlogLink(activity, parts);
+        case "orgs":
+            return parseOrganizationLink(activity, parts);
+        case "search":
+            return parseSearchLink(activity, uri);
         }
 
         //noinspection UnnecessaryLocalVariable
@@ -95,26 +95,26 @@ public class LinkParser {
         }
 
         switch (action) {
-            case "releases":
-                return parseReleaseLink(activity, parts, user, repo, id);
-            case "tree":
-            case "commits":
-                return parseCommitsLink(activity, parts, user, repo, action);
-            case "issues":
-                return parseIssuesLink(activity, uri, user, repo, id, initialCommentFallback);
-            case "pulls":
-                return new ParseResult(IssueListActivity.makeIntent(activity, user, repo, true));
-            case "wiki":
-                return new ParseResult(WikiListActivity.makeIntent(activity, user, repo, null));
-            case "pull":
-                return parsePullRequestLink(activity, uri, parts, user,
-                        repo, id, initialCommentFallback);
-            case "commit":
-                return parseCommitLink(activity, uri, user, repo, id, initialCommentFallback);
-            case "blob":
-                return parseBlobLink(activity, uri, parts, user, repo, id);
-            case "compare":
-                return parseCompareLink(activity, user, repo, id);
+        case "releases":
+            return parseReleaseLink(activity, parts, user, repo, id);
+        case "tree":
+        case "commits":
+            return parseCommitsLink(activity, parts, user, repo, action);
+        case "issues":
+            return parseIssuesLink(activity, uri, user, repo, id, initialCommentFallback);
+        case "pulls":
+            return new ParseResult(IssueListActivity.makeIntent(activity, user, repo, true));
+        case "wiki":
+            return new ParseResult(WikiListActivity.makeIntent(activity, user, repo, null));
+        case "pull":
+            return parsePullRequestLink(activity, uri, parts, user,
+                                        repo, id, initialCommentFallback);
+        case "commit":
+            return parseCommitLink(activity, uri, user, repo, id, initialCommentFallback);
+        case "blob":
+            return parseBlobLink(activity, uri, parts, user, repo, id);
+        case "compare":
+            return parseCompareLink(activity, user, repo, id);
         }
         return null;
     }
@@ -164,16 +164,16 @@ public class LinkParser {
         String tab = uri.getQueryParameter("tab");
         if (tab != null) {
             switch (tab) {
-                case "repositories":
-                    return new ParseResult(new UserReposLoadTask(activity, user, false));
-                case "stars":
-                    return new ParseResult(new UserReposLoadTask(activity, user, true));
-                case "followers":
-                    return new ParseResult(new UserFollowersLoadTask(activity, user, true));
-                case "following":
-                    return new ParseResult(new UserFollowersLoadTask(activity, user, false));
-                default:
-                    return new ParseResult(UserActivity.makeIntent(activity, user));
+            case "repositories":
+                return new ParseResult(new UserReposLoadTask(activity, user, false));
+            case "stars":
+                return new ParseResult(new UserReposLoadTask(activity, user, true));
+            case "followers":
+                return new ParseResult(new UserFollowersLoadTask(activity, user, true));
+            case "following":
+                return new ParseResult(new UserFollowersLoadTask(activity, user, false));
+            default:
+                return new ParseResult(UserActivity.makeIntent(activity, user));
             }
         }
         return new ParseResult(UserActivity.makeIntent(activity, user));
@@ -184,10 +184,17 @@ public class LinkParser {
         int typeInt = SearchActivity.SEARCH_TYPE_REPO;
         if (type != null) {
             switch (type) {
-                case "Repositories": typeInt = SearchActivity.SEARCH_TYPE_REPO; break;
-                case "Users": typeInt = SearchActivity.SEARCH_TYPE_USER; break;
-                case "Code": typeInt = SearchActivity.SEARCH_TYPE_CODE; break;
-                default: return null;
+            case "Repositories":
+                typeInt = SearchActivity.SEARCH_TYPE_REPO;
+                break;
+            case "Users":
+                typeInt = SearchActivity.SEARCH_TYPE_USER;
+                break;
+            case "Code":
+                typeInt = SearchActivity.SEARCH_TYPE_CODE;
+                break;
+            default:
+                return null;
             }
         }
         String query = uri.getQueryParameter("q");
@@ -217,8 +224,8 @@ public class LinkParser {
     private static ParseResult parseCommitsLink(FragmentActivity activity, List<String> parts,
             String user, String repo, String action) {
         int page = "tree".equals(action)
-                ? RepositoryActivity.PAGE_FILES
-                : RepositoryActivity.PAGE_COMMITS;
+                   ? RepositoryActivity.PAGE_FILES
+                   : RepositoryActivity.PAGE_COMMITS;
 
         int refStart = 3;
         if (parts.size() >= 6
@@ -228,7 +235,7 @@ public class LinkParser {
         }
         String refAndPath = TextUtils.join("/", parts.subList(refStart, parts.size()));
         return new ParseResult(new RefPathDisambiguationTask(activity, user, repo, refAndPath,
-                page));
+                               page));
     }
 
     @Nullable
@@ -244,9 +251,9 @@ public class LinkParser {
         try {
             int issueNumber = Integer.parseInt(id);
             IntentUtils.InitialCommentMarker initialComment = generateInitialCommentMarker(
-                    uri.getFragment(), "issuecomment-", initialCommentFallback);
+                        uri.getFragment(), "issuecomment-", initialCommentFallback);
             return new ParseResult(IssueActivity.makeIntent(activity, user, repo, issueNumber,
-                    initialComment));
+                                   initialComment));
         } catch (NumberFormatException e) {
             return null;
         }
@@ -271,50 +278,50 @@ public class LinkParser {
         }
 
         DiffHighlightId diffId =
-                extractDiffId(uri.getFragment(), "diff-", true);
+            extractDiffId(uri.getFragment(), "diff-", true);
 
         if (diffId != null) {
             return new ParseResult(new PullRequestDiffLoadTask(activity, user, repo, diffId,
-                    pullRequestNumber));
+                                   pullRequestNumber));
         }
 
         String target = parts.size() >= 5 ? parts.get(4) : null;
         int page = parsePullRequestPage(target);
 
         IntentUtils.InitialCommentMarker initialDiffComment =
-                generateInitialCommentMarkerWithoutFallback(uri.getFragment(), "r");
+            generateInitialCommentMarkerWithoutFallback(uri.getFragment(), "r");
         if (initialDiffComment != null) {
             return new ParseResult(new PullRequestDiffCommentLoadTask(activity, user, repo,
-                    pullRequestNumber, initialDiffComment, page));
+                                   pullRequestNumber, initialDiffComment, page));
         }
 
         IntentUtils.InitialCommentMarker reviewMarker =
-                generateInitialCommentMarkerWithoutFallback(uri.getFragment(),
-                        "pullrequestreview-");
+            generateInitialCommentMarkerWithoutFallback(uri.getFragment(),
+                    "pullrequestreview-");
         if (reviewMarker != null) {
             return new ParseResult(new PullRequestReviewLoadTask(activity, user, repo,
-                    pullRequestNumber, reviewMarker));
+                                   pullRequestNumber, reviewMarker));
         }
 
         IntentUtils.InitialCommentMarker reviewCommentMarker =
-                generateInitialCommentMarkerWithoutFallback(uri.getFragment(),
-                        "discussion_r");
+            generateInitialCommentMarkerWithoutFallback(uri.getFragment(),
+                    "discussion_r");
         if (reviewCommentMarker != null) {
             return new ParseResult(new PullRequestReviewCommentLoadTask(activity, user, repo,
-                    pullRequestNumber, reviewCommentMarker));
+                                   pullRequestNumber, reviewCommentMarker));
         }
 
         DiffHighlightId reviewDiffHunkId =
-                extractDiffId(uri.getFragment(), "discussion-diff-", false);
+            extractDiffId(uri.getFragment(), "discussion-diff-", false);
         if (reviewDiffHunkId != null) {
             return new ParseResult(new PullRequestReviewDiffLoadTask(activity, user, repo,
-                    reviewDiffHunkId, pullRequestNumber));
+                                   reviewDiffHunkId, pullRequestNumber));
         }
 
         IntentUtils.InitialCommentMarker initialComment = generateInitialCommentMarker(
-                uri.getFragment(), "issuecomment-", initialCommentFallback);
+                    uri.getFragment(), "issuecomment-", initialCommentFallback);
         return new ParseResult(PullRequestActivity.makeIntent(activity, user, repo,
-                pullRequestNumber, page, initialComment));
+                               pullRequestNumber, page, initialComment));
     }
 
     private static int parsePullRequestPage(String target) {
@@ -322,10 +329,10 @@ public class LinkParser {
             return -1;
         }
         switch (target) {
-            case "commits":
-                return PullRequestActivity.PAGE_COMMITS;
-            case "files":
-                return PullRequestActivity.PAGE_FILES;
+        case "commits":
+            return PullRequestActivity.PAGE_COMMITS;
+        case "files":
+            return PullRequestActivity.PAGE_FILES;
         }
         return -1;
     }
@@ -338,13 +345,13 @@ public class LinkParser {
             return null;
         }
         DiffHighlightId diffId =
-                extractDiffId(uri.getFragment(), "diff-", true);
+            extractDiffId(uri.getFragment(), "diff-", true);
         if (diffId != null) {
             return new ParseResult(new CommitDiffLoadTask(activity, user, repo, diffId, id));
         }
 
         IntentUtils.InitialCommentMarker initialComment = generateInitialCommentMarker(
-                uri.getFragment(), "commitcomment-", initialCommentFallback);
+                    uri.getFragment(), "commitcomment-", initialCommentFallback);
         if (initialComment != null) {
             return new ParseResult(new CommitCommentLoadTask(activity, user, repo, id, initialComment));
         }
@@ -359,7 +366,7 @@ public class LinkParser {
         }
         String refAndPath = TextUtils.join("/", parts.subList(3, parts.size()));
         return new ParseResult(new RefPathDisambiguationTask(activity, user, repo, refAndPath,
-                uri.getFragment()));
+                               uri.getFragment()));
     }
 
     @Nullable
@@ -379,7 +386,7 @@ public class LinkParser {
     }
 
     private static IntentUtils.InitialCommentMarker generateInitialCommentMarkerWithoutFallback(
-            String fragment, String prefix) {
+        String fragment, String prefix) {
         if (fragment == null || !fragment.startsWith(prefix)) {
             return null;
         }
@@ -392,9 +399,9 @@ public class LinkParser {
     }
 
     private static IntentUtils.InitialCommentMarker generateInitialCommentMarker(
-            String fragment, String prefix, IntentUtils.InitialCommentMarker fallback) {
+        String fragment, String prefix, IntentUtils.InitialCommentMarker fallback) {
         IntentUtils.InitialCommentMarker initialCommentMarker =
-                generateInitialCommentMarkerWithoutFallback(fragment, prefix);
+            generateInitialCommentMarkerWithoutFallback(fragment, prefix);
         return initialCommentMarker != null ? initialCommentMarker : fallback;
     }
 
@@ -412,8 +419,8 @@ public class LinkParser {
         }
 
         String fileHash = typePos > 0
-                ? fragment.substring(prefix.length(), typePos)
-                : fragment.substring(prefix.length());
+                          ? fragment.substring(prefix.length(), typePos)
+                          : fragment.substring(prefix.length());
         if (isMd5Hash && fileHash.length() != 32) { // MD5 hash length
             return null;
         }

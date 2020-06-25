@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
  */
 public class StringUtils {
     private static final Pattern HUNK_START_PATTERN =
-            Pattern.compile("@@ -(\\d+),\\d+ \\+(\\d+),\\d+.*");
+        Pattern.compile("@@ -(\\d+),\\d+ \\+(\\d+),\\d+.*");
 
     /**
      * Checks if is blank.
@@ -106,8 +106,8 @@ public class StringUtils {
 
     public static CharSequence formatExactTime(Context context, Date date) {
         return DateUtils.formatDateTime(context, date.getTime(), DateUtils.FORMAT_SHOW_DATE
-                | DateUtils.FORMAT_SHOW_TIME
-                | DateUtils.FORMAT_SHOW_YEAR);
+                                        | DateUtils.FORMAT_SHOW_TIME
+                                        | DateUtils.FORMAT_SHOW_YEAR);
     }
 
     public static void applyBoldTagsAndSetText(StyleableTextView view, String input) {

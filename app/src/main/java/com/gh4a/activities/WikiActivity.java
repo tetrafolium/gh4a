@@ -26,10 +26,10 @@ import com.gh4a.model.Feed;
 public class WikiActivity extends WebViewerActivity {
     public static Intent makeIntent(Context context, String repoOwner, String repoName, Feed feed) {
         return new Intent(context, WikiActivity.class)
-                .putExtra("owner", repoOwner)
-                .putExtra("repo", repoName)
-                .putExtra("title", feed.getTitle())
-                .putExtra("content", feed.getContent());
+               .putExtra("owner", repoOwner)
+               .putExtra("repo", repoName)
+               .putExtra("title", feed.getTitle())
+               .putExtra("content", feed.getContent());
     }
 
     private String mUserLogin;
@@ -70,7 +70,7 @@ public class WikiActivity extends WebViewerActivity {
     @Override
     protected String getDocumentTitle() {
         return getString(R.string.wiki_print_document_title,
-                getIntent().getStringExtra("title"), mUserLogin, mRepoName);
+                         getIntent().getStringExtra("title"), mUserLogin, mRepoName);
     }
 
     @Override

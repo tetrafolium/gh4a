@@ -28,7 +28,7 @@ import retrofit2.Response;
 
 public class IssueFragment extends IssueFragmentBase {
     public static IssueFragment newInstance(String repoOwner, String repoName, Issue issue,
-            boolean isCollaborator, IntentUtils.InitialCommentMarker initialComment) {
+                                            boolean isCollaborator, IntentUtils.InitialCommentMarker initialComment) {
         IssueFragment f = new IssueFragment();
         f.setArguments(buildArgs(repoOwner, repoName, issue, isCollaborator, initialComment));
         return f;
@@ -64,7 +64,7 @@ public class IssueFragment extends IssueFragmentBase {
     public void onClick(View v) {
         if (v.getId() == R.id.tv_pull) {
             startActivity(PullRequestActivity.makeIntent(getActivity(),
-                    mRepoOwner, mRepoName, mIssue.number()));
+                          mRepoOwner, mRepoName, mIssue.number()));
         } else {
             super.onClick(v);
         }
@@ -75,7 +75,7 @@ public class IssueFragment extends IssueFragmentBase {
         final int issueNumber = mIssue.number();
         final IssueEventService eventService = ServiceFactory.get(IssueEventService.class, bypassCache);
         final IssueCommentService commentService =
-                ServiceFactory.get(IssueCommentService.class, bypassCache);
+            ServiceFactory.get(IssueCommentService.class, bypassCache);
 
         Single<List<TimelineItem>> commentSingle = ApiHelpers.PageIterator
                 .toSingle(page -> commentService.getIssueComments(mRepoOwner, mRepoName, issueNumber, page))
@@ -97,9 +97,9 @@ public class IssueFragment extends IssueFragmentBase {
     @Override
     public void editComment(GitHubCommentBase comment) {
         @AttrRes int highlightColorAttr = mIssue.state() == IssueState.Closed
-                ? R.attr.colorIssueClosed : R.attr.colorIssueOpen;
+                                          ? R.attr.colorIssueClosed : R.attr.colorIssueOpen;
         Intent intent = EditIssueCommentActivity.makeIntent(getActivity(), mRepoOwner, mRepoName,
-                mIssue.number(), comment.id(), comment.body(), highlightColorAttr);
+                        mIssue.number(), comment.id(), comment.body(), highlightColorAttr);
         startActivityForResult(intent, REQUEST_EDIT);
     }
 

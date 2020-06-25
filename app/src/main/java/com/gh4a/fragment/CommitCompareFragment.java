@@ -39,7 +39,7 @@ import com.meisolsson.githubsdk.service.repositories.RepositoryCommitService;
 import io.reactivex.Single;
 
 public class CommitCompareFragment extends ListDataBaseFragment<Commit> implements
-        RootAdapter.OnItemClickListener<Commit> {
+    RootAdapter.OnItemClickListener<Commit> {
     public static CommitCompareFragment newInstance(String repoOwner, String repoName,
             String baseRef, String headRef) {
         return newInstance(repoOwner, repoName, -1, null, baseRef, null, headRef);
@@ -101,7 +101,7 @@ public class CommitCompareFragment extends ListDataBaseFragment<Commit> implemen
     @Override
     public void onItemClick(Commit commit) {
         Intent intent = CommitActivity.makeIntent(getActivity(),
-                mRepoOwner, mRepoName, mPullRequestNumber, commit.sha());
+                        mRepoOwner, mRepoName, mPullRequestNumber, commit.sha());
         startActivityForResult(intent, REQUEST_COMMIT);
     }
 
@@ -122,25 +122,25 @@ public class CommitCompareFragment extends ListDataBaseFragment<Commit> implemen
         RepositoryCommitService service = ServiceFactory.get(RepositoryCommitService.class, bypassCache);
 
         Single<CommitCompare> compareSingle = service.compareCommits(mRepoOwner, mRepoName, mBase, mHead)
-                .map(ApiHelpers::throwOnFailure)
-                .onErrorResumeNext(error -> {
-                    if (error instanceof ApiRequestException) {
-                        ApiRequestException are = (ApiRequestException) error;
-                        if (are.getStatus() == HttpURLConnection.HTTP_NOT_FOUND
-                                && mBaseLabel != null
-                                && mHeadLabel != null) {
-                            // We got a 404; likely the history of the base branch was rewritten. Try the labels.
-                            return service.compareCommits(mRepoOwner, mRepoName, mBaseLabel, mHeadLabel)
-                                    .map(ApiHelpers::throwOnFailure);
-                        }
-                    }
-                    return Single.error(error);
-                });
+                                              .map(ApiHelpers::throwOnFailure)
+        .onErrorResumeNext(error -> {
+            if (error instanceof ApiRequestException) {
+                ApiRequestException are = (ApiRequestException) error;
+                if (are.getStatus() == HttpURLConnection.HTTP_NOT_FOUND
+                        && mBaseLabel != null
+                        && mHeadLabel != null) {
+                    // We got a 404; likely the history of the base branch was rewritten. Try the labels.
+                    return service.compareCommits(mRepoOwner, mRepoName, mBaseLabel, mHeadLabel)
+                    .map(ApiHelpers::throwOnFailure);
+                }
+            }
+            return Single.error(error);
+        });
 
         return compareSingle
-                .map(CommitCompare::commits)
-                // Bummer, at least one branch was deleted.
-                // Can't do anything here, so return an empty list.
-                .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND,new ArrayList<>()));
+               .map(CommitCompare::commits)
+               // Bummer, at least one branch was deleted.
+               // Can't do anything here, so return an empty list.
+               .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND,new ArrayList<>()));
     }
 }

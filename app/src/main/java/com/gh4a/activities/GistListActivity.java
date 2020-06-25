@@ -27,7 +27,7 @@ import com.gh4a.fragment.GistListFragment;
 public class GistListActivity extends FragmentContainerActivity {
     public static Intent makeIntent(Context context, String user) {
         return new Intent(context, GistListActivity.class)
-                .putExtra("user", user);
+               .putExtra("user", user);
     }
 
     private String mUserLogin;

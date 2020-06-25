@@ -9,7 +9,7 @@ import android.text.style.LineHeightSpan;
 import android.text.style.ReplacementSpan;
 
 public class EllipsizeLineSpan extends ReplacementSpan implements
-        LineBackgroundSpan, LineHeightSpan {
+    LineBackgroundSpan, LineHeightSpan {
     private final Rect mClipRect = new Rect();
     private final int mBottomMargin;
 
@@ -19,7 +19,7 @@ public class EllipsizeLineSpan extends ReplacementSpan implements
 
     @Override
     public void drawBackground(Canvas c, Paint p, int left, int right, int top,
-            int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
+                               int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
         c.getClipBounds(mClipRect);
     }
 
@@ -35,7 +35,7 @@ public class EllipsizeLineSpan extends ReplacementSpan implements
 
     @Override
     public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end,
-            float x, int top, int y, int bottom, @NonNull Paint paint) {
+                     float x, int top, int y, int bottom, @NonNull Paint paint) {
         float textWidth = paint.measureText(text, start, end);
 
         if (x + (int) Math.ceil(textWidth) < mClipRect.right) {
@@ -45,7 +45,7 @@ public class EllipsizeLineSpan extends ReplacementSpan implements
             float ellipsisWidth = paint.measureText("\u2026");
             // move 'end' to the ellipsis point
             end = start + paint.breakText(text, start, end, true,
-                    mClipRect.right - x - ellipsisWidth, null);
+                                          mClipRect.right - x - ellipsisWidth, null);
             canvas.drawText(text, start, end, x, y, paint);
             canvas.drawText("\u2026", x + paint.measureText(text, start, end), y, paint);
         }
@@ -53,7 +53,7 @@ public class EllipsizeLineSpan extends ReplacementSpan implements
 
     @Override
     public void chooseHeight(CharSequence text, int start, int end, int spanstartv,
-            int v, Paint.FontMetricsInt fm) {
+                             int v, Paint.FontMetricsInt fm) {
         fm.descent += mBottomMargin;
         fm.bottom += mBottomMargin;
     }

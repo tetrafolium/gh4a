@@ -70,19 +70,19 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineItem> implements
-        View.OnClickListener, TimelineItemAdapter.OnCommentAction,
-        EditorBottomSheet.Callback, EditorBottomSheet.Listener,
-        ReactionBar.Callback, ReactionBar.Item, ReactionBar.ReactionDetailsCache.Listener {
+    View.OnClickListener, TimelineItemAdapter.OnCommentAction,
+    EditorBottomSheet.Callback, EditorBottomSheet.Listener,
+    ReactionBar.Callback, ReactionBar.Item, ReactionBar.ReactionDetailsCache.Listener {
     protected static final int REQUEST_EDIT = 1000;
 
     protected static final List<IssueEventType> INTERESTING_EVENTS = Arrays.asList(
-            IssueEventType.Closed, IssueEventType.Reopened, IssueEventType.Merged,
-            IssueEventType.Referenced, IssueEventType.Assigned, IssueEventType.Unassigned,
-            IssueEventType.Labeled, IssueEventType.Unlabeled, IssueEventType.Locked,
-            IssueEventType.Unlocked, IssueEventType.Milestoned, IssueEventType.Demilestoned,
-            IssueEventType.Renamed, IssueEventType.HeadRefDeleted, IssueEventType.HeadRefRestored,
-            IssueEventType.ReviewRequested, IssueEventType.ReviewRequestRemoved
-    );
+                IssueEventType.Closed, IssueEventType.Reopened, IssueEventType.Merged,
+                IssueEventType.Referenced, IssueEventType.Assigned, IssueEventType.Unassigned,
+                IssueEventType.Labeled, IssueEventType.Unlabeled, IssueEventType.Locked,
+                IssueEventType.Unlocked, IssueEventType.Milestoned, IssueEventType.Demilestoned,
+                IssueEventType.Renamed, IssueEventType.HeadRefDeleted, IssueEventType.HeadRefRestored,
+                IssueEventType.ReviewRequested, IssueEventType.ReviewRequestRemoved
+            );
 
     protected View mListHeaderView;
     protected Issue mIssue;
@@ -93,13 +93,13 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
     private boolean mListShown;
     private ReactionBar.AddReactionMenuHelper mReactionMenuHelper;
     private final ReactionBar.ReactionDetailsCache mReactionDetailsCache =
-            new ReactionBar.ReactionDetailsCache(this);
+        new ReactionBar.ReactionDetailsCache(this);
     private TimelineItemAdapter mAdapter;
     private HttpImageGetter mImageGetter;
     private EditorBottomSheet mBottomSheet;
 
     protected static Bundle buildArgs(String repoOwner, String repoName,
-            Issue issue, boolean isCollaborator, IntentUtils.InitialCommentMarker initialComment) {
+                                      Issue issue, boolean isCollaborator, IntentUtils.InitialCommentMarker initialComment) {
         Bundle args = new Bundle();
         args.putString("owner", repoOwner);
         args.putString("repo", repoName);
@@ -126,7 +126,7 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         View listContent = super.onCreateView(inflater, container, savedInstanceState);
         View v = inflater.inflate(R.layout.comment_list, container, false);
 
@@ -269,7 +269,7 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
     @Override
     protected RootAdapter<TimelineItem, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
         mAdapter = new TimelineItemAdapter(getActivity(), mRepoOwner, mRepoName, mIssue.number(),
-                mIssue.pullRequest() != null, true, this);
+                                           mIssue.pullRequest() != null, true, this);
         mAdapter.setLocked(isLocked());
         return mAdapter;
     }
@@ -324,7 +324,7 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
         }
 
         int commentVisibility = mListShown && Gh4Application.get().isAuthorized()
-                ? View.VISIBLE : View.GONE;
+                                ? View.VISIBLE : View.GONE;
         mBottomSheet.setVisibility(commentVisibility);
     }
 
@@ -357,7 +357,7 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
 
         TextView tvTimestamp = mListHeaderView.findViewById(R.id.tv_timestamp);
         tvTimestamp.setText(StringUtils.formatRelativeTime(getActivity(),
-                mIssue.createdAt(), true));
+                            mIssue.createdAt(), true));
 
         String body = mIssue.bodyHtml();
         TextView descriptionView = mListHeaderView.findViewById(R.id.tv_desc);
@@ -367,7 +367,7 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
 
             if (!isLocked()) {
                 descriptionView.setCustomSelectionActionModeCallback(
-                        new UiUtils.QuoteActionModeCallback(descriptionView) {
+                new UiUtils.QuoteActionModeCallback(descriptionView) {
                     @Override
                     public void onTextQuoted(CharSequence text) {
                         quoteText(text);
@@ -443,7 +443,7 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
     public Single<List<Reaction>> loadReactionDetails(ReactionBar.Item item, boolean bypassCache) {
         final ReactionService service = ServiceFactory.get(ReactionService.class, bypassCache);
         return ApiHelpers.PageIterator
-                .toSingle(page -> service.getIssueReactions(mRepoOwner, mRepoName, mIssue.number(), page));
+               .toSingle(page -> service.getIssueReactions(mRepoOwner, mRepoName, mIssue.number(), page));
     }
 
     @Override
@@ -451,7 +451,7 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
         ReactionService service = ServiceFactory.get(ReactionService.class, false);
         ReactionRequest request = ReactionRequest.builder().content(content).build();
         return service.createIssueReaction(mRepoOwner, mRepoName, mIssue.number(), request)
-                .map(ApiHelpers::throwOnFailure);
+               .map(ApiHelpers::throwOnFailure);
     }
 
     @Override
@@ -459,7 +459,7 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
             boolean bypassCache) {
         final ReactionService service = ServiceFactory.get(ReactionService.class, bypassCache);
         return ApiHelpers.PageIterator
-                .toSingle(page -> service.getIssueCommentReactions(mRepoOwner, mRepoName, comment.id(), page));
+               .toSingle(page -> service.getIssueCommentReactions(mRepoOwner, mRepoName, comment.id(), page));
     }
 
     @Override
@@ -467,7 +467,7 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
         ReactionService service = ServiceFactory.get(ReactionService.class, false);
         ReactionRequest request = ReactionRequest.builder().content(content).build();
         return service.createIssueCommentReaction(mRepoOwner, mRepoName,comment.id(), request)
-                .map(ApiHelpers::throwOnFailure);
+               .map(ApiHelpers::throwOnFailure);
     }
 
     @Override
@@ -523,7 +523,7 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
         IssueCommentService service = ServiceFactory.get(IssueCommentService.class, false);
         CommentRequest request = CommentRequest.builder().body(comment).build();
         return service.createIssueComment(mRepoOwner, mRepoName, mIssue.number(), request)
-                .map(ApiHelpers::throwOnFailure);
+               .map(ApiHelpers::throwOnFailure);
     }
 
     @Override
@@ -543,16 +543,16 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
     @Override
     public void deleteComment(final GitHubCommentBase comment) {
         new AlertDialog.Builder(getActivity())
-                .setMessage(R.string.delete_comment_message)
-                .setPositiveButton(R.string.delete, (dialog, which) -> handleDeleteComment(comment))
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+        .setMessage(R.string.delete_comment_message)
+        .setPositiveButton(R.string.delete, (dialog, which) -> handleDeleteComment(comment))
+        .setNegativeButton(R.string.cancel, null)
+        .show();
     }
 
     @Override
     public String getShareSubject(GitHubCommentBase comment) {
         return getString(R.string.share_comment_subject, comment.id(), mIssue.number(),
-                mRepoOwner + "/" + mRepoName);
+                         mRepoOwner + "/" + mRepoName);
     }
 
     @Override
@@ -584,12 +584,12 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
 
     private void handleDeleteComment(GitHubCommentBase comment) {
         doDeleteComment(comment)
-                .map(ApiHelpers::mapToBooleanOrThrowOnFailure)
-                .compose(RxUtils.wrapForBackgroundTask(getBaseActivity(),
-                        R.string.deleting_msg, R.string.error_delete_comment))
-                .subscribe(result -> {
-                    reloadEvents(false);
-                    getActivity().setResult(Activity.RESULT_OK);
-                }, error -> handleActionFailure("Deleting comment failed", error));
+        .map(ApiHelpers::mapToBooleanOrThrowOnFailure)
+        .compose(RxUtils.wrapForBackgroundTask(getBaseActivity(),
+                                               R.string.deleting_msg, R.string.error_delete_comment))
+        .subscribe(result -> {
+            reloadEvents(false);
+            getActivity().setResult(Activity.RESULT_OK);
+        }, error -> handleActionFailure("Deleting comment failed", error));
     }
 }

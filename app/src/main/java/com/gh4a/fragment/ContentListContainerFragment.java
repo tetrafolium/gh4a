@@ -43,8 +43,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class ContentListContainerFragment extends Fragment implements
-        ContentListFragment.ParentCallback, PathBreadcrumbs.SelectionCallback,
-        BaseActivity.RefreshableChild, SwipeRefreshLayout.ChildScrollDelegate {
+    ContentListFragment.ParentCallback, PathBreadcrumbs.SelectionCallback,
+    BaseActivity.RefreshableChild, SwipeRefreshLayout.ChildScrollDelegate {
     public interface CommitSelectionCallback {
         void onCommitSelectedAsBase(Commit commit);
     }
@@ -87,12 +87,12 @@ public class ContentListContainerFragment extends Fragment implements
         mStateSaved = false;
 
         mCacheFragment = (ContentListCacheFragment)
-                getFragmentManager().findFragmentByTag("content_list_cache");
+                         getFragmentManager().findFragmentByTag("content_list_cache");
         if (mCacheFragment == null) {
             mCacheFragment = new ContentListCacheFragment();
             getFragmentManager().beginTransaction()
-                    .add(mCacheFragment, "content_list_cache")
-                    .commitAllowingStateLoss();
+            .add(mCacheFragment, "content_list_cache")
+            .commitAllowingStateLoss();
         }
 
         if (savedInstanceState != null) {
@@ -162,7 +162,7 @@ public class ContentListContainerFragment extends Fragment implements
             mDirStack.pop();
             getChildFragmentManager().popBackStackImmediate();
             mContentListFragment = (ContentListFragment)
-                    getChildFragmentManager().findFragmentById(R.id.content_list_container);
+                                   getChildFragmentManager().findFragmentById(R.id.content_list_container);
             updateBreadcrumbs();
             return true;
         }
@@ -244,8 +244,8 @@ public class ContentListContainerFragment extends Fragment implements
             startActivity(RepositoryActivity.makeIntent(getActivity(), userRepo[0], userRepo[1]));
         } else {
             startActivity(FileViewerActivity.makeIntent(getActivity(),
-                    mRepository.owner().login(), mRepository.name(),
-                    getCurrentRef(), content.path()));
+                          mRepository.owner().login(), mRepository.name(),
+                          getCurrentRef(), content.path()));
         }
     }
 
@@ -285,8 +285,8 @@ public class ContentListContainerFragment extends Fragment implements
     private void addFragmentForTopOfStack() {
         String path = mDirStack.peek();
         mContentListFragment = ContentListFragment.newInstance(mRepository,
-                TextUtils.isEmpty(path) ? null : path,
-                mCacheFragment.getFromCache(path), mSelectedRef);
+                               TextUtils.isEmpty(path) ? null : path,
+                               mCacheFragment.getFromCache(path), mSelectedRef);
 
         FragmentTransaction ft = getChildFragmentManager().beginTransaction();
         if (path != null) {
@@ -314,20 +314,20 @@ public class ContentListContainerFragment extends Fragment implements
         String repoName = mRepository.name();
 
         service.getContents(repoOwner, repoName, ".gitmodules", mSelectedRef)
-                .map(ApiHelpers::throwOnFailure)
-                .map(Optional::of)
-                .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, Optional.<Content>absent()))
-                .map(contentOpt -> contentOpt.map(content -> StringUtils.fromBase64(content.content())))
-                .map(this::parseModuleMap)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .compose(mRxLoader.makeSingleTransformer(ID_LOADER_MODULEMAP, true))
-                .subscribe(resultOpt -> {
-                    mGitModuleMap = resultOpt.orNull();
-                    if (mContentListFragment != null) {
-                        mContentListFragment.onSubModuleNamesChanged(getSubModuleNames(mContentListFragment));
-                    }
-                }, ((BaseActivity) getActivity())::handleLoadFailure);
+        .map(ApiHelpers::throwOnFailure)
+        .map(Optional::of)
+        .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, Optional.<Content>absent()))
+        .map(contentOpt -> contentOpt.map(content -> StringUtils.fromBase64(content.content())))
+        .map(this::parseModuleMap)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .compose(mRxLoader.makeSingleTransformer(ID_LOADER_MODULEMAP, true))
+        .subscribe(resultOpt -> {
+            mGitModuleMap = resultOpt.orNull();
+            if (mContentListFragment != null) {
+                mContentListFragment.onSubModuleNamesChanged(getSubModuleNames(mContentListFragment));
+            }
+        }, ((BaseActivity) getActivity())::handleLoadFailure);
     }
 
     private Optional<Map<String, String>> parseModuleMap(Optional<String> inputOpt) {

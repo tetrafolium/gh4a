@@ -56,14 +56,14 @@ public class NestedCoordinatorLayout extends CoordinatorLayout implements Nested
 
     @Override
     public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed,
-            int dyUnconsumed, int[] offsetInWindow, int type) {
+                                        int dyUnconsumed, int[] offsetInWindow, int type) {
         return mNestedScrollingChildHelper.dispatchNestedScroll(dxConsumed, dyConsumed,
                 dxUnconsumed, dyUnconsumed, offsetInWindow, type);
     }
 
     @Override
     public boolean dispatchNestedPreScroll(int dx, int dy, int[] consumed,
-            int[] offsetInWindow, int type) {
+                                           int[] offsetInWindow, int type) {
         return mNestedScrollingChildHelper.dispatchNestedPreScroll(dx, dy, consumed,
                 offsetInWindow, type);
     }
@@ -94,10 +94,10 @@ public class NestedCoordinatorLayout extends CoordinatorLayout implements Nested
 
     @Override
     public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed,
-            int dyUnconsumed, int type) {
+                               int dyUnconsumed, int type) {
         super.onNestedScroll(target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, type);
         dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed,
-                mParentOffsetInWindow, type);
+                             mParentOffsetInWindow, type);
     }
 
     @Override

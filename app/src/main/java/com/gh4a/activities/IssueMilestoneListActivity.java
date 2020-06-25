@@ -32,13 +32,13 @@ import com.gh4a.fragment.IssueMilestoneListFragment;
 import com.gh4a.fragment.LoadingListFragmentBase;
 
 public class IssueMilestoneListActivity extends BaseFragmentPagerActivity implements
-        View.OnClickListener, LoadingListFragmentBase.OnRecyclerViewCreatedListener {
+    View.OnClickListener, LoadingListFragmentBase.OnRecyclerViewCreatedListener {
     public static Intent makeIntent(Context context, String repoOwner, String repoName,
-            boolean fromPullRequest) {
+                                    boolean fromPullRequest) {
         return new Intent(context, IssueMilestoneListActivity.class)
-                .putExtra("owner", repoOwner)
-                .putExtra("repo", repoName)
-                .putExtra("from_pr", fromPullRequest);
+               .putExtra("owner", repoOwner)
+               .putExtra("repo", repoName)
+               .putExtra("from_pr", fromPullRequest);
     }
 
     private static final int REQUEST_CREATE_MILESTONE = 1000;
@@ -64,7 +64,7 @@ public class IssueMilestoneListActivity extends BaseFragmentPagerActivity implem
         if (Gh4Application.get().isAuthorized()) {
             CoordinatorLayout rootLayout = getRootLayout();
             mCreateFab = (FloatingActionButton)
-                    getLayoutInflater().inflate(R.layout.add_fab, rootLayout, false);
+                         getLayoutInflater().inflate(R.layout.add_fab, rootLayout, false);
             mCreateFab.setOnClickListener(this);
             rootLayout.addView(mCreateFab);
         }
@@ -146,7 +146,7 @@ public class IssueMilestoneListActivity extends BaseFragmentPagerActivity implem
     @Override
     public void onClick(View view) {
         startActivityForResult(IssueMilestoneEditActivity.makeCreateIntent(this,
-                mRepoOwner, mRepoName, mParentIsPullRequest), REQUEST_CREATE_MILESTONE);
+                               mRepoOwner, mRepoName, mParentIsPullRequest), REQUEST_CREATE_MILESTONE);
     }
 
     @Override

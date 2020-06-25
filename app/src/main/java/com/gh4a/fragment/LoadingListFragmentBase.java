@@ -20,7 +20,7 @@ import com.gh4a.widget.SwipeRefreshLayout;
 import com.pluscubed.recyclerfastscroll.RecyclerFastScroller;
 
 public abstract class LoadingListFragmentBase extends LoadingFragmentBase implements
-        BaseActivity.RefreshableChild, SwipeRefreshLayout.ChildScrollDelegate {
+    BaseActivity.RefreshableChild, SwipeRefreshLayout.ChildScrollDelegate {
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
     private NestedScrollView mEmptyViewContainer;
@@ -54,7 +54,7 @@ public abstract class LoadingListFragmentBase extends LoadingFragmentBase implem
         }
         if (!hasCards()) {
             mRecyclerView.setBackgroundResource(
-                    UiUtils.resolveDrawable(getActivity(), R.attr.listBackground));
+                UiUtils.resolveDrawable(getActivity(), R.attr.listBackground));
         }
 
         mFastScroller = view.findViewById(R.id.fast_scroller);
@@ -62,14 +62,14 @@ public abstract class LoadingListFragmentBase extends LoadingFragmentBase implem
         mFastScroller.setVisibility(View.VISIBLE);
         mFastScroller.setOnHandleTouchListener((v, event) -> {
             switch (event.getActionMasked()) {
-                case MotionEvent.ACTION_DOWN:
-                    getBaseActivity().setRightDrawerLockedClosed(true);
-                    break;
+            case MotionEvent.ACTION_DOWN:
+                getBaseActivity().setRightDrawerLockedClosed(true);
+                break;
 
-                case MotionEvent.ACTION_UP:
-                case MotionEvent.ACTION_CANCEL:
-                    getBaseActivity().setRightDrawerLockedClosed(false);
-                    break;
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                getBaseActivity().setRightDrawerLockedClosed(false);
+                break;
             }
 
             return false;
@@ -124,7 +124,9 @@ public abstract class LoadingListFragmentBase extends LoadingFragmentBase implem
     protected boolean hasDividers() {
         return true;
     }
-    protected boolean hasCards() { return false; }
+    protected boolean hasCards() {
+        return false;
+    }
 
     @Override
     protected void setHighlightColors(int colorAttrId, int statusBarColorAttrId) {

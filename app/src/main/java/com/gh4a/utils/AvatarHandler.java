@@ -64,15 +64,15 @@ public class AvatarHandler {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case MSG_LOADED:
-                    processResult(msg.arg1, (Bitmap) msg.obj);
-                    if (sRequests.size() == 0) {
-                        sendEmptyMessageDelayed(MSG_DESTROY, 3000);
-                    }
-                    break;
-                case MSG_DESTROY:
-                    shutdownWorker();
-                    break;
+            case MSG_LOADED:
+                processResult(msg.arg1, (Bitmap) msg.obj);
+                if (sRequests.size() == 0) {
+                    sendEmptyMessageDelayed(MSG_DESTROY, 3000);
+                }
+                break;
+            case MSG_DESTROY:
+                shutdownWorker();
+                break;
             }
         }
 
@@ -105,7 +105,7 @@ public class AvatarHandler {
     }
 
     public static void assignAvatar(Context context, MenuItem item,
-            String userName, long userId) {
+                                    String userName, long userId) {
         assignAvatarInternal(new MenuItemDelegate(context, item), userName, userId, null);
     }
 
@@ -211,8 +211,8 @@ public class AvatarHandler {
             url = "https://avatars.githubusercontent.com/u/" + userId;
         }
         return Uri.parse(url).buildUpon()
-                .appendQueryParameter("s", String.valueOf(sMaxImageSizePx))
-                .toString();
+               .appendQueryParameter("s", String.valueOf(sMaxImageSizePx))
+               .toString();
     }
 
     private static void applyAvatarToView(ViewDelegate view, Bitmap avatar) {
@@ -262,8 +262,8 @@ public class AvatarHandler {
     private static Bitmap fetchBitmap(String url) throws IOException {
         OkHttpClient client = ServiceFactory.getImageHttpClient();
         okhttp3.Request request = new okhttp3.Request.Builder()
-                .url(url)
-                .build();
+        .url(url)
+        .build();
 
         byte[] data;
 
@@ -298,8 +298,8 @@ public class AvatarHandler {
         float scaleFactor = Math.min(1, Math.min(widthScale, heightScale));
 
         Bitmap scaled = Bitmap.createScaledBitmap(unscaled,
-                (int) (scaleFactor * unscaled.getWidth()),
-                (int) (scaleFactor * unscaled.getHeight()), true);
+                        (int) (scaleFactor * unscaled.getWidth()),
+                        (int) (scaleFactor * unscaled.getHeight()), true);
         if (scaled != unscaled) {
             unscaled.recycle();
         }
@@ -322,16 +322,16 @@ public class AvatarHandler {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case MSG_LOAD:
-                    String url = (String) msg.obj;
-                    Bitmap bitmap = null;
-                    try {
-                        bitmap = fetchBitmap(url);
-                    } catch (IOException e) {
-                        Log.e(TAG, "Couldn't fetch gravatar from URL " + url, e);
-                    }
-                    sHandler.obtainMessage(MSG_LOADED, msg.arg1, 0, bitmap).sendToTarget();
-                    break;
+            case MSG_LOAD:
+                String url = (String) msg.obj;
+                Bitmap bitmap = null;
+                try {
+                    bitmap = fetchBitmap(url);
+                } catch (IOException e) {
+                    Log.e(TAG, "Couldn't fetch gravatar from URL " + url, e);
+                }
+                sHandler.obtainMessage(MSG_LOADED, msg.arg1, 0, bitmap).sendToTarget();
+                break;
             }
         }
     }
@@ -398,8 +398,8 @@ public class AvatarHandler {
             mPaint.setColor(Color.WHITE);
 
             canvas.drawText(mLetter, 0, 1, bounds.centerX(),
-                    bounds.centerY() - sRect.exactCenterY(),
-                    mPaint);
+                            bounds.centerY() - sRect.exactCenterY(),
+                            mPaint);
         }
 
         @Override

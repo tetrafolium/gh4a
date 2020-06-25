@@ -63,8 +63,8 @@ public abstract class ListDataBaseFragment<T> extends LoadingListFragmentBase {
             handleNewData(initialData);
         } else {
             mSubscription = onCreateDataSingle(force)
-                    .compose(makeLoaderSingle(0, force))
-                    .subscribe(this::handleNewData, this::handleLoadFailure);
+                            .compose(makeLoaderSingle(0, force))
+                            .subscribe(this::handleNewData, this::handleLoadFailure);
         }
     }
 

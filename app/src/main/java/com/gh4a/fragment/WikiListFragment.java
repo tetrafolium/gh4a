@@ -19,7 +19,7 @@ import java.util.List;
 import io.reactivex.Single;
 
 public class WikiListFragment extends ListDataBaseFragment<Feed> implements
-        RootAdapter.OnItemClickListener<Feed> {
+    RootAdapter.OnItemClickListener<Feed> {
     private String mUserLogin;
     private String mRepoName;
     private String mInitialPage;
@@ -48,9 +48,9 @@ public class WikiListFragment extends ListDataBaseFragment<Feed> implements
         String relativeUrl = mUserLogin + "/" + mRepoName + "/wiki.atom";
         final List<Feed> empty = new ArrayList<>();
         return SingleFactory.loadFeed(relativeUrl)
-                // for empty repos, Github redirects to the repo's home page
-                .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_MOVED_TEMP, empty))
-                .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, empty));
+               // for empty repos, Github redirects to the repo's home page
+               .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_MOVED_TEMP, empty))
+               .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, empty));
     }
 
     @Override

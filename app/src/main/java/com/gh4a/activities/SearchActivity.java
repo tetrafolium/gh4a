@@ -29,11 +29,11 @@ public class SearchActivity extends FragmentContainerActivity {
     public static final int SEARCH_TYPE_CODE = SearchFragment.SEARCH_TYPE_CODE;
 
     public static Intent makeIntent(Context context, String initialSearch,
-            int searchType, boolean startSearchImmediately) {
+                                    int searchType, boolean startSearchImmediately) {
         return makeIntent(context)
-                .putExtra("initial_search", initialSearch)
-                .putExtra("search_type", searchType)
-                .putExtra("search_immediately", startSearchImmediately);
+               .putExtra("initial_search", initialSearch)
+               .putExtra("search_type", searchType)
+               .putExtra("search_immediately", startSearchImmediately);
     }
 
     public static Intent makeIntent(Context context) {

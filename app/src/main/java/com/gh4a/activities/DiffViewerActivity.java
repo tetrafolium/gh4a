@@ -48,28 +48,28 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public abstract class DiffViewerActivity<C extends PositionalCommentBase> extends WebViewerActivity
-        implements ReactionBar.Callback, ReactionBar.ReactionDetailsCache.Listener {
+    implements ReactionBar.Callback, ReactionBar.ReactionDetailsCache.Listener {
     protected static <C extends PositionalCommentBase> Intent fillInIntent(Intent baseIntent,
             String repoOwner, String repoName, String commitSha, String path, String diff,
             List<C> comments, int initialLine, int highlightStartLine, int highlightEndLine,
             boolean highlightisRight, IntentUtils.InitialCommentMarker initialComment) {
         return baseIntent.putExtra("owner", repoOwner)
-                .putExtra("repo", repoName)
-                .putExtra("sha", commitSha)
-                .putExtra("path", path)
-                .putExtra("diff", diff)
-                .putExtra("comments", comments != null ? new ArrayList<>(comments) : null)
-                .putExtra("initial_line", initialLine)
-                .putExtra("highlight_start", highlightStartLine)
-                .putExtra("highlight_end", highlightEndLine)
-                .putExtra("highlight_right", highlightisRight)
-                .putExtra("initial_comment", initialComment);
+               .putExtra("repo", repoName)
+               .putExtra("sha", commitSha)
+               .putExtra("path", path)
+               .putExtra("diff", diff)
+               .putExtra("comments", comments != null ? new ArrayList<>(comments) : null)
+               .putExtra("initial_line", initialLine)
+               .putExtra("highlight_start", highlightStartLine)
+               .putExtra("highlight_end", highlightEndLine)
+               .putExtra("highlight_right", highlightisRight)
+               .putExtra("initial_comment", initialComment);
     }
 
     private static final String COMMENT_ADD_URI_FORMAT =
-            "comment://add?position=%d&l=%d&r=%d&isRightLine=%b";
+        "comment://add?position=%d&l=%d&r=%d&isRightLine=%b";
     private static final String COMMENT_EDIT_URI_FORMAT =
-            "comment://edit?position=%d&l=%d&r=%d&isRightLine=%b&id=%d";
+        "comment://edit?position=%d&l=%d&r=%d&isRightLine=%b&id=%d";
 
     private static final String REACTION_PLUS_ONE_PATH = "M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2"
             + "h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9"
@@ -119,7 +119,7 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
     private boolean mHighlightIsRight;
     private IntentUtils.InitialCommentMarker mInitialComment;
     private final ReactionBar.ReactionDetailsCache mReactionDetailsCache =
-            new ReactionBar.ReactionDetailsCache(this);
+        new ReactionBar.ReactionDetailsCache(this);
 
     protected static class CommitCommentWrapper implements ReactionBar.Item {
         public PositionalCommentBase comment;
@@ -201,7 +201,7 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
 
         String viewAtTitle = getString(R.string.object_view_file_at, mSha.substring(0, 7));
         menu.add(0, MENU_ITEM_VIEW, Menu.NONE, viewAtTitle)
-                .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER);
+        .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -275,7 +275,7 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
             }
             if (authorized) {
                 String uri = String.format(Locale.US, COMMENT_ADD_URI_FORMAT,
-                        i, leftDiffPosition, rightDiffPosition, line.startsWith("+"));
+                                           i, leftDiffPosition, rightDiffPosition, line.startsWith("+"));
                 content.append(" onclick=\"javascript:location.href='");
                 content.append(uri).append("'\"");
             }
@@ -294,14 +294,14 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
                     content.append("\"");
                     if (authorized) {
                         String uri = String.format(Locale.US, COMMENT_EDIT_URI_FORMAT,
-                                i, leftDiffPosition, rightDiffPosition, line.startsWith("+"), id);
+                                                   i, leftDiffPosition, rightDiffPosition, line.startsWith("+"), id);
                         content.append(" onclick=\"javascript:location.href='");
                         content.append(uri).append("'\"");
                     }
                     content.append("><div class=\"change\">");
                     content.append(getString(R.string.commit_comment_header,
-                            "<b>" + ApiHelpers.getUserLogin(this, comment.user()) + "</b>",
-                            StringUtils.formatRelativeTime(DiffViewerActivity.this, comment.createdAt(), true)));
+                                             "<b>" + ApiHelpers.getUserLogin(this, comment.user()) + "</b>",
+                                             StringUtils.formatRelativeTime(DiffViewerActivity.this, comment.createdAt(), true)));
                     content.append("</div>").append(comment.bodyHtml());
 
                     Reactions reactions = comment.reactions();
@@ -322,14 +322,14 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
 
         if (mInitialLine > 0) {
             content.insert(highlightInsertPos, " onload='scrollToElement(\"line"
-                    + mInitialLine + "\")' onresize='scrollToHighlight();'");
+                           + mInitialLine + "\")' onresize='scrollToHighlight();'");
         } else if (mInitialComment != null) {
             content.insert(highlightInsertPos, " onload='scrollToElement(\"comment"
-                    + mInitialComment.commentId + "\")' onresize='scrollToHighlight();'");
+                           + mInitialComment.commentId + "\")' onresize='scrollToHighlight();'");
         } else if (highlightStartLine != -1 && highlightEndLine != -1) {
             content.insert(highlightInsertPos, " onload='highlightDiffLines("
-                    + highlightStartLine + "," + highlightEndLine
-                    + ")' onresize='scrollToHighlight();'");
+                           + highlightStartLine + "," + highlightEndLine
+                           + ")' onresize='scrollToHighlight();'");
         }
 
         content.append("</pre></body></html>");
@@ -349,7 +349,7 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
     @Override
     protected String getDocumentTitle() {
         return getString(R.string.diff_print_document_title,
-                FileUtils.getFileName(mPath), mSha.substring(0, 7), mRepoOwner, mRepoName);
+                         FileUtils.getFileName(mPath), mSha.substring(0, 7), mRepoOwner, mRepoName);
     }
 
     @Override
@@ -357,16 +357,16 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
         Uri url = createUrl("", 0L);
 
         switch (item.getItemId()) {
-            case R.id.browser:
-                IntentUtils.launchBrowser(this, url);
-                return true;
-            case R.id.share:
-                IntentUtils.share(this, getString(R.string.share_commit_subject,
-                        mSha.substring(0, 7), mRepoOwner + "/" + mRepoName), url);
-                return true;
-            case MENU_ITEM_VIEW:
-                startActivity(FileViewerActivity.makeIntent(this, mRepoOwner, mRepoName, mSha, mPath));
-                return true;
+        case R.id.browser:
+            IntentUtils.launchBrowser(this, url);
+            return true;
+        case R.id.share:
+            IntentUtils.share(this, getString(R.string.share_commit_subject,
+                                              mSha.substring(0, 7), mRepoOwner + "/" + mRepoName), url);
+            return true;
+        case MENU_ITEM_VIEW:
+            startActivity(FileViewerActivity.makeIntent(this, mRepoOwner, mRepoName, mSha, mPath));
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -445,19 +445,19 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
 
     private void deleteComment(long id) {
         doDeleteComment(id)
-                .map(ApiHelpers::mapToBooleanOrThrowOnFailure)
-                .compose(RxUtils.wrapForBackgroundTask(this, R.string.deleting_msg,
-                        getString(R.string.error_delete_commit_comment)))
-                .subscribe(result -> refresh(),
-                        error -> handleActionFailure("Comment deletion failed", error));
+        .map(ApiHelpers::mapToBooleanOrThrowOnFailure)
+        .compose(RxUtils.wrapForBackgroundTask(this, R.string.deleting_msg,
+                                               getString(R.string.error_delete_commit_comment)))
+        .subscribe(result -> refresh(),
+                   error -> handleActionFailure("Comment deletion failed", error));
     }
 
     private void loadComments(boolean useIntentExtraIfPresent, boolean force) {
         List<C> intentComments = useIntentExtraIfPresent
-                ? getIntent().getParcelableArrayListExtra("comments") : null;
+                                 ? getIntent().getParcelableArrayListExtra("comments") : null;
         Single<List<C>> commentSingle = intentComments != null
-                ? Single.just(intentComments)
-                : createCommentSingle(force).compose(makeLoaderSingle(ID_LOADER_COMMENTS, force));
+                                        ? Single.just(intentComments)
+                                        : createCommentSingle(force).compose(makeLoaderSingle(ID_LOADER_COMMENTS, force));
 
         commentSingle.subscribe(result -> {
             addCommentsToMap(result);
@@ -466,7 +466,7 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
     }
 
     private class CommentActionPopup extends PopupMenu implements
-            PopupMenu.OnMenuItemClickListener {
+        PopupMenu.OnMenuItemClickListener {
         private final long mId;
         private final int mPosition;
         private final int mLeftLine;
@@ -476,7 +476,7 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
         private ReactionBar.AddReactionMenuHelper mReactionMenuHelper;
 
         public CommentActionPopup(long id, int position, String lineText,
-                int leftLine, int rightLine, int x, int y, boolean isRightLine) {
+                                  int leftLine, int rightLine, int x, int y, boolean isRightLine) {
             super(DiffViewerActivity.this, findViewById(R.id.popup_helper));
 
             mId = id;
@@ -523,31 +523,31 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
             }
 
             switch (item.getItemId()) {
-                case R.id.delete:
-                    new AlertDialog.Builder(DiffViewerActivity.this)
-                            .setMessage(R.string.delete_comment_message)
-                            .setPositiveButton(R.string.delete, (dialog, which) -> deleteComment(mId))
-                            .setNegativeButton(R.string.cancel, null)
-                            .show();
-                    break;
-                case R.id.reply:
-                    openCommentDialog(0L, mId, mLineText, mPosition, mLeftLine, mRightLine, null);
-                    break;
-                case R.id.edit:
-                    CommitCommentWrapper wrapper = mCommitComments.get(mId);
-                    PositionalCommentBase comment = wrapper != null ? wrapper.comment : null;
-                    openCommentDialog(mId, 0L, mLineText, mPosition, mLeftLine, mRightLine, comment);
-                    break;
-                case R.id.add_comment:
-                    openCommentDialog(0L, 0L, mLineText, mPosition, mLeftLine, mRightLine, null);
-                    break;
-                case R.id.share:
-                    Uri url = createUrl(createLineLinkId(mIsRightLine ? mRightLine : mLeftLine,
-                            mIsRightLine), mId);
-                    String subject = getString(R.string.share_commit_subject, mSha.substring(0, 7),
-                            mRepoOwner + "/" + mRepoName);
-                    IntentUtils.share(DiffViewerActivity.this, subject, url);
-                    break;
+            case R.id.delete:
+                new AlertDialog.Builder(DiffViewerActivity.this)
+                .setMessage(R.string.delete_comment_message)
+                .setPositiveButton(R.string.delete, (dialog, which) -> deleteComment(mId))
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+                break;
+            case R.id.reply:
+                openCommentDialog(0L, mId, mLineText, mPosition, mLeftLine, mRightLine, null);
+                break;
+            case R.id.edit:
+                CommitCommentWrapper wrapper = mCommitComments.get(mId);
+                PositionalCommentBase comment = wrapper != null ? wrapper.comment : null;
+                openCommentDialog(mId, 0L, mLineText, mPosition, mLeftLine, mRightLine, comment);
+                break;
+            case R.id.add_comment:
+                openCommentDialog(0L, 0L, mLineText, mPosition, mLeftLine, mRightLine, null);
+                break;
+            case R.id.share:
+                Uri url = createUrl(createLineLinkId(mIsRightLine ? mRightLine : mLeftLine,
+                                                     mIsRightLine), mId);
+                String subject = getString(R.string.share_commit_subject, mSha.substring(0, 7),
+                                           mRepoOwner + "/" + mRepoName);
+                IntentUtils.share(DiffViewerActivity.this, subject, url);
+                break;
             }
             return true;
         }

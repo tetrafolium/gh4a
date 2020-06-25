@@ -46,25 +46,25 @@ public class PullRequestBranchInfoView extends RelativeLayout implements View.On
     }
 
     public void bind(PullRequestMarker sourceMarker, PullRequestMarker targetMarker,
-            GitReference sourceReference) {
+                     GitReference sourceReference) {
         mSourceMarker = sourceMarker;
         mTargetMarker = targetMarker;
         formatMarkerText(mSourceBranchView, R.string.pull_request_from, sourceMarker,
-                sourceReference != null);
+                         sourceReference != null);
         formatMarkerText(mTargetBranchView, R.string.pull_request_to, targetMarker, true);
     }
 
     private void formatMarkerText(StyleableTextView view, @StringRes int formatResId,
-            final PullRequestMarker marker, boolean makeClickable) {
+                                  final PullRequestMarker marker, boolean makeClickable) {
         SpannableStringBuilder builder = StringUtils.applyBoldTags(
-                getContext().getString(formatResId), view.getTypefaceValue());
+                                             getContext().getString(formatResId), view.getTypefaceValue());
         int pos = builder.toString().indexOf("[ref]");
         if (pos >= 0) {
             String label = TextUtils.isEmpty(marker.label()) ? marker.ref() : marker.label();
             builder.replace(pos, pos + 5, label);
             if (marker.repo() != null && makeClickable) {
                 builder.setSpan(
-                        new ForegroundColorSpan(mAccentColor), pos, pos + label.length(), 0);
+                    new ForegroundColorSpan(mAccentColor), pos, pos + label.length(), 0);
                 view.setClickable(true);
             } else {
                 view.setClickable(false);
@@ -79,7 +79,7 @@ public class PullRequestBranchInfoView extends RelativeLayout implements View.On
         PullRequestMarker marker = v.getId() == R.id.tv_pr_from ? mSourceMarker : mTargetMarker;
         if (marker.repo() != null) {
             Intent intent = RepositoryActivity.makeIntent(getContext(), marker.repo(),
-                    marker.ref());
+                            marker.ref());
             getContext().startActivity(intent);
         }
     }

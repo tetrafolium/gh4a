@@ -34,11 +34,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class EventViewHolder
-        extends TimelineItemAdapter.TimelineItemViewHolder<TimelineItem.TimelineEvent>
-        implements View.OnClickListener {
+    extends TimelineItemAdapter.TimelineItemViewHolder<TimelineItem.TimelineEvent>
+    implements View.OnClickListener {
 
     private static final Pattern COMMIT_URL_REPO_NAME_AND_OWNER_PATTERN =
-            Pattern.compile(".*github\\.com/repos/([^/]+)/([^/]+)/commits");
+        Pattern.compile(".*github\\.com/repos/([^/]+)/([^/]+)/commits");
     private static final HashMap<IssueEventType, Integer> EVENT_ICONS = new HashMap<>();
 
     static {
@@ -72,7 +72,7 @@ class EventViewHolder
     private final View mAvatarContainer;
 
     public EventViewHolder(View itemView, String repoOwner, String repoName,
-            boolean isPullRequest) {
+                           boolean isPullRequest) {
         super(itemView);
 
         mContext = itemView.getContext();
@@ -91,7 +91,7 @@ class EventViewHolder
     @Override
     public void bind(TimelineItem.TimelineEvent item) {
         User user = item.event.assigner() != null
-                ? item.event.assigner() : item.event.actor();
+                    ? item.event.assigner() : item.event.actor();
         AvatarHandler.assignAvatar(mAvatarView, user);
         mAvatarContainer.setTag(user);
 
@@ -104,123 +104,123 @@ class EventViewHolder
         }
 
         mMessageView.setText(formatEvent(item.event, user,
-                mMessageView.getTypefaceValue(), mIsPullRequest));
+                                         mMessageView.getTypefaceValue(), mIsPullRequest));
     }
 
     private CharSequence formatEvent(final IssueEvent event, final User user, int typefaceValue,
-            boolean isPullRequestEvent) {
+                                     boolean isPullRequestEvent) {
         String textBase = null;
         int textResId = 0;
 
         switch (event.event()) {
-            case Closed:
-                if (isPullRequestEvent) {
-                    textResId = event.commitId() != null
+        case Closed:
+            if (isPullRequestEvent) {
+                textResId = event.commitId() != null
                             ? R.string.pull_request_event_closed_with_commit
                             : R.string.pull_request_event_closed;
-                } else {
-                    textResId = event.commitId() != null
+            } else {
+                textResId = event.commitId() != null
                             ? R.string.issue_event_closed_with_commit
                             : R.string.issue_event_closed;
-                }
-                break;
-            case Reopened:
-                textResId = isPullRequestEvent
+            }
+            break;
+        case Reopened:
+            textResId = isPullRequestEvent
                         ? R.string.pull_request_event_reopened
                         : R.string.issue_event_reopened;
-                break;
-            case Merged:
-                textResId = event.commitId() != null
+            break;
+        case Merged:
+            textResId = event.commitId() != null
                         ? R.string.pull_request_event_merged_with_commit
                         : R.string.pull_request_event_merged;
-                break;
-            case Referenced:
-                if (isPullRequestEvent) {
-                    textResId = event.commitId() != null
+            break;
+        case Referenced:
+            if (isPullRequestEvent) {
+                textResId = event.commitId() != null
                             ? R.string.pull_request_event_referenced_with_commit
                             : R.string.pull_request_event_referenced;
-                } else {
-                    textResId = event.commitId() != null
+            } else {
+                textResId = event.commitId() != null
                             ? R.string.issue_event_referenced_with_commit
                             : R.string.issue_event_referenced;
-                }
-                break;
-            case Assigned:
-            case Unassigned: {
-                boolean isAssign = event.event() == IssueEventType.Assigned;
-                String actorLogin = user != null ? user.login() : null;
-                String assigneeLogin = event.assignee() != null ? event.assignee().login() : null;
-                if (assigneeLogin != null && assigneeLogin.equals(actorLogin)) {
-                    if (isAssign) {
-                        textResId = isPullRequestEvent
+            }
+            break;
+        case Assigned:
+        case Unassigned: {
+            boolean isAssign = event.event() == IssueEventType.Assigned;
+            String actorLogin = user != null ? user.login() : null;
+            String assigneeLogin = event.assignee() != null ? event.assignee().login() : null;
+            if (assigneeLogin != null && assigneeLogin.equals(actorLogin)) {
+                if (isAssign) {
+                    textResId = isPullRequestEvent
                                 ? R.string.pull_request_event_assigned_self
                                 : R.string.issue_event_assigned_self;
-                    } else {
-                        textResId = R.string.issue_event_unassigned_self;
-                    }
                 } else {
-                    textResId = isAssign
+                    textResId = R.string.issue_event_unassigned_self;
+                }
+            } else {
+                textResId = isAssign
                             ? R.string.issue_event_assigned
                             : R.string.issue_event_unassigned;
-                    textBase = mContext.getString(textResId,
-                            ApiHelpers.getUserLogin(mContext, user),
-                            ApiHelpers.getUserLogin(mContext, event.assignee()));
-                }
-                break;
+                textBase = mContext.getString(textResId,
+                                              ApiHelpers.getUserLogin(mContext, user),
+                                              ApiHelpers.getUserLogin(mContext, event.assignee()));
             }
-            case Labeled:
-                textResId = R.string.issue_event_labeled;
-                break;
-            case Unlabeled:
-                textResId = R.string.issue_event_unlabeled;
-                break;
-            case Locked:
-                textResId = R.string.issue_event_locked;
-                break;
-            case Unlocked:
-                textResId = R.string.issue_event_unlocked;
-                break;
-            case Milestoned:
-            case Demilestoned:
-                textResId = event.event() == IssueEventType.Milestoned
+            break;
+        }
+        case Labeled:
+            textResId = R.string.issue_event_labeled;
+            break;
+        case Unlabeled:
+            textResId = R.string.issue_event_unlabeled;
+            break;
+        case Locked:
+            textResId = R.string.issue_event_locked;
+            break;
+        case Unlocked:
+            textResId = R.string.issue_event_unlocked;
+            break;
+        case Milestoned:
+        case Demilestoned:
+            textResId = event.event() == IssueEventType.Milestoned
                         ? R.string.issue_event_milestoned
                         : R.string.issue_event_demilestoned;
-                textBase = mContext.getString(textResId, ApiHelpers.getUserLogin(mContext, user),
-                        event.milestone().title());
-                break;
-            case Renamed: {
-                Rename rename = event.rename();
-                textBase = mContext.getString(R.string.issue_event_renamed,
-                        ApiHelpers.getUserLogin(mContext, user), rename.from(), rename.to());
-                break;
-            }
-            case ReviewRequested:
-            case ReviewRequestRemoved: {
-                final String reviewerNames;
-                if (event.requestedReviewers() != null) {
-                    ArrayList<String> reviewers = new ArrayList<>();
-                    for (User reviewer : event.requestedReviewers()) {
-                        reviewers.add(ApiHelpers.getUserLogin(mContext, reviewer));
-                    }
-                    reviewerNames = TextUtils.join(", ", reviewers);
-                } else {
-                    reviewerNames = ApiHelpers.getUserLogin(mContext, event.requestedReviewer());
+            textBase = mContext.getString(textResId, ApiHelpers.getUserLogin(mContext, user),
+                                          event.milestone().title());
+            break;
+        case Renamed: {
+            Rename rename = event.rename();
+            textBase = mContext.getString(R.string.issue_event_renamed,
+                                          ApiHelpers.getUserLogin(mContext, user), rename.from(), rename.to());
+            break;
+        }
+        case ReviewRequested:
+        case ReviewRequestRemoved: {
+            final String reviewerNames;
+            if (event.requestedReviewers() != null) {
+                ArrayList<String> reviewers = new ArrayList<>();
+                for (User reviewer : event.requestedReviewers()) {
+                    reviewers.add(ApiHelpers.getUserLogin(mContext, reviewer));
                 }
-                @StringRes int stringResId = event.event() == IssueEventType.ReviewRequested
-                        ? R.string.pull_request_event_review_requested
-                        : R.string.pull_request_event_review_request_removed;
-                textBase = mContext.getString(stringResId,
-                        ApiHelpers.getUserLogin(mContext, event.reviewRequester()), reviewerNames);
-                break;
+                reviewerNames = TextUtils.join(", ", reviewers);
+            } else {
+                reviewerNames = ApiHelpers.getUserLogin(mContext, event.requestedReviewer());
             }
-            case HeadRefDeleted:
-                textResId = R.string.pull_request_event_ref_deleted;
-                break;
-            case HeadRefRestored:
-                textResId = R.string.pull_request_event_ref_restored;
-                break;
-            default:
-                return null;
+            @StringRes int stringResId = event.event() == IssueEventType.ReviewRequested
+                                         ? R.string.pull_request_event_review_requested
+                                         : R.string.pull_request_event_review_request_removed;
+            textBase = mContext.getString(stringResId,
+                                          ApiHelpers.getUserLogin(mContext, event.reviewRequester()), reviewerNames);
+            break;
+        }
+        case HeadRefDeleted:
+            textResId = R.string.pull_request_event_ref_deleted;
+            break;
+        case HeadRefRestored:
+            textResId = R.string.pull_request_event_ref_restored;
+            break;
+        default:
+            return null;
         }
 
         if (textBase == null) {
@@ -259,14 +259,14 @@ class EventViewHolder
         }
 
         CharSequence time = event.createdAt() != null
-                ? StringUtils.formatRelativeTime(mContext, event.createdAt(), true) : "";
+                            ? StringUtils.formatRelativeTime(mContext, event.createdAt(), true) : "";
 
         pos = text.toString().indexOf("[time]");
         if (pos >= 0) {
             text.replace(pos, pos + 6, time);
             if (event.createdAt() != null) {
                 text.setSpan(new TimestampToastSpan(event.createdAt()), pos,
-                        pos + time.length(), 0);
+                             pos + time.length(), 0);
             }
         }
 

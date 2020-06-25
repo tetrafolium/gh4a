@@ -57,7 +57,7 @@ import java.util.Set;
 import io.reactivex.Single;
 
 public class CommitNoteAdapter extends RootAdapter<GitComment, CommitNoteAdapter.ViewHolder>
-        implements ReactionBar.Callback, ReactionBar.ReactionDetailsCache.Listener {
+    implements ReactionBar.Callback, ReactionBar.ReactionDetailsCache.Listener {
     public interface OnCommentAction<T> {
         void editComment(T comment);
         void deleteComment(T comment);
@@ -70,25 +70,25 @@ public class CommitNoteAdapter extends RootAdapter<GitComment, CommitNoteAdapter
     private final String mRepoOwner;
     private final String mRepoName;
     private final ReactionBar.ReactionDetailsCache mReactionDetailsCache =
-            new ReactionBar.ReactionDetailsCache(this);
+        new ReactionBar.ReactionDetailsCache(this);
 
     private final ViewHolder.Callback mHolderCallback = new ViewHolder.Callback() {
         @Override
         public boolean onCommentMenuItemClick(GitComment item, MenuItem menuItem) {
             switch (menuItem.getItemId()) {
-                case R.id.edit:
-                    mActionCallback.editComment(item);
-                    return true;
+            case R.id.edit:
+                mActionCallback.editComment(item);
+                return true;
 
-                case R.id.delete:
-                    mActionCallback.deleteComment(item);
-                    return true;
+            case R.id.delete:
+                mActionCallback.deleteComment(item);
+                return true;
 
-                case R.id.share:
-                    String subject = mContext.getString(R.string.share_commit_comment_subject,
-                            item.id(), mRepoOwner + "/" + mRepoName);
-                    IntentUtils.share(mContext, subject, Uri.parse(item.htmlUrl()));
-                    return true;
+            case R.id.share:
+                String subject = mContext.getString(R.string.share_commit_comment_subject,
+                                                    item.id(), mRepoOwner + "/" + mRepoName);
+                IntentUtils.share(mContext, subject, Uri.parse(item.htmlUrl()));
+                return true;
             }
             return false;
         }
@@ -100,7 +100,7 @@ public class CommitNoteAdapter extends RootAdapter<GitComment, CommitNoteAdapter
     };
 
     public CommitNoteAdapter(Context context, String repoOwner, String repoName,
-            OnCommentAction actionCallback) {
+                             OnCommentAction actionCallback) {
         super(context);
         mImageGetter = new HttpImageGetter(context);
         mRepoOwner = repoOwner;
@@ -196,7 +196,7 @@ public class CommitNoteAdapter extends RootAdapter<GitComment, CommitNoteAdapter
 
         String ourLogin = Gh4Application.get().getAuthLogin();
         boolean canEdit = ApiHelpers.loginEquals(user, ourLogin)
-                || ApiHelpers.loginEquals(mRepoOwner, ourLogin);
+                          || ApiHelpers.loginEquals(mRepoOwner, ourLogin);
         MenuItem editMenuItem = holder.mPopupMenu.getMenu().findItem(R.id.edit);
         MenuItem deleteMenuItem = holder.mPopupMenu.getMenu().findItem(R.id.delete);
         MenuItem reactMenuItem = holder.mPopupMenu.getMenu().findItem(R.id.react);
@@ -211,7 +211,7 @@ public class CommitNoteAdapter extends RootAdapter<GitComment, CommitNoteAdapter
         final GitComment comment = ((ViewHolder) item).mBoundItem;
         final ReactionService service = ServiceFactory.get(ReactionService.class, bypassCache);
         return ApiHelpers.PageIterator
-                .toSingle(page -> service.getCommitCommentReactions(mRepoOwner, mRepoName, comment.id(), page));
+               .toSingle(page -> service.getCommitCommentReactions(mRepoOwner, mRepoName, comment.id(), page));
     }
 
     @Override
@@ -220,7 +220,7 @@ public class CommitNoteAdapter extends RootAdapter<GitComment, CommitNoteAdapter
         ReactionService service = ServiceFactory.get(ReactionService.class, false);
         ReactionRequest request = ReactionRequest.builder().content(content).build();
         return service.createCommitCommentReaction(mRepoOwner, mRepoName, comment.id(), request)
-                .map(ApiHelpers::throwOnFailure);
+               .map(ApiHelpers::throwOnFailure);
     }
 
     @Override
@@ -235,15 +235,15 @@ public class CommitNoteAdapter extends RootAdapter<GitComment, CommitNoteAdapter
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements
-            View.OnClickListener, PopupMenu.OnMenuItemClickListener, ReactionBar.Item {
+        View.OnClickListener, PopupMenu.OnMenuItemClickListener, ReactionBar.Item {
         private interface Callback {
             boolean onCommentMenuItemClick(GitComment comment, MenuItem item);
             void quoteText(CharSequence text);
         }
 
         private ViewHolder(View view, Callback callback,
-                ReactionBar.Callback reactionCallback,
-                ReactionBar.ReactionDetailsCache reactionDetailsCache) {
+                           ReactionBar.Callback reactionCallback,
+                           ReactionBar.ReactionDetailsCache reactionDetailsCache) {
             super(view);
             mCallback = callback;
 

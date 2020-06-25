@@ -62,7 +62,7 @@ public class RepositoryFactory extends FragmentFactory {
         if (mFragment != null) {
             mFilterDrawerHelper.selectFilterType(menu, mFragment.getFilterType());
             mSortDrawerHelper.selectSortType(menu, mFragment.getSortOrder(),
-                    mFragment.getSortDirection(), false);
+                                             mFragment.getSortDirection(), false);
         }
     }
 
@@ -80,9 +80,9 @@ public class RepositoryFactory extends FragmentFactory {
         if (sortOrderAndDirection != null) {
             mFragment.setSortOrder(sortOrderAndDirection[0], sortOrderAndDirection[1]);
             mPrefs.edit()
-                    .putString(PREF_KEY_SORT_ORDER, sortOrderAndDirection[0])
-                    .putString(PREF_KEY_SORT_DIR, sortOrderAndDirection[1])
-                    .apply();
+            .putString(PREF_KEY_SORT_ORDER, sortOrderAndDirection[0])
+            .putString(PREF_KEY_SORT_DIR, sortOrderAndDirection[1])
+            .apply();
             mActivity.doInvalidateOptionsMenuAndToolDrawer();
             return true;
         }
@@ -109,7 +109,7 @@ public class RepositoryFactory extends FragmentFactory {
     protected void onRestoreInstanceState(Bundle state) {
         super.onRestoreInstanceState(state);
         mFragment = (RepositoryListContainerFragment)
-                mActivity.getSupportFragmentManager().getFragment(state, STATE_KEY_FRAGMENT);
+                    mActivity.getSupportFragmentManager().getFragment(state, STATE_KEY_FRAGMENT);
         if (mFragment != null) {
             mSortDrawerHelper.setFilterType(mFragment.getFilterType());
             restorePreviouslySelectedFilterAndSort();

@@ -16,7 +16,7 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class GistListFragment extends PagedDataBaseFragment<Gist> implements
-        RootAdapter.OnItemClickListener<Gist> {
+    RootAdapter.OnItemClickListener<Gist> {
     public static GistListFragment newInstance(String userLogin, boolean starred) {
         Bundle args = new Bundle();
         args.putString("user", userLogin);
@@ -42,8 +42,8 @@ public class GistListFragment extends PagedDataBaseFragment<Gist> implements
     protected Single<Response<Page<Gist>>> loadPage(int page, boolean bypassCache) {
         final GistService service = ServiceFactory.get(GistService.class, bypassCache);
         return mShowStarred
-                ? service.getUserStarredGists(page)
-                : service.getUserGists(mUserLogin, page);
+               ? service.getUserStarredGists(page)
+               : service.getUserGists(mUserLogin, page);
     }
 
     @Override

@@ -132,18 +132,18 @@ public class ApiHelpers {
         }
 
         String path = uri.getPath()
-                .replace("/api/v3/", "/")
-                .replace("repos/", "")
-                .replace("commits/", "commit/")
-                .replace("pulls/", "pull/");
+                      .replace("/api/v3/", "/")
+                      .replace("repos/", "")
+                      .replace("commits/", "commit/")
+                      .replace("pulls/", "pull/");
 
         String authority = uri.getAuthority()
-                .replace("api.", "");
+                           .replace("api.", "");
 
         return uri.buildUpon()
-                .path(path)
-                .authority(authority)
-                .build();
+               .path(path)
+               .authority(authority)
+               .build();
     }
 
     private final static char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
@@ -187,7 +187,7 @@ public class ApiHelpers {
     }
 
     public static Boolean mapToBooleanOrThrowOnFailure(Response<Void> response)
-            throws ApiRequestException {
+    throws ApiRequestException {
         if (response.isSuccessful()) {
             return true;
         } else if (response.code() == HttpURLConnection.HTTP_NOT_FOUND) {
@@ -287,14 +287,14 @@ public class ApiHelpers {
 
         public static <T> Observable<List<T>> toObservable(PageProducer<T> producer) {
             BehaviorSubject<Optional<Integer>> pageControl =
-                    BehaviorSubject.createDefault(Optional.of(1));
+                BehaviorSubject.createDefault(Optional.of(1));
             return pageControl.concatMap(page -> {
                 if (page.isPresent()) {
                     return producer.getPage(page.get())
-                            .toObservable()
-                            .compose(PageIterator::evaluateError)
-                            .doOnNext(resultPage -> pageControl.onNext(Optional.ofWithNull(resultPage.next())))
-                            .map(responsePage -> responsePage.items());
+                    .toObservable()
+                    .compose(PageIterator::evaluateError)
+                    .doOnNext(resultPage -> pageControl.onNext(Optional.ofWithNull(resultPage.next())))
+                    .map(responsePage -> responsePage.items());
                 } else {
                     return Observable.<List<T>>empty().doOnComplete(() -> pageControl.onComplete());
                 }
@@ -303,14 +303,14 @@ public class ApiHelpers {
 
         public static <T> Single<List<T>> toSingle(PageProducer<T> producer) {
             return toObservable(producer)
-                    .toList()
-                    .map(lists -> {
-                        List<T> result = new ArrayList<>();
-                        for (List<T> l : lists) {
-                            result.addAll(l);
-                        }
-                        return result;
-                    });
+                   .toList()
+            .map(lists -> {
+                List<T> result = new ArrayList<>();
+                for (List<T> l : lists) {
+                    result.addAll(l);
+                }
+                return result;
+            });
         }
 
         private static <T> Observable<Page<T>> evaluateError(Observable<Response<Page<T>>> upstream) {

@@ -151,19 +151,19 @@ public class CommitFragment extends LoadingFragmentBase implements OnClickListen
 
         TextView tvTimestamp = mContentView.findViewById(R.id.tv_timestamp);
         tvTimestamp.setText(StringUtils.formatRelativeTime(
-                activity, commit.author().date(), true));
+                                activity, commit.author().date(), true));
 
         View committerContainer = mContentView.findViewById(R.id.committer);
 
         if (!ApiHelpers.authorEqualsCommitter(mCommit)) {
             ImageView commitGravatar = mContentView.findViewById(R.id.iv_commit_gravatar);
             StyleableTextView commitExtra =
-                    mContentView.findViewById(R.id.tv_commit_extra);
+                mContentView.findViewById(R.id.tv_commit_extra);
 
             AvatarHandler.assignAvatar(commitGravatar, mCommit.committer());
             String committerText = getString(R.string.commit_details,
-                    ApiHelpers.getCommitterName(app, mCommit),
-                    StringUtils.formatRelativeTime(activity, commit.committer().date(), true));
+                                             ApiHelpers.getCommitterName(app, mCommit),
+                                             StringUtils.formatRelativeTime(activity, commit.committer().date(), true));
             StringUtils.applyBoldTagsAndSetText(commitExtra, committerText);
 
             committerContainer.setVisibility(View.VISIBLE);
@@ -183,9 +183,9 @@ public class CommitFragment extends LoadingFragmentBase implements OnClickListen
         int count = files != null ? files.size() : 0;
         int highlightColor = UiUtils.resolveColor(getActivity(), android.R.attr.textColorPrimary);
         ForegroundColorSpan addSpan = new ForegroundColorSpan(
-                UiUtils.resolveColor(getActivity(), R.attr.colorCommitAddition));
+            UiUtils.resolveColor(getActivity(), R.attr.colorCommitAddition));
         ForegroundColorSpan deleteSpan = new ForegroundColorSpan(
-                UiUtils.resolveColor(getActivity(), R.attr.colorCommitDeletion));
+            UiUtils.resolveColor(getActivity(), R.attr.colorCommitDeletion));
 
         llChanged.removeAllViews();
         llAdded.removeAllViews();
@@ -197,24 +197,24 @@ public class CommitFragment extends LoadingFragmentBase implements OnClickListen
             final LinearLayout parent;
 
             switch (file.status()) {
-                case "added":
-                    parent = llAdded;
-                    added++;
-                    break;
-                case "modified":
-                    parent = llChanged;
-                    changed++;
-                    break;
-                case "renamed":
-                    parent = llRenamed;
-                    renamed++;
-                    break;
-                case "removed":
-                    parent = llDeleted;
-                    deleted++;
-                    break;
-                default:
-                    continue;
+            case "added":
+                parent = llAdded;
+                added++;
+                break;
+            case "modified":
+                parent = llChanged;
+                changed++;
+                break;
+            case "renamed":
+                parent = llRenamed;
+                renamed++;
+                break;
+            case "removed":
+                parent = llDeleted;
+                deleted++;
+                break;
+            default:
+                continue;
             }
 
             additions += file.additions();
@@ -267,7 +267,7 @@ public class CommitFragment extends LoadingFragmentBase implements OnClickListen
 
         TextView tvSummary = mContentView.findViewById(R.id.tv_desc);
         tvSummary.setText(getString(R.string.commit_summary, added + changed + renamed + deleted,
-                additions, deletions));
+                                    additions, deletions));
     }
 
     private void adjustVisibility(int containerResId, int count) {
@@ -292,11 +292,11 @@ public class CommitFragment extends LoadingFragmentBase implements OnClickListen
         final Intent intent;
         if (FileUtils.isImage(file.filename())) {
             intent = FileViewerActivity.makeIntent(getActivity(), mRepoOwner, mRepoName,
-                    mObjectSha, file.filename());
+                                                   mObjectSha, file.filename());
         } else {
             intent = CommitDiffViewerActivity.makeIntent(getActivity(), mRepoOwner, mRepoName,
-                    mObjectSha, file.filename(), file.patch(),
-                    commentsForFile(file), -1, -1, false, null);
+                     mObjectSha, file.filename(), file.patch(),
+                     commentsForFile(file), -1, -1, false, null);
         }
         startActivityForResult(intent, REQUEST_DIFF_VIEWER);
     }

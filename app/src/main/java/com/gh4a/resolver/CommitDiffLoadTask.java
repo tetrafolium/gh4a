@@ -25,7 +25,7 @@ public class CommitDiffLoadTask extends DiffLoadTask<GitComment> {
     protected final String mSha;
 
     public CommitDiffLoadTask(FragmentActivity activity, String repoOwner, String repoName,
-            DiffHighlightId diffId, String sha) {
+                              DiffHighlightId diffId, String sha) {
         super(activity, repoOwner, repoName, diffId);
         mSha = sha;
     }
@@ -52,15 +52,15 @@ public class CommitDiffLoadTask extends DiffLoadTask<GitComment> {
     protected Single<List<GitHubFile>> getFiles() throws ApiRequestException {
         RepositoryCommitService service = ServiceFactory.get(RepositoryCommitService.class, false);
         return service.getCommit(mRepoOwner, mRepoName, mSha)
-                .map(ApiHelpers::throwOnFailure)
-                .map(Commit::files);
+               .map(ApiHelpers::throwOnFailure)
+               .map(Commit::files);
     }
 
     @Override
     protected Single<List<GitComment>> getComments() throws ApiRequestException {
         final RepositoryCommentService service =
-                ServiceFactory.get(RepositoryCommentService.class, false);
+            ServiceFactory.get(RepositoryCommentService.class, false);
         return ApiHelpers.PageIterator
-                .toSingle(page -> service.getCommitComments(mRepoOwner, mRepoName, mSha, page));
+               .toSingle(page -> service.getCommitComments(mRepoOwner, mRepoName, mSha, page));
     }
 }

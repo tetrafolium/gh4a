@@ -24,7 +24,7 @@ public class PullRequestReviewLoadTask extends UrlLoadTask {
     protected final IntentUtils.InitialCommentMarker mMarker;
 
     public PullRequestReviewLoadTask(FragmentActivity activity, String repoOwner, String repoName,
-            int pullRequestNumber, IntentUtils.InitialCommentMarker marker) {
+                                     int pullRequestNumber, IntentUtils.InitialCommentMarker marker) {
         super(activity);
         mRepoOwner = repoOwner;
         mRepoName = repoName;
@@ -36,8 +36,8 @@ public class PullRequestReviewLoadTask extends UrlLoadTask {
     protected Single<Optional<Intent>> getSingle() {
         PullRequestReviewService service = ServiceFactory.get(PullRequestReviewService.class, false);
         return service.getReview(mRepoOwner, mRepoName, mPullRequestNumber, mMarker.commentId)
-                .map(ApiHelpers::throwOnFailure)
-                .map(review -> Optional.of(ReviewActivity.makeIntent(mActivity,
-                        mRepoOwner, mRepoName, mPullRequestNumber, review, mMarker)));
+               .map(ApiHelpers::throwOnFailure)
+               .map(review -> Optional.of(ReviewActivity.makeIntent(mActivity,
+                                          mRepoOwner, mRepoName, mPullRequestNumber, review, mMarker)));
     }
 }

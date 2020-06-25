@@ -26,7 +26,7 @@ public class PullRequestReviewDiffLoadTask extends UrlLoadTask {
     protected final int mPullRequestNumber;
 
     public PullRequestReviewDiffLoadTask(FragmentActivity activity, String repoOwner,
-            String repoName, DiffHighlightId diffId, int pullRequestNumber) {
+                                         String repoName, DiffHighlightId diffId, int pullRequestNumber) {
         super(activity);
         mRepoOwner = repoOwner;
         mRepoName = repoName;
@@ -37,23 +37,23 @@ public class PullRequestReviewDiffLoadTask extends UrlLoadTask {
     @Override
     protected Single<Optional<Intent>> getSingle() {
         final PullRequestReviewCommentService service =
-                ServiceFactory.get(PullRequestReviewCommentService.class, false);
+            ServiceFactory.get(PullRequestReviewCommentService.class, false);
         final PullRequestReviewService reviewService =
-                ServiceFactory.get(PullRequestReviewService.class, false);
+            ServiceFactory.get(PullRequestReviewService.class, false);
         long diffCommentId = Long.parseLong(mDiffId.fileHash);
 
         return ApiHelpers.PageIterator
-                .toSingle(page -> service.getPullRequestComments(
-                        mRepoOwner, mRepoName, mPullRequestNumber, page))
-                .compose(RxUtils.filterAndMapToFirst(c -> c.id() == diffCommentId))
-                .flatMap(commentOpt -> commentOpt.flatMap(comment -> {
-                    long reviewId = comment.pullRequestReviewId();
-                    return reviewService.getReview(mRepoOwner, mRepoName, mPullRequestNumber, reviewId)
-                            .map(ApiHelpers::throwOnFailure);
-                }))
-                .map(reviewOpt -> reviewOpt.map(review -> ReviewActivity.makeIntent(
-                        mActivity, mRepoOwner, mRepoName, mPullRequestNumber, review,
-                            new IntentUtils.InitialCommentMarker(diffCommentId)))
-                );
+               .toSingle(page -> service.getPullRequestComments(
+                             mRepoOwner, mRepoName, mPullRequestNumber, page))
+               .compose(RxUtils.filterAndMapToFirst(c -> c.id() == diffCommentId))
+        .flatMap(commentOpt -> commentOpt.flatMap(comment -> {
+            long reviewId = comment.pullRequestReviewId();
+            return reviewService.getReview(mRepoOwner, mRepoName, mPullRequestNumber, reviewId)
+            .map(ApiHelpers::throwOnFailure);
+        }))
+        .map(reviewOpt -> reviewOpt.map(review -> ReviewActivity.makeIntent(
+                                            mActivity, mRepoOwner, mRepoName, mPullRequestNumber, review,
+                                            new IntentUtils.InitialCommentMarker(diffCommentId)))
+            );
     }
 }

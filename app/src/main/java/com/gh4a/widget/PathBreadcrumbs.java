@@ -44,8 +44,8 @@ public class PathBreadcrumbs extends HorizontalScrollView implements View.OnClic
         mChildFrame = new LinearLayout(getContext());
         mChildFrame.setMinimumHeight((int) getResources().getDimension(R.dimen.breadcrumb_height));
         addView(mChildFrame, new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 
     public void setPath(@NonNull String path) {

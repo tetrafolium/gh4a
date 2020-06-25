@@ -11,15 +11,15 @@ import com.gh4a.fragment.CommitListFragment;
 import com.meisolsson.githubsdk.model.Commit;
 
 public class CommitHistoryActivity extends FragmentContainerActivity implements
-        CommitListFragment.ContextSelectionCallback {
+    CommitListFragment.ContextSelectionCallback {
     public static Intent makeIntent(Context context, String repoOwner, String repoName,
                                     String ref, String path, boolean supportBaseSelection) {
         return new Intent(context, CommitHistoryActivity.class)
-                .putExtra("owner", repoOwner)
-                .putExtra("repo", repoName)
-                .putExtra("ref", ref)
-                .putExtra("path", path)
-                .putExtra("base_selectable", supportBaseSelection);
+               .putExtra("owner", repoOwner)
+               .putExtra("repo", repoName)
+               .putExtra("ref", ref)
+               .putExtra("path", path)
+               .putExtra("base_selectable", supportBaseSelection);
     }
 
     private String mRepoOwner;

@@ -72,18 +72,18 @@ import java.util.Locale;
 import io.reactivex.Single;
 
 public class PullRequestActivity extends BaseFragmentPagerActivity implements
-        View.OnClickListener, PullRequestFilesFragment.CommentUpdateListener {
+    View.OnClickListener, PullRequestFilesFragment.CommentUpdateListener {
     public static Intent makeIntent(Context context, String repoOwner, String repoName, int number) {
         return makeIntent(context, repoOwner, repoName, number, -1, null);
     }
     public static Intent makeIntent(Context context, String repoOwner, String repoName,
-            int number, int initialPage, IntentUtils.InitialCommentMarker initialComment) {
+                                    int number, int initialPage, IntentUtils.InitialCommentMarker initialComment) {
         return new Intent(context, PullRequestActivity.class)
-                .putExtra("owner", repoOwner)
-                .putExtra("repo", repoName)
-                .putExtra("number", number)
-                .putExtra("initial_page", initialPage)
-                .putExtra("initial_comment", initialComment);
+               .putExtra("owner", repoOwner)
+               .putExtra("repo", repoName)
+               .putExtra("number", number)
+               .putExtra("initial_page", initialPage)
+               .putExtra("initial_comment", initialComment);
     }
 
     public static final int PAGE_CONVERSATION = 0;
@@ -110,8 +110,8 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
     private ViewGroup mHeader;
     private int[] mHeaderColorAttrs;
 
-    private static final int[] TITLES = new int[]{
-            R.string.pull_request_conversation, R.string.commits, R.string.pull_request_files
+    private static final int[] TITLES = new int[] {
+        R.string.pull_request_conversation, R.string.commits, R.string.pull_request_files
     };
 
     @Override
@@ -153,11 +153,11 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
         boolean authorized = app.isAuthorized();
 
         boolean isCreator = mPullRequest != null
-                && ApiHelpers.loginEquals(mPullRequest.user(), app.getAuthLogin());
+                            && ApiHelpers.loginEquals(mPullRequest.user(), app.getAuthLogin());
         boolean isClosed = mPullRequest != null && mPullRequest.state() == IssueState.Closed;
         boolean isCollaborator = mIsCollaborator != null && mIsCollaborator;
         boolean closerIsCreator = mIssue != null
-                && ApiHelpers.userEquals(mIssue.user(), mIssue.closedBy());
+                                  && ApiHelpers.userEquals(mIssue.user(), mIssue.closedBy());
         boolean canClose = mPullRequest != null && authorized && (isCreator || isCollaborator);
         boolean canOpen = canClose && (isCollaborator || closerIsCreator);
         boolean canMerge = canClose && isCollaborator;
@@ -173,7 +173,7 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
         if (!canMerge) {
             menu.removeItem(R.id.pull_merge);
         } else if (mPullRequest.merged()
-                || mPullRequest.mergeable() == null || !mPullRequest.mergeable()) {
+                   || mPullRequest.mergeable() == null || !mPullRequest.mergeable()) {
             MenuItem mergeItem = menu.findItem(R.id.pull_merge);
             mergeItem.setEnabled(false);
         }
@@ -198,28 +198,28 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.pull_merge:
-                showMergeDialog();
-                break;
-            case R.id.pull_review:
-                showReviewDialog();
-                break;
-            case R.id.pull_close:
-            case R.id.pull_reopen:
-                showOpenCloseConfirmDialog(item.getItemId() == R.id.pull_reopen);
-                break;
-            case R.id.share:
-                IntentUtils.share(this, getString(R.string.share_pull_subject,
-                        mPullRequest.number(), mPullRequest.title(),
-                        mRepoOwner + "/" + mRepoName), Uri.parse(mPullRequest.htmlUrl()));
-                break;
-            case R.id.browser:
-                IntentUtils.launchBrowser(this, Uri.parse(mPullRequest.htmlUrl()));
-                break;
-            case R.id.copy_number:
-                IntentUtils.copyToClipboard(this, "Pull Request #" + mPullRequest.number(),
-                        String.valueOf(mPullRequest.number()));
-                return true;
+        case R.id.pull_merge:
+            showMergeDialog();
+            break;
+        case R.id.pull_review:
+            showReviewDialog();
+            break;
+        case R.id.pull_close:
+        case R.id.pull_reopen:
+            showOpenCloseConfirmDialog(item.getItemId() == R.id.pull_reopen);
+            break;
+        case R.id.share:
+            IntentUtils.share(this, getString(R.string.share_pull_subject,
+                                              mPullRequest.number(), mPullRequest.title(),
+                                              mRepoOwner + "/" + mRepoName), Uri.parse(mPullRequest.htmlUrl()));
+            break;
+        case R.id.browser:
+            IntentUtils.launchBrowser(this, Uri.parse(mPullRequest.htmlUrl()));
+            break;
+        case R.id.copy_number:
+            IntentUtils.copyToClipboard(this, "Pull Request #" + mPullRequest.number(),
+                                        String.valueOf(mPullRequest.number()));
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -296,7 +296,7 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
                     mPullRequestNumber, mPullRequest.head().sha());
         } else {
             Fragment f = PullRequestFragment.newInstance(mPullRequest,
-                    mIssue, mIsCollaborator, mInitialComment);
+                         mIssue, mIsCollaborator, mInitialComment);
             mInitialComment = null;
             return f;
         }
@@ -348,16 +348,16 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
 
     private void showOpenCloseConfirmDialog(final boolean reopen) {
         @StringRes int messageResId = reopen
-                ? R.string.reopen_pull_request_confirm : R.string.close_pull_request_confirm;
+                                      ? R.string.reopen_pull_request_confirm : R.string.close_pull_request_confirm;
         @StringRes int buttonResId = reopen
-                ? R.string.pull_request_reopen : R.string.pull_request_close;
+                                     ? R.string.pull_request_reopen : R.string.pull_request_close;
         new AlertDialog.Builder(this)
-                .setMessage(messageResId)
-                .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setCancelable(false)
-                .setPositiveButton(buttonResId, (dialog, which) -> updatePullRequestState(reopen))
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+        .setMessage(messageResId)
+        .setIconAttribute(android.R.attr.alertDialogIcon)
+        .setCancelable(false)
+        .setPositiveButton(buttonResId, (dialog, which) -> updatePullRequestState(reopen))
+        .setNegativeButton(R.string.cancel, null)
+        .show();
     }
 
     private void showMergeDialog() {
@@ -391,34 +391,34 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
         });
 
         new AlertDialog.Builder(this)
-                .setTitle(title)
-                .setView(view)
-                .setPositiveButton(R.string.pull_request_merge, (dialog, which) -> {
-                    String text = editor.getText() == null ? null : editor.getText().toString();
-                    int methodIndex = mergeMethod.getSelectedItemPosition();
-                    mergePullRequest(text, adapter.getItem(methodIndex).action);
-                })
-                .setNegativeButton(getString(R.string.cancel), null)
-                .show();
+        .setTitle(title)
+        .setView(view)
+        .setPositiveButton(R.string.pull_request_merge, (dialog, which) -> {
+            String text = editor.getText() == null ? null : editor.getText().toString();
+            int methodIndex = mergeMethod.getSelectedItemPosition();
+            mergePullRequest(text, adapter.getItem(methodIndex).action);
+        })
+        .setNegativeButton(getString(R.string.cancel), null)
+        .show();
     }
 
     private void showReviewDialog() {
         Intent intent = CreateReviewActivity.makeIntent(this, mRepoOwner, mRepoName,
-                mPullRequestNumber, mPendingReview);
+                        mPullRequestNumber, mPendingReview);
         startActivityForResult(intent, REQUEST_CREATE_REVIEW);
     }
 
     private void updateFabVisibility() {
         boolean isIssueOwner = mIssue != null
-                && ApiHelpers.loginEquals(mIssue.user(), Gh4Application.get().getAuthLogin());
+                               && ApiHelpers.loginEquals(mIssue.user(), Gh4Application.get().getAuthLogin());
         boolean isCollaborator = mIsCollaborator != null && mIsCollaborator;
         boolean shouldHaveFab = (isIssueOwner || isCollaborator)
-                && mPullRequest != null && mIssue != null;
+                                && mPullRequest != null && mIssue != null;
         CoordinatorLayout rootLayout = getRootLayout();
 
         if (shouldHaveFab && mEditFab == null) {
             mEditFab = (IssueStateTrackingFloatingActionButton)
-                    getLayoutInflater().inflate(R.layout.issue_edit_fab, rootLayout, false);
+                       getLayoutInflater().inflate(R.layout.issue_edit_fab, rootLayout, false);
             mEditFab.setOnClickListener(this);
             rootLayout.addView(mEditFab);
             adjustTabsForHeaderAlignedFab(true);
@@ -488,38 +488,38 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
 
         PullRequestService service = ServiceFactory.get(PullRequestService.class, false);
         EditPullRequest request = EditPullRequest.builder()
-                .state(open ? ApiHelpers.IssueState.OPEN : ApiHelpers.IssueState.CLOSED)
-                .build();
+                                  .state(open ? ApiHelpers.IssueState.OPEN : ApiHelpers.IssueState.CLOSED)
+                                  .build();
 
         service.editPullRequest(mRepoOwner, mRepoName, mPullRequestNumber, request)
-                .map(ApiHelpers::throwOnFailure)
-                .compose(RxUtils.wrapForBackgroundTask(this, dialogMessageResId, errorMessage))
-                .subscribe(result -> {
-                    mPullRequest = result;
-                    handlePullRequestUpdate();
-                }, error -> handleActionFailure("Updating pull request failed", error));
+        .map(ApiHelpers::throwOnFailure)
+        .compose(RxUtils.wrapForBackgroundTask(this, dialogMessageResId, errorMessage))
+        .subscribe(result -> {
+            mPullRequest = result;
+            handlePullRequestUpdate();
+        }, error -> handleActionFailure("Updating pull request failed", error));
     }
 
     private void mergePullRequest(String commitMessage, MergeRequest.Method mergeMethod) {
         String errorMessage = getString(R.string.pull_error_merge, mPullRequest.number());
         PullRequestService service = ServiceFactory.get(PullRequestService.class, false);
         MergeRequest request = MergeRequest.builder()
-                .commitMessage(commitMessage)
-                .method(mergeMethod)
-                .build();
+                               .commitMessage(commitMessage)
+                               .method(mergeMethod)
+                               .build();
 
         service.mergePullRequest(mRepoOwner, mRepoName, mPullRequestNumber, request)
-                .map(ApiHelpers::throwOnFailure)
-                .compose(RxUtils.wrapForBackgroundTask(this, R.string.merging_msg, errorMessage))
-                .subscribe(result -> {
-                    if (result.merged()) {
-                        mPullRequest = mPullRequest.toBuilder()
-                                .merged(true)
-                                .state(IssueState.Closed)
-                                .build();
-                    }
-                    handlePullRequestUpdate();
-                }, error -> handleActionFailure("Merging pull request failed", error));
+        .map(ApiHelpers::throwOnFailure)
+        .compose(RxUtils.wrapForBackgroundTask(this, R.string.merging_msg, errorMessage))
+        .subscribe(result -> {
+            if (result.merged()) {
+                mPullRequest = mPullRequest.toBuilder()
+                .merged(true)
+                .state(IssueState.Closed)
+                .build();
+            }
+            handlePullRequestUpdate();
+        }, error -> handleActionFailure("Merging pull request failed", error));
     }
 
     private void load(boolean force) {
@@ -527,29 +527,29 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
         IssueService issueService = ServiceFactory.get(IssueService.class, force);
 
         Single<PullRequest> prSingle = prService.getPullRequest(mRepoOwner, mRepoName, mPullRequestNumber)
-                .map(ApiHelpers::throwOnFailure);
+                                       .map(ApiHelpers::throwOnFailure);
         Single<Issue> issueSingle = issueService.getIssue(mRepoOwner, mRepoName, mPullRequestNumber)
-                .map(ApiHelpers::throwOnFailure);
+                                    .map(ApiHelpers::throwOnFailure);
         Single<Boolean> isCollaboratorSingle =
-                SingleFactory.isAppUserRepoCollaborator(mRepoOwner, mRepoName, force);
+            SingleFactory.isAppUserRepoCollaborator(mRepoOwner, mRepoName, force);
 
         Single.zip(issueSingle, prSingle, isCollaboratorSingle, Triplet::create)
-                .compose(makeLoaderSingle(0, force))
-                .subscribe(result -> {
-                    mIssue = result.first;
-                    mPullRequest = result.second;
-                    mIsCollaborator = result.third;
-                    fillHeader();
-                    setContentShown(true);
-                    invalidateTabs();
-                    updateFabVisibility();
-                    supportInvalidateOptionsMenu();
+        .compose(makeLoaderSingle(0, force))
+        .subscribe(result -> {
+            mIssue = result.first;
+            mPullRequest = result.second;
+            mIsCollaborator = result.third;
+            fillHeader();
+            setContentShown(true);
+            invalidateTabs();
+            updateFabVisibility();
+            supportInvalidateOptionsMenu();
 
-                    if (mInitialPage >= 0 && mInitialPage < TITLES.length) {
-                        getPager().setCurrentItem(mInitialPage);
-                        mInitialPage = -1;
-                    }
-                }, this::handleLoadFailure);
+            if (mInitialPage >= 0 && mInitialPage < TITLES.length) {
+                getPager().setCurrentItem(mInitialPage);
+                mInitialPage = -1;
+            }
+        }, this::handleLoadFailure);
     }
 
     private void loadPendingReview(boolean force) {
@@ -557,21 +557,21 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
         PullRequestReviewService service = ServiceFactory.get(PullRequestReviewService.class, force);
 
         ApiHelpers.PageIterator
-                .toSingle(page -> service.getReviews(mRepoOwner, mRepoName, mPullRequestNumber, page))
-                .compose(RxUtils.filterAndMapToFirst(r -> {
-                    return r.state() == ReviewState.Pending
-                            && ApiHelpers.loginEquals(r.user(), ownLogin);
-                }))
-                .compose(makeLoaderSingle(1, force))
-                .doOnSubscribe(disposable -> {
-                    mPendingReviewLoaded = false;
-                    supportInvalidateOptionsMenu();
-                })
-                .subscribe(result -> {
-                    mPendingReview = result.orNull();
-                    mPendingReviewLoaded = true;
-                    supportInvalidateOptionsMenu();
-                }, this::handleLoadFailure);
+        .toSingle(page -> service.getReviews(mRepoOwner, mRepoName, mPullRequestNumber, page))
+        .compose(RxUtils.filterAndMapToFirst(r -> {
+            return r.state() == ReviewState.Pending
+            && ApiHelpers.loginEquals(r.user(), ownLogin);
+        }))
+        .compose(makeLoaderSingle(1, force))
+        .doOnSubscribe(disposable -> {
+            mPendingReviewLoaded = false;
+            supportInvalidateOptionsMenu();
+        })
+        .subscribe(result -> {
+            mPendingReview = result.orNull();
+            mPendingReviewLoaded = true;
+            supportInvalidateOptionsMenu();
+        }, this::handleLoadFailure);
     }
 
     private class MergeMethodDesc {

@@ -13,15 +13,15 @@ import java.util.Map;
 
 public class ContentListCacheFragment extends Fragment {
     private final Map<String, ArrayList<Content>> mContentCache =
-            new LinkedHashMap<String, ArrayList<Content>>() {
-                private static final long serialVersionUID = -2379579224736389357L;
-                private static final int MAX_CACHE_ENTRIES = 100;
+    new LinkedHashMap<String, ArrayList<Content>>() {
+        private static final long serialVersionUID = -2379579224736389357L;
+        private static final int MAX_CACHE_ENTRIES = 100;
 
-                @Override
-                protected boolean removeEldestEntry(Map.Entry<String, ArrayList<Content>> eldest) {
-                    return size() > MAX_CACHE_ENTRIES;
-                }
-            };
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<String, ArrayList<Content>> eldest) {
+            return size() > MAX_CACHE_ENTRIES;
+        }
+    };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

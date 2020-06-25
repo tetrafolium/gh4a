@@ -37,8 +37,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 class ReviewViewHolder
-        extends TimelineItemAdapter.TimelineItemViewHolder<TimelineItem.TimelineReview>
-        implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
+    extends TimelineItemAdapter.TimelineItemViewHolder<TimelineItem.TimelineReview>
+    implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
 
     private final Context mContext;
     private final HttpImageGetter mImageGetter;
@@ -69,8 +69,8 @@ class ReviewViewHolder
     }
 
     public ReviewViewHolder(View itemView, HttpImageGetter imageGetter,
-            String repoOwner, String repoName, int issueNumber,
-            boolean displayReviewDetails, Callback callback) {
+                            String repoOwner, String repoName, int issueNumber,
+                            boolean displayReviewDetails, Callback callback) {
         super(itemView);
 
         mContext = itemView.getContext();
@@ -153,7 +153,7 @@ class ReviewViewHolder
                 View row = mDetailsContainer.getChildAt(viewIndex);
                 if (row == null) {
                     row = inflater.inflate(R.layout.row_timeline_review_file_details,
-                            mDetailsContainer, false);
+                                           mDetailsContainer, false);
                     mDetailsContainer.addView(row);
                     row.setOnClickListener(this);
                 }
@@ -177,7 +177,7 @@ class ReviewViewHolder
                 }
 
                 TextView tvFileComments =
-                        fileDetails.row.findViewById(R.id.tv_file_comments);
+                    fileDetails.row.findViewById(R.id.tv_file_comments);
                 tvFileComments.setText(String.valueOf(fileDetails.count));
 
                 fileDetails.row.setVisibility(View.VISIBLE);
@@ -212,12 +212,12 @@ class ReviewViewHolder
     private int getEventIconResId(Review review) {
         @AttrRes int iconResAttr = R.attr.timelineEventReviewed;
         switch (review.state()) {
-            case Approved:
-                iconResAttr = R.attr.timelineEventApproved;
-                break;
-            case ChangesRequested:
-                iconResAttr = R.attr.timelineEventRequestedChanges;
-                break;
+        case Approved:
+            iconResAttr = R.attr.timelineEventApproved;
+            break;
+        case ChangesRequested:
+            iconResAttr = R.attr.timelineEventRequestedChanges;
+            break;
         }
         return UiUtils.resolveDrawable(mContext, iconResAttr);
     }
@@ -225,36 +225,36 @@ class ReviewViewHolder
     private void formatTitle(final Review review) {
         int textResId;
         switch (review.state()) {
-            case Approved:
-                textResId = R.string.pull_request_event_review_approved;
-                break;
-            case ChangesRequested:
-                textResId = R.string.pull_request_event_review_requested_changes;
-                break;
-            case Dismissed:
-            case Commented:
-            default:
-                textResId = R.string.pull_request_event_review_reviewed;
-                break;
-            case Pending:
-                textResId = R.string.pull_request_event_review_started_review;
-                break;
+        case Approved:
+            textResId = R.string.pull_request_event_review_approved;
+            break;
+        case ChangesRequested:
+            textResId = R.string.pull_request_event_review_requested_changes;
+            break;
+        case Dismissed:
+        case Commented:
+        default:
+            textResId = R.string.pull_request_event_review_reviewed;
+            break;
+        case Pending:
+            textResId = R.string.pull_request_event_review_started_review;
+            break;
         }
 
         String login = review.user().login();
         String textBase = mContext.getString(textResId, login);
         SpannableStringBuilder text = StringUtils.applyBoldTags(textBase,
-                mMessageView.getTypefaceValue());
+                                      mMessageView.getTypefaceValue());
 
         CharSequence time = review.submittedAt() != null
-                ? StringUtils.formatRelativeTime(mContext, review.submittedAt(), true) : "";
+                            ? StringUtils.formatRelativeTime(mContext, review.submittedAt(), true) : "";
 
         int pos = text.toString().indexOf("[time]");
         if (pos >= 0) {
             text.replace(pos, pos + 6, time);
             if (review.submittedAt() != null) {
                 text.setSpan(new TimestampToastSpan(review.submittedAt()), pos,
-                        pos + time.length(), 0);
+                             pos + time.length(), 0);
             }
         }
         mMessageView.setText(text);
@@ -263,30 +263,30 @@ class ReviewViewHolder
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.avatar_container: {
-                User user = (User) v.getTag();
-                Intent intent = UserActivity.makeIntent(mContext, user);
-                if (intent != null) {
-                    mContext.startActivity(intent);
-                }
-                break;
+        case R.id.avatar_container: {
+            User user = (User) v.getTag();
+            Intent intent = UserActivity.makeIntent(mContext, user);
+            if (intent != null) {
+                mContext.startActivity(intent);
             }
-            case R.id.btn_show_details: {
-                Review review = (Review) v.getTag();
-                mContext.startActivity(ReviewActivity.makeIntent(mContext, mRepoOwner, mRepoName,
-                        mIssueNumber, review, null));
-                break;
-            }
-            case R.id.iv_menu:
-                mPopupMenu.show();
-                break;
-            case R.id.review_file_details: {
-                Review review = (Review) v.getTag();
-                long commentId = (long) v.getTag(R.id.review_comment_id);
-                mContext.startActivity(ReviewActivity.makeIntent(mContext, mRepoOwner, mRepoName,
-                        mIssueNumber, review, new IntentUtils.InitialCommentMarker(commentId)));
-                break;
-            }
+            break;
+        }
+        case R.id.btn_show_details: {
+            Review review = (Review) v.getTag();
+            mContext.startActivity(ReviewActivity.makeIntent(mContext, mRepoOwner, mRepoName,
+                                   mIssueNumber, review, null));
+            break;
+        }
+        case R.id.iv_menu:
+            mPopupMenu.show();
+            break;
+        case R.id.review_file_details: {
+            Review review = (Review) v.getTag();
+            long commentId = (long) v.getTag(R.id.review_comment_id);
+            mContext.startActivity(ReviewActivity.makeIntent(mContext, mRepoOwner, mRepoName,
+                                   mIssueNumber, review, new IntentUtils.InitialCommentMarker(commentId)));
+            break;
+        }
         }
     }
 
@@ -295,14 +295,14 @@ class ReviewViewHolder
         Review review = (Review) ivMenu.getTag();
 
         switch (item.getItemId()) {
-            case R.id.share:
-                IntentUtils.share(mContext, "Pull Request #" + mIssueNumber + " - Review",
-                        Uri.parse(review.htmlUrl()));
-                return true;
+        case R.id.share:
+            IntentUtils.share(mContext, "Pull Request #" + mIssueNumber + " - Review",
+                              Uri.parse(review.htmlUrl()));
+            return true;
 
-            case R.id.browser:
-                IntentUtils.launchBrowser(mContext, Uri.parse(review.htmlUrl()));
-                return true;
+        case R.id.browser:
+            IntentUtils.launchBrowser(mContext, Uri.parse(review.htmlUrl()));
+            return true;
         }
         return false;
     }

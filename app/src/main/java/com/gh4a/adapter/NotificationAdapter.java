@@ -24,7 +24,7 @@ import com.meisolsson.githubsdk.model.Repository;
 import com.meisolsson.githubsdk.model.User;
 
 public class NotificationAdapter extends
-        RootAdapter<NotificationHolder, NotificationAdapter.ViewHolder> {
+    RootAdapter<NotificationHolder, NotificationAdapter.ViewHolder> {
     private static final int VIEW_TYPE_NOTIFICATION_HEADER = RootAdapter.CUSTOM_VIEW_TYPE_START + 1;
     public static final String SUBJECT_ISSUE = "Issue";
     public static final String SUBJECT_PULL_REQUEST = "PullRequest";
@@ -62,7 +62,7 @@ public class NotificationAdapter extends
     }
 
     public boolean markAsRead(@Nullable Repository repository,
-            @Nullable NotificationThread notification) {
+                              @Nullable NotificationThread notification) {
         NotificationHolder previousRepoItem = null;
         int unreadNotificationsInSameRepoCount = 0;
         boolean hasReadEverything = true;
@@ -112,10 +112,10 @@ public class NotificationAdapter extends
 
     @Override
     protected ViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent,
-            int viewType) {
+                                            int viewType) {
         int layoutResId = viewType == VIEW_TYPE_NOTIFICATION_HEADER
-                ? R.layout.row_notification_header
-                : R.layout.row_notification;
+                          ? R.layout.row_notification_header
+                          : R.layout.row_notification;
         View v = inflater.inflate(layoutResId, parent, false);
         return new ViewHolder(v, mActionCallback);
     }
@@ -163,16 +163,16 @@ public class NotificationAdapter extends
 
         holder.tvTitle.setText(subject.title());
         holder.tvTimestamp.setText(StringUtils.formatRelativeTime(mContext,
-                item.notification.updatedAt(), true));
+                                   item.notification.updatedAt(), true));
 
         ViewGroup.MarginLayoutParams layoutParams =
-                (ViewGroup.MarginLayoutParams) holder.vNotificationContent.getLayoutParams();
+            (ViewGroup.MarginLayoutParams) holder.vNotificationContent.getLayoutParams();
         int bottomMargin = item.isLastRepositoryNotification() ? mBottomMargin : 0;
         layoutParams.setMargins(0, 0, 0, bottomMargin);
         holder.vNotificationContent.setLayoutParams(layoutParams);
 
         holder.vBottomShadow.setVisibility(
-                item.isLastRepositoryNotification() ? View.VISIBLE : View.GONE);
+            item.isLastRepositoryNotification() ? View.VISIBLE : View.GONE);
     }
 
     private int getIconResId(String subjectType) {
@@ -193,7 +193,7 @@ public class NotificationAdapter extends
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
-            PopupMenu.OnMenuItemClickListener {
+        PopupMenu.OnMenuItemClickListener {
         public ViewHolder(View view, OnNotificationActionCallback actionCallback) {
             super(view);
             mActionCallback = actionCallback;
@@ -228,24 +228,24 @@ public class NotificationAdapter extends
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.iv_action: {
-                    NotificationHolder notificationHolder = (NotificationHolder) v.getTag();
+            case R.id.iv_action: {
+                NotificationHolder notificationHolder = (NotificationHolder) v.getTag();
 
-                    if (notificationHolder.notification == null) {
-                        mActionCallback.markAsRead(notificationHolder);
-                    } else {
-                        mPopupMenu.show();
-                    }
-                    break;
+                if (notificationHolder.notification == null) {
+                    mActionCallback.markAsRead(notificationHolder);
+                } else {
+                    mPopupMenu.show();
                 }
-                case R.id.iv_avatar: {
-                    User user = (User) v.getTag();
-                    Intent intent = UserActivity.makeIntent(v.getContext(), user);
-                    if (intent != null) {
-                        v.getContext().startActivity(intent);
-                    }
-                    break;
+                break;
+            }
+            case R.id.iv_avatar: {
+                User user = (User) v.getTag();
+                Intent intent = UserActivity.makeIntent(v.getContext(), user);
+                if (intent != null) {
+                    v.getContext().startActivity(intent);
                 }
+                break;
+            }
             }
         }
 
@@ -254,12 +254,12 @@ public class NotificationAdapter extends
             NotificationHolder notificationHolder = (NotificationHolder) ivAction.getTag();
 
             switch (item.getItemId()) {
-                case R.id.mark_as_read:
-                    mActionCallback.markAsRead(notificationHolder);
-                    return true;
-                case R.id.unsubscribe:
-                    mActionCallback.unsubscribe(notificationHolder);
-                    return true;
+            case R.id.mark_as_read:
+                mActionCallback.markAsRead(notificationHolder);
+                return true;
+            case R.id.unsubscribe:
+                mActionCallback.unsubscribe(notificationHolder);
+                return true;
             }
 
             return false;

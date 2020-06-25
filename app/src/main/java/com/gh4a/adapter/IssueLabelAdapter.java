@@ -23,7 +23,7 @@ import com.gh4a.widget.StyleableTextView;
 import com.meisolsson.githubsdk.model.Label;
 
 public class IssueLabelAdapter extends
-        RootAdapter<IssueLabelAdapter.EditableLabel, IssueLabelAdapter.ViewHolder> {
+    RootAdapter<IssueLabelAdapter.EditableLabel, IssueLabelAdapter.ViewHolder> {
     public static class EditableLabel implements Parcelable {
         public String editedName;
         public String editedColor;
@@ -177,7 +177,7 @@ public class IssueLabelAdapter extends
             if (v.getId() == R.id.custom) {
                 final String color = holder.lastAssignedLabel.editedColor;
                 ColorPickerDialog dialog =
-                        new ColorPickerDialog(mContext, color, c -> assignColor(holder, c));
+                    new ColorPickerDialog(mContext, color, c -> assignColor(holder, c));
                 dialog.show();
             } else {
                 assignColor(holder, (String) v.getTag());

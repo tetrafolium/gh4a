@@ -60,7 +60,7 @@ public class CommonFeedAdapter extends RootAdapter<Feed, CommonFeedAdapter.ViewH
 
         if (mShowExtra && feed.getUserId() > 0) {
             AvatarHandler.assignAvatar(holder.ivGravatar,
-                    feed.getAuthor(), feed.getUserId(), feed.getAvatarUrl());
+                                       feed.getAuthor(), feed.getUserId(), feed.getAvatarUrl());
             holder.ivGravatar.setTag(feed);
             holder.ivGravatar.setVisibility(View.VISIBLE);
         } else {
@@ -70,7 +70,7 @@ public class CommonFeedAdapter extends RootAdapter<Feed, CommonFeedAdapter.ViewH
         if (mShowExtra) {
             Date date = feed.getPublished() != null ? feed.getPublished() : feed.getUpdated();
             String published = date != null
-                    ? DateFormat.getMediumDateFormat(mContext).format(date) : "";
+                               ? DateFormat.getMediumDateFormat(mContext).format(date) : "";
             holder.tvExtra.setText(feed.getAuthor());
             holder.tvTimestamp.setText(published);
             holder.tvExtra.setVisibility(feed.getAuthor() != null ? View.VISIBLE : View.GONE);

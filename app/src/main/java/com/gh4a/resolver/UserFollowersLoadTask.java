@@ -14,7 +14,7 @@ public class UserFollowersLoadTask extends UserLoadTask {
     protected final boolean mShowFollowers;
 
     public UserFollowersLoadTask(FragmentActivity activity, String userLogin,
-            boolean showFollowers) {
+                                 boolean showFollowers) {
         super(activity, userLogin);
         mShowFollowers = showFollowers;
     }

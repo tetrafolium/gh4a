@@ -32,14 +32,14 @@ public class ToggleableBottomSheetBehavior<V extends View> extends BottomSheetBe
 
     @Override
     public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout,
-            V child, View directTargetChild, View target, int nestedScrollAxes) {
+                                       V child, View directTargetChild, View target, int nestedScrollAxes) {
         return mEnabled && super.onStartNestedScroll(coordinatorLayout,
                 child, directTargetChild, target, nestedScrollAxes);
     }
 
     @Override
     public void onNestedPreScroll(CoordinatorLayout coordinatorLayout,
-            V child, View target, int dx, int dy, int[] consumed) {
+                                  V child, View target, int dx, int dy, int[] consumed) {
         if (mEnabled) {
             super.onNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed);
         }
@@ -54,7 +54,7 @@ public class ToggleableBottomSheetBehavior<V extends View> extends BottomSheetBe
 
     @Override
     public boolean onNestedPreFling(CoordinatorLayout coordinatorLayout,
-            V child, View target, float velocityX, float velocityY) {
+                                    V child, View target, float velocityX, float velocityY) {
         return mEnabled && super.onNestedPreFling(coordinatorLayout,
                 child, target, velocityX, velocityY);
     }

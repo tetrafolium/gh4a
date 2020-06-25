@@ -9,7 +9,7 @@ import com.gh4a.R;
 import com.gh4a.fragment.SettingsFragment;
 
 public class SettingsActivity extends BaseActivity implements
-        SettingsFragment.OnStateChangeListener {
+    SettingsFragment.OnStateChangeListener {
     public static final String RESULT_EXTRA_THEME_CHANGED = "theme_changed";
     private static final String STATE_KEY_RESULT = "result";
 
@@ -23,9 +23,9 @@ public class SettingsActivity extends BaseActivity implements
             mResultIntent = new Intent();
 
             getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.content_container, new SettingsFragment())
-                    .commit();
+            .beginTransaction()
+            .add(R.id.content_container, new SettingsFragment())
+            .commit();
         } else {
             mResultIntent = savedInstanceState.getParcelable(STATE_KEY_RESULT);
         }

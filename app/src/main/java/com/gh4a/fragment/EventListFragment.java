@@ -139,186 +139,186 @@ public abstract class EventListFragment extends PagedDataBaseFragment<GitHubEven
         }
 
         switch (event.type()) {
-            case CommitCommentEvent: {
-                CommitCommentPayload payload = (CommitCommentPayload) event.payload();
-                GitComment comment = payload.comment();
-                if (comment != null) {
-                    intentSingle = CommitCommentLoadTask.load(getActivity(),
-                            repoOwner, repoName, comment.commitId(),
-                            new IntentUtils.InitialCommentMarker(comment.id()));
-                }
-                break;
+        case CommitCommentEvent: {
+            CommitCommentPayload payload = (CommitCommentPayload) event.payload();
+            GitComment comment = payload.comment();
+            if (comment != null) {
+                intentSingle = CommitCommentLoadTask.load(getActivity(),
+                               repoOwner, repoName, comment.commitId(),
+                               new IntentUtils.InitialCommentMarker(comment.id()));
             }
+            break;
+        }
 
-            case CreateEvent: {
-                CreatePayload payload = (CreatePayload) event.payload();
-                String ref = null;
-                if (payload.refType() == ReferenceType.Branch
-                        || payload.refType() == ReferenceType.Tag) {
-                    ref = payload.ref();
-                }
-                intent = RepositoryActivity.makeIntent(getActivity(), repoOwner, repoName, ref);
-                break;
+        case CreateEvent: {
+            CreatePayload payload = (CreatePayload) event.payload();
+            String ref = null;
+            if (payload.refType() == ReferenceType.Branch
+                    || payload.refType() == ReferenceType.Tag) {
+                ref = payload.ref();
             }
+            intent = RepositoryActivity.makeIntent(getActivity(), repoOwner, repoName, ref);
+            break;
+        }
 
-            case DeleteEvent:
-                intent = RepositoryActivity.makeIntent(getActivity(), repoOwner, repoName);
-                break;
+        case DeleteEvent:
+            intent = RepositoryActivity.makeIntent(getActivity(), repoOwner, repoName);
+            break;
 
-            case DownloadEvent: {
-                DownloadPayload payload = (DownloadPayload) event.payload();
-                Download download = payload.download();
-                UiUtils.enqueueDownloadWithPermissionCheck((BaseActivity) getActivity(),
-                        download.htmlUrl(), download.contentType(),
-                        download.name(), download.description(), null);
-                break;
+        case DownloadEvent: {
+            DownloadPayload payload = (DownloadPayload) event.payload();
+            Download download = payload.download();
+            UiUtils.enqueueDownloadWithPermissionCheck((BaseActivity) getActivity(),
+                    download.htmlUrl(), download.contentType(),
+                    download.name(), download.description(), null);
+            break;
+        }
+
+        case FollowEvent: {
+            FollowPayload payload = (FollowPayload) event.payload();
+            intent = UserActivity.makeIntent(getActivity(), payload.target());
+            break;
+        }
+
+        case ForkEvent: {
+            ForkPayload payload = (ForkPayload) event.payload();
+            Repository forkee = payload.forkee();
+            if (forkee != null) {
+                intent = RepositoryActivity.makeIntent(getActivity(), forkee);
+            } else {
+                Toast.makeText(getActivity(), R.string.repo_not_found_toast, Toast.LENGTH_LONG)
+                .show();
             }
+            break;
+        }
 
-            case FollowEvent: {
-                FollowPayload payload = (FollowPayload) event.payload();
-                intent = UserActivity.makeIntent(getActivity(), payload.target());
-                break;
-            }
+        case ForkApplyEvent:
+            intent = RepositoryActivity.makeIntent(getActivity(), repoOwner, repoName);
+            break;
 
-            case ForkEvent: {
-                ForkPayload payload = (ForkPayload) event.payload();
-                Repository forkee = payload.forkee();
-                if (forkee != null) {
-                    intent = RepositoryActivity.makeIntent(getActivity(), forkee);
-                } else {
-                    Toast.makeText(getActivity(), R.string.repo_not_found_toast, Toast.LENGTH_LONG)
-                            .show();
-                }
-                break;
-            }
+        case GistEvent: {
+            GistPayload payload = (GistPayload) event.payload();
+            intent = GistActivity.makeIntent(getActivity(), payload.gist().id());
+            break;
+        }
 
-            case ForkApplyEvent:
-                intent = RepositoryActivity.makeIntent(getActivity(), repoOwner, repoName);
-                break;
+        case GollumEvent: {
+            GollumPayload payload = (GollumPayload) event.payload();
+            intent = WikiListActivity.makeIntent(getActivity(), repoOwner, repoName,
+                                                 payload.pages().isEmpty() ? null : payload.pages().get(0));
+            break;
+        }
 
-            case GistEvent: {
-                GistPayload payload = (GistPayload) event.payload();
-                intent = GistActivity.makeIntent(getActivity(), payload.gist().id());
-                break;
-            }
+        case IssueCommentEvent: {
+            IssueCommentPayload payload = (IssueCommentPayload) event.payload();
+            Issue issue = payload.issue();
+            PullRequest request = issue != null ? issue.pullRequest() : null;
+            IntentUtils.InitialCommentMarker initialComment = payload.comment() != null
+                    ? new IntentUtils.InitialCommentMarker(payload.comment().id()) : null;
 
-            case GollumEvent: {
-                GollumPayload payload = (GollumPayload) event.payload();
-                intent = WikiListActivity.makeIntent(getActivity(), repoOwner, repoName,
-                        payload.pages().isEmpty() ? null : payload.pages().get(0));
-                break;
-            }
-
-            case IssueCommentEvent: {
-                IssueCommentPayload payload = (IssueCommentPayload) event.payload();
-                Issue issue = payload.issue();
-                PullRequest request = issue != null ? issue.pullRequest() : null;
-                IntentUtils.InitialCommentMarker initialComment = payload.comment() != null
-                        ? new IntentUtils.InitialCommentMarker(payload.comment().id()) : null;
-
-                if (request != null && request.htmlUrl() != null) {
-                    intent = PullRequestActivity.makeIntent(getActivity(),
-                            repoOwner, repoName, issue.number(),
-                            initialComment != null ? PullRequestActivity.PAGE_CONVERSATION : -1,
-                            initialComment);
-                } else if (issue != null) {
-                    intent = IssueActivity.makeIntent(getActivity(),
-                            repoOwner, repoName, issue.number(), initialComment);
-                }
-                break;
-            }
-
-            case IssuesEvent: {
-                IssuesPayload payload = (IssuesPayload) event.payload();
-                startActivity(IssueActivity.makeIntent(getActivity(), repoOwner, repoName,
-                        payload.issue().number()));
-                break;
-            }
-
-            case MemberEvent:
-                intent = RepositoryActivity.makeIntent(getActivity(), repoOwner, repoName);
-                break;
-
-            case PublicEvent:
-                intent = RepositoryActivity.makeIntent(getActivity(), repoOwner, repoName);
-                break;
-
-            case PullRequestEvent: {
-                PullRequestPayload payload = (PullRequestPayload) event.payload();
+            if (request != null && request.htmlUrl() != null) {
                 intent = PullRequestActivity.makeIntent(getActivity(),
-                        repoOwner, repoName, payload.number());
-                break;
+                                                        repoOwner, repoName, issue.number(),
+                                                        initialComment != null ? PullRequestActivity.PAGE_CONVERSATION : -1,
+                                                        initialComment);
+            } else if (issue != null) {
+                intent = IssueActivity.makeIntent(getActivity(),
+                                                  repoOwner, repoName, issue.number(), initialComment);
             }
+            break;
+        }
 
-            case PullRequestReviewCommentEvent: {
-                PullRequestReviewCommentPayload payload =
-                        (PullRequestReviewCommentPayload) event.payload();
-                PullRequest pr = payload.pullRequest();
-                ReviewComment comment = payload.comment();
-                IntentUtils.InitialCommentMarker initialComment = comment != null
-                        ? new IntentUtils.InitialCommentMarker(comment.id()) : null;
+        case IssuesEvent: {
+            IssuesPayload payload = (IssuesPayload) event.payload();
+            startActivity(IssueActivity.makeIntent(getActivity(), repoOwner, repoName,
+                                                   payload.issue().number()));
+            break;
+        }
 
-                if (pr != null) {
-                    if (initialComment != null) {
-                        intentSingle = PullRequestReviewCommentLoadTask.load(getActivity(),
-                                repoOwner, repoName, pr.number(), initialComment);
-                    } else {
-                        intent = PullRequestActivity.makeIntent(getActivity(), repoOwner, repoName,
-                                pr.number(), -1, null);
-                    }
-                } else if (comment != null) {
-                    intent = CommitActivity.makeIntent(getActivity(), repoOwner, repoName,
-                            comment.commitId(), initialComment);
-                }
-                break;
-            }
+        case MemberEvent:
+            intent = RepositoryActivity.makeIntent(getActivity(), repoOwner, repoName);
+            break;
 
-            case PushEvent: {
-                PushPayload payload = (PushPayload) event.payload();
-                List<GitCommit> commits = payload.commits();
+        case PublicEvent:
+            intent = RepositoryActivity.makeIntent(getActivity(), repoOwner, repoName);
+            break;
 
-                if (commits != null && !commits.isEmpty()) {
-                    if (commits.size() > 1) {
-                        // if commit > 1, then show compare activity
-                        intent = CompareActivity.makeIntent(getActivity(), repoOwner, repoName,
-                                payload.before(), payload.head());
-                    } else {
-                        // only 1 commit, then show the commit details
-                        intent = CommitActivity.makeIntent(getActivity(),
-                                repoOwner, repoName, commits.get(0).sha());
-                    }
+        case PullRequestEvent: {
+            PullRequestPayload payload = (PullRequestPayload) event.payload();
+            intent = PullRequestActivity.makeIntent(getActivity(),
+                                                    repoOwner, repoName, payload.number());
+            break;
+        }
+
+        case PullRequestReviewCommentEvent: {
+            PullRequestReviewCommentPayload payload =
+                (PullRequestReviewCommentPayload) event.payload();
+            PullRequest pr = payload.pullRequest();
+            ReviewComment comment = payload.comment();
+            IntentUtils.InitialCommentMarker initialComment = comment != null
+                    ? new IntentUtils.InitialCommentMarker(comment.id()) : null;
+
+            if (pr != null) {
+                if (initialComment != null) {
+                    intentSingle = PullRequestReviewCommentLoadTask.load(getActivity(),
+                                   repoOwner, repoName, pr.number(), initialComment);
                 } else {
-                    intent = RepositoryActivity.makeIntent(getActivity(), repoOwner, repoName);
+                    intent = PullRequestActivity.makeIntent(getActivity(), repoOwner, repoName,
+                                                            pr.number(), -1, null);
                 }
-                break;
+            } else if (comment != null) {
+                intent = CommitActivity.makeIntent(getActivity(), repoOwner, repoName,
+                                                   comment.commitId(), initialComment);
             }
+            break;
+        }
 
-            case ReleaseEvent: {
-                ReleasePayload payload = (ReleasePayload) event.payload();
-                Release release = payload.release();
-                if (release != null) {
-                    intent = ReleaseInfoActivity.makeIntent(getActivity(),
-                            repoOwner, repoName, release.id());
+        case PushEvent: {
+            PushPayload payload = (PushPayload) event.payload();
+            List<GitCommit> commits = payload.commits();
+
+            if (commits != null && !commits.isEmpty()) {
+                if (commits.size() > 1) {
+                    // if commit > 1, then show compare activity
+                    intent = CompareActivity.makeIntent(getActivity(), repoOwner, repoName,
+                                                        payload.before(), payload.head());
+                } else {
+                    // only 1 commit, then show the commit details
+                    intent = CommitActivity.makeIntent(getActivity(),
+                                                       repoOwner, repoName, commits.get(0).sha());
                 }
-                break;
-            }
-
-            case WatchEvent:
+            } else {
                 intent = RepositoryActivity.makeIntent(getActivity(), repoOwner, repoName);
-                break;
+            }
+            break;
+        }
+
+        case ReleaseEvent: {
+            ReleasePayload payload = (ReleasePayload) event.payload();
+            Release release = payload.release();
+            if (release != null) {
+                intent = ReleaseInfoActivity.makeIntent(getActivity(),
+                                                        repoOwner, repoName, release.id());
+            }
+            break;
+        }
+
+        case WatchEvent:
+            intent = RepositoryActivity.makeIntent(getActivity(), repoOwner, repoName);
+            break;
         }
 
         if (intent != null) {
             startActivity(intent);
         } else if (intentSingle != null) {
             intentSingle
-                    .compose(RxUtils::doInBackground)
-                    .compose(RxUtils.wrapWithProgressDialog(getActivity(), R.string.loading_msg))
-                    .subscribe(result -> {
-                        if (result.isPresent() && isAdded()) {
-                            startActivity(result.get());
-                        }
-                    }, error -> Log.d(Gh4Application.LOG_TAG, "Loading click intent failed", error));
+            .compose(RxUtils::doInBackground)
+            .compose(RxUtils.wrapWithProgressDialog(getActivity(), R.string.loading_msg))
+            .subscribe(result -> {
+                if (result.isPresent() && isAdded()) {
+                    startActivity(result.get());
+                }
+            }, error -> Log.d(Gh4Application.LOG_TAG, "Loading click intent failed", error));
         }
     }
 
@@ -327,7 +327,7 @@ public abstract class EventListFragment extends PagedDataBaseFragment<GitHubEven
         super.onCreateContextMenu(menu, v, menuInfo);
 
         ContextMenuAwareRecyclerView.RecyclerContextMenuInfo info =
-                (ContextMenuAwareRecyclerView.RecyclerContextMenuInfo) menuInfo;
+            (ContextMenuAwareRecyclerView.RecyclerContextMenuInfo) menuInfo;
         GitHubEvent event = mAdapter.getItemFromAdapterPosition(info.position);
 
         if (EventAdapter.hasInvalidPayload(event)) {
@@ -343,125 +343,125 @@ public abstract class EventListFragment extends PagedDataBaseFragment<GitHubEven
 
         /* Common menu */
         menu.add(getString(R.string.menu_user, event.actor().login()))
-                .setIntent(UserActivity.makeIntent(getActivity(), event.actor()));
+        .setIntent(UserActivity.makeIntent(getActivity(), event.actor()));
         if (repoOwner != null) {
             menu.add(getString(R.string.menu_repo, repoOwner + "/" + repoName))
-                    .setIntent(RepositoryActivity.makeIntent(getActivity(), repoOwner, repoName));
+            .setIntent(RepositoryActivity.makeIntent(getActivity(), repoOwner, repoName));
         }
 
         switch (event.type()) {
-            case CommitCommentEvent:
-                if (repoOwner != null) {
-                    CommitCommentPayload payload = (CommitCommentPayload) event.payload();
-                    String sha = payload.comment().commitId();
+        case CommitCommentEvent:
+            if (repoOwner != null) {
+                CommitCommentPayload payload = (CommitCommentPayload) event.payload();
+                String sha = payload.comment().commitId();
+                menu.add(getString(R.string.menu_commit, sha.substring(0, 7)))
+                .setIntent(CommitActivity.makeIntent(getActivity(), repoOwner, repoName, sha));
+            }
+            break;
+
+        case DownloadEvent: {
+            DownloadPayload payload = (DownloadPayload) event.payload();
+            menu.add(Menu.NONE, MENU_DOWNLOAD_START, Menu.NONE,
+                     getString(R.string.menu_file, payload.download().name()));
+            break;
+        }
+
+        case FollowEvent: {
+            FollowPayload payload = (FollowPayload) event.payload();
+            User target = payload.target();
+            if (target != null) {
+                menu.add(getString(R.string.menu_user, target.login()))
+                .setIntent(UserActivity.makeIntent(getActivity(), target));
+            }
+            break;
+        }
+
+        case ForkEvent: {
+            ForkPayload payload = (ForkPayload) event.payload();
+            Repository forkee = payload.forkee();
+            if (forkee != null) {
+                menu.add(getString(R.string.menu_fork, forkee.owner().login() + "/" + forkee.name()))
+                .setIntent(RepositoryActivity.makeIntent(getActivity(), forkee));
+            }
+            break;
+        }
+
+        case GistEvent: {
+            GistPayload payload = (GistPayload) event.payload();
+            String gistId = payload.gist().id();
+            menu.add(getString(R.string.menu_gist, gistId))
+            .setIntent(GistActivity.makeIntent(getActivity(), gistId));
+            break;
+        }
+
+        case GollumEvent: {
+            GollumPayload payload = (GollumPayload) event.payload();
+            List<GitHubWikiPage> pages = payload.pages();
+            if (pages != null && !pages.isEmpty()) { //TODO: now just open the first page
+                menu.add(getString(R.string.menu_wiki))
+                .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse(pages.get(0).htmlUrl())));
+            }
+            break;
+        }
+
+        case IssueCommentEvent: {
+            IssueCommentPayload payload = (IssueCommentPayload) event.payload();
+            boolean isPullRequest = payload.issue().pullRequest() != null;
+            menu.add(getString(isPullRequest ? R.string.menu_pulls : R.string.menu_issues))
+            .setIntent(IssueListActivity.makeIntent(getActivity(),repoOwner, repoName, isPullRequest));
+            break;
+        }
+
+        case IssuesEvent: {
+            IssuesPayload payload = (IssuesPayload) event.payload();
+            int issueNumber = payload.issue().number();
+            menu.add(getString(R.string.menu_issue, issueNumber))
+            .setIntent(IssueActivity.makeIntent(getActivity(), repoOwner, repoName, issueNumber));
+            break;
+        }
+
+        case PullRequestEvent: {
+            PullRequestPayload payload = (PullRequestPayload) event.payload();
+            menu.add(getString(R.string.menu_pull, payload.number()))
+            .setIntent(PullRequestActivity.makeIntent(getActivity(),
+                       repoOwner, repoName, payload.number()));
+            break;
+        }
+
+        case PushEvent: {
+            if (repoOwner != null) {
+                PushPayload payload = (PushPayload) event.payload();
+                menu.add(getString(R.string.menu_compare, payload.head().substring(0, 7)))
+                .setIntent(CompareActivity.makeIntent(getActivity(), repoOwner, repoName,
+                                                      payload.before(), payload.head()));
+
+                for (GitCommit commit : payload.commits()) {
+                    String sha = commit.sha();
                     menu.add(getString(R.string.menu_commit, sha.substring(0, 7)))
-                            .setIntent(CommitActivity.makeIntent(getActivity(), repoOwner, repoName, sha));
+                    .setIntent(CommitActivity.makeIntent(getActivity(), repoOwner, repoName, sha));
                 }
-                break;
-
-            case DownloadEvent: {
-                DownloadPayload payload = (DownloadPayload) event.payload();
-                menu.add(Menu.NONE, MENU_DOWNLOAD_START, Menu.NONE,
-                        getString(R.string.menu_file, payload.download().name()));
-                break;
             }
+            break;
+        }
 
-            case FollowEvent: {
-                FollowPayload payload = (FollowPayload) event.payload();
-                User target = payload.target();
-                if (target != null) {
-                    menu.add(getString(R.string.menu_user, target.login()))
-                            .setIntent(UserActivity.makeIntent(getActivity(), target));
-                }
-                break;
+        case ReleaseEvent: {
+            ReleasePayload payload = (ReleasePayload) event.payload();
+            List<ReleaseAsset> downloads = payload.release().assets();
+            int count = downloads != null ? downloads.size() : 0;
+
+            for (int i = 0; i < count; i++) {
+                menu.add(Menu.NONE, MENU_DOWNLOAD_START + i, Menu.NONE,
+                         getString(R.string.menu_file, downloads.get(i).name()));
             }
-
-            case ForkEvent: {
-                ForkPayload payload = (ForkPayload) event.payload();
-                Repository forkee = payload.forkee();
-                if (forkee != null) {
-                    menu.add(getString(R.string.menu_fork, forkee.owner().login() + "/" + forkee.name()))
-                            .setIntent(RepositoryActivity.makeIntent(getActivity(), forkee));
-                }
-                break;
-            }
-
-            case GistEvent: {
-                GistPayload payload = (GistPayload) event.payload();
-                String gistId = payload.gist().id();
-                menu.add(getString(R.string.menu_gist, gistId))
-                        .setIntent(GistActivity.makeIntent(getActivity(), gistId));
-                break;
-            }
-
-            case GollumEvent: {
-                GollumPayload payload = (GollumPayload) event.payload();
-                List<GitHubWikiPage> pages = payload.pages();
-                if (pages != null && !pages.isEmpty()) { //TODO: now just open the first page
-                    menu.add(getString(R.string.menu_wiki))
-                            .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse(pages.get(0).htmlUrl())));
-                }
-                break;
-            }
-
-            case IssueCommentEvent: {
-                IssueCommentPayload payload = (IssueCommentPayload) event.payload();
-                boolean isPullRequest = payload.issue().pullRequest() != null;
-                menu.add(getString(isPullRequest ? R.string.menu_pulls : R.string.menu_issues))
-                        .setIntent(IssueListActivity.makeIntent(getActivity(),repoOwner, repoName, isPullRequest));
-                break;
-            }
-
-            case IssuesEvent: {
-                IssuesPayload payload = (IssuesPayload) event.payload();
-                int issueNumber = payload.issue().number();
-                menu.add(getString(R.string.menu_issue, issueNumber))
-                        .setIntent(IssueActivity.makeIntent(getActivity(), repoOwner, repoName, issueNumber));
-                break;
-            }
-
-            case PullRequestEvent: {
-                PullRequestPayload payload = (PullRequestPayload) event.payload();
-                menu.add(getString(R.string.menu_pull, payload.number()))
-                        .setIntent(PullRequestActivity.makeIntent(getActivity(),
-                                repoOwner, repoName, payload.number()));
-                break;
-            }
-
-            case PushEvent: {
-                if (repoOwner != null) {
-                    PushPayload payload = (PushPayload) event.payload();
-                    menu.add(getString(R.string.menu_compare, payload.head().substring(0, 7)))
-                            .setIntent(CompareActivity.makeIntent(getActivity(), repoOwner, repoName,
-                                    payload.before(), payload.head()));
-
-                    for (GitCommit commit : payload.commits()) {
-                        String sha = commit.sha();
-                        menu.add(getString(R.string.menu_commit, sha.substring(0, 7)))
-                                .setIntent(CommitActivity.makeIntent(getActivity(), repoOwner, repoName, sha));
-                    }
-                }
-                break;
-            }
-
-            case ReleaseEvent: {
-                ReleasePayload payload = (ReleasePayload) event.payload();
-                List<ReleaseAsset> downloads = payload.release().assets();
-                int count = downloads != null ? downloads.size() : 0;
-
-                for (int i = 0; i < count; i++) {
-                    menu.add(Menu.NONE, MENU_DOWNLOAD_START + i, Menu.NONE,
-                            getString(R.string.menu_file, downloads.get(i).name()));
-                }
-                break;
-            }
+            break;
+        }
         }
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         ContextMenuAwareRecyclerView.RecyclerContextMenuInfo info =
-                (ContextMenuAwareRecyclerView.RecyclerContextMenuInfo) item.getMenuInfo();
+            (ContextMenuAwareRecyclerView.RecyclerContextMenuInfo) item.getMenuInfo();
         if (info.position >= mAdapter.getItemCount()) {
             return false;
         }

@@ -43,13 +43,13 @@ import com.meisolsson.githubsdk.model.Label;
 import com.meisolsson.githubsdk.service.issues.IssueLabelService;
 
 public class IssueLabelListActivity extends BaseActivity implements
-        RootAdapter.OnItemClickListener<IssueLabelAdapter.EditableLabel>, View.OnClickListener {
+    RootAdapter.OnItemClickListener<IssueLabelAdapter.EditableLabel>, View.OnClickListener {
     public static Intent makeIntent(Context context, String repoOwner, String repoName,
-            boolean fromPullRequest) {
+                                    boolean fromPullRequest) {
         return new Intent(context, IssueLabelListActivity.class)
-                .putExtra("owner", repoOwner)
-                .putExtra("repo", repoName)
-                .putExtra("from_pr", fromPullRequest);
+               .putExtra("owner", repoOwner)
+               .putExtra("repo", repoName)
+               .putExtra("from_pr", fromPullRequest);
     }
 
     private static final int ID_LOADER_LABELS = 0;
@@ -84,7 +84,7 @@ public class IssueLabelListActivity extends BaseActivity implements
 
         CoordinatorLayout rootLayout = getRootLayout();
         mFab = (FloatingActionButton) getLayoutInflater().inflate(
-                R.layout.add_fab, rootLayout, false);
+                   R.layout.add_fab, rootLayout, false);
         mFab.setOnClickListener(this);
         rootLayout.addView(mFab);
         updateFabVisibility();
@@ -98,7 +98,7 @@ public class IssueLabelListActivity extends BaseActivity implements
                 startEditing(mAddedLabel);
             } else if (savedInstanceState.containsKey(STATE_KEY_EDITING_LABEL)) {
                 IssueLabelAdapter.EditableLabel label =
-                        savedInstanceState.getParcelable(STATE_KEY_EDITING_LABEL);
+                    savedInstanceState.getParcelable(STATE_KEY_EDITING_LABEL);
                 int count = mAdapter.getCount();
                 for (int i = 0; i < count; i++) {
                     IssueLabelAdapter.EditableLabel item = mAdapter.getItem(i);
@@ -205,13 +205,13 @@ public class IssueLabelListActivity extends BaseActivity implements
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             menu.add(Menu.NONE, Menu.FIRST, Menu.NONE, R.string.save)
-                    .setIcon(R.drawable.content_save)
-                    .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            .setIcon(R.drawable.content_save)
+            .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
             if (mLabel != mAddedLabel) {
                 menu.add(Menu.NONE, Menu.FIRST + 1, Menu.NONE, R.string.delete)
-                        .setIcon(R.drawable.content_discard)
-                        .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
+                .setIcon(R.drawable.content_discard)
+                .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
             }
 
             return true;
@@ -234,10 +234,10 @@ public class IssueLabelListActivity extends BaseActivity implements
                 break;
             case Menu.FIRST + 1:
                 new AlertDialog.Builder(IssueLabelListActivity.this)
-                        .setMessage(getString(R.string.issue_dialog_delete_message, mLabel.name()))
-                        .setPositiveButton(R.string.delete, (dialog, which) -> deleteLabel(mLabel))
-                        .setNegativeButton(R.string.cancel, null)
-                        .show();
+                .setMessage(getString(R.string.issue_dialog_delete_message, mLabel.name()))
+                .setPositiveButton(R.string.delete, (dialog, which) -> deleteLabel(mLabel))
+                .setNegativeButton(R.string.cancel, null)
+                .show();
                 break;
             default:
                 break;
@@ -266,12 +266,12 @@ public class IssueLabelListActivity extends BaseActivity implements
         String errorMessage = getString(R.string.issue_error_delete_label, label.base().name());
         IssueLabelService service = ServiceFactory.get(IssueLabelService.class, false);
         service.deleteLabel(mRepoOwner, mRepoName, label.base().name())
-                .map(ApiHelpers::throwOnFailure)
-                .compose(RxUtils.wrapForBackgroundTask(this, R.string.deleting_msg, errorMessage))
-                .subscribe(result -> {
-                    loadLabels(true);
-                    setResult(RESULT_OK);
-                }, error -> handleActionFailure("Deleting label failed", error));
+        .map(ApiHelpers::throwOnFailure)
+        .compose(RxUtils.wrapForBackgroundTask(this, R.string.deleting_msg, errorMessage))
+        .subscribe(result -> {
+            loadLabels(true);
+            setResult(RESULT_OK);
+        }, error -> handleActionFailure("Deleting label failed", error));
     }
 
     private void editLabel(IssueLabelAdapter.EditableLabel label) {
@@ -279,48 +279,48 @@ public class IssueLabelListActivity extends BaseActivity implements
         String errorMessage = getString(R.string.issue_error_edit_label, oldLabel.name());
         IssueLabelService service = ServiceFactory.get(IssueLabelService.class, false);
         Label newLabel = Label.builder()
-                .name(label.editedName)
-                .color(label.editedColor)
-                .build();
+                         .name(label.editedName)
+                         .color(label.editedColor)
+                         .build();
 
         service.editLabel(mRepoOwner, mRepoName, oldLabel.name(), newLabel)
-                .map(ApiHelpers::throwOnFailure)
-                .compose(RxUtils.wrapForBackgroundTask(this, R.string.saving_msg, errorMessage))
-                .subscribe(result -> {
-                    loadLabels(true);
-                    setResult(RESULT_OK);
-                }, error -> handleActionFailure("Editing label failed", error));
+        .map(ApiHelpers::throwOnFailure)
+        .compose(RxUtils.wrapForBackgroundTask(this, R.string.saving_msg, errorMessage))
+        .subscribe(result -> {
+            loadLabels(true);
+            setResult(RESULT_OK);
+        }, error -> handleActionFailure("Editing label failed", error));
     }
 
     private void addLabel(IssueLabelAdapter.EditableLabel label) {
         String errorMessage = getString(R.string.issue_error_create_label, label.name());
         IssueLabelService service = ServiceFactory.get(IssueLabelService.class, false);
         Label newLabel = Label.builder()
-                .name(label.name())
-                .color(label.color())
-                .build();
+                         .name(label.name())
+                         .color(label.color())
+                         .build();
 
         service.createLabel(mRepoOwner, mRepoName, newLabel)
-                .map(ApiHelpers::throwOnFailure)
-                .compose(RxUtils.wrapForBackgroundTask(this, R.string.saving_msg, errorMessage))
-                .subscribe(result -> {
-                    mAddedLabel = null;
-                    loadLabels(true);
-                    setResult(RESULT_OK);
-                }, error -> handleActionFailure("Adding label failed", error));
+        .map(ApiHelpers::throwOnFailure)
+        .compose(RxUtils.wrapForBackgroundTask(this, R.string.saving_msg, errorMessage))
+        .subscribe(result -> {
+            mAddedLabel = null;
+            loadLabels(true);
+            setResult(RESULT_OK);
+        }, error -> handleActionFailure("Adding label failed", error));
     }
 
     private void loadLabels(boolean force) {
         final IssueLabelService service = ServiceFactory.get(IssueLabelService.class, false);
         ApiHelpers.PageIterator
-                .toSingle(page -> service.getRepositoryLabels(mRepoOwner, mRepoName, page))
-                .compose(RxUtils.mapList(IssueLabelAdapter.EditableLabel::new))
-                .compose(makeLoaderSingle(ID_LOADER_LABELS, force))
-                .subscribe(result -> {
-                    UiUtils.hideImeForView(getCurrentFocus());
-                    mAdapter.clear();
-                    mAdapter.addAll(result);
-                    setContentShown(true);
-                }, this::handleLoadFailure);
+        .toSingle(page -> service.getRepositoryLabels(mRepoOwner, mRepoName, page))
+        .compose(RxUtils.mapList(IssueLabelAdapter.EditableLabel::new))
+        .compose(makeLoaderSingle(ID_LOADER_LABELS, force))
+        .subscribe(result -> {
+            UiUtils.hideImeForView(getCurrentFocus());
+            mAdapter.clear();
+            mAdapter.addAll(result);
+            setContentShown(true);
+        }, this::handleLoadFailure);
     }
 }
