@@ -14,9 +14,9 @@ import com.meisolsson.githubsdk.service.pull_request.PullRequestReviewCommentSer
 import io.reactivex.Single;
 
 public class EditPullRequestCommentActivity extends EditCommentActivity {
-    public static Intent makeIntent(Context context, String repoOwner, String repoName,
-                                    int prNumber, long id, long replyToCommentId, String body,
-                                    @AttrRes int highlightColorAttr) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
+                                    final int prNumber, final long id, final long replyToCommentId, final String body,
+                                    final @AttrRes int highlightColorAttr) {
         // This activity only supports editing or replying to comments,
         // not creating new unrelated ones.
         if (id == 0L && replyToCommentId == 0L) {
@@ -29,8 +29,8 @@ public class EditPullRequestCommentActivity extends EditCommentActivity {
     }
 
     @Override
-    protected Single<GitHubCommentBase> createComment(String repoOwner, String repoName,
-            String body, long replyToCommentId) {
+    protected Single<GitHubCommentBase> createComment(final String repoOwner, final String repoName,
+            final String body, final long replyToCommentId) {
         int prNumber = getIntent().getIntExtra("pr", 0);
         PullRequestReviewCommentService service =
             ServiceFactory.get(PullRequestReviewCommentService.class, false);
@@ -43,8 +43,8 @@ public class EditPullRequestCommentActivity extends EditCommentActivity {
     }
 
     @Override
-    protected Single<GitHubCommentBase> editComment(String repoOwner, String repoName,
-            long commentId, String body) {
+    protected Single<GitHubCommentBase> editComment(final String repoOwner, final String repoName,
+            final long commentId, final String body) {
         PullRequestReviewCommentService service =
             ServiceFactory.get(PullRequestReviewCommentService.class, false);
         CommentRequest request = CommentRequest.builder().body(body).build();

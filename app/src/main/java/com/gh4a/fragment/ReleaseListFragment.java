@@ -21,7 +21,7 @@ public class ReleaseListFragment extends PagedDataBaseFragment<Release> implemen
     private String mUserLogin;
     private String mRepoName;
 
-    public static ReleaseListFragment newInstance(String owner, String repo) {
+    public static ReleaseListFragment newInstance(final String owner, final String repo) {
         ReleaseListFragment f = new ReleaseListFragment();
         Bundle args = new Bundle();
         args.putString("owner", owner);
@@ -31,14 +31,14 @@ public class ReleaseListFragment extends PagedDataBaseFragment<Release> implemen
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mUserLogin = getArguments().getString("owner");
         mRepoName = getArguments().getString("repo");
     }
 
     @Override
-    protected Single<Response<Page<Release>>> loadPage(int page, boolean bypassCache) {
+    protected Single<Response<Page<Release>>> loadPage(final int page, final boolean bypassCache) {
         final RepositoryReleaseService service =
             ServiceFactory.get(RepositoryReleaseService.class, bypassCache);
         return service.getReleases(mUserLogin, mRepoName, page);
@@ -57,7 +57,7 @@ public class ReleaseListFragment extends PagedDataBaseFragment<Release> implemen
     }
 
     @Override
-    public void onItemClick(Release release) {
+    public void onItemClick(final Release release) {
         startActivity(ReleaseInfoActivity.makeIntent(getActivity(), mUserLogin, mRepoName, release));
     }
 }

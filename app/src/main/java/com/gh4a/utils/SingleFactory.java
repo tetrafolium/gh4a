@@ -37,8 +37,8 @@ import retrofit2.converter.moshi.MoshiConverterFactory;
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
 public class SingleFactory {
-    public static Single<Boolean> isAppUserRepoCollaborator(String repoOwner, String repoName,
-            boolean bypassCache) {
+    public static Single<Boolean> isAppUserRepoCollaborator(final String repoOwner, final String repoName,
+            final boolean bypassCache) {
         Gh4Application app = Gh4Application.get();
         if (!app.isAuthorized()) {
             return Single.just(false);
@@ -55,8 +55,8 @@ public class SingleFactory {
                .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_FORBIDDEN, false));
     }
 
-    public static Single<NotificationListLoadResult> getNotifications(boolean all,
-            boolean participating, boolean bypassCache) {
+    public static Single<NotificationListLoadResult> getNotifications(final boolean all,
+            final boolean participating, final boolean bypassCache) {
         final NotificationService service =
             ServiceFactory.get(NotificationService.class, bypassCache);
         final Map<String, Object> options = new HashMap<>();
@@ -69,7 +69,7 @@ public class SingleFactory {
     }
 
     private static NotificationListLoadResult notificationsToResult(
-        List<NotificationThread> notifications) {
+        final List<NotificationThread> notifications) {
         // group notifications by repo
         final HashMap<Repository, ArrayList<NotificationThread>> notificationsByRepo = new HashMap<>();
         for (NotificationThread n : notifications) {
@@ -117,7 +117,7 @@ public class SingleFactory {
         return new NotificationListLoadResult(result);
     }
 
-    public static Single<List<Feed>> loadFeed(String relativeUrl) {
+    public static Single<List<Feed>> loadFeed(final String relativeUrl) {
         return RetrofitHelper.feedService()
                .getFeed(relativeUrl)
                .map(ApiHelpers::throwOnFailure)
@@ -131,7 +131,7 @@ public class SingleFactory {
                .map(feed -> feed.feed);
     }
 
-    public static Single<List<Trend>> loadTrends(String type) {
+    public static Single<List<Trend>> loadTrends(final String type) {
         return RetrofitHelper.trendService()
                .getTrends(type)
                .map(ApiHelpers::throwOnFailure);
@@ -162,12 +162,12 @@ public class SingleFactory {
                     new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
 
                 @Override
-                public Date read(String value) throws Exception {
+                public Date read(final String value) throws Exception {
                     return mFormat.parse(value);
                 }
 
                 @Override
-                public String write(Date value) throws Exception {
+                public String write(final Date value) throws Exception {
                     return mFormat.format(value);
                 }
             });

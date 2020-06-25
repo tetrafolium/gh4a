@@ -32,7 +32,7 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class FollowersFollowingListFragment extends PagedDataBaseFragment<User> {
-    public static FollowersFollowingListFragment newInstance(String login, boolean showFollowers) {
+    public static FollowersFollowingListFragment newInstance(final String login, final boolean showFollowers) {
         FollowersFollowingListFragment f = new FollowersFollowingListFragment();
 
         Bundle args = new Bundle();
@@ -47,7 +47,7 @@ public class FollowersFollowingListFragment extends PagedDataBaseFragment<User> 
     private boolean mShowFollowers;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLogin = getArguments().getString("user");
         mShowFollowers = getArguments().getBoolean("show_followers");
@@ -64,7 +64,7 @@ public class FollowersFollowingListFragment extends PagedDataBaseFragment<User> 
     }
 
     @Override
-    public void onItemClick(User user) {
+    public void onItemClick(final User user) {
         Intent intent = UserActivity.makeIntent(getActivity(), user);
         if (intent != null) {
             startActivity(intent);
@@ -72,7 +72,7 @@ public class FollowersFollowingListFragment extends PagedDataBaseFragment<User> 
     }
 
     @Override
-    protected Single<Response<Page<User>>> loadPage(int page, boolean bypassCache) {
+    protected Single<Response<Page<User>>> loadPage(final int page, final boolean bypassCache) {
         final UserFollowerService service = ServiceFactory.get(UserFollowerService.class, bypassCache);
         return mShowFollowers
                ? service.getFollowers(mLogin, page)

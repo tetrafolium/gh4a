@@ -32,7 +32,7 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class WatcherListFragment extends PagedDataBaseFragment<User> {
-    public static WatcherListFragment newInstance(String repoOwner, String repoName) {
+    public static WatcherListFragment newInstance(final String repoOwner, final String repoName) {
         WatcherListFragment f = new WatcherListFragment();
 
         Bundle args = new Bundle();
@@ -47,7 +47,7 @@ public class WatcherListFragment extends PagedDataBaseFragment<User> {
     private String mRepoName;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mRepoOwner = getArguments().getString("owner");
         mRepoName = getArguments().getString("repo");
@@ -64,7 +64,7 @@ public class WatcherListFragment extends PagedDataBaseFragment<User> {
     }
 
     @Override
-    public void onItemClick(User user) {
+    public void onItemClick(final User user) {
         Intent intent = UserActivity.makeIntent(getActivity(), user);
         if (intent != null) {
             startActivity(intent);
@@ -72,7 +72,7 @@ public class WatcherListFragment extends PagedDataBaseFragment<User> {
     }
 
     @Override
-    protected Single<Response<Page<User>>> loadPage(int page, boolean bypassCache) {
+    protected Single<Response<Page<User>>> loadPage(final int page, final boolean bypassCache) {
         final WatchingService service = ServiceFactory.get(WatchingService.class, bypassCache);
         return service.getRepositoryWatchers(mRepoOwner, mRepoName, page);
     }

@@ -17,7 +17,7 @@ import retrofit2.Response;
 
 public class OrganizationMemberListFragment extends PagedDataBaseFragment<User> implements
     RootAdapter.OnItemClickListener<User> {
-    public static OrganizationMemberListFragment newInstance(String organization) {
+    public static OrganizationMemberListFragment newInstance(final String organization) {
         OrganizationMemberListFragment f = new OrganizationMemberListFragment();
         Bundle args = new Bundle();
         args.putString("org", organization);
@@ -26,7 +26,7 @@ public class OrganizationMemberListFragment extends PagedDataBaseFragment<User> 
     }
 
     @Override
-    protected Single<Response<Page<User>>> loadPage(int page, boolean bypassCache) {
+    protected Single<Response<Page<User>>> loadPage(final int page, final boolean bypassCache) {
         String organization = getArguments().getString("org");
         final OrganizationMemberService service =
             ServiceFactory.get(OrganizationMemberService.class, bypassCache);
@@ -46,7 +46,7 @@ public class OrganizationMemberListFragment extends PagedDataBaseFragment<User> 
     }
 
     @Override
-    public void onItemClick(User item) {
+    public void onItemClick(final User item) {
         startActivity(UserActivity.makeIntent(getActivity(), item));
     }
 }

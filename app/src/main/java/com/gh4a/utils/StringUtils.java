@@ -45,7 +45,7 @@ public class StringUtils {
      * @param val the val
      * @return true, if is blank
      */
-    public static boolean isBlank(String val) {
+    public static boolean isBlank(final String val) {
         return val == null || val.trim().isEmpty();
     }
 
@@ -55,7 +55,7 @@ public class StringUtils {
      * @param text the text
      * @return the string
      */
-    public static String doTeaser(String text) {
+    public static String doTeaser(final String text) {
         if (isBlank(text)) {
             return "";
         }
@@ -85,7 +85,7 @@ public class StringUtils {
      * @param name the name
      * @return the string
      */
-    public static String formatName(String userLogin, String name) {
+    public static String formatName(final String userLogin, final String name) {
         if (StringUtils.isBlank(userLogin)) {
             return name;
         }
@@ -93,7 +93,7 @@ public class StringUtils {
         return userLogin + (!StringUtils.isBlank(name) ? " - " + name : "");
     }
 
-    public static CharSequence formatRelativeTime(Context context, Date date, boolean showDateIfLongAgo) {
+    public static CharSequence formatRelativeTime(final Context context, final Date date, final boolean showDateIfLongAgo) {
         long now = System.currentTimeMillis();
         long time = date.getTime();
         long duration = Math.abs(now - time);
@@ -104,18 +104,18 @@ public class StringUtils {
         return Gh4Application.get().getPrettyTimeInstance().format(date);
     }
 
-    public static CharSequence formatExactTime(Context context, Date date) {
+    public static CharSequence formatExactTime(final Context context, final Date date) {
         return DateUtils.formatDateTime(context, date.getTime(), DateUtils.FORMAT_SHOW_DATE
                                         | DateUtils.FORMAT_SHOW_TIME
                                         | DateUtils.FORMAT_SHOW_YEAR);
     }
 
-    public static void applyBoldTagsAndSetText(StyleableTextView view, String input) {
+    public static void applyBoldTagsAndSetText(final StyleableTextView view, final String input) {
         SpannableStringBuilder text = applyBoldTags(input, view.getTypefaceValue());
         view.setText(text);
     }
 
-    public static SpannableStringBuilder applyBoldTags(String input, int baseTypefaceValue) {
+    public static SpannableStringBuilder applyBoldTags(final String input, final int baseTypefaceValue) {
         SpannableStringBuilder ssb = new SpannableStringBuilder();
         int pos = 0;
 
@@ -140,7 +140,7 @@ public class StringUtils {
     }
 
     @Nullable
-    public static int[] findMatchingLines(String input, String match) {
+    public static int[] findMatchingLines(final String input, final String match) {
         int pos = input.indexOf(match);
         if (pos < 0) {
             return null;
@@ -148,10 +148,10 @@ public class StringUtils {
 
         int start = input.substring(0, pos).split("\n").length;
         int end = start + match.split("\n").length - 1;
-        return new int[] { start, end };
+        return new int[] {start, end };
     }
 
-    public static int[] extractDiffHunkLineNumbers(@NonNull String diffHunk) {
+    public static int[] extractDiffHunkLineNumbers(final @NonNull String diffHunk) {
         if (!diffHunk.startsWith("@@")) {
             return null;
         }
@@ -160,22 +160,22 @@ public class StringUtils {
         if (matcher.matches()) {
             int leftLine = Integer.parseInt(matcher.group(1)) - 1;
             int rightLine = Integer.parseInt(matcher.group(2)) - 1;
-            return new int[] { leftLine, rightLine };
+            return new int[] {leftLine, rightLine };
         }
 
         return null;
     }
 
-    public static CharSequence formatMention(Context context, User user) {
+    public static CharSequence formatMention(final Context context, final User user) {
         String userLogin = ApiHelpers.getUserLogin(context, user);
         return "@" + userLogin + " ";
     }
 
-    public static String toBase64(String data) {
+    public static String toBase64(final String data) {
         return Base64.encodeToString(data.getBytes(), Base64.NO_WRAP);
     }
 
-    public static String fromBase64(String encoded) {
+    public static String fromBase64(final String encoded) {
         return new String(Base64.decode(encoded, Base64.DEFAULT));
     }
 }

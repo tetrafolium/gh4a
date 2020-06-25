@@ -40,7 +40,7 @@ public class NewsFeedFactory extends FragmentFactory implements Spinner.OnItemSe
         R.string.user_news_feed
     };
 
-    public NewsFeedFactory(HomeActivity activity, String userLogin) {
+    public NewsFeedFactory(final HomeActivity activity, final String userLogin) {
         super(activity);
         mUserLogin = userLogin;
     }
@@ -56,13 +56,13 @@ public class NewsFeedFactory extends FragmentFactory implements Spinner.OnItemSe
     }
 
     @Override
-    protected Fragment makeFragment(int position) {
+    protected Fragment makeFragment(final int position) {
         return PrivateEventListFragment.newInstance(mUserLogin,
                 mSelectedOrganization != null ? mSelectedOrganization.login() : null);
     }
 
     @Override
-    protected void setUserInfo(User user) {
+    protected void setUserInfo(final User user) {
         mSelf = user;
         mActivity.supportInvalidateOptionsMenu();
     }
@@ -73,7 +73,7 @@ public class NewsFeedFactory extends FragmentFactory implements Spinner.OnItemSe
     }
 
     @Override
-    protected boolean onCreateOptionsMenu(Menu menu) {
+    protected boolean onCreateOptionsMenu(final Menu menu) {
         if (mUserScopes == null || mSelf == null) {
             return super.onCreateOptionsMenu(menu);
         }
@@ -106,7 +106,7 @@ public class NewsFeedFactory extends FragmentFactory implements Spinner.OnItemSe
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+    public void onItemSelected(final AdapterView<?> parent, final View view, final int position, final long id) {
         User selectedOrganization = position != 0 ? mUserScopes.get(position - 1) : null;
         boolean isSameUser = selectedOrganization == null || mSelectedOrganization == null
                              ? selectedOrganization == mSelectedOrganization
@@ -119,14 +119,14 @@ public class NewsFeedFactory extends FragmentFactory implements Spinner.OnItemSe
     }
 
     @Override
-    public void onNothingSelected(AdapterView<?> view) {
+    public void onNothingSelected(final AdapterView<?> view) {
         if (mSelectedOrganization != null) {
             mSelectedOrganization = null;
             mActivity.invalidateFragments();
         }
     }
 
-    private void loadOrganizations(boolean force) {
+    private void loadOrganizations(final boolean force) {
         final Gh4Application app = Gh4Application.get();
         final OrganizationService service = ServiceFactory.get(OrganizationService.class, force);
         mOrganizationSubscription = ApiHelpers.PageIterator
@@ -145,7 +145,7 @@ public class NewsFeedFactory extends FragmentFactory implements Spinner.OnItemSe
         private final List<User> mUsers;
         private final LayoutInflater mInflater;
 
-        public UserAdapter(Context context, User self, List<User> users) {
+        public UserAdapter(final Context context, final User self, final List<User> users) {
             super();
             mInflater = LayoutInflater.from(context);
             mSelf = self;
@@ -158,17 +158,17 @@ public class NewsFeedFactory extends FragmentFactory implements Spinner.OnItemSe
         }
 
         @Override
-        public User getItem(int position) {
+        public User getItem(final int position) {
             return position == 0 ? mSelf : mUsers.get(position - 1);
         }
 
         @Override
-        public long getItemId(int position) {
+        public long getItemId(final int position) {
             return 0;
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, final View convertView, final ViewGroup parent) {
             if (convertView == null) {
                 convertView = mInflater.inflate(R.layout.user_type_small, parent, false);
             }
@@ -181,7 +181,7 @@ public class NewsFeedFactory extends FragmentFactory implements Spinner.OnItemSe
         }
 
         @Override
-        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+        public View getDropDownView(final int position, final View convertView, final ViewGroup parent) {
             if (convertView == null) {
                 convertView = mInflater.inflate(R.layout.user_type_popup, parent, false);
             }

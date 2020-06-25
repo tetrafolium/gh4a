@@ -11,7 +11,7 @@ public class TrendingFactory extends FragmentFactory {
         R.string.trend_today, R.string.trend_week, R.string.trend_month
     };
 
-    public TrendingFactory(HomeActivity activity) {
+    public TrendingFactory(final HomeActivity activity) {
         super(activity);
     }
 
@@ -26,7 +26,7 @@ public class TrendingFactory extends FragmentFactory {
     }
 
     @Override
-    protected Fragment makeFragment(int position) {
+    protected Fragment makeFragment(final int position) {
         switch (position) {
         case 0:
             return TrendingFragment.newInstance(TrendingFragment.TYPE_DAILY);

@@ -73,7 +73,7 @@ public class Feed {
         }
     }
 
-    private static String generatePreview(String content) {
+    private static String generatePreview(final String content) {
         if (content == null) {
             return null;
         }
@@ -85,7 +85,7 @@ public class Feed {
         return preview;
     }
 
-    private static int determineUserId(String url, String userName) {
+    private static int determineUserId(final String url, final String userName) {
         if (url == null) {
             return -1;
         }
@@ -107,7 +107,7 @@ public class Feed {
         return -1;
     }
 
-    private static String getTitleFromUrl(String url) {
+    private static String getTitleFromUrl(final String url) {
         if (url == null) {
             return null;
         }

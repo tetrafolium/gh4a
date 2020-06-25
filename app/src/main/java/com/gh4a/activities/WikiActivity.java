@@ -24,7 +24,7 @@ import com.gh4a.R;
 import com.gh4a.model.Feed;
 
 public class WikiActivity extends WebViewerActivity {
-    public static Intent makeIntent(Context context, String repoOwner, String repoName, Feed feed) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName, final Feed feed) {
         return new Intent(context, WikiActivity.class)
                .putExtra("owner", repoOwner)
                .putExtra("repo", repoName)
@@ -36,7 +36,7 @@ public class WikiActivity extends WebViewerActivity {
     private String mRepoName;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         onDataReady();
@@ -55,14 +55,14 @@ public class WikiActivity extends WebViewerActivity {
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         mUserLogin = extras.getString("owner");
         mRepoName = extras.getString("repo");
     }
 
     @Override
-    protected String generateHtml(String cssTheme, boolean addTitleHeader) {
+    protected String generateHtml(final String cssTheme, final boolean addTitleHeader) {
         String title = addTitleHeader ? getDocumentTitle() : null;
         return wrapUnthemedHtml(getIntent().getStringExtra("content"), cssTheme, title);
     }

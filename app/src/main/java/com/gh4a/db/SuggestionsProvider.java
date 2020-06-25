@@ -52,8 +52,8 @@ public class SuggestionsProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(@NonNull Uri uri, String[] projection, String selection,
-                        String[] selectionArgs, String sortOrder) {
+    public Cursor query(final @NonNull Uri uri, final String[] projection, final String selection,
+                        final String[] selectionArgs, final String sortOrder) {
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         int match = sURIMatcher.match(uri);
 
@@ -80,12 +80,12 @@ public class SuggestionsProvider extends ContentProvider {
     }
 
     @Override
-    public String getType(@NonNull Uri uri) {
+    public String getType(final @NonNull Uri uri) {
         return null;
     }
 
     @Override
-    public Uri insert(@NonNull Uri uri, ContentValues values) {
+    public Uri insert(final @NonNull Uri uri, final ContentValues values) {
         if (sURIMatcher.match(uri) != MATCH_ALL) {
             return null;
         }
@@ -102,7 +102,7 @@ public class SuggestionsProvider extends ContentProvider {
     }
 
     @Override
-    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(final @NonNull Uri uri, final ContentValues values, final String selection, final String[] selectionArgs) {
         int count;
         int match = sURIMatcher.match(uri);
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
@@ -123,7 +123,7 @@ public class SuggestionsProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
+    public int delete(final @NonNull Uri uri, final String selection, final String[] selectionArgs) {
         int match = sURIMatcher.match(uri);
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 

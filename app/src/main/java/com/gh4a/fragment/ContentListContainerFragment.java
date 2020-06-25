@@ -65,8 +65,8 @@ public class ContentListContainerFragment extends Fragment implements
     private CommitSelectionCallback mCommitCallback;
     private ContentListCacheFragment mCacheFragment;
 
-    public static ContentListContainerFragment newInstance(Repository repository,
-            String ref, String initialPath) {
+    public static ContentListContainerFragment newInstance(final Repository repository,
+            final String ref, final String initialPath) {
         ContentListContainerFragment f = new ContentListContainerFragment();
 
         Bundle args = new Bundle();
@@ -78,7 +78,7 @@ public class ContentListContainerFragment extends Fragment implements
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mRxLoader = new RxLoader(getActivity(), getLoaderManager());
@@ -115,7 +115,7 @@ public class ContentListContainerFragment extends Fragment implements
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(final Context context) {
         super.onAttach(context);
         if (context instanceof CommitSelectionCallback) {
             mCommitCallback = (CommitSelectionCallback) context;
@@ -137,7 +137,7 @@ public class ContentListContainerFragment extends Fragment implements
         setRef(mSelectedRef);
     }
 
-    public void setRef(String ref) {
+    public void setRef(final String ref) {
         getArguments().putString("ref", ref);
         mSelectedRef = ref;
         mGitModuleMap = null;
@@ -171,12 +171,12 @@ public class ContentListContainerFragment extends Fragment implements
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.content_list, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mBreadcrumbs = view.findViewById(R.id.breadcrumbs);
         mBreadcrumbs.setCallback(this);
@@ -186,7 +186,7 @@ public class ContentListContainerFragment extends Fragment implements
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putStringArrayList(STATE_KEY_DIR_STACK, new ArrayList<>(mDirStack));
         outState.putStringArrayList(STATE_KEY_INITIAL_PATH, mInitialPathToLoad);
@@ -194,7 +194,7 @@ public class ContentListContainerFragment extends Fragment implements
     }
 
     @Override
-    public void onContentsLoaded(ContentListFragment fragment, List<Content> contents) {
+    public void onContentsLoaded(final ContentListFragment fragment, final List<Content> contents) {
         if (contents == null) {
             return;
         }
@@ -228,12 +228,12 @@ public class ContentListContainerFragment extends Fragment implements
     }
 
     @Override
-    public void onCommitSelected(Commit commit) {
+    public void onCommitSelected(final Commit commit) {
         mCommitCallback.onCommitSelectedAsBase(commit);
     }
 
     @Override
-    public void onTreeSelected(Content content) {
+    public void onTreeSelected(final Content content) {
         String path = content.path();
         if (content.type() == ContentType.Directory) {
             mDirStack.push(path);
@@ -250,7 +250,7 @@ public class ContentListContainerFragment extends Fragment implements
     }
 
     @Override
-    public Set<String> getSubModuleNames(ContentListFragment fragment) {
+    public Set<String> getSubModuleNames(final ContentListFragment fragment) {
         if (mGitModuleMap == null) {
             return null;
         }
@@ -268,7 +268,7 @@ public class ContentListContainerFragment extends Fragment implements
     }
 
     @Override
-    public void onCrumbSelection(String absolutePath, int index, int count) {
+    public void onCrumbSelection(final String absolutePath, final int index, final int count) {
         FragmentManager fm = getChildFragmentManager();
         boolean poppedAny = false;
         while (mDirStack.size() > 1 && !TextUtils.equals(absolutePath, mDirStack.peek())) {
@@ -330,7 +330,7 @@ public class ContentListContainerFragment extends Fragment implements
         }, ((BaseActivity) getActivity())::handleLoadFailure);
     }
 
-    private Optional<Map<String, String>> parseModuleMap(Optional<String> inputOpt) {
+    private Optional<Map<String, String>> parseModuleMap(final Optional<String> inputOpt) {
         String input = inputOpt.orNull();
         if (StringUtils.isBlank(input)) {
             return Optional.absent();

@@ -24,7 +24,7 @@ public class WikiListFragment extends ListDataBaseFragment<Feed> implements
     private String mRepoName;
     private String mInitialPage;
 
-    public static WikiListFragment newInstance(String owner, String repo, String initialPage) {
+    public static WikiListFragment newInstance(final String owner, final String repo, final String initialPage) {
         WikiListFragment f = new WikiListFragment();
         Bundle args = new Bundle();
         args.putString("owner", owner);
@@ -35,7 +35,7 @@ public class WikiListFragment extends ListDataBaseFragment<Feed> implements
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mUserLogin = getArguments().getString("owner");
         mRepoName = getArguments().getString("repo");
@@ -44,7 +44,7 @@ public class WikiListFragment extends ListDataBaseFragment<Feed> implements
     }
 
     @Override
-    protected Single<List<Feed>> onCreateDataSingle(boolean bypassCache) {
+    protected Single<List<Feed>> onCreateDataSingle(final boolean bypassCache) {
         String relativeUrl = mUserLogin + "/" + mRepoName + "/wiki.atom";
         final List<Feed> empty = new ArrayList<>();
         return SingleFactory.loadFeed(relativeUrl)
@@ -66,12 +66,12 @@ public class WikiListFragment extends ListDataBaseFragment<Feed> implements
     }
 
     @Override
-    public void onItemClick(Feed feed) {
+    public void onItemClick(final Feed feed) {
         openViewer(feed);
     }
 
     @Override
-    protected void onAddData(RootAdapter<Feed, ?> adapter, List<Feed> data) {
+    protected void onAddData(final RootAdapter<Feed, ?> adapter, final List<Feed> data) {
         super.onAddData(adapter, data);
 
         if (mInitialPage != null) {
@@ -85,7 +85,7 @@ public class WikiListFragment extends ListDataBaseFragment<Feed> implements
         }
     }
 
-    private void openViewer(Feed feed) {
+    private void openViewer(final Feed feed) {
         startActivity(WikiActivity.makeIntent(getActivity(), mUserLogin, mRepoName, feed));
     }
 }

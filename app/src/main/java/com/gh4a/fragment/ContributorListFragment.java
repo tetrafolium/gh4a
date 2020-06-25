@@ -18,7 +18,7 @@ import retrofit2.Response;
 
 public class ContributorListFragment extends PagedDataBaseFragment<User> implements
     RootAdapter.OnItemClickListener<User> {
-    public static ContributorListFragment newInstance(String repoOwner, String repoName) {
+    public static ContributorListFragment newInstance(final String repoOwner, final String repoName) {
         ContributorListFragment f = new ContributorListFragment();
 
         Bundle args = new Bundle();
@@ -30,7 +30,7 @@ public class ContributorListFragment extends PagedDataBaseFragment<User> impleme
     }
 
     @Override
-    protected Single<Response<Page<User>>> loadPage(int page, boolean bypassCache) {
+    protected Single<Response<Page<User>>> loadPage(final int page, final boolean bypassCache) {
         String repoOwner = getArguments().getString("owner");
         String repoName = getArguments().getString("repo");
         RepositoryService service = ServiceFactory.get(RepositoryService.class, bypassCache);
@@ -50,7 +50,7 @@ public class ContributorListFragment extends PagedDataBaseFragment<User> impleme
     }
 
     @Override
-    public void onItemClick(User item) {
+    public void onItemClick(final User item) {
         Intent intent = UserActivity.makeIntent(getActivity(), item);
         if (intent != null) {
             startActivity(intent);

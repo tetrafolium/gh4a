@@ -11,7 +11,7 @@ public class SearchFactory extends FragmentFactory {
         R.string.search
     };
 
-    public SearchFactory(HomeActivity activity) {
+    public SearchFactory(final HomeActivity activity) {
         super(activity);
     }
 
@@ -26,7 +26,7 @@ public class SearchFactory extends FragmentFactory {
     }
 
     @Override
-    protected Fragment makeFragment(int position) {
+    protected Fragment makeFragment(final int position) {
         return SearchFragment.newInstance(SearchFragment.SEARCH_TYPE_REPO, null, false);
     }
 }

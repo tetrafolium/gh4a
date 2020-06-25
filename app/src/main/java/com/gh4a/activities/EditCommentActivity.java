@@ -19,8 +19,8 @@ import io.reactivex.Single;
 public abstract class EditCommentActivity extends AppCompatActivity implements
     EditorBottomSheet.Callback {
 
-    protected static Intent fillInIntent(Intent baseIntent, String repoOwner, String repoName,
-                                         long id, long replyToId, String body, @AttrRes int highlightColorAttr) {
+    protected static Intent fillInIntent(final Intent baseIntent, final String repoOwner, final String repoName,
+                                         final long id, final long replyToId, final String body, final @AttrRes int highlightColorAttr) {
         return baseIntent.putExtra("owner", repoOwner)
                .putExtra("repo", repoName)
                .putExtra("id", id)
@@ -33,7 +33,7 @@ public abstract class EditCommentActivity extends AppCompatActivity implements
     protected EditorBottomSheet mEditorSheet;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         setTheme(Gh4Application.THEME == R.style.DarkTheme
                  ? R.style.BottomSheetDarkTheme : R.style.BottomSheetLightTheme);
         super.onCreate(savedInstanceState);
@@ -68,7 +68,7 @@ public abstract class EditCommentActivity extends AppCompatActivity implements
     }
 
     @Override
-    public Single<?> onEditorDoSend(String body) {
+    public Single<?> onEditorDoSend(final String body) {
         Bundle extras = getIntent().getExtras();
         String repoOwner = extras.getString("owner");
         String repoName = extras.getString("repo");

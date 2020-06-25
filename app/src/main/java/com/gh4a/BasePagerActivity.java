@@ -30,7 +30,7 @@ public abstract class BasePagerActivity extends BaseActivity implements
     private int mLastTabCount;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.view_pager);
@@ -42,12 +42,12 @@ public abstract class BasePagerActivity extends BaseActivity implements
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
+    protected void onPostCreate(final Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         onPageMoved(0, 0);
     }
 
-    protected void adjustTabsForHeaderAlignedFab(boolean fabPresent) {
+    protected void adjustTabsForHeaderAlignedFab(final boolean fabPresent) {
         int margin = fabPresent
                      ? getResources().getDimensionPixelSize(R.dimen.mini_fab_size_with_margin) : 0;
 
@@ -86,7 +86,7 @@ public abstract class BasePagerActivity extends BaseActivity implements
     }
 
     @Override
-    protected void setErrorViewVisibility(boolean visible, Throwable e) {
+    protected void setErrorViewVisibility(final boolean visible, final Throwable e) {
         mErrorViewVisible = visible;
         updateTabVisibility();
         super.setErrorViewVisibility(visible, e);
@@ -156,13 +156,13 @@ public abstract class BasePagerActivity extends BaseActivity implements
     }
 
     @Override
-    protected void setHeaderColor(int color, int statusBarColor) {
+    protected void setHeaderColor(final int color, final int statusBarColor) {
         super.setHeaderColor(color, statusBarColor);
         mCurrentHeaderColor = color;
     }
 
     @Override
-    protected void transitionHeaderToColor(int colorAttrId, int statusBarColorAttrId) {
+    protected void transitionHeaderToColor(final int colorAttrId, final int statusBarColorAttrId) {
         super.transitionHeaderToColor(colorAttrId, statusBarColorAttrId);
         mCurrentHeaderColor = UiUtils.resolveColor(this, colorAttrId);
     }
@@ -180,26 +180,26 @@ public abstract class BasePagerActivity extends BaseActivity implements
     }
 
     @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    public void onPageScrolled(final int position, final float positionOffset, final int positionOffsetPixels) {
         onPageMoved(position, positionOffset);
     }
 
     @Override
-    public void onPageSelected(int position) {
+    public void onPageSelected(final int position) {
         if (!mScrolling) {
             onPageMoved(position, 0);
         }
     }
 
     @Override
-    public void onPageScrollStateChanged(int state) {
+    public void onPageScrollStateChanged(final int state) {
         mScrolling = state != ViewPager.SCROLL_STATE_IDLE;
         if (!mScrolling) {
             tryUpdatePagerColor();
         }
     }
 
-    protected void onPageMoved(int position, float fraction) {
+    protected void onPageMoved(final int position, final float fraction) {
         if (mTabHeaderColors != null) {
             int nextIndex = Math.max(0, Math.min(position + 1, mTabHeaderColors.length - 1));
             int headerColor = UiUtils.mixColors(mTabHeaderColors[position][0],
@@ -230,11 +230,11 @@ public abstract class BasePagerActivity extends BaseActivity implements
 
         private static Field sLeftEffectField, sRightEffectField;
 
-        public ViewPagerEdgeColorHelper(ViewPager pager) {
+        public ViewPagerEdgeColorHelper(final ViewPager pager) {
             mPager = pager;
             mColor = 0;
         }
-        public void setColor(int color) {
+        public void setColor(final int color) {
             mColor = color;
             applyIfPossible();
         }
@@ -255,7 +255,7 @@ public abstract class BasePagerActivity extends BaseActivity implements
             applyColor(mRightEffect);
         }
 
-        private void applyColor(EdgeEffect effect) {
+        private void applyColor(final EdgeEffect effect) {
             if (effect != null) {
                 final int alpha = Color.alpha(effect.getColor());
                 effect.setColor(Color.argb(alpha, Color.red(mColor),

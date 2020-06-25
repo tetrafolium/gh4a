@@ -75,15 +75,15 @@ import retrofit2.Response;
 public class IssueEditActivity extends BasePagerActivity implements
     AppBarLayout.OnOffsetChangedListener, View.OnClickListener,
     View.OnFocusChangeListener {
-    public static Intent makeCreateIntent(Context context, String repoOwner, String repoName) {
+    public static Intent makeCreateIntent(final Context context, final String repoOwner, final String repoName) {
         // can't reuse makeEditIntent here, because even a null extra counts for hasExtra()
         return new Intent(context, IssueEditActivity.class)
                .putExtra("owner", repoOwner)
                .putExtra("repo", repoName);
     }
 
-    public static Intent makeEditIntent(Context context, String repoOwner,
-                                        String repoName, Issue issue) {
+    public static Intent makeEditIntent(final Context context, final String repoOwner,
+                                        final String repoName, final Issue issue) {
         return new Intent(context, IssueEditActivity.class)
                .putExtra("owner", repoOwner)
                .putExtra("repo", repoName)
@@ -124,7 +124,7 @@ public class IssueEditActivity extends BasePagerActivity implements
     private static final String STATE_KEY_ORIGINAL_ISSUE = "original_issue";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             mEditIssue = savedInstanceState.getParcelable(STATE_KEY_ISSUE);
             mOriginalIssue = savedInstanceState.getParcelable(STATE_KEY_ORIGINAL_ISSUE);
@@ -191,7 +191,7 @@ public class IssueEditActivity extends BasePagerActivity implements
         mTitleView.addTextChangedListener(new UiUtils.ButtonEnableTextWatcher(mTitleView, mFab));
         mTitleView.addTextChangedListener(new UiUtils.EmptinessWatchingTextWatcher(mTitleView) {
             @Override
-            public void onIsEmpty(boolean isEmpty) {
+            public void onIsEmpty(final boolean isEmpty) {
                 if (isEmpty) {
                     mTitleWrapper.setError(getString(R.string.issue_error_title));
                 } else {
@@ -226,14 +226,14 @@ public class IssueEditActivity extends BasePagerActivity implements
     }
 
     @Override
-    protected PagerAdapter createAdapter(ViewGroup root) {
+    protected PagerAdapter createAdapter(final ViewGroup root) {
         mRootView = root;
         getLayoutInflater().inflate(R.layout.issue_create, root);
         return new EditPagerAdapter();
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         mRepoOwner = extras.getString("owner");
         mRepoName = extras.getString("repo");
@@ -274,7 +274,7 @@ public class IssueEditActivity extends BasePagerActivity implements
     }
 
     @Override
-    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+    public void onOffsetChanged(final AppBarLayout appBarLayout, final int verticalOffset) {
         // Set the bottom padding to make the bottom appear as not moving while the
         // AppBarLayout pushes it down or up.
         mRootView.setPadding(mRootView.getPaddingLeft(), mRootView.getPaddingTop(),
@@ -286,7 +286,7 @@ public class IssueEditActivity extends BasePagerActivity implements
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
         int id = view.getId();
         if (id == R.id.milestone_container) {
             showMilestonesDialog();
@@ -304,14 +304,14 @@ public class IssueEditActivity extends BasePagerActivity implements
     }
 
     @Override
-    public void onFocusChange(View view, boolean hasFocus) {
+    public void onFocusChange(final View view, final boolean hasFocus) {
         if (view == mTitleView) {
             mMarkdownButtons.setVisibility(hasFocus ? View.GONE : View.VISIBLE);
         }
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(STATE_KEY_ISSUE, mEditIssue);
         outState.putParcelable(STATE_KEY_ORIGINAL_ISSUE, mOriginalIssue);
@@ -330,7 +330,7 @@ public class IssueEditActivity extends BasePagerActivity implements
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQUEST_MANAGE_LABELS) {
             if (resultCode == RESULT_OK) {
                 // Require reload of labels
@@ -487,7 +487,7 @@ public class IssueEditActivity extends BasePagerActivity implements
         }
     }
 
-    private void setLabelSelection(TextView view, boolean selected) {
+    private void setLabelSelection(final TextView view, final boolean selected) {
         Label label = (Label) view.getTag();
         if (selected) {
             int color = ApiHelpers.colorForLabel(label);
@@ -590,7 +590,7 @@ public class IssueEditActivity extends BasePagerActivity implements
         }, error -> handleActionFailure("Saving issue failed", error));
     }
 
-    private void loadCollaboratorStatus(boolean force) {
+    private void loadCollaboratorStatus(final boolean force) {
         SingleFactory.isAppUserRepoCollaborator(mRepoOwner, mRepoName, force)
         .compose(makeLoaderSingle(ID_LOADER_COLLABORATOR_STATUS, force))
         .subscribe(result -> {
@@ -661,7 +661,7 @@ public class IssueEditActivity extends BasePagerActivity implements
         }, this::handleLoadFailure));
     }
 
-    private Single<Optional<Content>> getIssueTemplateContentSingle(String path) {
+    private Single<Optional<Content>> getIssueTemplateContentSingle(final String path) {
         RepositoryContentService service = ServiceFactory.get(RepositoryContentService.class, false);
         return ApiHelpers.PageIterator
                .toSingle(page -> service.getDirectoryContents(mRepoOwner, mRepoName, path, null, page))
@@ -673,7 +673,7 @@ public class IssueEditActivity extends BasePagerActivity implements
 
     private class EditPagerAdapter extends PagerAdapter {
         @Override
-        public Object instantiateItem(ViewGroup container, int position) {
+        public Object instantiateItem(final ViewGroup container, final int position) {
             @IdRes int resId = 0;
             switch (position) {
             case 0:
@@ -690,12 +690,12 @@ public class IssueEditActivity extends BasePagerActivity implements
         }
 
         @Override
-        public boolean isViewFromObject(View view, Object object) {
+        public boolean isViewFromObject(final View view, final Object object) {
             return view == object;
         }
 
         @Override
-        public CharSequence getPageTitle(int position) {
+        public CharSequence getPageTitle(final int position) {
             return getString(TITLES[position]);
         }
 

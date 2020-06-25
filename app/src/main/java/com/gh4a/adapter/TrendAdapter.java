@@ -34,19 +34,19 @@ import com.vdurmont.emoji.EmojiParser;
 public class TrendAdapter extends RootAdapter<Trend, TrendAdapter.ViewHolder> {
     private final @StringRes int mStarsTemplate;
 
-    public TrendAdapter(Context context, @StringRes int starsTemplate) {
+    public TrendAdapter(final Context context, final @StringRes int starsTemplate) {
         super(context);
         mStarsTemplate = starsTemplate;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
         View v = inflater.inflate(R.layout.row_trend, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, Trend trend) {
+    public void onBindViewHolder(final ViewHolder holder, final Trend trend) {
         String owner = trend.getRepoOwner();
         String name = trend.getRepoName();
 
@@ -70,7 +70,7 @@ public class TrendAdapter extends RootAdapter<Trend, TrendAdapter.ViewHolder> {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ViewHolder(View view) {
+        private ViewHolder(final View view) {
             super(view);
             tvTitle = view.findViewById(R.id.tv_title);
             tvDesc = view.findViewById(R.id.tv_desc);

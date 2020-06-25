@@ -57,11 +57,11 @@ import com.meisolsson.githubsdk.service.issues.IssueService;
 import java.util.Locale;
 
 public class IssueActivity extends BaseActivity implements View.OnClickListener {
-    public static Intent makeIntent(Context context, String login, String repoName, int number) {
+    public static Intent makeIntent(final Context context, final String login, final String repoName, final int number) {
         return makeIntent(context, login, repoName, number, null);
     }
-    public static Intent makeIntent(Context context, String login, String repoName,
-                                    int number, IntentUtils.InitialCommentMarker initialComment) {
+    public static Intent makeIntent(final Context context, final String login, final String repoName,
+                                    final int number, final IntentUtils.InitialCommentMarker initialComment) {
         return new Intent(context, IssueActivity.class)
                .putExtra("owner", login)
                .putExtra("repo", repoName)
@@ -86,7 +86,7 @@ public class IssueActivity extends BaseActivity implements View.OnClickListener 
     private IssueFragment mFragment;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.frame_layout);
@@ -122,7 +122,7 @@ public class IssueActivity extends BaseActivity implements View.OnClickListener 
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         mRepoOwner = extras.getString("owner");
         mRepoName = extras.getString("repo");
@@ -153,7 +153,7 @@ public class IssueActivity extends BaseActivity implements View.OnClickListener 
         setContentShown(true);
     }
 
-    private void setFragment(IssueFragment fragment) {
+    private void setFragment(final IssueFragment fragment) {
         mFragment = fragment;
         setChildScrollDelegate(fragment);
     }
@@ -175,13 +175,13 @@ public class IssueActivity extends BaseActivity implements View.OnClickListener 
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.issue_menu, menu);
 
         boolean authorized = Gh4Application.get().isAuthorized();
-        boolean isCreator = mIssue != null && authorized &&
-                            ApiHelpers.loginEquals(mIssue.user(), Gh4Application.get().getAuthLogin());
+        boolean isCreator = mIssue != null && authorized
+                            && ApiHelpers.loginEquals(mIssue.user(), Gh4Application.get().getAuthLogin());
         boolean isClosed = mIssue != null && mIssue.state() == IssueState.Closed;
         boolean isCollaborator = mIsCollaborator != null && mIsCollaborator;
         boolean closerIsCreator = mIssue != null
@@ -216,7 +216,7 @@ public class IssueActivity extends BaseActivity implements View.OnClickListener 
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         int itemId = item.getItemId();
         switch (itemId) {
         case R.id.issue_close:
@@ -289,7 +289,7 @@ public class IssueActivity extends BaseActivity implements View.OnClickListener 
         .show();
     }
 
-    private void updateIssueState(boolean reopen) {
+    private void updateIssueState(final boolean reopen) {
         IssueService service = ServiceFactory.get(IssueService.class, false);
         IssueRequest request = IssueRequest.builder()
                                .state(reopen ? IssueState.Open : IssueState.Closed)
@@ -348,7 +348,7 @@ public class IssueActivity extends BaseActivity implements View.OnClickListener 
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         if (v.getId() == R.id.edit_fab && checkForAuthOrExit()) {
             Intent editIntent = IssueEditActivity.makeEditIntent(this,
                                 mRepoOwner, mRepoName, mIssue);
@@ -357,7 +357,7 @@ public class IssueActivity extends BaseActivity implements View.OnClickListener 
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQUEST_EDIT_ISSUE) {
             if (resultCode == Activity.RESULT_OK) {
                 loadIssue(true);
@@ -368,7 +368,7 @@ public class IssueActivity extends BaseActivity implements View.OnClickListener 
         }
     }
 
-    private void loadIssue(boolean force) {
+    private void loadIssue(final boolean force) {
         IssueService service = ServiceFactory.get(IssueService.class, force);
         service.getIssue(mRepoOwner, mRepoName, mIssueNumber)
         .map(ApiHelpers::throwOnFailure)
@@ -380,7 +380,7 @@ public class IssueActivity extends BaseActivity implements View.OnClickListener 
         }, this::handleLoadFailure);
     }
 
-    private void loadCollaboratorStatus(boolean force) {
+    private void loadCollaboratorStatus(final boolean force) {
         SingleFactory.isAppUserRepoCollaborator(mRepoOwner, mRepoName, force)
         .compose(makeLoaderSingle(ID_LOADER_COLLABORATOR_STATUS, force))
         .subscribe(result -> {

@@ -20,16 +20,16 @@ public class StyleableTextView extends AppCompatTextView {
 
     private int mTypefaceValue = TypefaceCache.TF_REGULAR;
 
-    public StyleableTextView(Context context) {
+    public StyleableTextView(final Context context) {
         super(context, null);
     }
 
-    public StyleableTextView(Context context, AttributeSet attrs) {
+    public StyleableTextView(final Context context, final AttributeSet attrs) {
         super(context, attrs);
         initAttributes(context, attrs, 0);
     }
 
-    public StyleableTextView(Context context, AttributeSet attrs, int defStyle) {
+    public StyleableTextView(final Context context, final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
         initAttributes(context, attrs, defStyle);
     }
@@ -38,7 +38,7 @@ public class StyleableTextView extends AppCompatTextView {
         return mTypefaceValue;
     }
 
-    private void initAttributes(Context context, AttributeSet attrs, int defStyle) {
+    private void initAttributes(final Context context, final AttributeSet attrs, final int defStyle) {
         Resources.Theme theme = context.getTheme();
         TypedArray appearance = null;
 
@@ -85,7 +85,7 @@ public class StyleableTextView extends AppCompatTextView {
     }
 
     @Override
-    public void setTypeface(Typeface tf, int style) {
+    public void setTypeface(final Typeface tf, final int style) {
         if (tf == getTypeface()) {
             setTypeface(TypefaceCache.getTypeface(mTypefaceValue, style));
         } else {
@@ -104,7 +104,7 @@ public class StyleableTextView extends AppCompatTextView {
     }
 
     @Override
-    public void setText(CharSequence text, BufferType type) {
+    public void setText(final CharSequence text, final BufferType type) {
         super.setText(text, type);
         if (getMovementMethod() == LinkMovementMethod.getInstance()) {
             setMovementMethod(UiUtils.CHECKING_LINK_METHOD);
@@ -113,7 +113,7 @@ public class StyleableTextView extends AppCompatTextView {
 
     // workaround for https://code.google.com/p/android/issues/detail?id=191430
     @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
+    public boolean dispatchTouchEvent(final MotionEvent event) {
         int startSelection = getSelectionStart();
         int endSelection = getSelectionEnd();
         if (startSelection != endSelection && event.getActionMasked() == MotionEvent.ACTION_DOWN) {

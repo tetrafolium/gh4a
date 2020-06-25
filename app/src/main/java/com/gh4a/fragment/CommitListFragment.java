@@ -61,13 +61,13 @@ public class CommitListFragment extends PagedDataBaseFragment<Commit> {
     private CommitAdapter mAdapter;
     private ContextSelectionCallback mCallback;
 
-    public static CommitListFragment newInstance(Repository repo, String ref) {
+    public static CommitListFragment newInstance(final Repository repo, final String ref) {
         return newInstance(repo.owner().login(), repo.name(),
                            StringUtils.isBlank(ref) ? repo.defaultBranch() : ref, null);
     }
 
-    public static CommitListFragment newInstance(String repoOwner, String repoName,
-            String ref, String filePath) {
+    public static CommitListFragment newInstance(final String repoOwner, final String repoName,
+            final String ref, final String filePath) {
         CommitListFragment f = new CommitListFragment();
 
         Bundle args = new Bundle();
@@ -81,7 +81,7 @@ public class CommitListFragment extends PagedDataBaseFragment<Commit> {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mRepoOwner = getArguments().getString("owner");
         mRepoName = getArguments().getString("repo");
@@ -90,7 +90,7 @@ public class CommitListFragment extends PagedDataBaseFragment<Commit> {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(final Context context) {
         super.onAttach(context);
         mCallback = context instanceof ContextSelectionCallback
                     ? (ContextSelectionCallback) context : null;
@@ -104,7 +104,7 @@ public class CommitListFragment extends PagedDataBaseFragment<Commit> {
     }
 
     @Override
-    protected void onRecyclerViewInflated(RecyclerView view, LayoutInflater inflater) {
+    protected void onRecyclerViewInflated(final RecyclerView view, final LayoutInflater inflater) {
         super.onRecyclerViewInflated(view, inflater);
         registerForContextMenu(view);
     }
@@ -115,7 +115,7 @@ public class CommitListFragment extends PagedDataBaseFragment<Commit> {
     }
 
     @Override
-    public void onItemClick(Commit commit) {
+    public void onItemClick(final Commit commit) {
         String[] urlPart = commit.url().split("/");
         Intent intent = CommitActivity.makeIntent(getActivity(),
                         urlPart[4], urlPart[5], commit.sha());
@@ -123,14 +123,14 @@ public class CommitListFragment extends PagedDataBaseFragment<Commit> {
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(final ContextMenu menu, final View v, final ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
 
         menu.add(Menu.NONE, MENU_SELECT_AS_BASE, Menu.NONE, R.string.commit_use_as_ref);
     }
 
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
+    public boolean onContextItemSelected(final MenuItem item) {
         ContextMenuAwareRecyclerView.RecyclerContextMenuInfo info =
             (ContextMenuAwareRecyclerView.RecyclerContextMenuInfo) item.getMenuInfo();
         if (info.position >= mAdapter.getItemCount()) {
@@ -147,7 +147,7 @@ public class CommitListFragment extends PagedDataBaseFragment<Commit> {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQUEST_COMMIT) {
             if (resultCode == Activity.RESULT_OK) {
                 // comments were updated
@@ -159,7 +159,7 @@ public class CommitListFragment extends PagedDataBaseFragment<Commit> {
     }
 
     @Override
-    protected Single<Response<Page<Commit>>> loadPage(int page, boolean bypassCache) {
+    protected Single<Response<Page<Commit>>> loadPage(final int page, final boolean bypassCache) {
         final RepositoryCommitService service =
             ServiceFactory.get(RepositoryCommitService.class, bypassCache);
         return service.getCommits(mRepoOwner, mRepoName, mRef, mFilePath, page)

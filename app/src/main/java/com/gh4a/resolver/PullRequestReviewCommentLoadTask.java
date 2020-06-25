@@ -32,8 +32,8 @@ public class PullRequestReviewCommentLoadTask extends UrlLoadTask {
     @VisibleForTesting
     protected final IntentUtils.InitialCommentMarker mMarker;
 
-    public PullRequestReviewCommentLoadTask(FragmentActivity activity, String repoOwner,
-                                            String repoName, int pullRequestNumber, IntentUtils.InitialCommentMarker marker) {
+    public PullRequestReviewCommentLoadTask(final FragmentActivity activity, final String repoOwner,
+                                            final String repoName, final int pullRequestNumber, final IntentUtils.InitialCommentMarker marker) {
         super(activity);
         mRepoOwner = repoOwner;
         mRepoName = repoName;
@@ -46,8 +46,8 @@ public class PullRequestReviewCommentLoadTask extends UrlLoadTask {
         return load(mActivity, mRepoOwner, mRepoName, mPullRequestNumber, mMarker);
     }
 
-    public static Single<Optional<Intent>> load(Context context, String repoOwner, String repoName,
-            int pullRequestNumber, IntentUtils.InitialCommentMarker marker) {
+    public static Single<Optional<Intent>> load(final Context context, final String repoOwner, final String repoName,
+            final int pullRequestNumber, final IntentUtils.InitialCommentMarker marker) {
         final PullRequestReviewService reviewService =
             ServiceFactory.get(PullRequestReviewService.class, false);
         final PullRequestReviewCommentService commentService =

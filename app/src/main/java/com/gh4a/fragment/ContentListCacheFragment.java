@@ -18,22 +18,22 @@ public class ContentListCacheFragment extends Fragment {
         private static final int MAX_CACHE_ENTRIES = 100;
 
         @Override
-        protected boolean removeEldestEntry(Map.Entry<String, ArrayList<Content>> eldest) {
+        protected boolean removeEldestEntry(final Map.Entry<String, ArrayList<Content>> eldest) {
             return size() > MAX_CACHE_ENTRIES;
         }
     };
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
     }
 
-    public void addToCache(String path, List<Content> contents) {
+    public void addToCache(final String path, final List<Content> contents) {
         mContentCache.put(path, new ArrayList<>(contents));
     }
 
-    public ArrayList<Content> getFromCache(String path) {
+    public ArrayList<Content> getFromCache(final String path) {
         return mContentCache.get(path);
     }
 

@@ -33,8 +33,8 @@ import com.gh4a.fragment.LoadingListFragmentBase;
 
 public class IssueMilestoneListActivity extends BaseFragmentPagerActivity implements
     View.OnClickListener, LoadingListFragmentBase.OnRecyclerViewCreatedListener {
-    public static Intent makeIntent(Context context, String repoOwner, String repoName,
-                                    boolean fromPullRequest) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
+                                    final boolean fromPullRequest) {
         return new Intent(context, IssueMilestoneListActivity.class)
                .putExtra("owner", repoOwner)
                .putExtra("repo", repoName)
@@ -47,8 +47,8 @@ public class IssueMilestoneListActivity extends BaseFragmentPagerActivity implem
         R.string.open, R.string.closed
     };
     private static final int[][] HEADER_COLOR_ATTRS = new int[][] {
-        { R.attr.colorIssueOpen, R.attr.colorIssueOpenDark },
-        { R.attr.colorIssueClosed, R.attr.colorIssueClosedDark }
+        {R.attr.colorIssueOpen, R.attr.colorIssueOpenDark },
+        {R.attr.colorIssueClosed, R.attr.colorIssueClosedDark }
     };
 
     private String mRepoOwner;
@@ -58,7 +58,7 @@ public class IssueMilestoneListActivity extends BaseFragmentPagerActivity implem
     private FloatingActionButton mCreateFab;
     private IssueMilestoneListFragment mOpenFragment;
 
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (Gh4Application.get().isAuthorized()) {
@@ -88,27 +88,27 @@ public class IssueMilestoneListActivity extends BaseFragmentPagerActivity implem
     }
 
     @Override
-    protected Fragment makeFragment(int position) {
+    protected Fragment makeFragment(final int position) {
         return IssueMilestoneListFragment.newInstance(mRepoOwner, mRepoName,
                 position == 1, mParentIsPullRequest);
     }
 
     @Override
-    protected void onFragmentInstantiated(Fragment f, int position) {
+    protected void onFragmentInstantiated(final Fragment f, final int position) {
         if (position == 0) {
             mOpenFragment = (IssueMilestoneListFragment) f;
         }
     }
 
     @Override
-    protected void onFragmentDestroyed(Fragment f) {
+    protected void onFragmentDestroyed(final Fragment f) {
         if (f == mOpenFragment) {
             mOpenFragment = null;
         }
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         mRepoOwner = extras.getString("owner");
         mRepoName = extras.getString("repo");
@@ -116,14 +116,14 @@ public class IssueMilestoneListActivity extends BaseFragmentPagerActivity implem
     }
 
     @Override
-    public void onRecyclerViewCreated(Fragment fragment, RecyclerView recyclerView) {
+    public void onRecyclerViewCreated(final Fragment fragment, final RecyclerView recyclerView) {
         if (fragment == mOpenFragment) {
             recyclerView.setTag(R.id.FloatingActionButtonScrollEnabled, new Object());
         }
     }
 
     @Override
-    protected void onPageMoved(int position, float fraction) {
+    protected void onPageMoved(final int position, final float fraction) {
         super.onPageMoved(position, fraction);
         if (mCreateFab != null) {
             float openFraction = 1 - position - fraction;
@@ -144,7 +144,7 @@ public class IssueMilestoneListActivity extends BaseFragmentPagerActivity implem
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
         startActivityForResult(IssueMilestoneEditActivity.makeCreateIntent(this,
                                mRepoOwner, mRepoName, mParentIsPullRequest), REQUEST_CREATE_MILESTONE);
     }
@@ -156,7 +156,7 @@ public class IssueMilestoneListActivity extends BaseFragmentPagerActivity implem
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQUEST_CREATE_MILESTONE) {
             if (resultCode == RESULT_OK) {
                 onRefresh();

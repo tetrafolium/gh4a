@@ -39,8 +39,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommitFragment extends LoadingFragmentBase implements OnClickListener {
-    public static CommitFragment newInstance(String repoOwner, String repoName, String commitSha,
-            Commit commit, List<GitComment> comments) {
+    public static CommitFragment newInstance(final String repoOwner, final String repoName, final String commitSha,
+            final Commit commit, final List<GitComment> comments) {
         CommitFragment f = new CommitFragment();
 
         Bundle args = new Bundle();
@@ -70,7 +70,7 @@ public class CommitFragment extends LoadingFragmentBase implements OnClickListen
     protected View mContentView;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         mRepoOwner = args.getString("owner");
@@ -81,13 +81,13 @@ public class CommitFragment extends LoadingFragmentBase implements OnClickListen
     }
 
     @Override
-    protected View onCreateContentView(LayoutInflater inflater, ViewGroup parent) {
+    protected View onCreateContentView(final LayoutInflater inflater, final ViewGroup parent) {
         mContentView = inflater.inflate(R.layout.commit, parent, false);
         return mContentView;
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         populateUiIfReady();
     }
@@ -172,7 +172,7 @@ public class CommitFragment extends LoadingFragmentBase implements OnClickListen
         }
     }
 
-    protected void fillStats(List<GitHubFile> files, List<? extends PositionalCommentBase> comments) {
+    protected void fillStats(final List<GitHubFile> files, final List<? extends PositionalCommentBase> comments) {
         LinearLayout llChanged = mContentView.findViewById(R.id.ll_changed);
         LinearLayout llAdded = mContentView.findViewById(R.id.ll_added);
         LinearLayout llRenamed = mContentView.findViewById(R.id.ll_renamed);
@@ -245,8 +245,8 @@ public class CommitFragment extends LoadingFragmentBase implements OnClickListen
                 statsView.setVisibility(View.GONE);
             }
 
-            if (file.patch() != null ||
-                    (parent != llDeleted && FileUtils.isImage(file.filename()))) {
+            if (file.patch() != null
+                    || (parent != llDeleted && FileUtils.isImage(file.filename()))) {
                 fileNameView.setTextColor(highlightColor);
                 fileView.setOnClickListener(this);
                 fileView.setTag(file);
@@ -270,13 +270,13 @@ public class CommitFragment extends LoadingFragmentBase implements OnClickListen
                                     additions, deletions));
     }
 
-    private void adjustVisibility(int containerResId, int count) {
+    private void adjustVisibility(final int containerResId, final int count) {
         int visibility = count > 0 ? View.VISIBLE : View.GONE;
         mContentView.findViewById(containerResId).setVisibility(visibility);
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         if (v.getId() == R.id.iv_gravatar) {
             Intent intent = UserActivity.makeIntent(getActivity(), (String) v.getTag());
             if (intent != null) {
@@ -288,7 +288,7 @@ public class CommitFragment extends LoadingFragmentBase implements OnClickListen
         }
     }
 
-    protected void handleFileClick(GitHubFile file) {
+    protected void handleFileClick(final GitHubFile file) {
         final Intent intent;
         if (FileUtils.isImage(file.filename())) {
             intent = FileViewerActivity.makeIntent(getActivity(), mRepoOwner, mRepoName,
@@ -302,7 +302,7 @@ public class CommitFragment extends LoadingFragmentBase implements OnClickListen
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQUEST_DIFF_VIEWER) {
             if (resultCode == Activity.RESULT_OK) {
                 // reload comments
@@ -315,7 +315,7 @@ public class CommitFragment extends LoadingFragmentBase implements OnClickListen
         }
     }
 
-    private ArrayList<GitComment> commentsForFile(GitHubFile file) {
+    private ArrayList<GitComment> commentsForFile(final GitHubFile file) {
         if (mComments == null) {
             return null;
         }

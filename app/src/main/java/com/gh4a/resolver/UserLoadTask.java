@@ -16,7 +16,7 @@ public abstract class UserLoadTask extends UrlLoadTask {
     @VisibleForTesting
     protected final String mUserLogin;
 
-    public UserLoadTask(FragmentActivity activity, String userLogin) {
+    public UserLoadTask(final FragmentActivity activity, final String userLogin) {
         super(activity);
         this.mUserLogin = userLogin;
     }

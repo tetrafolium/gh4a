@@ -13,17 +13,17 @@ import java.util.Date;
 public class TimestampToastSpan extends ClickableSpan {
     private final Date mTime;
 
-    public TimestampToastSpan(Date time) {
+    public TimestampToastSpan(final Date time) {
         mTime = time;
     }
 
     @Override
-    public void updateDrawState(TextPaint ds) {
+    public void updateDrawState(final TextPaint ds) {
         // No special styling
     }
 
     @Override
-    public void onClick(View widget) {
+    public void onClick(final View widget) {
         Context context = widget.getContext();
         CharSequence longTime = StringUtils.formatExactTime(context, mTime);
         Toast.makeText(context, longTime, Toast.LENGTH_LONG).show();

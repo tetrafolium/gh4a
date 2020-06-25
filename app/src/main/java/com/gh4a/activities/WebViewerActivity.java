@@ -81,14 +81,14 @@ public abstract class WebViewerActivity extends BaseActivity implements
 
     private final WebViewClient mWebViewClient = new WebViewClient() {
         @Override
-        public void onPageFinished(WebView view, String url) {
+        public void onPageFinished(final WebView view, final String url) {
             mPageFinished = true;
             showContentIfDone();
         }
 
         @Override
         @TargetApi(24)
-        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+        public boolean shouldOverrideUrlLoading(final WebView view, final WebResourceRequest request) {
             if (mStarted) {
                 handleUrlLoad(request.getUrl());
             }
@@ -97,7 +97,7 @@ public abstract class WebViewerActivity extends BaseActivity implements
 
         @Override
         @SuppressWarnings("deprecation")
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+        public boolean shouldOverrideUrlLoading(final WebView view, final String url) {
             if (mStarted) {
                 handleUrlLoad(Uri.parse(url));
             }
@@ -106,7 +106,7 @@ public abstract class WebViewerActivity extends BaseActivity implements
     };
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -167,7 +167,7 @@ public abstract class WebViewerActivity extends BaseActivity implements
 
     @SuppressWarnings("deprecation")
     @SuppressLint("SetJavaScriptEnabled")
-    private void initWebViewSettings(WebSettings s) {
+    private void initWebViewSettings(final WebSettings s) {
         s.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NORMAL);
         s.setAllowFileAccess(true);
         s.setBuiltInZoomControls(true);
@@ -180,7 +180,7 @@ public abstract class WebViewerActivity extends BaseActivity implements
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         if (!mHasData) {
             menu.removeItem(R.id.browser);
         }
@@ -194,7 +194,7 @@ public abstract class WebViewerActivity extends BaseActivity implements
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public boolean onPrepareOptionsMenu(final Menu menu) {
         MenuItem wrapItem = menu.findItem(R.id.wrap);
         if (wrapItem != null) {
             wrapItem.setChecked(shouldWrapLines());
@@ -203,7 +203,7 @@ public abstract class WebViewerActivity extends BaseActivity implements
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         int itemId = item.getItemId();
 
         if (itemId == R.id.search) {
@@ -224,7 +224,7 @@ public abstract class WebViewerActivity extends BaseActivity implements
     }
 
     @Override
-    public boolean onTouch(View view, MotionEvent event) {
+    public boolean onTouch(final View view, final MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             mLastTouchDown.set((int) event.getX(), (int) event.getY());
         }
@@ -254,7 +254,7 @@ public abstract class WebViewerActivity extends BaseActivity implements
         } else {
             mPrintWebView.setWebViewClient(new WebViewClient() {
                 @Override
-                public void onPageFinished(WebView webView, String url) {
+                public void onPageFinished(final WebView webView, final String url) {
                     doPrintHtml();
                 }
             });
@@ -278,7 +278,7 @@ public abstract class WebViewerActivity extends BaseActivity implements
 
     @SuppressWarnings("deprecation")
     @TargetApi(19)
-    private PrintDocumentAdapter getPrintAdapterForWebView(WebView webView, String title) {
+    private PrintDocumentAdapter getPrintAdapterForWebView(final WebView webView, final String title) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return webView.createPrintDocumentAdapter(title);
         } else {
@@ -287,7 +287,7 @@ public abstract class WebViewerActivity extends BaseActivity implements
     }
 
     @Override
-    protected void setContentShown(boolean shown) {
+    protected void setContentShown(final boolean shown) {
         super.setContentShown(shown);
         if (!shown) {
             mHasData = false;
@@ -308,15 +308,15 @@ public abstract class WebViewerActivity extends BaseActivity implements
         return getPrefs().getBoolean("line_wrapping", false);
     }
 
-    private void setLineWrapping(boolean enabled) {
+    private void setLineWrapping(final boolean enabled) {
         getPrefs().edit().putBoolean("line_wrapping", enabled).apply();
     }
 
-    private void applyLineWrapping(boolean enabled) {
+    private void applyLineWrapping(final boolean enabled) {
         mWebView.loadUrl("javascript:applyLineWrapping(" + enabled + ")");
     }
 
-    protected void handleUrlLoad(Uri uri) {
+    protected void handleUrlLoad(final Uri uri) {
         if ("file".equals(uri.getScheme())) {
             // Opening that URL will trigger a FileUriExposedException in API 24+
             return;
@@ -334,7 +334,7 @@ public abstract class WebViewerActivity extends BaseActivity implements
         }
     }
 
-    protected void onLineTouched(int line, int x, int y) {
+    protected void onLineTouched(final int line, final int x, final int y) {
     }
 
     @SuppressLint("AddJavascriptInterface")
@@ -372,9 +372,9 @@ public abstract class WebViewerActivity extends BaseActivity implements
         }
     }
 
-    protected String generateMarkdownHtml(String base64Data,
-                                          String repoOwner, String repoName, String ref,
-                                          String cssTheme, boolean addTitleHeader) {
+    protected String generateMarkdownHtml(final String base64Data,
+                                          final String repoOwner, final String repoName, final String ref,
+                                          final String cssTheme, final boolean addTitleHeader) {
         String title = addTitleHeader ? getDocumentTitle() : null;
         StringBuilder content = new StringBuilder();
         content.append("<html><head><title>");
@@ -416,9 +416,9 @@ public abstract class WebViewerActivity extends BaseActivity implements
         return content.toString();
     }
 
-    protected String generateCodeHtml(String data, String fileName,
-                                      int highlightStart, int highlightEnd,
-                                      String cssTheme, boolean addTitleHeader) {
+    protected String generateCodeHtml(final String data, final String fileName,
+                                      final int highlightStart, final int highlightEnd,
+                                      final String cssTheme, final boolean addTitleHeader) {
         String ext = FileUtils.getFileExtension(fileName);
         String title = addTitleHeader ? getDocumentTitle() : null;
         StringBuilder content = new StringBuilder();
@@ -453,23 +453,23 @@ public abstract class WebViewerActivity extends BaseActivity implements
         return content.toString();
     }
 
-    protected static String wrapUnthemedHtml(String html, String cssTheme, String title) {
+    protected static String wrapUnthemedHtml(final String html, final String cssTheme, final String title) {
         String style = TextUtils.equals(cssTheme, DARK_CSS_THEME)
-                       ? "<style type=\"text/css\">" +
-                       "body { color: #A3A3A5 !important }" +
-                       "a { color: #4183C4 !important }</style>"
+                       ? "<style type=\"text/css\">"
+                       + "body { color: #A3A3A5 !important }"
+                       + "a { color: #4183C4 !important }</style>"
                        : "";
         String titleHeader = title != null ? "<h2>" + title + "</h2>" : "";
         return style + "<body>" + titleHeader + html + "</body>";
     }
 
-    protected static void writeScriptInclude(StringBuilder builder, String scriptName) {
+    protected static void writeScriptInclude(final StringBuilder builder, final String scriptName) {
         builder.append("<script src='file:///android_asset/");
         builder.append(scriptName);
         builder.append(".js' type='text/javascript'></script>");
     }
 
-    protected static void writeCssInclude(StringBuilder builder, String cssType, String cssTheme) {
+    protected static void writeCssInclude(final StringBuilder builder, final String cssType, final String cssTheme) {
         builder.append("<link href='file:///android_asset/");
         builder.append(cssType);
         builder.append("-");
@@ -505,7 +505,7 @@ public abstract class WebViewerActivity extends BaseActivity implements
     @SuppressWarnings("unused")
     private class PrintJavascriptInterface {
         @JavascriptInterface
-        public void onLineTouched(int line) {
+        public void onLineTouched(final int line) {
         }
 
         @JavascriptInterface

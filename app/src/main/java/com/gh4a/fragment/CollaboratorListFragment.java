@@ -18,7 +18,7 @@ import retrofit2.Response;
 
 public class CollaboratorListFragment extends PagedDataBaseFragment<User> implements
     RootAdapter.OnItemClickListener<User> {
-    public static CollaboratorListFragment newInstance(String owner, String repo) {
+    public static CollaboratorListFragment newInstance(final String owner, final String repo) {
         CollaboratorListFragment f = new CollaboratorListFragment();
         Bundle args = new Bundle();
         args.putString("owner", owner);
@@ -28,7 +28,7 @@ public class CollaboratorListFragment extends PagedDataBaseFragment<User> implem
     }
 
     @Override
-    protected Single<Response<Page<User>>> loadPage(int page, boolean bypassCache) {
+    protected Single<Response<Page<User>>> loadPage(final int page, final boolean bypassCache) {
         String owner = getArguments().getString("owner");
         String repo = getArguments().getString("repo");
         final RepositoryCollaboratorService service =
@@ -49,7 +49,7 @@ public class CollaboratorListFragment extends PagedDataBaseFragment<User> implem
     }
 
     @Override
-    public void onItemClick(User item) {
+    public void onItemClick(final User item) {
         startActivity(UserActivity.makeIntent(getActivity(), item));
     }
 }

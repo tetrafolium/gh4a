@@ -58,8 +58,8 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
     private TimelineItemAdapter mAdapter;
     private EditorBottomSheet mBottomSheet;
 
-    public static ReviewFragment newInstance(String repoOwner, String repoName, int issueNumber,
-            Review review, IntentUtils.InitialCommentMarker mInitialComment) {
+    public static ReviewFragment newInstance(final String repoOwner, final String repoName, final int issueNumber,
+            final Review review, final IntentUtils.InitialCommentMarker mInitialComment) {
         ReviewFragment f = new ReviewFragment();
         Bundle args = new Bundle();
         args.putString("repo_owner", repoOwner);
@@ -80,7 +80,7 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
     private @StringRes int mCommentEditorHintResId = R.string.review_reply_hint;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         mRepoOwner = args.getString("repo_owner");
@@ -96,8 +96,8 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
         View listContent = super.onCreateView(inflater, container, savedInstanceState);
         View v = inflater.inflate(R.layout.comment_list, container, false);
 
@@ -113,13 +113,13 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getBaseActivity().addAppBarOffsetListener(mBottomSheet);
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putLong(EXTRA_SELECTED_REPLY_COMMENT_ID, mSelectedReplyCommentId);
     }
@@ -145,13 +145,13 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
     }
 
     @Override
-    protected void setHighlightColors(int colorAttrId, int statusBarColorAttrId) {
+    protected void setHighlightColors(final int colorAttrId, final int statusBarColorAttrId) {
         super.setHighlightColors(colorAttrId, statusBarColorAttrId);
         mBottomSheet.setHighlightColor(colorAttrId);
     }
 
     @Override
-    protected Single<List<TimelineItem>> onCreateDataSingle(boolean bypassCache) {
+    protected Single<List<TimelineItem>> onCreateDataSingle(final boolean bypassCache) {
         final PullRequestService prService = ServiceFactory.get(PullRequestService.class, bypassCache);
         final PullRequestReviewService reviewService =
             ServiceFactory.get(PullRequestReviewService.class, bypassCache);
@@ -252,7 +252,7 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
     }
 
     @Override
-    protected void onAddData(RootAdapter<TimelineItem, ?> adapter, List<TimelineItem> data) {
+    protected void onAddData(final RootAdapter<TimelineItem, ?> adapter, final List<TimelineItem> data) {
         selectAndRemoveFirstReply(data);
 
         // Lock the bottom sheet if there is no selected reply group
@@ -274,7 +274,7 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
         }
     }
 
-    private void selectAndRemoveFirstReply(List<TimelineItem> data) {
+    private void selectAndRemoveFirstReply(final List<TimelineItem> data) {
         int groupCount = 0;
         TimelineItem.Reply firstReplyItem = null;
         TimelineItem.Diff firstDiffItem = null;
@@ -303,7 +303,7 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
         }
     }
 
-    private void highlightInitialComment(List<TimelineItem> data) {
+    private void highlightInitialComment(final List<TimelineItem> data) {
         for (int i = 0; i < data.size(); i++) {
             TimelineItem item = data.get(i);
 
@@ -319,7 +319,7 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQUEST_EDIT) {
             if (resultCode == Activity.RESULT_OK) {
                 reloadComments(true);
@@ -329,7 +329,7 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
         }
     }
 
-    private void reloadComments( boolean alsoClearCaches) {
+    private void reloadComments(final boolean alsoClearCaches) {
         if (mAdapter != null && !alsoClearCaches) {
             // Don't clear adapter's cache, we're only interested in the new event
             mAdapter.suppressCacheClearOnNextClear();
@@ -344,7 +344,7 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
     }
 
     @Override
-    public void editComment(GitHubCommentBase comment) {
+    public void editComment(final GitHubCommentBase comment) {
         Intent intent;
         if (comment instanceof ReviewComment) {
             intent = EditPullRequestCommentActivity.makeIntent(getActivity(), mRepoOwner, mRepoName,
@@ -367,24 +367,24 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
     }
 
     @Override
-    public void onToggleAdvancedMode(boolean advancedMode) {
+    public void onToggleAdvancedMode(final boolean advancedMode) {
         getBaseActivity().collapseAppBar();
         getBaseActivity().setAppBarLocked(advancedMode);
         mBottomSheet.resetPeekHeight(0);
     }
 
     @Override
-    public void onScrollingInBasicEditor(boolean scrolling) {
+    public void onScrollingInBasicEditor(final boolean scrolling) {
         getBaseActivity().setAppBarLocked(scrolling);
     }
 
     @Override
-    public void quoteText(CharSequence text) {
+    public void quoteText(final CharSequence text) {
         mBottomSheet.addQuote(text);
     }
 
     @Override
-    public void onReplyCommentSelected(long replyToId) {
+    public void onReplyCommentSelected(final long replyToId) {
         mSelectedReplyCommentId = replyToId;
         mBottomSheet.setLocked(false, 0);
     }
@@ -395,17 +395,17 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
     }
 
     @Override
-    public String getShareSubject(GitHubCommentBase comment) {
+    public String getShareSubject(final GitHubCommentBase comment) {
         return null;
     }
 
     @Override
-    public void addText(CharSequence text) {
+    public void addText(final CharSequence text) {
     }
 
     @Override
     public Single<List<Reaction>> loadReactionDetails(final GitHubCommentBase comment,
-            boolean bypassCache) {
+            final boolean bypassCache) {
         final ReactionService service = ServiceFactory.get(ReactionService.class, bypassCache);
         return ApiHelpers.PageIterator
                .toSingle(page -> comment instanceof ReviewComment
@@ -416,7 +416,7 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
     }
 
     @Override
-    public Single<Reaction> addReaction(GitHubCommentBase comment, String content) {
+    public Single<Reaction> addReaction(final GitHubCommentBase comment, final String content) {
         final ReactionService service = ServiceFactory.get(ReactionService.class, false);
         final ReactionRequest request = ReactionRequest.builder().content(content).build();
         final Single<Response<Reaction>> responseSingle = comment instanceof ReviewComment
@@ -436,7 +436,7 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
     }
 
     @Override
-    public Single<?> onEditorDoSend(String comment) {
+    public Single<?> onEditorDoSend(final String comment) {
         PullRequestReviewCommentService service =
             ServiceFactory.get(PullRequestReviewCommentService.class, false);
         CreateReviewComment request = CreateReviewComment.builder()
@@ -457,7 +457,7 @@ public class ReviewFragment extends ListDataBaseFragment<TimelineItem>
         return getBaseActivity().getRootLayout();
     }
 
-    private void handleDeleteComment(GitHubCommentBase comment) {
+    private void handleDeleteComment(final GitHubCommentBase comment) {
         final Single<Response<Void>> responseSingle;
         if (comment instanceof ReviewComment) {
             PullRequestReviewCommentService service =

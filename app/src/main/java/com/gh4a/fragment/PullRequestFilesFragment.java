@@ -21,8 +21,8 @@ import com.meisolsson.githubsdk.service.pull_request.PullRequestService;
 import java.util.List;
 
 public class PullRequestFilesFragment extends CommitFragment {
-    public static PullRequestFilesFragment newInstance(String repoOwner, String repoName,
-            int pullRequestNumber, String headSha) {
+    public static PullRequestFilesFragment newInstance(final String repoOwner, final String repoName,
+            final int pullRequestNumber, final String headSha) {
         PullRequestFilesFragment f = new PullRequestFilesFragment();
 
         Bundle args = new Bundle();
@@ -50,7 +50,7 @@ public class PullRequestFilesFragment extends CommitFragment {
     private List<ReviewComment> mComments;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final Bundle args = getArguments();
         mRepoOwner = args.getString("owner");
@@ -60,7 +60,7 @@ public class PullRequestFilesFragment extends CommitFragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mContentView.findViewById(R.id.iv_gravatar).setVisibility(View.GONE);
         mContentView.findViewById(R.id.tv_author).setVisibility(View.GONE);
@@ -72,7 +72,7 @@ public class PullRequestFilesFragment extends CommitFragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setContentShown(false);
         loadFiles(false);
@@ -96,7 +96,7 @@ public class PullRequestFilesFragment extends CommitFragment {
     }
 
     @Override
-    protected void handleFileClick(GitHubFile file) {
+    protected void handleFileClick(final GitHubFile file) {
         final Intent intent;
         if (FileUtils.isImage(file.filename())) {
             intent = FileViewerActivity.makeIntent(getActivity(),
@@ -111,7 +111,7 @@ public class PullRequestFilesFragment extends CommitFragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQUEST_DIFF_VIEWER) {
             if (resultCode == Activity.RESULT_OK) {
                 // reload comments
@@ -127,7 +127,7 @@ public class PullRequestFilesFragment extends CommitFragment {
         }
     }
 
-    private void loadFiles(boolean force) {
+    private void loadFiles(final boolean force) {
         final PullRequestService service = ServiceFactory.get(PullRequestService.class, force);
         ApiHelpers.PageIterator
         .toSingle(page -> service.getPullRequestFiles(
@@ -139,7 +139,7 @@ public class PullRequestFilesFragment extends CommitFragment {
         }, this::handleLoadFailure);
     }
 
-    private void loadComments(boolean force) {
+    private void loadComments(final boolean force) {
         final PullRequestReviewCommentService service =
             ServiceFactory.get(PullRequestReviewCommentService.class, force);
         ApiHelpers.PageIterator

@@ -88,20 +88,20 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
     private final PopupMenu.OnMenuItemClickListener mAddReactionClickListener =
     new PopupMenu.OnMenuItemClickListener() {
         @Override
-        public boolean onMenuItemClick(MenuItem item) {
+        public boolean onMenuItemClick(final MenuItem item) {
             return mAddHelper.onItemClick(item);
         }
     };
 
-    public ReactionBar(Context context) {
+    public ReactionBar(final Context context) {
         this(context, null);
     }
 
-    public ReactionBar(Context context, @Nullable AttributeSet attrs) {
+    public ReactionBar(final Context context, final @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public ReactionBar(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public ReactionBar(final Context context, final @Nullable AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         setOrientation(HORIZONTAL);
@@ -120,7 +120,7 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
         setReactions(null);
     }
 
-    public void setReactions(Reactions reactions) {
+    public void setReactions(final Reactions reactions) {
         if (mPopup != null) {
             mPopup.update();
         }
@@ -142,11 +142,11 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
         }
     }
 
-    public void setDetailsCache(ReactionDetailsCache cache) {
+    public void setDetailsCache(final ReactionDetailsCache cache) {
         mDetailsCache = cache;
     }
 
-    public void setCallback(Callback callback, Item item) {
+    public void setCallback(final Callback callback, final Item item) {
         mCallback = callback;
         mReferenceItem = item;
 
@@ -174,7 +174,7 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
         if (mPopup != null && mPopup.isShowing()) {
             mPopup.dismiss();
             return;
@@ -207,7 +207,7 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
         }
     }
 
-    private void updateView(TextView view, int count) {
+    private void updateView(final TextView view, final int count) {
         if (count > 0) {
             view.setText(String.valueOf(count));
             view.setVisibility(View.VISIBLE);
@@ -224,8 +224,8 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
         private final ReactionUserAdapter mAdapter;
         private String mContent;
 
-        public ReactionUserPopup(@NonNull Context context, Callback callback,
-                                 Item item, ReactionDetailsCache detailsCache) {
+        public ReactionUserPopup(final @NonNull Context context, final Callback callback,
+                                 final Item item, final ReactionDetailsCache detailsCache) {
             super(context);
 
             mCallback = callback;
@@ -245,7 +245,7 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
             }
         }
 
-        public void show(String content) {
+        public void show(final String content) {
             if (!TextUtils.equals(content, mContent)) {
                 mAdapter.setReactions(null);
                 mContent = content;
@@ -264,7 +264,7 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
             }
         }
 
-        public void toggleOwnReaction(Reaction currentReaction) {
+        public void toggleOwnReaction(final Reaction currentReaction) {
             final long id = currentReaction != null ? currentReaction.id() : 0;
             toggleReaction(mContent, id, mLastKnownDetails, mCallback, mItem, mDetailsCache)
             .subscribe(result -> dismiss(), error -> {
@@ -273,7 +273,7 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
             });
         }
 
-        private void populateAdapter(List<Reaction> details) {
+        private void populateAdapter(final List<Reaction> details) {
             List<Reaction> reactions = new ArrayList<>();
             for (Reaction reaction : details) {
                 if (TextUtils.equals(mContent, reaction.content())) {
@@ -292,13 +292,13 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
         private List<User> mUsers;
         private Reaction mOwnReaction;
 
-        public ReactionUserAdapter(Context context, ReactionUserPopup popup) {
+        public ReactionUserAdapter(final Context context, final ReactionUserPopup popup) {
             mContext = context;
             mParent = popup;
             mInflater = LayoutInflater.from(context);
         }
 
-        public void setReactions(List<Reaction> reactions) {
+        public void setReactions(final List<Reaction> reactions) {
             mOwnReaction = null;
             if (reactions != null) {
                 User ownUser = Gh4Application.get().getCurrentAccountInfoForAvatar();
@@ -329,7 +329,7 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
         }
 
         @Override
-        public int getItemViewType(int position) {
+        public int getItemViewType(final int position) {
             if (mUsers == null) {
                 return 1;
             }
@@ -342,22 +342,22 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
         }
 
         @Override
-        public Object getItem(int position) {
+        public Object getItem(final int position) {
             return mUsers != null ? mUsers.get(position) : null;
         }
 
         @Override
-        public long getItemId(int position) {
+        public long getItemId(final int position) {
             return 0;
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, final View convertView, final ViewGroup parent) {
             int viewType = getItemViewType(position);
             @LayoutRes int layoutResId =
-                viewType == 0 ? R.layout.row_reaction_details :
-                viewType == 1 ? R.layout.reaction_details_progress :
-                R.layout.reaction_details_divider;
+                viewType == 0 ? R.layout.row_reaction_details
+                : viewType == 1 ? R.layout.reaction_details_progress
+                : R.layout.reaction_details_divider;
 
             if (convertView == null) {
                 convertView = mInflater.inflate(layoutResId, parent, false);
@@ -388,7 +388,7 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
         }
 
         @Override
-        public void onClick(View view) {
+        public void onClick(final View view) {
             if (view.getTag() instanceof User) {
                 User user = (User) view.getTag();
                 mParent.dismiss();
@@ -400,8 +400,8 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
         }
     }
 
-    private static Single<List<Reaction>> fetchReactions(Callback callback, Item item,
-            ReactionDetailsCache cache) {
+    private static Single<List<Reaction>> fetchReactions(final Callback callback, final Item item,
+            final ReactionDetailsCache cache) {
         return callback.loadReactionDetails(item, false)
                .compose(RxUtils::doInBackground)
         .compose(RxUtils.sortList((lhs, rhs) -> {
@@ -414,9 +414,9 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
         .doOnSuccess(result -> cache.putEntry(item, result));
     }
 
-    private static Single<Optional<Reaction>> toggleReaction(String content, long id,
-            List<Reaction> existingDetails, Callback callback, Item item,
-            ReactionDetailsCache cache) {
+    private static Single<Optional<Reaction>> toggleReaction(final String content, final long id,
+            final List<Reaction> existingDetails, final Callback callback, final Item item,
+            final ReactionDetailsCache cache) {
         final Single<Optional<Reaction>> resultSingle;
 
         if (id == 0) {
@@ -457,8 +457,8 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
         private final Item mItem;
         private boolean mLoading;
 
-        public AddReactionMenuHelper(@NonNull Context context, Menu menu,
-                                     Callback callback, Item item, ReactionDetailsCache detailsCache) {
+        public AddReactionMenuHelper(final @NonNull Context context, final Menu menu,
+                                     final Callback callback, final Item item, final ReactionDetailsCache detailsCache) {
             mContext = context;
             mCallback = callback;
             mItem = item;
@@ -467,7 +467,7 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
             updateFromMenu(menu);
         }
 
-        public void updateFromMenu(Menu menu) {
+        public void updateFromMenu(final Menu menu) {
             mLoadingItem = menu.findItem(R.id.loading);
 
             for (int i = 0; i < VIEW_IDS.length; i++) {
@@ -481,7 +481,7 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
             }
         }
 
-        public boolean onItemClick(MenuItem item) {
+        public boolean onItemClick(final MenuItem item) {
             for (int i = 0; i < mItems.length; i++) {
                 if (item == mItems[i]) {
                     item.setChecked(mOldReactionIds[i] == 0);
@@ -535,7 +535,7 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
             }
         }
 
-        private void setDataItemsVisible(boolean visible) {
+        private void setDataItemsVisible(final boolean visible) {
             mLoadingItem.setVisible(!visible);
             for (MenuItem item : mItems) {
                 item.setVisible(visible);
@@ -582,7 +582,7 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
         private boolean mDestroyed;
         private final HashMap<Object, List<Reaction>> mMap = new HashMap<>();
 
-        public ReactionDetailsCache(Listener listener) {
+        public ReactionDetailsCache(final Listener listener) {
             super();
             mListener = listener;
         }
@@ -595,15 +595,15 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
             mMap.clear();
         }
 
-        public boolean hasEntryFor(Item item) {
+        public boolean hasEntryFor(final Item item) {
             return mMap.containsKey(item.getCacheKey());
         }
 
-        public List<Reaction> getEntry(Item item) {
+        public List<Reaction> getEntry(final Item item) {
             return mMap.get(item.getCacheKey());
         }
 
-        public List<Reaction> putEntry(Item item, List<Reaction> value) {
+        public List<Reaction> putEntry(final Item item, final List<Reaction> value) {
             Object key = item.getCacheKey();
             List<Reaction> result = mMap.put(key, new ArrayList<>(value));
             if (result != null && !mDestroyed) {
@@ -612,7 +612,7 @@ public class ReactionBar extends LinearLayout implements View.OnClickListener {
             return result;
         }
 
-        private Reactions buildReactions(List<Reaction> reactions) {
+        private Reactions buildReactions(final List<Reaction> reactions) {
             int plusOne = 0, minusOne = 0, confused = 0, heart = 0;
             int hooray = 0, laugh = 0, rocket = 0, eyes = 0;
             for (Reaction reaction : reactions) {

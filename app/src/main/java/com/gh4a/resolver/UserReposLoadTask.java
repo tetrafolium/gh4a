@@ -13,13 +13,13 @@ public class UserReposLoadTask extends UserLoadTask {
     @VisibleForTesting
     protected final boolean mShowStars;
 
-    public UserReposLoadTask(FragmentActivity activity, String userLogin, boolean showStars) {
+    public UserReposLoadTask(final FragmentActivity activity, final String userLogin, final boolean showStars) {
         super(activity, userLogin);
         mShowStars = showStars;
     }
 
     @Override
-    protected Intent getIntent(User user) {
+    protected Intent getIntent(final User user) {
         boolean isOrg = user.type() == UserType.Organization;
         String filter = mShowStars && !isOrg
                         ? RepositoryListContainerFragment.FILTER_TYPE_STARRED

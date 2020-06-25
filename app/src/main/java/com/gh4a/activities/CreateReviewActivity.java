@@ -34,8 +34,8 @@ public class CreateReviewActivity extends AppCompatActivity implements
     private static final String EXTRA_PR_NUMBER = "pr_number";
     private static final String EXTRA_PENDING_REVIEW = "pending_review";
 
-    protected static Intent makeIntent(Context context, String repoOwner, String repoName,
-                                       int pullRequestNumber, Review pendingReview) {
+    protected static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
+                                       final int pullRequestNumber, final Review pendingReview) {
         return new Intent(context, CreateReviewActivity.class)
                .putExtra(EXTRA_OWNER, repoOwner)
                .putExtra(EXTRA_REPO, repoName)
@@ -54,7 +54,7 @@ public class CreateReviewActivity extends AppCompatActivity implements
     private Review mPendingReview;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         setTheme(Gh4Application.THEME == R.style.DarkTheme
                  ? R.style.BottomSheetDarkTheme : R.style.BottomSheetLightTheme);
         super.onCreate(savedInstanceState);
@@ -101,7 +101,7 @@ public class CreateReviewActivity extends AppCompatActivity implements
     }
 
     @Override
-    public Single<?> onEditorDoSend(String body) {
+    public Single<?> onEditorDoSend(final String body) {
         int position = mReviewEventSpinner.getSelectedItemPosition();
         @SuppressWarnings("ConstantConditions")
         ReviewEventDesc desc = mReviewEventAdapter.getItem(position);
@@ -153,8 +153,8 @@ public class CreateReviewActivity extends AppCompatActivity implements
         public final CreateReview.Event mCreateEvent;
         public final SubmitReview.Event mSubmitEvent;
 
-        public ReviewEventDesc(@StringRes int textResId, CreateReview.Event createEvent,
-                               SubmitReview.Event submitEvent) {
+        public ReviewEventDesc(final @StringRes int textResId, final CreateReview.Event createEvent,
+                               final SubmitReview.Event submitEvent) {
             mTextResId = textResId;
             mCreateEvent = createEvent;
             mSubmitEvent = submitEvent;

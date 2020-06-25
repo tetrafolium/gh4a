@@ -119,7 +119,7 @@ public class Gh4Application extends Application implements OnSharedPreferenceCha
         updateNotificationJob(prefs);
     }
 
-    private void updateNotificationJob(SharedPreferences prefs) {
+    private void updateNotificationJob(final SharedPreferences prefs) {
         if (isAuthorized() && prefs.getBoolean(SettingsFragment.KEY_NOTIFICATIONS, false)) {
             int intervalMinutes = prefs.getInt(SettingsFragment.KEY_NOTIFICATION_INTERVAL, 15);
             NotificationsJob.scheduleJob(intervalMinutes);
@@ -128,7 +128,7 @@ public class Gh4Application extends Application implements OnSharedPreferenceCha
         }
     }
 
-    private void selectTheme(int theme) {
+    private void selectTheme(final int theme) {
         switch (theme) {
         case THEME_DARK:
             THEME = R.style.DarkTheme;
@@ -142,7 +142,7 @@ public class Gh4Application extends Application implements OnSharedPreferenceCha
 
     @Override
     @SuppressWarnings("deprecation")
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(final Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             mPt = new PrettyTime(newConfig.getLocales().get(0));
@@ -155,7 +155,7 @@ public class Gh4Application extends Application implements OnSharedPreferenceCha
         return mPt;
     }
 
-    public void setActiveLogin(String login) {
+    public void setActiveLogin(final String login) {
         if (getPrefs().getStringSet(KEY_ALL_LOGINS, null).contains(login)) {
             getPrefs().edit()
             .putString(KEY_ACTIVE_LOGIN, login)
@@ -183,7 +183,7 @@ public class Gh4Application extends Application implements OnSharedPreferenceCha
         return login != null ? getPrefs().getString(KEY_PREFIX_TOKEN + login, null) : null;
     }
 
-    public void addAccount(User user, String token) {
+    public void addAccount(final User user, final String token) {
         SharedPreferences prefs = getPrefs();
         String login = user.login();
         Set<String> logins = prefs.getStringSet(KEY_ALL_LOGINS, null);
@@ -210,7 +210,7 @@ public class Gh4Application extends Application implements OnSharedPreferenceCha
         return null;
     }
 
-    public void setCurrentAccountInfo(User user) {
+    public void setCurrentAccountInfo(final User user) {
         getPrefs().edit()
         .putLong(KEY_PREFIX_USER_ID + user.login(), user.id())
         .apply();
@@ -248,7 +248,7 @@ public class Gh4Application extends Application implements OnSharedPreferenceCha
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+    public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
         if (key.equals(SettingsFragment.KEY_THEME)) {
             selectTheme(sharedPreferences.getInt(key, THEME_LIGHT));
         }

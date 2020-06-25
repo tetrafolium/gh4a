@@ -21,12 +21,12 @@ import com.gh4a.R;
 import com.meisolsson.githubsdk.model.Issue;
 
 public class RepositoryIssueAdapter extends IssueAdapter {
-    public RepositoryIssueAdapter(Context context) {
+    public RepositoryIssueAdapter(final Context context) {
         super(context);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, Issue issue) {
+    public void onBindViewHolder(final ViewHolder holder, final Issue issue) {
         super.onBindViewHolder(holder, issue);
 
         // https://api.github.com/repos/batterseapower/pinyin-toolkit/issues/132

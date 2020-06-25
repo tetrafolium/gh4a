@@ -26,15 +26,15 @@ public class MarkdownPreviewWebView extends WebView implements NestedScrollingCh
     private int mLastY;
     private final String mCssTheme;
 
-    public MarkdownPreviewWebView(Context context) {
+    public MarkdownPreviewWebView(final Context context) {
         this(context, null);
     }
 
-    public MarkdownPreviewWebView(Context context, AttributeSet attrs) {
+    public MarkdownPreviewWebView(final Context context, final AttributeSet attrs) {
         this(context, attrs, android.R.attr.webViewStyle);
     }
 
-    public MarkdownPreviewWebView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public MarkdownPreviewWebView(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         mChildHelper = new NestedScrollingChildHelper(this);
@@ -49,25 +49,25 @@ public class MarkdownPreviewWebView extends WebView implements NestedScrollingCh
         }
     }
 
-    public void setEditText(EditText editor) {
+    public void setEditText(final EditText editor) {
         editor.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
                 setContent(s.toString());
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
+            public void afterTextChanged(final Editable s) {
             }
         });
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent ev) {
+    public boolean onTouchEvent(final MotionEvent ev) {
         boolean result;
 
         MotionEvent event = MotionEvent.obtain(ev);
@@ -114,7 +114,7 @@ public class MarkdownPreviewWebView extends WebView implements NestedScrollingCh
     }
 
     @Override
-    public void setNestedScrollingEnabled(boolean enabled) {
+    public void setNestedScrollingEnabled(final boolean enabled) {
         mChildHelper.setNestedScrollingEnabled(enabled);
     }
 
@@ -124,57 +124,57 @@ public class MarkdownPreviewWebView extends WebView implements NestedScrollingCh
     }
 
     @Override
-    public boolean startNestedScroll(int axes, int type) {
+    public boolean startNestedScroll(final int axes, final int type) {
         return mChildHelper.startNestedScroll(axes, type);
     }
 
     @Override
-    public void stopNestedScroll(int type) {
+    public void stopNestedScroll(final int type) {
         mChildHelper.stopNestedScroll(type);
     }
 
     @Override
-    public boolean hasNestedScrollingParent(int type) {
+    public boolean hasNestedScrollingParent(final int type) {
         return mChildHelper.hasNestedScrollingParent(type);
     }
 
     @Override
-    public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed,
-                                        int dxUnconsumed, int dyUnconsumed,  int[] offsetInWindow, int type) {
+    public boolean dispatchNestedScroll(final int dxConsumed, final int dyConsumed,
+                                        final int dxUnconsumed, final int dyUnconsumed,  final int[] offsetInWindow, final int type) {
         return mChildHelper.dispatchNestedScroll(dxConsumed, dyConsumed,
                 dxUnconsumed, dyUnconsumed, offsetInWindow, type);
     }
 
     @Override
-    public boolean dispatchNestedPreScroll(int dx, int dy, int[] consumed,
-                                           int[] offsetInWindow, int type) {
+    public boolean dispatchNestedPreScroll(final int dx, final int dy, final int[] consumed,
+                                           final int[] offsetInWindow, final int type) {
         return mChildHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow, type);
     }
 
     @Override
-    public boolean dispatchNestedFling(float velocityX, float velocityY, boolean consumed) {
+    public boolean dispatchNestedFling(final float velocityX, final float velocityY, final boolean consumed) {
         return mChildHelper.dispatchNestedFling(velocityX, velocityY, consumed);
     }
 
     @Override
-    public boolean dispatchNestedPreFling(float velocityX, float velocityY) {
+    public boolean dispatchNestedPreFling(final float velocityX, final float velocityY) {
         return mChildHelper.dispatchNestedPreFling(velocityX, velocityY);
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    private void initWebViewSettings(WebSettings s) {
+    private void initWebViewSettings(final WebSettings s) {
         s.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NORMAL);
         s.setLoadsImagesAutomatically(true);
         s.setJavaScriptEnabled(true);
         s.setUseWideViewPort(false);
     }
 
-    private void setContent(String content) {
+    private void setContent(final String content) {
         String html = generateMarkdownHtml(StringUtils.toBase64(content), mCssTheme);
         loadDataWithBaseURL("file:///android_asset/", html, null, "utf-8", null);
     }
 
-    private String generateMarkdownHtml(String base64Data, String cssTheme) {
+    private String generateMarkdownHtml(final String base64Data, final String cssTheme) {
         StringBuilder content = new StringBuilder();
         content.append("<html><head>");
         writeScriptInclude(content, "showdown");
@@ -201,13 +201,13 @@ public class MarkdownPreviewWebView extends WebView implements NestedScrollingCh
         return content.toString();
     }
 
-    private static void writeScriptInclude(StringBuilder builder, String scriptName) {
+    private static void writeScriptInclude(final StringBuilder builder, final String scriptName) {
         builder.append("<script src='file:///android_asset/");
         builder.append(scriptName);
         builder.append(".js' type='text/javascript'></script>");
     }
 
-    private static void writeCssInclude(StringBuilder builder, String cssType, String cssTheme) {
+    private static void writeCssInclude(final StringBuilder builder, final String cssType, final String cssTheme) {
         builder.append("<link href='file:///android_asset/");
         builder.append(cssType);
         builder.append("-");

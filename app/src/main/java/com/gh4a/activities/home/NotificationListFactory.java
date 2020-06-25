@@ -11,7 +11,7 @@ public class NotificationListFactory extends FragmentFactory {
         R.string.notifications
     };
 
-    protected NotificationListFactory(HomeActivity activity) {
+    protected NotificationListFactory(final HomeActivity activity) {
         super(activity);
     }
 
@@ -26,7 +26,7 @@ public class NotificationListFactory extends FragmentFactory {
     }
 
     @Override
-    protected Fragment makeFragment(int position) {
+    protected Fragment makeFragment(final int position) {
         return NotificationListFragment.newInstance();
     }
 }

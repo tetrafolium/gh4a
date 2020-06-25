@@ -26,12 +26,12 @@ import com.meisolsson.githubsdk.model.Repository;
 public class RepositoryListContainerFragment extends Fragment implements
     BaseActivity.RefreshableChild, SearchView.OnCloseListener, SearchView.OnQueryTextListener,
     MenuItem.OnActionExpandListener, SwipeRefreshLayout.ChildScrollDelegate {
-    public static RepositoryListContainerFragment newInstance(String userLogin, boolean isOrg) {
+    public static RepositoryListContainerFragment newInstance(final String userLogin, final boolean isOrg) {
         return newInstance(userLogin, isOrg, null);
     }
 
-    public static RepositoryListContainerFragment newInstance(String userLogin, boolean isOrg,
-            String defaultFilter) {
+    public static RepositoryListContainerFragment newInstance(final String userLogin, final boolean isOrg,
+            final String defaultFilter) {
         RepositoryListContainerFragment f = new RepositoryListContainerFragment();
         Bundle args = new Bundle();
 
@@ -70,7 +70,7 @@ public class RepositoryListContainerFragment extends Fragment implements
     private static final String STATE_KEY_SEARCH_IS_EXPANDED = "search_is_expanded";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         Bundle data = getArguments();
         mUserLogin = data.getString("user");
         mIsOrg = data.getBoolean("is_org");
@@ -108,12 +108,12 @@ public class RepositoryListContainerFragment extends Fragment implements
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.frame_layout, container, false);
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         FragmentManager fm = getChildFragmentManager();
@@ -138,7 +138,7 @@ public class RepositoryListContainerFragment extends Fragment implements
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(STATE_KEY_FILTER_TYPE, mFilterType);
         outState.putString(STATE_KEY_SORT_ORDER, mSortOrder);
@@ -148,14 +148,14 @@ public class RepositoryListContainerFragment extends Fragment implements
         outState.putBoolean(STATE_KEY_SEARCH_IS_EXPANDED, mSearchIsExpanded);
     }
 
-    public void setFilterType(String type) {
+    public void setFilterType(final String type) {
         if (!TextUtils.equals(type, mFilterType)) {
             mFilterType = type;
             applyFilterTypeAndSortOrder();
         }
     }
 
-    public void setSortOrder(String sortOrder, String direction) {
+    public void setSortOrder(final String sortOrder, final String direction) {
         if (!TextUtils.equals(sortOrder, mSortOrder) || !TextUtils.equals(mSortDirection, direction)) {
             mSortOrder = sortOrder;
             mSortDirection = direction;
@@ -232,7 +232,7 @@ public class RepositoryListContainerFragment extends Fragment implements
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         getActivity().getMenuInflater().inflate(R.menu.repo_list_menu, menu);
 
         // We can only properly search the 'all repos' list
@@ -258,7 +258,7 @@ public class RepositoryListContainerFragment extends Fragment implements
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case R.id.search:
             setSearchVisibility(true);
@@ -273,7 +273,7 @@ public class RepositoryListContainerFragment extends Fragment implements
         return super.onOptionsItemSelected(item);
     }
 
-    private void setSearchVisibility(boolean visible) {
+    private void setSearchVisibility(final boolean visible) {
         String hiddenTag = visible ? "main" : "search";
         String visibleTag = visible ? "search" : "main";
         FragmentManager fm = getChildFragmentManager();
@@ -292,7 +292,7 @@ public class RepositoryListContainerFragment extends Fragment implements
     }
 
     @Override
-    public boolean onQueryTextSubmit(String query) {
+    public boolean onQueryTextSubmit(final String query) {
         if (mSearchFragment != null) {
             mSearchFragment.setQuery(query);
         }
@@ -300,7 +300,7 @@ public class RepositoryListContainerFragment extends Fragment implements
     }
 
     @Override
-    public boolean onQueryTextChange(String newText) {
+    public boolean onQueryTextChange(final String newText) {
         mSearchQuery = newText;
         return false;
     }
@@ -314,26 +314,26 @@ public class RepositoryListContainerFragment extends Fragment implements
     }
 
     @Override
-    public boolean onMenuItemActionExpand(MenuItem item) {
+    public boolean onMenuItemActionExpand(final MenuItem item) {
         mSearchIsExpanded = true;
         return true;
     }
 
     @Override
-    public boolean onMenuItemActionCollapse(MenuItem item) {
+    public boolean onMenuItemActionCollapse(final MenuItem item) {
         mSearchIsExpanded = false;
         mSearchQuery = null;
         setSearchVisibility(false);
         return true;
     }
 
-    private static void setMenuItemChecked(MenuItem item, int selected, SparseArray<?> relevant) {
+    private static void setMenuItemChecked(final MenuItem item, final int selected, final SparseArray<?> relevant) {
         if (relevant.indexOfKey(item.getItemId()) >= 0) {
             item.setChecked(item.getItemId() == selected);
         }
     }
 
-    private static void setMenuItemChecked(Menu menu, int selected, SparseArray<?> relevant) {
+    private static void setMenuItemChecked(final Menu menu, final int selected, final SparseArray<?> relevant) {
         for (int i = 0; i < menu.size(); i++) {
             MenuItem item = menu.getItem(i);
             if (item.hasSubMenu()) {
@@ -362,7 +362,7 @@ public class RepositoryListContainerFragment extends Fragment implements
             FILTER_LOOKUP.put(R.id.filter_type_watched, "watched");
         }
 
-        public static FilterDrawerHelper create(String userLogin, boolean isOrg) {
+        public static FilterDrawerHelper create(final String userLogin, final boolean isOrg) {
             int menuResId;
             if (ApiHelpers.loginEquals(userLogin, Gh4Application.get().getAuthLogin())) {
                 menuResId = R.menu.repo_filter_logged_in;
@@ -375,7 +375,7 @@ public class RepositoryListContainerFragment extends Fragment implements
             return new FilterDrawerHelper(menuResId);
         }
 
-        private FilterDrawerHelper(int menuResId) {
+        private FilterDrawerHelper(final int menuResId) {
             mMenuResId = menuResId;
         }
 
@@ -383,7 +383,7 @@ public class RepositoryListContainerFragment extends Fragment implements
             return mMenuResId;
         }
 
-        public void selectFilterType(Menu menu, String filterType) {
+        public void selectFilterType(final Menu menu, final String filterType) {
             int selectedId = 0;
             for (int i = 0; i < FILTER_LOOKUP.size(); i++) {
                 if (FILTER_LOOKUP.valueAt(i).equals(filterType)) {
@@ -394,7 +394,7 @@ public class RepositoryListContainerFragment extends Fragment implements
             setMenuItemChecked(menu, selectedId, FILTER_LOOKUP);
         }
 
-        public String handleSelectionAndGetFilterType(MenuItem item) {
+        public String handleSelectionAndGetFilterType(final MenuItem item) {
             return FILTER_LOOKUP.get(item.getItemId());
         }
     }
@@ -404,20 +404,20 @@ public class RepositoryListContainerFragment extends Fragment implements
 
         private static final SparseArray<String[]> SORT_LOOKUP = new SparseArray<>();
         static {
-            SORT_LOOKUP.put(R.id.sort_name_asc, new String[] { "full_name", "asc" });
-            SORT_LOOKUP.put(R.id.sort_name_desc, new String[] { "full_name", "desc" });
-            SORT_LOOKUP.put(R.id.sort_created_asc, new String[] { "created", "asc" });
-            SORT_LOOKUP.put(R.id.sort_created_desc, new String[] { "created", "desc" });
-            SORT_LOOKUP.put(R.id.sort_pushed_asc, new String[] { "pushed", "asc" });
-            SORT_LOOKUP.put(R.id.sort_pushed_desc, new String[] { "pushed", "desc" });
-            SORT_LOOKUP.put(R.id.sort_updated_asc, new String[] { "updated", "asc" });
-            SORT_LOOKUP.put(R.id.sort_updated_desc, new String[] { "updated", "desc" });
+            SORT_LOOKUP.put(R.id.sort_name_asc, new String[] {"full_name", "asc" });
+            SORT_LOOKUP.put(R.id.sort_name_desc, new String[] {"full_name", "desc" });
+            SORT_LOOKUP.put(R.id.sort_created_asc, new String[] {"created", "asc" });
+            SORT_LOOKUP.put(R.id.sort_created_desc, new String[] {"created", "desc" });
+            SORT_LOOKUP.put(R.id.sort_pushed_asc, new String[] {"pushed", "asc" });
+            SORT_LOOKUP.put(R.id.sort_pushed_desc, new String[] {"pushed", "desc" });
+            SORT_LOOKUP.put(R.id.sort_updated_asc, new String[] {"updated", "asc" });
+            SORT_LOOKUP.put(R.id.sort_updated_desc, new String[] {"updated", "desc" });
         }
 
         public SortDrawerHelper() {
         }
 
-        public void setFilterType(String type) {
+        public void setFilterType(final String type) {
             mFilterType = type;
         }
 
@@ -425,8 +425,8 @@ public class RepositoryListContainerFragment extends Fragment implements
             return TextUtils.equals(mFilterType, "watched") ? 0 : R.menu.repo_sort;
         }
 
-        public void selectSortType(Menu menu, String order, String direction,
-                                   boolean updateSingleItem) {
+        public void selectSortType(final Menu menu, final String order, final String direction,
+                                   final boolean updateSingleItem) {
             int selectedId = 0;
             for (int i = 0; i < SORT_LOOKUP.size(); i++) {
                 String[] value = SORT_LOOKUP.valueAt(i);
@@ -442,7 +442,7 @@ public class RepositoryListContainerFragment extends Fragment implements
             setMenuItemChecked(menu, selectedId, SORT_LOOKUP);
         }
 
-        public String[] handleSelectionAndGetSortOrder(MenuItem item) {
+        public String[] handleSelectionAndGetSortOrder(final MenuItem item) {
             return SORT_LOOKUP.get(item.getItemId());
         }
     }

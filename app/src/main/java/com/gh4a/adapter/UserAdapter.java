@@ -30,12 +30,12 @@ import com.gh4a.utils.StringUtils;
 import com.meisolsson.githubsdk.model.User;
 
 public class UserAdapter extends RootAdapter<User, UserAdapter.ViewHolder> {
-    public UserAdapter(Context context) {
+    public UserAdapter(final Context context) {
         super(context);
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
         View v = inflater.inflate(R.layout.row_user, parent, false);
         ViewHolder holder = new ViewHolder(v);
         holder.ivGravatar.setOnClickListener(this);
@@ -43,7 +43,7 @@ public class UserAdapter extends RootAdapter<User, UserAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, User user) {
+    public void onBindViewHolder(final ViewHolder holder, final User user) {
         AvatarHandler.assignAvatar(holder.ivGravatar, user);
         holder.ivGravatar.setTag(user);
 
@@ -51,7 +51,7 @@ public class UserAdapter extends RootAdapter<User, UserAdapter.ViewHolder> {
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         if (v.getId() == R.id.iv_gravatar) {
             User user = (User) v.getTag();
             mContext.startActivity(UserActivity.makeIntent(mContext, user));
@@ -61,7 +61,7 @@ public class UserAdapter extends RootAdapter<User, UserAdapter.ViewHolder> {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ViewHolder(View view) {
+        private ViewHolder(final View view) {
             super(view);
             ivGravatar = view.findViewById(R.id.iv_gravatar);
             tvTitle = view.findViewById(R.id.tv_title);

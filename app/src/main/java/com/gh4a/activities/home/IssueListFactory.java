@@ -27,7 +27,7 @@ public class IssueListFactory extends FragmentFactory {
         new IssueListFragment.SortDrawerHelper();
     private int[] mHeaderColorAttrs;
 
-    public IssueListFactory(HomeActivity activity, String userLogin, boolean pr) {
+    public IssueListFactory(final HomeActivity activity, final String userLogin, final boolean pr) {
         super(activity);
         mLogin = userLogin;
         mShowingClosed = false;
@@ -54,7 +54,7 @@ public class IssueListFactory extends FragmentFactory {
     }
 
     @Override
-    protected Fragment makeFragment(int position) {
+    protected Fragment makeFragment(final int position) {
         final String action;
         if (position == 1) {
             action = "assignee";
@@ -78,9 +78,9 @@ public class IssueListFactory extends FragmentFactory {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        int resIdState = mShowingClosed ?
-                         R.string.issues_menu_show_open : R.string.issues_menu_show_closed;
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        int resIdState = mShowingClosed
+                         ? R.string.issues_menu_show_open : R.string.issues_menu_show_closed;
         menu.add(Menu.NONE, Menu.FIRST, Menu.NONE, resIdState)
         .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
@@ -92,7 +92,7 @@ public class IssueListFactory extends FragmentFactory {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case Menu.FIRST:
             toggleStateFilter();
@@ -106,7 +106,7 @@ public class IssueListFactory extends FragmentFactory {
 
     @Override
     protected int[] getToolDrawerMenuResIds() {
-        return new int[] { IssueListFragment.SortDrawerHelper.getMenuResId() };
+        return new int[] {IssueListFragment.SortDrawerHelper.getMenuResId() };
     }
 
     @Override
@@ -115,7 +115,7 @@ public class IssueListFactory extends FragmentFactory {
     }
 
     @Override
-    protected boolean onDrawerItemSelected(MenuItem item) {
+    protected boolean onDrawerItemSelected(final MenuItem item) {
         if (mDrawerHelper.handleItemSelection(item)) {
             reloadIssueList();
             return true;
@@ -124,13 +124,13 @@ public class IssueListFactory extends FragmentFactory {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(STATE_KEY_SHOWING_CLOSED, mShowingClosed);
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle state) {
+    protected void onRestoreInstanceState(final Bundle state) {
         super.onRestoreInstanceState(state);
         boolean showedClosed = state.getBoolean(STATE_KEY_SHOWING_CLOSED, false);
         if (mShowingClosed != showedClosed) {

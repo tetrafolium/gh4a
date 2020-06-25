@@ -34,7 +34,7 @@ import com.meisolsson.githubsdk.model.GistFile;
 import com.meisolsson.githubsdk.service.gists.GistService;
 
 public class GistViewerActivity extends WebViewerActivity {
-    public static Intent makeIntent(Context context, String id, String fileName) {
+    public static Intent makeIntent(final Context context, final String id, final String fileName) {
         return new Intent(context, GistViewerActivity.class)
                .putExtra("id", id)
                .putExtra("file", fileName);
@@ -48,7 +48,7 @@ public class GistViewerActivity extends WebViewerActivity {
     private String mGistOwner;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         loadGist(false);
     }
@@ -60,7 +60,7 @@ public class GistViewerActivity extends WebViewerActivity {
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         mFileName = extras.getString("file");
         mGistId = extras.getString("id");
@@ -80,7 +80,7 @@ public class GistViewerActivity extends WebViewerActivity {
     }
 
     @Override
-    protected String generateHtml(String cssTheme, boolean addTitleHeader) {
+    protected String generateHtml(final String cssTheme, final boolean addTitleHeader) {
         if (FileUtils.isMarkdown(mGistFile.filename())) {
             String base64Data = StringUtils.toBase64(mGistFile.content());
             return generateMarkdownHtml(base64Data, null, null, null, cssTheme, addTitleHeader);
@@ -96,7 +96,7 @@ public class GistViewerActivity extends WebViewerActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.file_viewer_menu, menu);
 
@@ -114,7 +114,7 @@ public class GistViewerActivity extends WebViewerActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case R.id.browser:
             IntentUtils.launchBrowser(this, Uri.parse(mGistFile.rawUrl()));
@@ -123,7 +123,7 @@ public class GistViewerActivity extends WebViewerActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadGist(boolean force) {
+    private void loadGist(final boolean force) {
         GistService service = ServiceFactory.get(GistService.class, force);
         service.getGist(mGistId)
         .map(ApiHelpers::throwOnFailure)

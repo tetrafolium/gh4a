@@ -135,7 +135,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         setTheme(Gh4Application.THEME);
         onInitExtras(getIntent().getExtras());
         super.onCreate(savedInstanceState);
@@ -166,16 +166,16 @@ public abstract class BaseActivity extends AppCompatActivity implements
         return null;
     }
 
-    public void handleLoadFailure(Throwable e) {
+    public void handleLoadFailure(final Throwable e) {
         handleFailure("Loading data failed", e);
         setErrorViewVisibility(true, e);
     }
 
-    public void handleActionFailure(String text, Throwable e) {
+    public void handleActionFailure(final String text, final Throwable e) {
         handleFailure(text, e);
     }
 
-    private void handleFailure(String text, Throwable e) {
+    private void handleFailure(final String text, final Throwable e) {
         ApiRequestException are = e instanceof ApiRequestException ? (ApiRequestException) e : null;
         boolean isAuthError = are != null && are.getStatus() == HttpURLConnection.HTTP_UNAUTHORIZED;
         if (isAuthError) {
@@ -191,7 +191,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         Log.d(Gh4Application.LOG_TAG, text, e);
     }
 
-    protected void registerTemporarySubscription(Disposable disposable) {
+    protected void registerTemporarySubscription(final Disposable disposable) {
         mDisposeOnStop.add(disposable);
     }
 
@@ -200,7 +200,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
 
     @IdRes
-    protected int getInitialLeftDrawerSelection(Menu menu) {
+    protected int getInitialLeftDrawerSelection(final Menu menu) {
         return 0;
     }
 
@@ -234,34 +234,34 @@ public abstract class BaseActivity extends AppCompatActivity implements
         }
     }
 
-    protected void configureLeftDrawerHeader(View header) {
+    protected void configureLeftDrawerHeader(final View header) {
     }
 
     protected boolean canSwipeToRefresh() {
         return mCanSwipeToRefresh;
     }
 
-    public void setCanSwipeToRefresh(boolean canSwipeToRefresh) {
+    public void setCanSwipeToRefresh(final boolean canSwipeToRefresh) {
         mCanSwipeToRefresh = canSwipeToRefresh;
         updateSwipeToRefreshState();
     }
 
-    protected void setChildScrollDelegate(SwipeRefreshLayout.ChildScrollDelegate delegate) {
+    protected void setChildScrollDelegate(final SwipeRefreshLayout.ChildScrollDelegate delegate) {
         mSwipeLayout.setChildScrollDelegate(delegate);
     }
 
-    protected void setEmptyText(CharSequence text) {
+    protected void setEmptyText(final CharSequence text) {
         ensureContent();
         mEmptyView.setText(text);
     }
 
-    protected void setContentShown(boolean shown) {
+    protected void setContentShown(final boolean shown) {
         mContentShown = shown;
         updateSwipeToRefreshState();
         updateViewVisibility(true);
     }
 
-    protected void setContentEmpty(boolean isEmpty) {
+    protected void setContentEmpty(final boolean isEmpty) {
         mContentEmpty = isEmpty;
         updateViewVisibility(false);
     }
@@ -275,11 +275,11 @@ public abstract class BaseActivity extends AppCompatActivity implements
         return mCoordinatorLayout;
     }
 
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
 
     }
 
-    protected void setHeaderColor(int color, int statusBarColor) {
+    protected void setHeaderColor(final int color, final int statusBarColor) {
         cancelHeaderTransition();
 
         for (ColorDrawable d : mHeaderDrawables) {
@@ -294,7 +294,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         scheduleTaskDescriptionUpdate();
     }
 
-    protected void transitionHeaderToColor(int colorAttrId, int statusBarColorAttrId) {
+    protected void transitionHeaderToColor(final int colorAttrId, final int statusBarColorAttrId) {
         final AnimatorSet animation = new AnimatorSet();
         List<Animator> animators = new ArrayList<>();
         int color = UiUtils.resolveColor(this, colorAttrId);
@@ -365,7 +365,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         }
     }
 
-    protected void onPrepareRightNavigationDrawerMenu(Menu menu) {
+    protected void onPrepareRightNavigationDrawerMenu(final Menu menu) {
 
     }
 
@@ -388,7 +388,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         return getSharedPreferences(SettingsFragment.PREF_NAME, MODE_PRIVATE);
     }
 
-    public void addAppBarOffsetListener(AppBarLayout.OnOffsetChangedListener l) {
+    public void addAppBarOffsetListener(final AppBarLayout.OnOffsetChangedListener l) {
         mHeader.addOnOffsetChangedListener(l);
     }
 
@@ -396,7 +396,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         return mHeader.getTotalScrollRange();
     }
 
-    public void removeAppBarOffsetListener(AppBarLayout.OnOffsetChangedListener l) {
+    public void removeAppBarOffsetListener(final AppBarLayout.OnOffsetChangedListener l) {
         mHeader.removeOnOffsetChangedListener(l);
     }
 
@@ -404,19 +404,19 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mHeader.setExpanded(false);
     }
 
-    public void setAppBarLocked(boolean locked) {
+    public void setAppBarLocked(final boolean locked) {
         mAppBarLocked = locked;
         updateAppBarEnabledState();
     }
 
-    protected void addHeaderView(View view, boolean scrollable) {
+    protected void addHeaderView(final View view, final boolean scrollable) {
         mHeader.addView(view, 1, new AppBarLayout.LayoutParams(
                             AppBarLayout.LayoutParams.MATCH_PARENT,
                             AppBarLayout.LayoutParams.WRAP_CONTENT));
         setAppBarChildScrollable(view, scrollable);
     }
 
-    protected void setToolbarScrollable(boolean scrollable) {
+    protected void setToolbarScrollable(final boolean scrollable) {
         setAppBarChildScrollable(mToolbar, scrollable);
         mAppBarScrollable = scrollable;
         updateAppBarEnabledState();
@@ -426,7 +426,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mHeaderBehavior.setEnabled(mAppBarScrollable && !mAppBarLocked);
     }
 
-    private void setAppBarChildScrollable(View view, boolean scrollable) {
+    private void setAppBarChildScrollable(final View view, final boolean scrollable) {
         AppBarLayout.LayoutParams lp = (AppBarLayout.LayoutParams) view.getLayoutParams();
         if (scrollable) {
             lp.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
@@ -463,7 +463,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     @Override
     @CallSuper
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                 && !IntentUtils.isNewTaskIntent(getIntent())
                 && displayDetachAction()) {
@@ -478,7 +478,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             Intent intent = navigateUp();
             if (intent != null) {
@@ -501,7 +501,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void setContentView(int layoutResId) {
+    public void setContentView(final int layoutResId) {
         ensureContent();
         LayoutInflater layoutInflater = LayoutInflater.from(this);
         View contentView = layoutInflater.inflate(layoutResId, mContentContainer, false);
@@ -509,7 +509,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void setContentView(View view) {
+    public void setContentView(final View view) {
         ensureContent();
         if (view == null) {
             throw new IllegalArgumentException("Content view can't be null");
@@ -532,42 +532,42 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    public boolean onNavigationItemSelected(final @NonNull MenuItem item) {
         mDrawerLayout.closeDrawers();
         return false;
     }
 
-    public void setRightDrawerLockedClosed(boolean locked) {
+    public void setRightDrawerLockedClosed(final boolean locked) {
         mDrawerLayout.setDrawerLockMode(
             locked ? DrawerLayout.LOCK_MODE_LOCKED_CLOSED : DrawerLayout.LOCK_MODE_UNLOCKED,
             Gravity.RIGHT);
     }
 
     public void requestPermission(final String permission,
-                                  ActivityCompat.OnRequestPermissionsResultCallback cb,
-                                  int rationaleTextResId) {
+                                  final ActivityCompat.OnRequestPermissionsResultCallback cb,
+                                  final int rationaleTextResId) {
         if (mPendingPermissionCb != null) {
             throw new IllegalStateException();
         }
         int grantResult = ActivityCompat.checkSelfPermission(this, permission);
         if (grantResult == PackageManager.PERMISSION_GRANTED) {
-            cb.onRequestPermissionsResult(0, new String[] { permission }, new int[] { grantResult });
+            cb.onRequestPermissionsResult(0, new String[] {permission }, new int[] {grantResult });
         } else {
             mPendingPermissionCb = cb;
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
                 Snackbar.make(getRootLayout(), rationaleTextResId, Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.ok, v -> ActivityCompat.requestPermissions(
-                               BaseActivity.this, new String[] { permission }, 0))
+                               BaseActivity.this, new String[] {permission }, 0))
                 .show();
             } else {
-                ActivityCompat.requestPermissions(this, new String[] { permission }, 0);
+                ActivityCompat.requestPermissions(this, new String[] {permission }, 0);
             }
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode,
+                                           final @NonNull String[] permissions, final @NonNull int[] grantResults) {
         if (mPendingPermissionCb != null) {
             mPendingPermissionCb.onRequestPermissionsResult(0, permissions, grantResults);
             mPendingPermissionCb = null;
@@ -581,13 +581,13 @@ public abstract class BaseActivity extends AppCompatActivity implements
         }
     }
 
-    public <T> SingleTransformer<T, T> makeLoaderSingle(int id, boolean force) {
+    public <T> SingleTransformer<T, T> makeLoaderSingle(final int id, final boolean force) {
         return upstream -> upstream
                .compose(RxUtils::doInBackground)
                .compose(mRxLoader.makeSingleTransformer(id, force));
     }
 
-    protected void setErrorViewVisibility(boolean visible, Throwable e) {
+    protected void setErrorViewVisibility(final boolean visible, final Throwable e) {
         View content = findViewById(R.id.content);
         View error = findViewById(R.id.error);
 
@@ -636,10 +636,10 @@ public abstract class BaseActivity extends AppCompatActivity implements
         }
     }
 
-    protected void onDrawerOpened(boolean right) {
+    protected void onDrawerOpened(final boolean right) {
     }
 
-    protected void onDrawerClosed(boolean right) {
+    protected void onDrawerClosed(final boolean right) {
     }
 
     private void updateSwipeToRefreshState() {
@@ -661,7 +661,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mStatusBarDrawables.add(d);
     }
 
-    private ObjectAnimator createColorTransition(ColorDrawable drawable, int color) {
+    private ObjectAnimator createColorTransition(final ColorDrawable drawable, final int color) {
         final ObjectAnimator animation = ObjectAnimator.ofInt(drawable,
                                          "color", drawable.getColor(), color);
         animation.setEvaluator(new ArgbEvaluator());
@@ -669,7 +669,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
 
     @SuppressWarnings("deprecation")
-    private void assignBackground(View view, int color) {
+    private void assignBackground(final View view, final int color) {
         if (view == null) {
             return;
         }
@@ -708,19 +708,19 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mDrawerLayout = findViewById(R.id.drawer_container);
         mDrawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
+            public void onDrawerSlide(final View drawerView, final float slideOffset) {
             }
             @Override
-            public void onDrawerOpened(View drawerView) {
+            public void onDrawerOpened(final View drawerView) {
                 BaseActivity.this.onDrawerOpened(drawerView == mRightDrawer);
             }
             @Override
-            public void onDrawerClosed(View drawerView) {
+            public void onDrawerClosed(final View drawerView) {
                 BaseActivity.this.onDrawerClosed(drawerView == mRightDrawer);
             }
 
             @Override
-            public void onDrawerStateChanged(int newState) {
+            public void onDrawerStateChanged(final int newState) {
             }
         });
 
@@ -765,7 +765,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         updateRightNavigationDrawer();
     }
 
-    private void applyHighlightColor(NavigationView view) {
+    private void applyHighlightColor(final NavigationView view) {
         ColorStateList iconTint =
             createDefaultNavigationColorStateList(android.R.attr.textColorSecondary);
         if (iconTint != null) {
@@ -780,7 +780,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     // similar to what NavigationView does by default,
     // but uses accent color instead of primary color
-    private ColorStateList createDefaultNavigationColorStateList(int baseColorThemeAttr) {
+    private ColorStateList createDefaultNavigationColorStateList(final int baseColorThemeAttr) {
         TypedValue value = new TypedValue();
         if (!getTheme().resolveAttribute(baseColorThemeAttr, value, true)) {
             return null;
@@ -791,9 +791,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
         }
         int colorAccent = value.data;
         int defaultColor = baseColor.getDefaultColor();
-        final int[] disabledStateSet = { -android.R.attr.state_enabled };
-        final int[] checkedStateSet = { android.R.attr.state_checked };
-        final int[][] states = { disabledStateSet, checkedStateSet, { 0 } };
+        final int[] disabledStateSet = {-android.R.attr.state_enabled };
+        final int[] checkedStateSet = {android.R.attr.state_checked };
+        final int[][] states = {disabledStateSet, checkedStateSet, {0 } };
         final int[] colors = {
             baseColor.getColorForState(disabledStateSet, defaultColor),
             colorAccent,
@@ -803,14 +803,14 @@ public abstract class BaseActivity extends AppCompatActivity implements
         return new ColorStateList(states, colors);
     }
 
-    private void updateViewVisibility(boolean animate) {
+    private void updateViewVisibility(final boolean animate) {
         ensureContent();
         updateViewVisibility(mProgress, animate, !mContentShown);
         updateViewVisibility(mEmptyView, animate, mContentEmpty && mContentShown);
         updateViewVisibility(mContentContainer, animate, !mContentEmpty && mContentShown);
     }
 
-    private void updateViewVisibility(View view, boolean animate, boolean show) {
+    private void updateViewVisibility(final View view, final boolean animate, final boolean show) {
         int visibility = show ? View.VISIBLE : View.GONE;
         if (view.getVisibility() == visibility) {
             return;

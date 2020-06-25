@@ -23,7 +23,7 @@ public abstract class UrlLoadTask extends AsyncTask<Void, Void, Optional<Intent>
     protected final FragmentActivity mActivity;
     private ProgressDialogFragment mProgressDialog;
 
-    public UrlLoadTask(FragmentActivity activity) {
+    public UrlLoadTask(final FragmentActivity activity) {
         super();
         mActivity = activity;
     }
@@ -36,7 +36,7 @@ public abstract class UrlLoadTask extends AsyncTask<Void, Void, Optional<Intent>
     }
 
     @Override
-    protected Optional<Intent> doInBackground(Void... params) {
+    protected Optional<Intent> doInBackground(final Void... params) {
         try {
             return getSingle().blockingGet();
         } catch (Exception e) {
@@ -46,7 +46,7 @@ public abstract class UrlLoadTask extends AsyncTask<Void, Void, Optional<Intent>
     }
 
     @Override
-    protected void onPostExecute(Optional<Intent> result) {
+    protected void onPostExecute(final Optional<Intent> result) {
         if (mActivity.isFinishing()) {
             return;
         }
@@ -68,7 +68,7 @@ public abstract class UrlLoadTask extends AsyncTask<Void, Void, Optional<Intent>
     public static class ProgressDialogFragment extends DialogFragment {
         @NonNull
         @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
+        public Dialog onCreateDialog(final Bundle savedInstanceState) {
             return UiUtils.createProgressDialog(getActivity(), R.string.loading_msg);
         }
     }

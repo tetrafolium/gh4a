@@ -10,15 +10,15 @@ import android.view.View;
 public class ContextMenuAwareRecyclerView extends RecyclerView {
     private RecyclerContextMenuInfo mContextMenuInfo;
 
-    public ContextMenuAwareRecyclerView(Context context) {
+    public ContextMenuAwareRecyclerView(final Context context) {
         super(context);
     }
 
-    public ContextMenuAwareRecyclerView(Context context, @Nullable AttributeSet attrs) {
+    public ContextMenuAwareRecyclerView(final Context context, final @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public ContextMenuAwareRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
+    public ContextMenuAwareRecyclerView(final Context context, final @Nullable AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
     }
 
@@ -28,7 +28,7 @@ public class ContextMenuAwareRecyclerView extends RecyclerView {
     }
 
     @Override
-    public boolean showContextMenuForChild(View view) {
+    public boolean showContextMenuForChild(final View view) {
         if (view.getLayoutParams() instanceof RecyclerView.LayoutParams) {
             RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) view.getLayoutParams();
             final int position = params.getViewAdapterPosition();
@@ -45,7 +45,7 @@ public class ContextMenuAwareRecyclerView extends RecyclerView {
         public final int position;
         public final long id;
 
-        private RecyclerContextMenuInfo(int position, long id) {
+        private RecyclerContextMenuInfo(final int position, final long id) {
             this.position = position;
             this.id = id;
         }

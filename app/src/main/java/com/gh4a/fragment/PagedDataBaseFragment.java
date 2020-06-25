@@ -49,7 +49,7 @@ public abstract class PagedDataBaseFragment<T> extends LoadingListFragmentBase i
     private Disposable mSubscription;
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         mRxLoader = new RxLoader(getActivity(), getLoaderManager());
@@ -77,7 +77,7 @@ public abstract class PagedDataBaseFragment<T> extends LoadingListFragmentBase i
     }
 
     @Override
-    protected void onRecyclerViewInflated(RecyclerView view, LayoutInflater inflater) {
+    protected void onRecyclerViewInflated(final RecyclerView view, final LayoutInflater inflater) {
         super.onRecyclerViewInflated(view, inflater);
         mAdapter = onCreateAdapter();
 
@@ -108,7 +108,7 @@ public abstract class PagedDataBaseFragment<T> extends LoadingListFragmentBase i
         return true;
     }
 
-    private void load(boolean force) {
+    private void load(final boolean force) {
         mSubscription = mPageSubject
                         .flatMap(page -> loadPage(page, force)
         .map(response -> {
@@ -134,7 +134,7 @@ public abstract class PagedDataBaseFragment<T> extends LoadingListFragmentBase i
         }, this::handleLoadFailure);
     }
 
-    private void fillData(List<T> data, Integer nextPage) {
+    private void fillData(final List<T> data, final Integer nextPage) {
         mNextPage = nextPage;
         mLoadingView.setVisibility(nextPage != null ? View.VISIBLE : View.GONE);
 
@@ -156,7 +156,7 @@ public abstract class PagedDataBaseFragment<T> extends LoadingListFragmentBase i
         }
     }
 
-    protected void onAddData(RootAdapter<T, ? extends RecyclerView.ViewHolder> adapter, Collection<T> data) {
+    protected void onAddData(final RootAdapter<T, ? extends RecyclerView.ViewHolder> adapter, final Collection<T> data) {
         adapter.addAll(data);
     }
 

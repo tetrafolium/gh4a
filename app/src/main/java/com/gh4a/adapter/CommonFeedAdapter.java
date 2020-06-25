@@ -36,13 +36,13 @@ import java.util.Date;
 public class CommonFeedAdapter extends RootAdapter<Feed, CommonFeedAdapter.ViewHolder> {
     private final boolean mShowExtra;
 
-    public CommonFeedAdapter(Context context, boolean showExtra) {
+    public CommonFeedAdapter(final Context context, final boolean showExtra) {
         super(context);
         mShowExtra = showExtra;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
         View v = inflater.inflate(R.layout.row_feed, parent, false);
         ViewHolder holder = new ViewHolder(v);
         holder.ivGravatar.setOnClickListener(this);
@@ -50,7 +50,7 @@ public class CommonFeedAdapter extends RootAdapter<Feed, CommonFeedAdapter.ViewH
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, Feed feed) {
+    public void onBindViewHolder(final ViewHolder holder, final Feed feed) {
         String title = feed.getTitle();
         holder.tvTitle.setText(title);
         holder.tvTitle.setVisibility(title != null ? View.VISIBLE : View.GONE);
@@ -82,7 +82,7 @@ public class CommonFeedAdapter extends RootAdapter<Feed, CommonFeedAdapter.ViewH
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         if (v.getId() == R.id.iv_gravatar) {
             Feed feed = (Feed) v.getTag();
             Intent intent = UserActivity.makeIntent(mContext, feed.getAuthor());
@@ -95,7 +95,7 @@ public class CommonFeedAdapter extends RootAdapter<Feed, CommonFeedAdapter.ViewH
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ViewHolder(View view) {
+        private ViewHolder(final View view) {
             super(view);
             ivGravatar = view.findViewById(R.id.iv_gravatar);
             tvTitle = view.findViewById(R.id.tv_title);

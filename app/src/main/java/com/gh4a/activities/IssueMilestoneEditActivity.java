@@ -67,14 +67,14 @@ import retrofit2.Response;
 
 public class IssueMilestoneEditActivity extends BasePagerActivity implements
     View.OnClickListener, View.OnFocusChangeListener, AppBarLayout.OnOffsetChangedListener {
-    public static Intent makeEditIntent(Context context, String repoOwner, String repoName,
-                                        Milestone milestone, boolean fromPullRequest) {
+    public static Intent makeEditIntent(final Context context, final String repoOwner, final String repoName,
+                                        final Milestone milestone, final boolean fromPullRequest) {
         return makeCreateIntent(context, repoOwner, repoName, fromPullRequest)
                .putExtra("milestone", milestone);
     }
 
-    public static Intent makeCreateIntent(Context context, String repoOwner, String repoName,
-                                          boolean fromPullRequest) {
+    public static Intent makeCreateIntent(final Context context, final String repoOwner, final String repoName,
+                                          final boolean fromPullRequest) {
         return new Intent(context, IssueMilestoneEditActivity.class)
                .putExtra("owner", repoOwner)
                .putExtra("repo", repoName)
@@ -100,7 +100,7 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
     private TextView mDueView;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (!Gh4Application.get().isAuthorized()) {
@@ -145,7 +145,7 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
         mTitleView.addTextChangedListener(new UiUtils.ButtonEnableTextWatcher(mTitleView, mSaveFab));
         mTitleView.addTextChangedListener(new UiUtils.EmptinessWatchingTextWatcher(mTitleView) {
             @Override
-            public void onIsEmpty(boolean isEmpty) {
+            public void onIsEmpty(final boolean isEmpty) {
                 if (isEmpty) {
                     mTitleWrapper.setError(getString(R.string.issue_error_milestone_title));
                 } else {
@@ -177,14 +177,14 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
     }
 
     @Override
-    protected PagerAdapter createAdapter(ViewGroup root) {
+    protected PagerAdapter createAdapter(final ViewGroup root) {
         mRootView = root;
         getLayoutInflater().inflate(R.layout.issue_create_milestone, root);
         return new MilestonePagerAdapter();
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         mRepoOwner = extras.getString("owner");
         mRepoName = extras.getString("repo");
@@ -204,7 +204,7 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         if (isInEditMode()) {
             MenuInflater inflater = getMenuInflater();
             inflater.inflate(R.menu.edit_milestone_menu, menu);
@@ -224,28 +224,28 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
         if (view.getId() == R.id.due_container) {
             DialogFragment newFragment = new DatePickerFragment();
             newFragment.show(getSupportFragmentManager(), "datePicker");
         } else if (view == mSaveFab) {
             String title = mTitleView.getText().toString();
-            String desc = mDescriptionView.getText() != null ?
-                          mDescriptionView.getText().toString() : null;
+            String desc = mDescriptionView.getText() != null
+                          ? mDescriptionView.getText().toString() : null;
 
             saveMilestone(title, desc);
         }
     }
 
     @Override
-    public void onFocusChange(View view, boolean hasFocus) {
+    public void onFocusChange(final View view, final boolean hasFocus) {
         if (view == mTitleView) {
             mMarkdownButtons.setVisibility(hasFocus ? View.GONE : View.VISIBLE);
         }
     }
 
     @Override
-    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+    public void onOffsetChanged(final AppBarLayout appBarLayout, final int verticalOffset) {
         // Set the bottom padding to make the bottom appear as not moving while the
         // AppBarLayout pushes it down or up.
         mRootView.setPadding(mRootView.getPaddingLeft(), mRootView.getPaddingTop(),
@@ -253,7 +253,7 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case R.id.milestone_close:
         case R.id.milestone_reopen:
@@ -291,7 +291,7 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
         mSaveFab.setState(mMilestone.state());
     }
 
-    private void setDueOn(int year, int month, int day) {
+    private void setDueOn(final int year, final int month, final int day) {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DAY_OF_MONTH, day);
         cal.set(Calendar.MONTH, month);
@@ -323,8 +323,8 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
         }
     }
 
-    private Single<Response<Milestone>> createMilestone(String title, String desc,
-            IssueMilestoneService service) {
+    private Single<Response<Milestone>> createMilestone(final String title, final String desc,
+            final IssueMilestoneService service) {
         CreateMilestone request = CreateMilestone.builder()
                                   .title(title)
                                   .description(desc)
@@ -335,8 +335,8 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
         return service.createMilestone(mRepoOwner, mRepoName, request);
     }
 
-    private Single<Response<Milestone>> editMilestone(String title, String desc,
-            IssueMilestoneService service) {
+    private Single<Response<Milestone>> editMilestone(final String title, final String desc,
+            final IssueMilestoneService service) {
         EditMilestone request = EditMilestone.builder()
                                 .title(title)
                                 .description(desc)
@@ -347,7 +347,7 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
         return service.editMilestone(mRepoOwner, mRepoName, mMilestone.number(), request);
     }
 
-    private void saveMilestone(String title, String desc) {
+    private void saveMilestone(final String title, final String desc) {
         @StringRes int errorMessageResId = isInEditMode()
                                            ? R.string.issue_error_edit_milestone : R.string.issue_error_create_milestone;
         String errorMessage = getString(errorMessageResId, title);
@@ -376,7 +376,7 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
         }, error -> handleActionFailure("Deleting milestone failed", error));
     }
 
-    private void setMilestoneState(boolean open) {
+    private void setMilestoneState(final boolean open) {
         @StringRes int dialogMessageResId = open ? R.string.opening_msg : R.string.closing_msg;
         String errorMessage = getString(
                                   open ? R.string.issue_milestone_reopen_error : R.string.issue_milestone_close_error,
@@ -402,7 +402,7 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
         private boolean mStopping;
 
         @Override
-        public @NonNull Dialog onCreateDialog(@NonNull Bundle savedInstanceState) {
+        public @NonNull Dialog onCreateDialog(final @NonNull Bundle savedInstanceState) {
             final IssueMilestoneEditActivity activity = (IssueMilestoneEditActivity) getActivity();
             final Calendar c = Calendar.getInstance();
 
@@ -430,14 +430,14 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
         }
 
         @Override
-        public void onClick(DialogInterface dialog, int which) {
+        public void onClick(final DialogInterface dialog, final int which) {
             if (which == DialogInterface.BUTTON_NEUTRAL) {
                 getEditActivity().resetDueOn();
             }
         }
 
         @Override
-        public void onDateSet(DatePicker view, int year, int month, int day) {
+        public void onDateSet(final DatePicker view, final int year, final int month, final int day) {
             if (!mStopping) {
                 getEditActivity().setDueOn(year, month, day);
             }
@@ -450,7 +450,7 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
 
     private class MilestonePagerAdapter extends PagerAdapter {
         @Override
-        public Object instantiateItem(ViewGroup container, int position) {
+        public Object instantiateItem(final ViewGroup container, final int position) {
             @IdRes int resId = 0;
             switch (position) {
             case 0:
@@ -467,12 +467,12 @@ public class IssueMilestoneEditActivity extends BasePagerActivity implements
         }
 
         @Override
-        public boolean isViewFromObject(View view, Object object) {
+        public boolean isViewFromObject(final View view, final Object object) {
             return view == object;
         }
 
         @Override
-        public CharSequence getPageTitle(int position) {
+        public CharSequence getPageTitle(final int position) {
             return getString(TITLES[position]);
         }
 

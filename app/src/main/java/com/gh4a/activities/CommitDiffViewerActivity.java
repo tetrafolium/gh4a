@@ -38,10 +38,10 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class CommitDiffViewerActivity extends DiffViewerActivity<GitComment> {
-    public static Intent makeIntent(Context context, String repoOwner, String repoName,
-                                    String commitSha, String path, String diff, List<GitComment> comments,
-                                    int highlightStartLine, int highlightEndLine, boolean highlightIsRight,
-                                    IntentUtils.InitialCommentMarker initialComment) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
+                                    final String commitSha, final String path, final String diff, final List<GitComment> comments,
+                                    final int highlightStartLine, final int highlightEndLine, final boolean highlightIsRight,
+                                    final IntentUtils.InitialCommentMarker initialComment) {
         return DiffViewerActivity.fillInIntent(new Intent(context, CommitDiffViewerActivity.class),
                                                repoOwner, repoName, commitSha, path, diff, comments, -1,
                                                highlightStartLine, highlightEndLine, highlightIsRight, initialComment);
@@ -53,7 +53,7 @@ public class CommitDiffViewerActivity extends DiffViewerActivity<GitComment> {
     }
 
     @Override
-    protected Uri createUrl(String lineId, long replyId) {
+    protected Uri createUrl(final String lineId, final long replyId) {
         Uri.Builder builder = IntentUtils.createBaseUriForRepo(mRepoOwner, mRepoName)
                               .appendPath("commit")
                               .appendPath(mSha);
@@ -71,16 +71,16 @@ public class CommitDiffViewerActivity extends DiffViewerActivity<GitComment> {
     }
 
     @Override
-    protected PositionalCommentBase onUpdateReactions(PositionalCommentBase comment,
-            Reactions reactions) {
+    protected PositionalCommentBase onUpdateReactions(final PositionalCommentBase comment,
+            final Reactions reactions) {
         return ((GitComment) comment).toBuilder()
                .reactions(reactions)
                .build();
     }
 
     @Override
-    protected void openCommentDialog(long id, long replyToId, String line, int position,
-                                     int leftLine, int rightLine, PositionalCommentBase commitComment) {
+    protected void openCommentDialog(final long id, final long replyToId, final String line, final int position,
+                                     final int leftLine, final int rightLine, final PositionalCommentBase commitComment) {
         String body = commitComment == null ? "" : commitComment.body();
         Intent intent = EditDiffCommentActivity.makeIntent(this, mRepoOwner, mRepoName,
                         mSha, mPath, line, leftLine, rightLine, position, id, body);
@@ -88,14 +88,14 @@ public class CommitDiffViewerActivity extends DiffViewerActivity<GitComment> {
     }
 
     @Override
-    public Single<Response<Void>> doDeleteComment(long id) {
+    public Single<Response<Void>> doDeleteComment(final long id) {
         RepositoryCommentService service = ServiceFactory.get(RepositoryCommentService.class, false);
 
         return service.deleteCommitComment(mRepoOwner, mRepoName, id);
     }
 
     @Override
-    protected Single<List<GitComment>> createCommentSingle(boolean bypassCache) {
+    protected Single<List<GitComment>> createCommentSingle(final boolean bypassCache) {
         final RepositoryCommentService service =
             ServiceFactory.get(RepositoryCommentService.class, bypassCache);
         return ApiHelpers.PageIterator
@@ -104,7 +104,7 @@ public class CommitDiffViewerActivity extends DiffViewerActivity<GitComment> {
     }
 
     @Override
-    public Single<List<Reaction>> loadReactionDetails(ReactionBar.Item item, boolean bypassCache) {
+    public Single<List<Reaction>> loadReactionDetails(final ReactionBar.Item item, final boolean bypassCache) {
         final CommitCommentWrapper comment = (CommitCommentWrapper) item;
         final ReactionService service = ServiceFactory.get(ReactionService.class, bypassCache);
         return ApiHelpers.PageIterator
@@ -112,7 +112,7 @@ public class CommitDiffViewerActivity extends DiffViewerActivity<GitComment> {
     }
 
     @Override
-    public Single<Reaction> addReaction(ReactionBar.Item item, String content) {
+    public Single<Reaction> addReaction(final ReactionBar.Item item, final String content) {
         CommitCommentWrapper comment = (CommitCommentWrapper) item;
         final ReactionService service = ServiceFactory.get(ReactionService.class, false);
         ReactionRequest request = ReactionRequest.builder().content(content).build();

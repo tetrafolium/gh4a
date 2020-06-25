@@ -16,7 +16,7 @@ public class SettingsActivity extends BaseActivity implements
     private Intent mResultIntent;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
@@ -46,7 +46,7 @@ public class SettingsActivity extends BaseActivity implements
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(STATE_KEY_RESULT, mResultIntent);
     }

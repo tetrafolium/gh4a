@@ -44,8 +44,8 @@ import com.meisolsson.githubsdk.service.issues.IssueLabelService;
 
 public class IssueLabelListActivity extends BaseActivity implements
     RootAdapter.OnItemClickListener<IssueLabelAdapter.EditableLabel>, View.OnClickListener {
-    public static Intent makeIntent(Context context, String repoOwner, String repoName,
-                                    boolean fromPullRequest) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
+                                    final boolean fromPullRequest) {
         return new Intent(context, IssueLabelListActivity.class)
                .putExtra("owner", repoOwner)
                .putExtra("repo", repoName)
@@ -67,7 +67,7 @@ public class IssueLabelListActivity extends BaseActivity implements
     private static final String STATE_KEY_EDITING_LABEL = "editing_label";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.generic_list);
@@ -126,7 +126,7 @@ public class IssueLabelListActivity extends BaseActivity implements
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         mRepoOwner = extras.getString("owner");
         mRepoName = extras.getString("repo");
@@ -149,7 +149,7 @@ public class IssueLabelListActivity extends BaseActivity implements
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mActionMode != null) {
             if (mAddedLabel != null) {
@@ -161,7 +161,7 @@ public class IssueLabelListActivity extends BaseActivity implements
     }
 
     @Override
-    public void onItemClick(IssueLabelAdapter.EditableLabel item) {
+    public void onItemClick(final IssueLabelAdapter.EditableLabel item) {
         if (mActionMode == null) {
             startEditing(item);
         }
@@ -173,7 +173,7 @@ public class IssueLabelListActivity extends BaseActivity implements
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
         if (mActionMode == null) {
             mAddedLabel = new IssueLabelAdapter.EditableLabel("dddddd");
             mAdapter.add(mAddedLabel);
@@ -182,7 +182,7 @@ public class IssueLabelListActivity extends BaseActivity implements
         }
     }
 
-    private void startEditing(IssueLabelAdapter.EditableLabel label) {
+    private void startEditing(final IssueLabelAdapter.EditableLabel label) {
         mActionMode = new EditActionMode(label);
         mAdapter.notifyDataSetChanged();
         startSupportActionMode(mActionMode);
@@ -197,13 +197,13 @@ public class IssueLabelListActivity extends BaseActivity implements
     private final class EditActionMode implements ActionMode.Callback {
         private final IssueLabelAdapter.EditableLabel mLabel;
 
-        public EditActionMode(IssueLabelAdapter.EditableLabel label) {
+        public EditActionMode(final IssueLabelAdapter.EditableLabel label) {
             mLabel = label;
             mLabel.isEditing = true;
         }
 
         @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        public boolean onCreateActionMode(final ActionMode mode, final Menu menu) {
             menu.add(Menu.NONE, Menu.FIRST, Menu.NONE, R.string.save)
             .setIcon(R.drawable.content_save)
             .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
@@ -218,12 +218,12 @@ public class IssueLabelListActivity extends BaseActivity implements
         }
 
         @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        public boolean onPrepareActionMode(final ActionMode mode, final Menu menu) {
             return false;
         }
 
         @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        public boolean onActionItemClicked(final ActionMode mode, final MenuItem item) {
             switch (item.getItemId()) {
             case Menu.FIRST:
                 if (mLabel == mAddedLabel) {
@@ -248,7 +248,7 @@ public class IssueLabelListActivity extends BaseActivity implements
         }
 
         @Override
-        public void onDestroyActionMode(ActionMode mode) {
+        public void onDestroyActionMode(final ActionMode mode) {
             mActionMode = null;
             mLabel.isEditing = false;
             if (mLabel == mAddedLabel) {
@@ -262,7 +262,7 @@ public class IssueLabelListActivity extends BaseActivity implements
         }
     }
 
-    private void deleteLabel(IssueLabelAdapter.EditableLabel label) {
+    private void deleteLabel(final IssueLabelAdapter.EditableLabel label) {
         String errorMessage = getString(R.string.issue_error_delete_label, label.base().name());
         IssueLabelService service = ServiceFactory.get(IssueLabelService.class, false);
         service.deleteLabel(mRepoOwner, mRepoName, label.base().name())
@@ -274,7 +274,7 @@ public class IssueLabelListActivity extends BaseActivity implements
         }, error -> handleActionFailure("Deleting label failed", error));
     }
 
-    private void editLabel(IssueLabelAdapter.EditableLabel label) {
+    private void editLabel(final IssueLabelAdapter.EditableLabel label) {
         Label oldLabel = label.base();
         String errorMessage = getString(R.string.issue_error_edit_label, oldLabel.name());
         IssueLabelService service = ServiceFactory.get(IssueLabelService.class, false);
@@ -292,7 +292,7 @@ public class IssueLabelListActivity extends BaseActivity implements
         }, error -> handleActionFailure("Editing label failed", error));
     }
 
-    private void addLabel(IssueLabelAdapter.EditableLabel label) {
+    private void addLabel(final IssueLabelAdapter.EditableLabel label) {
         String errorMessage = getString(R.string.issue_error_create_label, label.name());
         IssueLabelService service = ServiceFactory.get(IssueLabelService.class, false);
         Label newLabel = Label.builder()
@@ -310,7 +310,7 @@ public class IssueLabelListActivity extends BaseActivity implements
         }, error -> handleActionFailure("Adding label failed", error));
     }
 
-    private void loadLabels(boolean force) {
+    private void loadLabels(final boolean force) {
         final IssueLabelService service = ServiceFactory.get(IssueLabelService.class, false);
         ApiHelpers.PageIterator
         .toSingle(page -> service.getRepositoryLabels(mRepoOwner, mRepoName, page))

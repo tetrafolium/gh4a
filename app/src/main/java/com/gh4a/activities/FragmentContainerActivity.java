@@ -13,7 +13,7 @@ public abstract class FragmentContainerActivity extends BaseActivity {
     private Fragment mFragment;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         final FragmentManager fm = getSupportFragmentManager();

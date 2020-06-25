@@ -15,22 +15,22 @@ public class NestedCoordinatorLayout extends CoordinatorLayout implements Nested
     private final int[] mParentOffsetInWindow = new int[2];
     private final int[] mParentScrollConsumed = new int[2];
 
-    public NestedCoordinatorLayout(Context context) {
+    public NestedCoordinatorLayout(final Context context) {
         this(context, null, 0);
     }
 
-    public NestedCoordinatorLayout(Context context, AttributeSet attrs) {
+    public NestedCoordinatorLayout(final Context context, final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public NestedCoordinatorLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public NestedCoordinatorLayout(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mNestedScrollingChildHelper = new NestedScrollingChildHelper(this);
         setNestedScrollingEnabled(true);
     }
 
     @Override
-    public void setNestedScrollingEnabled(boolean enabled) {
+    public void setNestedScrollingEnabled(final boolean enabled) {
         mNestedScrollingChildHelper.setNestedScrollingEnabled(enabled);
     }
 
@@ -40,46 +40,46 @@ public class NestedCoordinatorLayout extends CoordinatorLayout implements Nested
     }
 
     @Override
-    public boolean startNestedScroll(int axes, int type) {
+    public boolean startNestedScroll(final int axes, final int type) {
         return mNestedScrollingChildHelper.startNestedScroll(axes, type);
     }
 
     @Override
-    public void stopNestedScroll(int type) {
+    public void stopNestedScroll(final int type) {
         mNestedScrollingChildHelper.stopNestedScroll(type);
     }
 
     @Override
-    public boolean hasNestedScrollingParent(int type) {
+    public boolean hasNestedScrollingParent(final int type) {
         return mNestedScrollingChildHelper.hasNestedScrollingParent(type);
     }
 
     @Override
-    public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed,
-                                        int dyUnconsumed, int[] offsetInWindow, int type) {
+    public boolean dispatchNestedScroll(final int dxConsumed, final int dyConsumed, final int dxUnconsumed,
+                                        final int dyUnconsumed, final int[] offsetInWindow, final int type) {
         return mNestedScrollingChildHelper.dispatchNestedScroll(dxConsumed, dyConsumed,
                 dxUnconsumed, dyUnconsumed, offsetInWindow, type);
     }
 
     @Override
-    public boolean dispatchNestedPreScroll(int dx, int dy, int[] consumed,
-                                           int[] offsetInWindow, int type) {
+    public boolean dispatchNestedPreScroll(final int dx, final int dy, final int[] consumed,
+                                           final int[] offsetInWindow, final int type) {
         return mNestedScrollingChildHelper.dispatchNestedPreScroll(dx, dy, consumed,
                 offsetInWindow, type);
     }
 
     @Override
-    public boolean dispatchNestedFling(float velocityX, float velocityY, boolean consumed) {
+    public boolean dispatchNestedFling(final float velocityX, final float velocityY, final boolean consumed) {
         return mNestedScrollingChildHelper.dispatchNestedFling(velocityX, velocityY, consumed);
     }
 
     @Override
-    public boolean dispatchNestedPreFling(float velocityX, float velocityY) {
+    public boolean dispatchNestedPreFling(final float velocityX, final float velocityY) {
         return mNestedScrollingChildHelper.dispatchNestedPreFling(velocityX, velocityY);
     }
 
     @Override
-    public void onNestedScrollAccepted(View child, View target, int axes, int type) {
+    public void onNestedScrollAccepted(final View child, final View target, final int axes, final int type) {
         super.onNestedScrollAccepted(child, target, axes, type);
 
         // Dispatch up to the nested parent
@@ -87,21 +87,21 @@ public class NestedCoordinatorLayout extends CoordinatorLayout implements Nested
     }
 
     @Override
-    public void onStopNestedScroll(View target, int type) {
+    public void onStopNestedScroll(final View target, final int type) {
         super.onStopNestedScroll(target, type);
         stopNestedScroll(type);
     }
 
     @Override
-    public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed,
-                               int dyUnconsumed, int type) {
+    public void onNestedScroll(final View target, final int dxConsumed, final int dyConsumed, final int dxUnconsumed,
+                               final int dyUnconsumed, final int type) {
         super.onNestedScroll(target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, type);
         dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed,
                              mParentOffsetInWindow, type);
     }
 
     @Override
-    public void onNestedPreScroll(View target, int dx, int dy, int[] consumed, int type) {
+    public void onNestedPreScroll(final View target, final int dx, final int dy, final int[] consumed, final int type) {
         super.onNestedPreScroll(target, dx, dy, consumed, type);
 
         final int[] parentConsumed = mParentScrollConsumed;

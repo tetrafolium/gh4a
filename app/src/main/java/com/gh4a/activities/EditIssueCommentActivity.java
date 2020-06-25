@@ -13,9 +13,9 @@ import com.meisolsson.githubsdk.service.issues.IssueCommentService;
 import io.reactivex.Single;
 
 public class EditIssueCommentActivity extends EditCommentActivity {
-    public static Intent makeIntent(Context context, String repoOwner,
-                                    String repoName, int issueNumber, long id, String body,
-                                    @AttrRes int highlightColorAttr) {
+    public static Intent makeIntent(final Context context, final String repoOwner,
+                                    final String repoName, final int issueNumber, final long id, final String body,
+                                    final @AttrRes int highlightColorAttr) {
         Intent intent = new Intent(context, EditIssueCommentActivity.class)
         .putExtra("issue", issueNumber);
         return EditCommentActivity.fillInIntent(intent,
@@ -23,8 +23,8 @@ public class EditIssueCommentActivity extends EditCommentActivity {
     }
 
     @Override
-    protected Single<GitHubCommentBase> createComment(String repoOwner, String repoName,
-            String body, long replyToCommentId) {
+    protected Single<GitHubCommentBase> createComment(final String repoOwner, final String repoName,
+            final String body, final long replyToCommentId) {
         int issueNumber = getIntent().getIntExtra("issue", 0);
         IssueCommentService service = ServiceFactory.get(IssueCommentService.class, false);
         CommentRequest request = CommentRequest.builder().body(body).build();
@@ -33,8 +33,8 @@ public class EditIssueCommentActivity extends EditCommentActivity {
     }
 
     @Override
-    protected Single<GitHubCommentBase> editComment(String repoOwner, String repoName,
-            long commentId, String body) {
+    protected Single<GitHubCommentBase> editComment(final String repoOwner, final String repoName,
+            final long commentId, final String body) {
         IssueCommentService service = ServiceFactory.get(IssueCommentService.class, false);
         CommentRequest request = CommentRequest.builder().body(body).build();
         return service.editIssueComment(repoOwner, repoName, commentId, request)

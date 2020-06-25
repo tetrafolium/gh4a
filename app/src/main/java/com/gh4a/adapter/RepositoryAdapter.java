@@ -34,18 +34,18 @@ import java.util.Locale;
 
 public class RepositoryAdapter extends RootAdapter<Repository, RepositoryAdapter.ViewHolder>
     implements Filterable {
-    public RepositoryAdapter(Context context) {
+    public RepositoryAdapter(final Context context) {
         super(context);
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
         View v = inflater.inflate(R.layout.row_repo, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, Repository repository) {
+    public void onBindViewHolder(final ViewHolder holder, final Repository repository) {
         holder.tvTitle.setText(repository.owner().login() + "/" + repository.name());
 
         if (!StringUtils.isBlank(repository.description())) {
@@ -66,7 +66,7 @@ public class RepositoryAdapter extends RootAdapter<Repository, RepositoryAdapter
     }
 
     @Override
-    protected boolean isFiltered(CharSequence filter, Repository repo) {
+    protected boolean isFiltered(final CharSequence filter, final Repository repo) {
         String lcFilter = filter.toString().toLowerCase(Locale.getDefault());
         String name = repo.name().toLowerCase(Locale.getDefault());
         return name.contains(lcFilter);
@@ -74,7 +74,7 @@ public class RepositoryAdapter extends RootAdapter<Repository, RepositoryAdapter
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
         View.OnTouchListener {
-        private ViewHolder(View view) {
+        private ViewHolder(final View view) {
             super(view);
             tvTitle = view.findViewById(R.id.tv_title);
             tvDesc = view.findViewById(R.id.tv_desc);
@@ -99,14 +99,14 @@ public class RepositoryAdapter extends RootAdapter<Repository, RepositoryAdapter
         private final TextView tvFork;
 
         @Override
-        public void onClick(View v) {
+        public void onClick(final View v) {
             // Workaround to make it possible to open repositories when clicking inside of
             // attributes ScrollView
             itemView.performClick();
         }
 
         @Override
-        public boolean onTouch(View v, MotionEvent event) {
+        public boolean onTouch(final View v, final MotionEvent event) {
             return false;
         }
     }

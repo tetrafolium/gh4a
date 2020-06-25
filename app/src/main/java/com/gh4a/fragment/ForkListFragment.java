@@ -34,7 +34,7 @@ public class ForkListFragment extends PagedDataBaseFragment<Repository> {
     private String mRepoOwner;
     private String mRepoName;
 
-    public static ForkListFragment newInstance(String repoOwner, String repoName) {
+    public static ForkListFragment newInstance(final String repoOwner, final String repoName) {
         ForkListFragment f = new ForkListFragment();
 
         Bundle args = new Bundle();
@@ -46,7 +46,7 @@ public class ForkListFragment extends PagedDataBaseFragment<Repository> {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mRepoOwner = getArguments().getString("owner");
         mRepoName = getArguments().getString("repo");
@@ -63,12 +63,12 @@ public class ForkListFragment extends PagedDataBaseFragment<Repository> {
     }
 
     @Override
-    public void onItemClick(Repository repo) {
+    public void onItemClick(final Repository repo) {
         startActivity(RepositoryActivity.makeIntent(getActivity(), repo));
     }
 
     @Override
-    protected Single<Response<Page<Repository>>> loadPage(int page, boolean bypassCache) {
+    protected Single<Response<Page<Repository>>> loadPage(final int page, final boolean bypassCache) {
         final RepositoryForkService service = ServiceFactory.get(RepositoryForkService.class, bypassCache);
         return service.getForks(mRepoOwner, mRepoName, page);
     }

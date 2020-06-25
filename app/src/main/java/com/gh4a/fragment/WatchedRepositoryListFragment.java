@@ -31,7 +31,7 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class WatchedRepositoryListFragment extends PagedDataBaseFragment<Repository> {
-    public static WatchedRepositoryListFragment newInstance(String login) {
+    public static WatchedRepositoryListFragment newInstance(final String login) {
         WatchedRepositoryListFragment f = new WatchedRepositoryListFragment();
 
         Bundle args = new Bundle();
@@ -44,7 +44,7 @@ public class WatchedRepositoryListFragment extends PagedDataBaseFragment<Reposit
     private String mLogin;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLogin = getArguments().getString("user");
     }
@@ -60,12 +60,12 @@ public class WatchedRepositoryListFragment extends PagedDataBaseFragment<Reposit
     }
 
     @Override
-    public void onItemClick(Repository repository) {
+    public void onItemClick(final Repository repository) {
         startActivity(RepositoryActivity.makeIntent(getActivity(), repository));
     }
 
     @Override
-    protected Single<Response<Page<Repository>>> loadPage(int page, boolean bypassCache) {
+    protected Single<Response<Page<Repository>>> loadPage(final int page, final boolean bypassCache) {
         final WatchingService service = ServiceFactory.get(WatchingService.class, bypassCache);
         return service.getWatchedRepositories(mLogin, page);
     }

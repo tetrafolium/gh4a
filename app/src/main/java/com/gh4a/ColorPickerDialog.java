@@ -24,7 +24,7 @@ public class ColorPickerDialog extends AlertDialog {
     private final OnColorChangedListener mColorChangedListener;
     private final ColorPicker mColorPicker;
 
-    public ColorPickerDialog(Context context, String color, OnColorChangedListener listener) {
+    public ColorPickerDialog(final Context context, final String color, final OnColorChangedListener listener) {
         super(context);
         mColorChangedListener = listener;
 
@@ -55,7 +55,7 @@ public class ColorPickerDialog extends AlertDialog {
      * @param color
      *         The RGB value of a color
      */
-    private void setColor(String color) {
+    private void setColor(final String color) {
         int colorValue = Color.parseColor("#" + color);
         mColorPicker.setColor(colorValue);
         mColorPicker.setOldCenterColor(colorValue);

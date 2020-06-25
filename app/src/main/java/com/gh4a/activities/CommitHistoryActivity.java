@@ -12,8 +12,8 @@ import com.meisolsson.githubsdk.model.Commit;
 
 public class CommitHistoryActivity extends FragmentContainerActivity implements
     CommitListFragment.ContextSelectionCallback {
-    public static Intent makeIntent(Context context, String repoOwner, String repoName,
-                                    String ref, String path, boolean supportBaseSelection) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
+                                    final String ref, final String path, final boolean supportBaseSelection) {
         return new Intent(context, CommitHistoryActivity.class)
                .putExtra("owner", repoOwner)
                .putExtra("repo", repoName)
@@ -41,7 +41,7 @@ public class CommitHistoryActivity extends FragmentContainerActivity implements
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         mRepoOwner = extras.getString("owner");
         mRepoName = extras.getString("repo");
@@ -66,7 +66,7 @@ public class CommitHistoryActivity extends FragmentContainerActivity implements
     }
 
     @Override
-    public void onCommitSelectedAsBase(Commit commit) {
+    public void onCommitSelectedAsBase(final Commit commit) {
         Intent result = new Intent();
         result.putExtra("commit", commit);
         setResult(RESULT_OK, result);

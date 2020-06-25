@@ -409,8 +409,8 @@ public class LinkParserTest {
     @Test
     public void pullRequestLink_withDiffMarker__loadsDiff() throws Exception {
         LinkParser.ParseResult result =
-            parseLink("https://github.com/slapperwan/gh4a/pull/665/files" +
-                      "#diff-38f43208e0c158ca7b78e175b8846bc6");
+            parseLink("https://github.com/slapperwan/gh4a/pull/665/files"
+                      + "#diff-38f43208e0c158ca7b78e175b8846bc6");
         PullRequestDiffLoadTask loadTask =
             assertThatLoadTaskIs(result.loadTask, PullRequestDiffLoadTask.class);
         assertThat("User name is incorrect", loadTask.mRepoOwner, is("slapperwan"));
@@ -427,8 +427,8 @@ public class LinkParserTest {
     @Test
     public void pullRequestLink_withDiffMarker_andLeftNumber__loadsDiff() throws Exception {
         LinkParser.ParseResult result =
-            parseLink("https://github.com/slapperwan/gh4a/pull/665/files" +
-                      "#diff-38f43208e0c158ca7b78e175b8846bc6L24");
+            parseLink("https://github.com/slapperwan/gh4a/pull/665/files"
+                      + "#diff-38f43208e0c158ca7b78e175b8846bc6L24");
         PullRequestDiffLoadTask loadTask =
             assertThatLoadTaskIs(result.loadTask, PullRequestDiffLoadTask.class);
         assertThat("User name is incorrect", loadTask.mRepoOwner, is("slapperwan"));
@@ -445,8 +445,8 @@ public class LinkParserTest {
     @Test
     public void pullRequestLink_withDiffMarker_andLineRange__loadsDiff() throws Exception {
         LinkParser.ParseResult result =
-            parseLink("https://github.com/slapperwan/gh4a/pull/665/files" +
-                      "#diff-38f43208e0c158ca7b78e175b8846bc6L24-L26");
+            parseLink("https://github.com/slapperwan/gh4a/pull/665/files"
+                      + "#diff-38f43208e0c158ca7b78e175b8846bc6L24-L26");
         PullRequestDiffLoadTask loadTask =
             assertThatLoadTaskIs(result.loadTask, PullRequestDiffLoadTask.class);
         assertThat("User name is incorrect", loadTask.mRepoOwner, is("slapperwan"));
@@ -464,8 +464,8 @@ public class LinkParserTest {
     public void pullRequestLink_withDiffMarker_andInvalidNumber__opensPullRequest() throws
         Exception {
         LinkParser.ParseResult result =
-            parseLink("https://github.com/slapperwan/gh4a/pull/665/files" +
-                      "#diff-38f43208e0c158ca7b78e175b8846bc6LA3");
+            parseLink("https://github.com/slapperwan/gh4a/pull/665/files"
+                      + "#diff-38f43208e0c158ca7b78e175b8846bc6LA3");
         assertRedirectsTo(result, PullRequestActivity.class);
         Bundle extras = result.intent.getExtras();
         assertThat("Extras are missing", extras, is(notNullValue()));
@@ -481,8 +481,8 @@ public class LinkParserTest {
     @Test
     public void pullRequestLink_withDiffMarker_andRightNumber__loadsDiff() throws Exception {
         LinkParser.ParseResult result =
-            parseLink("https://github.com/slapperwan/gh4a/pull/665/files" +
-                      "#diff-38f43208e0c158ca7b78e175b8846bc6R24");
+            parseLink("https://github.com/slapperwan/gh4a/pull/665/files"
+                      + "#diff-38f43208e0c158ca7b78e175b8846bc6R24");
         PullRequestDiffLoadTask loadTask =
             assertThatLoadTaskIs(result.loadTask, PullRequestDiffLoadTask.class);
         assertThat("User name is incorrect", loadTask.mRepoOwner, is("slapperwan"));
@@ -499,8 +499,8 @@ public class LinkParserTest {
     @Test
     public void pullRequestLink_withDiffMarker_andIncorrectHash__loadsDiff() throws Exception {
         LinkParser.ParseResult result =
-            parseLink("https://github.com/slapperwan/gh4a/pull/665/files" +
-                      "#diff-38f43208e0c158ca7b78e1");
+            parseLink("https://github.com/slapperwan/gh4a/pull/665/files"
+                      + "#diff-38f43208e0c158ca7b78e1");
         assertRedirectsTo(result, PullRequestActivity.class);
         Bundle extras = result.intent.getExtras();
         assertThat("Extras are missing", extras, is(notNullValue()));
@@ -541,8 +541,8 @@ public class LinkParserTest {
 
     @Test
     public void pullRequestReviewDiffLink__loadsReviewDiff() throws Exception {
-        LinkParser.ParseResult result = parseLink("https://github.com/slapperwan/gh4a/pull/665" +
-                                        "#discussion-diff-136304421R590");
+        LinkParser.ParseResult result = parseLink("https://github.com/slapperwan/gh4a/pull/665"
+                                        + "#discussion-diff-136304421R590");
         PullRequestReviewDiffLoadTask loadTask =
             assertThatLoadTaskIs(result.loadTask, PullRequestReviewDiffLoadTask.class);
         assertThat("User name is incorrect", loadTask.mRepoOwner, is("slapperwan"));
@@ -592,9 +592,9 @@ public class LinkParserTest {
     @Test
     public void commitLink_withDiffMarker__loadsCommitDiff() throws Exception {
         LinkParser.ParseResult result =
-            parseLink("https://github.com/slapperwan/gh4a/commit/" +
-                      "57a054f85ade77ebb80eecd671aace770b312bf5" +
-                      "#diff-1d86a926c5d4666eb76b2326aa28ee89L160");
+            parseLink("https://github.com/slapperwan/gh4a/commit/"
+                      + "57a054f85ade77ebb80eecd671aace770b312bf5"
+                      + "#diff-1d86a926c5d4666eb76b2326aa28ee89L160");
         CommitDiffLoadTask loadTask =
             assertThatLoadTaskIs(result.loadTask, CommitDiffLoadTask.class);
         assertThat("User name is incorrect", loadTask.mRepoOwner, is("slapperwan"));
@@ -777,11 +777,11 @@ public class LinkParserTest {
         assertRedirectsToBrowser(parseLink("https://github.com/slapperwan/gh4a/unknown"));
     }
 
-    private LinkParser.ParseResult parseLink(String uriString) {
+    private LinkParser.ParseResult parseLink(final String uriString) {
         return LinkParser.parseUri(mActivity, Uri.parse(uriString), null);
     }
 
-    private static void assertRedirectsTo(LinkParser.ParseResult result, Class<?> cls) {
+    private static void assertRedirectsTo(final LinkParser.ParseResult result, final Class<?> cls) {
         assertThat("Parse result must not be null to redirect to activity", result,
                    is(notNullValue()));
         assertThat("Load task must be null to redirect to activity", result.loadTask,
@@ -791,13 +791,13 @@ public class LinkParserTest {
                    is(cls.getName()));
     }
 
-    private static void assertRedirectsToBrowser(LinkParser.ParseResult result) {
+    private static void assertRedirectsToBrowser(final LinkParser.ParseResult result) {
         assertThat("Parse result does not redirect to browser (must be null)", result,
                    is(nullValue()));
     }
 
-    private static <T extends UrlLoadTask> T assertThatLoadTaskIs(UrlLoadTask loadTask,
-            Class<T> cls) {
+    private static <T extends UrlLoadTask> T assertThatLoadTaskIs(final UrlLoadTask loadTask,
+            final Class<T> cls) {
         assertThat("Load task is of incorrect type", loadTask, is(instanceOf(cls)));
         //noinspection unchecked
         return (T) loadTask;

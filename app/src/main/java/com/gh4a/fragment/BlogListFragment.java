@@ -42,19 +42,19 @@ public class BlogListFragment extends ListDataBaseFragment<Feed> implements
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         inflater.inflate(R.menu.blog_list_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case R.id.browser:
             IntentUtils.launchBrowser(getActivity(), Uri.parse("https://blog.github.com"));
@@ -76,12 +76,12 @@ public class BlogListFragment extends ListDataBaseFragment<Feed> implements
     }
 
     @Override
-    public void onItemClick(Feed blog) {
+    public void onItemClick(final Feed blog) {
         startActivity(BlogActivity.makeIntent(getActivity(), blog));
     }
 
     @Override
-    protected Single<List<Feed>> onCreateDataSingle(boolean bypassCache) {
+    protected Single<List<Feed>> onCreateDataSingle(final boolean bypassCache) {
         return SingleFactory.loadBlogFeed();
     }
 }

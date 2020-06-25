@@ -24,22 +24,22 @@ public class CommitDiffLoadTask extends DiffLoadTask<GitComment> {
     @VisibleForTesting
     protected final String mSha;
 
-    public CommitDiffLoadTask(FragmentActivity activity, String repoOwner, String repoName,
-                              DiffHighlightId diffId, String sha) {
+    public CommitDiffLoadTask(final FragmentActivity activity, final String repoOwner, final String repoName,
+                              final DiffHighlightId diffId, final String sha) {
         super(activity, repoOwner, repoName, diffId);
         mSha = sha;
     }
 
     @Override
-    protected @NonNull Intent getLaunchIntent(String sha, @NonNull GitHubFile file,
-            List<GitComment> comments, DiffHighlightId diffId) {
+    protected @NonNull Intent getLaunchIntent(final String sha, final @NonNull GitHubFile file,
+            final List<GitComment> comments, final DiffHighlightId diffId) {
         return CommitDiffViewerActivity.makeIntent(mActivity, mRepoOwner, mRepoName,
                 sha, file.filename(), file.patch(), comments, diffId.startLine,
                 diffId.endLine, diffId.right, null);
     }
 
     @Override
-    protected @NonNull Intent getFallbackIntent(String sha) {
+    protected @NonNull Intent getFallbackIntent(final String sha) {
         return CommitActivity.makeIntent(mActivity, mRepoOwner, mRepoName, sha);
     }
 

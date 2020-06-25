@@ -16,12 +16,12 @@ public class NotificationHolder {
     private boolean mLastRepositoryNotification;
     private boolean mRead;
 
-    public NotificationHolder(@NonNull Repository repository) {
+    public NotificationHolder(final @NonNull Repository repository) {
         notification = null;
         this.repository = repository;
     }
 
-    public NotificationHolder(@NonNull NotificationThread notification) {
+    public NotificationHolder(final @NonNull NotificationThread notification) {
         this.notification = notification;
         repository = notification.repository();
         mRead = !notification.unread();
@@ -31,7 +31,7 @@ public class NotificationHolder {
         return mLastRepositoryNotification;
     }
 
-    public void setIsLastRepositoryNotification(boolean value) {
+    public void setIsLastRepositoryNotification(final boolean value) {
         mLastRepositoryNotification = value;
     }
 
@@ -39,7 +39,7 @@ public class NotificationHolder {
         return mRead;
     }
 
-    public void setIsRead(boolean value) {
+    public void setIsRead(final boolean value) {
         mRead = value;
     }
 }

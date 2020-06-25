@@ -135,12 +135,12 @@ public class ServiceFactory {
 
     private final static HashMap<String, Object> sCache = new HashMap<>();
 
-    public static <S> S get(Class<S> serviceClass, boolean bypassCache) {
+    public static <S> S get(final Class<S> serviceClass, final boolean bypassCache) {
         return get(serviceClass, bypassCache, null, null, null);
     }
 
-    public static <S> S get(Class<S> serviceClass, boolean bypassCache, String acceptHeader,
-                            String token, Integer pageSize) {
+    public static <S> S get(final Class<S> serviceClass, final boolean bypassCache, final String acceptHeader,
+                            final String token, final Integer pageSize) {
         String key = makeKey(serviceClass, bypassCache, acceptHeader, token, pageSize);
         S service = (S) sCache.get(key);
         if (service == null) {
@@ -150,15 +150,15 @@ public class ServiceFactory {
         return service;
     }
 
-    private static String makeKey(Class<?> serviceClass, boolean bypassCache,
-                                  String acceptHeader, String token, Integer pageSize) {
+    private static String makeKey(final Class<?> serviceClass, final boolean bypassCache,
+                                  final String acceptHeader, final String token, final Integer pageSize) {
         return String.format(Locale.US, "%s-%d-%s-%s-%d",
                              serviceClass.getSimpleName(), bypassCache ? 1 : 0,
                              acceptHeader != null ? acceptHeader : "",
                              token != null ? token : "", pageSize != null ? pageSize : 0);
     }
 
-    private static <S> S createService(Class<S> serviceClass, final boolean bypassCache,
+    private static <S> S createService(final Class<S> serviceClass, final boolean bypassCache,
                                        final String acceptHeader, final String token, final Integer pageSize) {
         OkHttpClient.Builder clientBuilder = sApiHttpClient.newBuilder()
                                              .addInterceptor(PAGINATION_INTRCEPTOR)
@@ -203,8 +203,8 @@ public class ServiceFactory {
         return retrofit.create(serviceClass);
     }
 
-    public static LoginService createLoginService(String userName, String password,
-            Optional.Supplier<String> otpCodeSupplier) {
+    public static LoginService createLoginService(final String userName, final String password,
+            final Optional.Supplier<String> otpCodeSupplier) {
         OkHttpClient.Builder clientBuilder = sApiHttpClient.newBuilder()
         .addInterceptor(chain -> {
             String otpCode = otpCodeSupplier.get();
@@ -246,7 +246,7 @@ public class ServiceFactory {
         return sImageHttpClient;
     }
 
-    static void initClient(Context context) {
+    static void initClient(final Context context) {
         sApiHttpClient = enableTls12IfNeeded(new OkHttpClient.Builder())
                          .cache(new Cache(new File(context.getCacheDir(), "api-http"), 20 * 1024 * 1024))
                          .build();
@@ -255,7 +255,7 @@ public class ServiceFactory {
         .build();
     }
 
-    private static OkHttpClient.Builder enableTls12IfNeeded(OkHttpClient.Builder builder) {
+    private static OkHttpClient.Builder enableTls12IfNeeded(final OkHttpClient.Builder builder) {
         if (Build.VERSION.SDK_INT >= 16 && Build.VERSION.SDK_INT < 22) {
             try {
                 SSLContext sc = SSLContext.getInstance("TLSv1.2");
@@ -303,7 +303,7 @@ public class ServiceFactory {
             private String[] scopes;
             private String note;
 
-            public AuthorizationRequest(String scopes, String note, String fingerprint) {
+            public AuthorizationRequest(final String scopes, final String note, final String fingerprint) {
                 this.scopes = scopes.split(",");
                 this.note = note;
                 this.fingerprint = fingerprint;
@@ -336,7 +336,7 @@ public class ServiceFactory {
 
         final SSLSocketFactory delegate;
 
-        public Tls12SocketFactory(SSLSocketFactory base) {
+        public Tls12SocketFactory(final SSLSocketFactory base) {
             this.delegate = base;
         }
 
@@ -351,34 +351,34 @@ public class ServiceFactory {
         }
 
         @Override
-        public Socket createSocket(Socket s, String host, int port, boolean autoClose)
+        public Socket createSocket(final Socket s, final String host, final int port, final boolean autoClose)
         throws IOException {
             return patch(delegate.createSocket(s, host, port, autoClose));
         }
 
         @Override
-        public Socket createSocket(String host, int port) throws IOException {
+        public Socket createSocket(final String host, final int port) throws IOException {
             return patch(delegate.createSocket(host, port));
         }
 
         @Override
-        public Socket createSocket(String host, int port, InetAddress localHost, int localPort)
+        public Socket createSocket(final String host, final int port, final InetAddress localHost, final int localPort)
         throws IOException {
             return patch(delegate.createSocket(host, port, localHost, localPort));
         }
 
         @Override
-        public Socket createSocket(InetAddress host, int port) throws IOException {
+        public Socket createSocket(final InetAddress host, final int port) throws IOException {
             return patch(delegate.createSocket(host, port));
         }
 
         @Override
-        public Socket createSocket(InetAddress address, int port,
-                                   InetAddress localAddress, int localPort) throws IOException {
+        public Socket createSocket(final InetAddress address, final int port,
+                                   final InetAddress localAddress, final int localPort) throws IOException {
             return patch(delegate.createSocket(address, port, localAddress, localPort));
         }
 
-        private Socket patch(Socket s) {
+        private Socket patch(final Socket s) {
             if (s instanceof SSLSocket) {
                 ((SSLSocket) s).setEnabledProtocols(TLS_V12_ONLY);
             }

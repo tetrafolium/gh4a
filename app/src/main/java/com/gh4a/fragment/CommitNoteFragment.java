@@ -39,9 +39,9 @@ public class CommitNoteFragment extends ListDataBaseFragment<GitComment> impleme
     CommitNoteAdapter.OnCommentAction<GitComment>,
     EditorBottomSheet.Callback, EditorBottomSheet.Listener {
 
-    public static CommitNoteFragment newInstance(String repoOwner, String repoName,
-            String commitSha, Commit commit,
-            List<GitComment> allComments, IntentUtils.InitialCommentMarker initialComment) {
+    public static CommitNoteFragment newInstance(final String repoOwner, final String repoName,
+            final String commitSha, final Commit commit,
+            final List<GitComment> allComments, final IntentUtils.InitialCommentMarker initialComment) {
         CommitNoteFragment f = new CommitNoteFragment();
 
         ArrayList<GitComment> comments = new ArrayList<>();
@@ -82,7 +82,7 @@ public class CommitNoteFragment extends ListDataBaseFragment<GitComment> impleme
     private EditorBottomSheet mBottomSheet;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         mRepoOwner = args.getString("owner");
@@ -95,7 +95,7 @@ public class CommitNoteFragment extends ListDataBaseFragment<GitComment> impleme
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         View listContent = super.onCreateView(inflater, container, savedInstanceState);
         View v = inflater.inflate(R.layout.comment_list, container, false);
 
@@ -115,7 +115,7 @@ public class CommitNoteFragment extends ListDataBaseFragment<GitComment> impleme
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getBaseActivity().addAppBarOffsetListener(mBottomSheet);
         mBottomSheet.post(() -> {
@@ -171,7 +171,7 @@ public class CommitNoteFragment extends ListDataBaseFragment<GitComment> impleme
     }
 
     @Override
-    public void onToggleAdvancedMode(boolean advancedMode) {
+    public void onToggleAdvancedMode(final boolean advancedMode) {
         BaseActivity activity = getBaseActivity();
         if (activity != null) {
             activity.collapseAppBar();
@@ -181,12 +181,12 @@ public class CommitNoteFragment extends ListDataBaseFragment<GitComment> impleme
     }
 
     @Override
-    public void onScrollingInBasicEditor(boolean scrolling) {
+    public void onScrollingInBasicEditor(final boolean scrolling) {
         getBaseActivity().setAppBarLocked(scrolling);
     }
 
     @Override
-    protected void setHighlightColors(int colorAttrId, int statusBarColorAttrId) {
+    protected void setHighlightColors(final int colorAttrId, final int statusBarColorAttrId) {
         super.setHighlightColors(colorAttrId, statusBarColorAttrId);
         mBottomSheet.setHighlightColor(colorAttrId);
     }
@@ -198,7 +198,7 @@ public class CommitNoteFragment extends ListDataBaseFragment<GitComment> impleme
     }
 
     @Override
-    protected void onAddData(RootAdapter<GitComment, ?> adapter, List<GitComment> data) {
+    protected void onAddData(final RootAdapter<GitComment, ?> adapter, final List<GitComment> data) {
         super.onAddData(adapter, data);
         Set<User> users = mAdapter.getUsers();
         if (mCommitAuthor != null) {
@@ -226,7 +226,7 @@ public class CommitNoteFragment extends ListDataBaseFragment<GitComment> impleme
     }
 
     @Override
-    protected Single<List<GitComment>> onCreateDataSingle(boolean bypassCache) {
+    protected Single<List<GitComment>> onCreateDataSingle(final boolean bypassCache) {
         final RepositoryCommentService service =
             ServiceFactory.get(RepositoryCommentService.class, bypassCache);
 
@@ -242,7 +242,7 @@ public class CommitNoteFragment extends ListDataBaseFragment<GitComment> impleme
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQUEST_EDIT) {
             if (resultCode == Activity.RESULT_OK) {
                 refreshComments();
@@ -253,7 +253,7 @@ public class CommitNoteFragment extends ListDataBaseFragment<GitComment> impleme
     }
 
     @Override
-    public void editComment(GitComment comment) {
+    public void editComment(final GitComment comment) {
         Intent intent = EditCommitCommentActivity.makeIntent(getActivity(),
                         mRepoOwner, mRepoName, mObjectSha, comment.id(), comment.body());
         startActivityForResult(intent, REQUEST_EDIT);
@@ -269,12 +269,12 @@ public class CommitNoteFragment extends ListDataBaseFragment<GitComment> impleme
     }
 
     @Override
-    public void quoteText(CharSequence text) {
+    public void quoteText(final CharSequence text) {
         mBottomSheet.addQuote(text);
     }
 
     @Override
-    public void addText(CharSequence text) {
+    public void addText(final CharSequence text) {
         mBottomSheet.addText(text);
     }
 
@@ -284,7 +284,7 @@ public class CommitNoteFragment extends ListDataBaseFragment<GitComment> impleme
     }
 
     @Override
-    public Single<?> onEditorDoSend(String comment) {
+    public Single<?> onEditorDoSend(final String comment) {
         RepositoryCommentService service = ServiceFactory.get(RepositoryCommentService.class, false);
         CreateCommitComment request = CreateCommitComment.builder().body(comment).build();
         return service.createCommitComment(mRepoOwner, mRepoName, mObjectSha, request)
@@ -307,7 +307,7 @@ public class CommitNoteFragment extends ListDataBaseFragment<GitComment> impleme
         }
     }
 
-    private void deleteComment(long id) {
+    private void deleteComment(final long id) {
         RepositoryCommentService service = ServiceFactory.get(RepositoryCommentService.class, false);
         service.deleteCommitComment(mRepoOwner, mRepoName, id)
         .map(ApiHelpers::throwOnFailure)

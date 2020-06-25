@@ -54,8 +54,8 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
     SearchView.OnQueryTextListener, SearchView.OnCloseListener,
     SearchView.OnSuggestionListener, FilterQueryProvider,
     AdapterView.OnItemSelectedListener, SearchAdapter.Callback {
-    public static SearchFragment newInstance(int initialType, String initialQuery,
-            boolean startSearchImmediately) {
+    public static SearchFragment newInstance(final int initialType, final String initialQuery,
+            final boolean startSearchImmediately) {
         SearchFragment f = new SearchFragment();
         Bundle args = new Bundle();
         args.putInt("search_type", initialType);
@@ -70,17 +70,17 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
     public static final int SEARCH_TYPE_CODE = 2;
 
     private static final int[][] HINT_AND_EMPTY_TEXTS = {
-        { R.string.search_hint_repo, R.string.no_search_repos_found },
-        { R.string.search_hint_user, R.string.no_search_users_found },
-        { R.string.search_hint_code, R.string.no_search_code_found }
+        {R.string.search_hint_repo, R.string.no_search_repos_found },
+        {R.string.search_hint_user, R.string.no_search_users_found },
+        {R.string.search_hint_code, R.string.no_search_code_found }
     };
 
     private static final String[] SUGGESTION_PROJECTION = {
         SuggestionsProvider.Columns._ID, SuggestionsProvider.Columns.SUGGESTION
     };
     private static final String SUGGESTION_SELECTION =
-        SuggestionsProvider.Columns.TYPE + " = ? AND " +
-        SuggestionsProvider.Columns.SUGGESTION + " LIKE ?";
+        SuggestionsProvider.Columns.TYPE + " = ? AND "
+        + SuggestionsProvider.Columns.SUGGESTION + " LIKE ?";
     private static final String SUGGESTION_ORDER = SuggestionsProvider.Columns.DATE + " DESC";
 
     private static final String STATE_KEY_QUERY = "query";
@@ -94,7 +94,7 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
     private String mQuery;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         if (savedInstanceState != null) {
@@ -108,7 +108,7 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         inflater.inflate(R.menu.search, menu);
 
         mSearchType = (Spinner) menu.findItem(R.id.type).getActionView();
@@ -138,7 +138,7 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         outState.putInt(STATE_KEY_SEARCH_TYPE, mSelectedSearchType);
         outState.putString(STATE_KEY_QUERY, mQuery);
         super.onSaveInstanceState(outState);
@@ -157,7 +157,7 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
     }
 
     @Override
-    protected Single<Response<Page<Object>>> loadPage(int page, boolean bypassCache) {
+    protected Single<Response<Page<Object>>> loadPage(final int page, final boolean bypassCache) {
         if (TextUtils.isEmpty(mQuery)) {
             return Single.just(Response.success(new ApiHelpers.DummyPage<>()));
         }
@@ -178,7 +178,7 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
     }
 
     @Override
-    public void onItemClick(Object item) {
+    public void onItemClick(final Object item) {
         if (item instanceof Repository) {
             Repository repository = (Repository) item;
             startActivity(RepositoryActivity.makeIntent(getActivity(), repository));
@@ -191,7 +191,7 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
     }
 
     @Override
-    public boolean onQueryTextSubmit(String query) {
+    public boolean onQueryTextSubmit(final String query) {
         mQuery = query;
         if (!StringUtils.isBlank(query)) {
             final ContentResolver cr = getActivity().getContentResolver();
@@ -212,7 +212,7 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
     }
 
     @Override
-    public boolean onQueryTextChange(String newText) {
+    public boolean onQueryTextChange(final String newText) {
         mQuery = newText;
         return true;
     }
@@ -227,12 +227,12 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
     }
 
     @Override
-    public boolean onSuggestionSelect(int position) {
+    public boolean onSuggestionSelect(final int position) {
         return false;
     }
 
     @Override
-    public boolean onSuggestionClick(int position) {
+    public boolean onSuggestionClick(final int position) {
         Cursor cursor = mSearch.getSuggestionsAdapter().getCursor();
         if (cursor.moveToPosition(position)) {
             if (position == cursor.getCount() - 1) {
@@ -243,7 +243,7 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
                     public void run() {
                         cr.delete(SuggestionsProvider.Columns.CONTENT_URI,
                                   SuggestionsProvider.Columns.TYPE + " = ?",
-                                  new String[] { String.valueOf(type) });
+                                  new String[] {String.valueOf(type) });
                     }
                 } .start();
             } else {
@@ -255,31 +255,31 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+    public void onItemSelected(final AdapterView<?> parent, final View view, final int position, final long id) {
         updateSelectedSearchType();
     }
 
     @Override
-    public void onNothingSelected(AdapterView<?> parent) {
+    public void onNothingSelected(final AdapterView<?> parent) {
         updateSelectedSearchType();
     }
 
     @Override
-    public void onSearchFragmentClick(SearchCode result, int matchIndex) {
+    public void onSearchFragmentClick(final SearchCode result, final int matchIndex) {
         openFileViewer(result, matchIndex);
     }
 
     @Override
-    public Cursor runQuery(CharSequence query) {
+    public Cursor runQuery(final CharSequence query) {
         if (TextUtils.isEmpty(query)) {
             return null;
         }
         return getContext().getContentResolver().query(SuggestionsProvider.Columns.CONTENT_URI,
                 SUGGESTION_PROJECTION, SUGGESTION_SELECTION,
-                new String[] { String.valueOf(mSelectedSearchType), query + "%" }, SUGGESTION_ORDER);
+                new String[] {String.valueOf(mSelectedSearchType), query + "%" }, SUGGESTION_ORDER);
     }
 
-    private void openFileViewer(SearchCode result, int matchIndex) {
+    private void openFileViewer(final SearchCode result, final int matchIndex) {
         Repository repo = result.repository();
         Uri uri = Uri.parse(result.url());
         String ref = uri.getQueryParameter("ref");
@@ -316,12 +316,12 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
         mSearch.setQuery(mQuery, true);
     }
 
-    private void updateEmptyText(@StringRes int emptyTextResId) {
+    private void updateEmptyText(final @StringRes int emptyTextResId) {
         TextView emptyView = getView().findViewById(android.R.id.empty);
         emptyView.setText(emptyTextResId);
     }
 
-    private Single<Response<Page<Object>>> makeRepoSearchSingle(long page, boolean bypassCache) {
+    private Single<Response<Page<Object>>> makeRepoSearchSingle(final long page, final boolean bypassCache) {
         SearchService service = ServiceFactory.get(SearchService.class, bypassCache);
         String params = mQuery + " fork:true";
 
@@ -333,13 +333,13 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
                .compose(RxUtils.mapFailureToValue(422, Response.success(new ApiHelpers.DummyPage<>())));
     }
 
-    private Single<Response<Page<Object>>> makeUserSearchSingle(long page, boolean bypassCache) {
+    private Single<Response<Page<Object>>> makeUserSearchSingle(final long page, final boolean bypassCache) {
         final SearchService service = ServiceFactory.get(SearchService.class, bypassCache);
         return service.searchUsers(mQuery, null, null, page)
                .compose(result -> RxUtils.<User, Object>searchPageAdapter(result, item -> item));
     }
 
-    private Single<Response<Page<Object>>> makeCodeSearchSingle(long page, boolean bypassCache) {
+    private Single<Response<Page<Object>>> makeCodeSearchSingle(final long page, final boolean bypassCache) {
         SearchService service = ServiceFactory.get(SearchService.class, bypassCache,
                                 "application/vnd.github.v3.text-match+json", null, null);
 
@@ -353,12 +353,12 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
         private final LayoutInflater mPopupInflater;
 
         private final int[][] mResources = new int[][] {
-            { R.string.search_type_repo, R.drawable.icon_repositories_dark, R.attr.searchRepoIcon, 0 },
-            { R.string.search_type_user, R.drawable.search_users_dark, R.attr.searchUserIcon, 0 },
-            { R.string.search_type_code, R.drawable.search_code_dark, R.attr.searchCodeIcon, 0 }
+            {R.string.search_type_repo, R.drawable.icon_repositories_dark, R.attr.searchRepoIcon, 0 },
+            {R.string.search_type_user, R.drawable.search_users_dark, R.attr.searchUserIcon, 0 },
+            {R.string.search_type_code, R.drawable.search_code_dark, R.attr.searchCodeIcon, 0 }
         };
 
-        private SearchTypeAdapter(Context context, Context popupContext) {
+        private SearchTypeAdapter(final Context context, final Context popupContext) {
             mContext = context;
             mInflater = LayoutInflater.from(context);
             mPopupInflater = LayoutInflater.from(popupContext);
@@ -373,17 +373,17 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
         }
 
         @Override
-        public CharSequence getItem(int position) {
+        public CharSequence getItem(final int position) {
             return mContext.getString(mResources[position][0]);
         }
 
         @Override
-        public long getItemId(int position) {
+        public long getItemId(final int position) {
             return 0;
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, final View convertView, final ViewGroup parent) {
             if (convertView == null) {
                 convertView = mInflater.inflate(R.layout.search_type_small, null);
             }
@@ -395,7 +395,7 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
         }
 
         @Override
-        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+        public View getDropDownView(final int position, final View convertView, final ViewGroup parent) {
             if (convertView == null) {
                 convertView = mPopupInflater.inflate(R.layout.search_type_popup, null);
             }
@@ -413,26 +413,26 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
     private static class SuggestionAdapter extends CursorAdapter {
         private final LayoutInflater mInflater;
 
-        public SuggestionAdapter(Context context) {
+        public SuggestionAdapter(final Context context) {
             super(context, null, false);
             mInflater = LayoutInflater.from(context);
         }
 
         @Override
-        public Cursor swapCursor(Cursor newCursor) {
+        public Cursor swapCursor(final Cursor newCursor) {
             if (newCursor != null && newCursor.getCount() > 0) {
                 MatrixCursor clearRowCursor = new MatrixCursor(SUGGESTION_PROJECTION);
                 clearRowCursor.addRow(new Object[] {
                                           Long.MAX_VALUE,
                                           mContext.getString(R.string.clear_suggestions)
                                       });
-                newCursor = new MergeCursor(new Cursor[] { newCursor, clearRowCursor });
+                newCursor = new MergeCursor(new Cursor[] {newCursor, clearRowCursor });
             }
             return super.swapCursor(newCursor);
         }
 
         @Override
-        public int getItemViewType(int position) {
+        public int getItemViewType(final int position) {
             return isClearRow(position) ? 1 : 0;
         }
 
@@ -442,20 +442,20 @@ public class SearchFragment extends PagedDataBaseFragment<Object> implements
         }
 
         @Override
-        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        public View newView(final Context context, final Cursor cursor, final ViewGroup parent) {
             @LayoutRes int layoutResId = isClearRow(cursor.getPosition())
                                          ? R.layout.row_suggestion_clear : R.layout.row_suggestion;
             return mInflater.inflate(layoutResId, parent, false);
         }
 
         @Override
-        public void bindView(View view, Context context, Cursor cursor) {
+        public void bindView(final View view, final Context context, final Cursor cursor) {
             TextView textView = (TextView) view;
             int columnIndex = cursor.getColumnIndexOrThrow(SuggestionsProvider.Columns.SUGGESTION);
             textView.setText(cursor.getString(columnIndex));
         }
 
-        private boolean isClearRow(int position) {
+        private boolean isClearRow(final int position) {
             return position == getCount() - 1;
         }
     }

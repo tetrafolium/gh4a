@@ -15,20 +15,20 @@ public class ScrollAwareFloatingActionButtonBehavior extends FloatingActionButto
     private final FloatingActionButton.OnVisibilityChangedListener mVisibilityChangedListener =
     new FloatingActionButton.OnVisibilityChangedListener() {
         @Override
-        public void onHidden(FloatingActionButton fab) {
+        public void onHidden(final FloatingActionButton fab) {
             super.onHidden(fab);
             fab.setVisibility(View.INVISIBLE);
         }
     };
 
-    public ScrollAwareFloatingActionButtonBehavior(Context context, AttributeSet attrs) {
+    public ScrollAwareFloatingActionButtonBehavior(final Context context, final AttributeSet attrs) {
         super(context, attrs);
     }
 
     @Override
-    public boolean onStartNestedScroll(@NonNull CoordinatorLayout coordinatorLayout,
-                                       @NonNull FloatingActionButton child, @NonNull View directTargetChild,
-                                       @NonNull View target, int axes, int type) {
+    public boolean onStartNestedScroll(final @NonNull CoordinatorLayout coordinatorLayout,
+                                       final @NonNull FloatingActionButton child, final @NonNull View directTargetChild,
+                                       final @NonNull View target, final int axes, final int type) {
         if (target.getTag(R.id.FloatingActionButtonScrollEnabled) == null) {
             return super.onStartNestedScroll(coordinatorLayout, child, directTargetChild, target,
                                              axes, type);
@@ -37,9 +37,9 @@ public class ScrollAwareFloatingActionButtonBehavior extends FloatingActionButto
     }
 
     @Override
-    public void onNestedScroll(@NonNull CoordinatorLayout coordinatorLayout,
-                               @NonNull FloatingActionButton child, @NonNull View target, int dxConsumed,
-                               int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type) {
+    public void onNestedScroll(final @NonNull CoordinatorLayout coordinatorLayout,
+                               final @NonNull FloatingActionButton child, final @NonNull View target, final int dxConsumed,
+                               final int dyConsumed, final int dxUnconsumed, final int dyUnconsumed, final int type) {
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed,
                              dyUnconsumed, type);
 

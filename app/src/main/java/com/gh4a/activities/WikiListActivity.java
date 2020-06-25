@@ -26,8 +26,8 @@ import com.gh4a.fragment.WikiListFragment;
 import com.meisolsson.githubsdk.model.GitHubWikiPage;
 
 public class WikiListActivity extends FragmentContainerActivity {
-    public static Intent makeIntent(Context context, String repoOwner,
-                                    String repoName, GitHubWikiPage initialPage) {
+    public static Intent makeIntent(final Context context, final String repoOwner,
+                                    final String repoName, final GitHubWikiPage initialPage) {
         String initialPageId = initialPage != null ? initialPage.sha() : null;
         return new Intent(context, WikiListActivity.class)
                .putExtra("owner", repoOwner)
@@ -51,7 +51,7 @@ public class WikiListActivity extends FragmentContainerActivity {
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         mUserLogin = extras.getString("owner");
         mRepoName = extras.getString("repo");

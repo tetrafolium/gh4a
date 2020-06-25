@@ -15,13 +15,13 @@ public abstract class BaseFragmentPagerActivity extends BasePagerActivity implem
     private FragmentAdapter mAdapter;
 
     @Override
-    protected PagerAdapter createAdapter(ViewGroup root) {
+    protected PagerAdapter createAdapter(final ViewGroup root) {
         mAdapter = new FragmentAdapter();
         return mAdapter;
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setChildScrollDelegate(this);
     }
@@ -61,14 +61,14 @@ public abstract class BaseFragmentPagerActivity extends BasePagerActivity implem
 
     protected abstract int[] getTabTitleResIds();
     protected abstract Fragment makeFragment(int position);
-    protected boolean fragmentNeedsRefresh(Fragment object) {
+    protected boolean fragmentNeedsRefresh(final Fragment object) {
         return false;
     }
 
-    protected void onFragmentInstantiated(Fragment f, int position) {
+    protected void onFragmentInstantiated(final Fragment f, final int position) {
     }
 
-    protected void onFragmentDestroyed(Fragment f) {
+    protected void onFragmentDestroyed(final Fragment f) {
     }
 
     private class FragmentAdapter extends FragmentStatePagerAdapter {
@@ -86,19 +86,19 @@ public abstract class BaseFragmentPagerActivity extends BasePagerActivity implem
         }
 
         @Override
-        public Fragment getItem(int position) {
+        public Fragment getItem(final int position) {
             return makeFragment(position);
         }
 
         @Override
-        public Object instantiateItem(ViewGroup container, int position) {
+        public Object instantiateItem(final ViewGroup container, final int position) {
             Fragment f = (Fragment) super.instantiateItem(container, position);
             mFragments.put(position, f);
             onFragmentInstantiated(f, position);
             return f;
         }
 
-        private Fragment getExistingFragment(int position) {
+        private Fragment getExistingFragment(final int position) {
             return mFragments.get(position);
         }
 
@@ -107,12 +107,12 @@ public abstract class BaseFragmentPagerActivity extends BasePagerActivity implem
         }
 
         @Override
-        public CharSequence getPageTitle(int position) {
+        public CharSequence getPageTitle(final int position) {
             return getString(getTabTitleResIds()[position]);
         }
 
         @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
+        public void destroyItem(final ViewGroup container, final int position, final Object object) {
             super.destroyItem(container, position, object);
             mFragments.remove(position);
             onFragmentDestroyed((Fragment) object);
@@ -122,13 +122,13 @@ public abstract class BaseFragmentPagerActivity extends BasePagerActivity implem
         }
 
         @Override
-        public void setPrimaryItem(ViewGroup container, int position, Object object) {
+        public void setPrimaryItem(final ViewGroup container, final int position, final Object object) {
             mCurrentFragment = (Fragment) object;
             super.setPrimaryItem(container, position, object);
         }
 
         @Override
-        public int getItemPosition(Object object) {
+        public int getItemPosition(final Object object) {
             if (object instanceof Fragment && fragmentNeedsRefresh((Fragment) object)) {
                 return POSITION_NONE;
             }

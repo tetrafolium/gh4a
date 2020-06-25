@@ -34,14 +34,14 @@ public abstract class LoadingFragmentBase extends Fragment implements
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(final Context context) {
         super.onAttach(context);
         mRxLoader = new RxLoader(context, getLoaderManager());
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.loading_fragment, container, false);
 
         mContentContainer = view.findViewById(R.id.content_container);
@@ -52,7 +52,7 @@ public abstract class LoadingFragmentBase extends Fragment implements
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         mProgress = view.findViewById(R.id.progress);
@@ -79,27 +79,27 @@ public abstract class LoadingFragmentBase extends Fragment implements
         return (BaseActivity) getActivity();
     }
 
-    protected <T> SingleTransformer<T, T> makeLoaderSingle(int id, boolean force) {
+    protected <T> SingleTransformer<T, T> makeLoaderSingle(final int id, final boolean force) {
         return upstream -> upstream
                .compose(RxUtils::doInBackground)
                .compose(mRxLoader.makeSingleTransformer(id, force));
     }
 
-    protected void handleLoadFailure(Throwable error) {
+    protected void handleLoadFailure(final Throwable error) {
         BaseActivity activity = getBaseActivity();
         if (activity != null) {
             activity.handleLoadFailure(error);
         }
     }
 
-    protected void handleActionFailure(String text, Throwable error) {
+    protected void handleActionFailure(final String text, final Throwable error) {
         BaseActivity activity = getBaseActivity();
         if (activity != null) {
             activity.handleActionFailure(text, error);
         }
     }
 
-    protected void setHighlightColors(int colorAttrId, int statusBarColorAttrId) {
+    protected void setHighlightColors(final int colorAttrId, final int statusBarColorAttrId) {
         mProgressColors[0] = UiUtils.resolveColor(getActivity(), colorAttrId);
         mProgressColors[1] = UiUtils.resolveColor(getActivity(), statusBarColorAttrId);
         if (mProgress != null) {
@@ -115,7 +115,7 @@ public abstract class LoadingFragmentBase extends Fragment implements
         return mContentShown;
     }
 
-    protected void setContentShown(boolean shown) {
+    protected void setContentShown(final boolean shown) {
         if (mContentShown != shown) {
             mContentShown = shown;
             if (mContentContainer != null) {

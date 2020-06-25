@@ -73,20 +73,20 @@ public class HtmlUtils {
         private final int mMargin;
         private final int mSize;
 
-        public ReplySpan(int margin, int size, int color) {
+        public ReplySpan(final int margin, final int size, final int color) {
             mColor = color;
             mMargin = margin;
             mSize = size;
         }
 
         @Override
-        public int getLeadingMargin(boolean first) {
+        public int getLeadingMargin(final boolean first) {
             return mMargin;
         }
 
-        public void drawLeadingMargin(Canvas c, Paint p, int x, int dir,
-                                      int top, int baseline, int bottom, CharSequence text,
-                                      int start, int end, boolean first, Layout layout) {
+        public void drawLeadingMargin(final Canvas c, final Paint p, final int x, final int dir,
+                                      final int top, final int baseline, final int bottom, final CharSequence text,
+                                      final int start, final int end, final boolean first, final Layout layout) {
             final Style style = p.getStyle();
             final int color = p.getColor();
 
@@ -103,13 +103,13 @@ public class HtmlUtils {
     private static class CodeBlockSpan implements LineBackgroundSpan {
         private final int mColor;
 
-        public CodeBlockSpan(int color) {
+        public CodeBlockSpan(final int color) {
             mColor = color;
         }
 
         @Override
-        public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline,
-                                   int bottom, CharSequence text, int start, int end, int lnum) {
+        public void drawBackground(final Canvas c, final Paint p, final int left, final int right, final int top, final int baseline,
+                                   final int bottom, final CharSequence text, final int start, final int end, final int lnum) {
             final int paintColor = p.getColor();
             p.setColor(mColor);
             c.drawRect(left, top, right, bottom, p);
@@ -121,14 +121,14 @@ public class HtmlUtils {
         private final int mColor;
         private final float mHeight;
 
-        public HorizontalLineSpan(float height, int color) {
+        public HorizontalLineSpan(final float height, final int color) {
             mColor = color;
             mHeight = height;
         }
 
         @Override
-        public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline,
-                                   int bottom, CharSequence text, int start, int end, int lnum) {
+        public void drawBackground(final Canvas c, final Paint p, final int left, final int right, final int top, final int baseline,
+                                   final int bottom, final CharSequence text, final int start, final int end, final int lnum) {
             final int paintColor = p.getColor();
             final float centerY = (top + bottom) / 2;
             p.setColor(mColor);
@@ -195,8 +195,8 @@ public class HtmlUtils {
             private static final HTMLSchema schema = new HTMLSchema();
         }
 
-        public static Spanned fromHtml(Context context,
-                                       String source, android.text.Html.ImageGetter imageGetter) {
+        public static Spanned fromHtml(final Context context,
+                                       final String source, final android.text.Html.ImageGetter imageGetter) {
             Parser parser = new Parser();
             try {
                 parser.setProperty(Parser.schemaProperty, HtmlParser.schema);
@@ -263,8 +263,8 @@ public class HtmlUtils {
             return sTextDecorationPattern;
         }
 
-        public HtmlToSpannedConverter(Context context, String source,
-                                      android.text.Html.ImageGetter imageGetter, Parser parser) {
+        public HtmlToSpannedConverter(final Context context, final String source,
+                                      final android.text.Html.ImageGetter imageGetter, final Parser parser) {
             final Resources res = context.getResources();
             mDividerHeight = res.getDimension(R.dimen.divider_span_height);
             mBulletMargin = res.getDimensionPixelSize(R.dimen.bullet_span_margin);
@@ -313,8 +313,8 @@ public class HtmlUtils {
 
                 // If the last line of the range is blank, back off by one.
                 if (end - 2 >= 0 && (end - start) >= 2) {
-                    if (mSpannableStringBuilder.charAt(end - 1) == '\n' &&
-                            mSpannableStringBuilder.charAt(end - 2) == '\n') {
+                    if (mSpannableStringBuilder.charAt(end - 1) == '\n'
+                            && mSpannableStringBuilder.charAt(end - 2) == '\n') {
                         end--;
                     }
                 }
@@ -342,7 +342,7 @@ public class HtmlUtils {
             return mSpannableStringBuilder;
         }
 
-        private void handleStartTag(String tag, Attributes attributes) {
+        private void handleStartTag(final String tag, final Attributes attributes) {
             //noinspection StatementWithEmptyBody
             if (tag.equalsIgnoreCase("br")) {
                 // We don't need to handle this. TagSoup will ensure that there's a </br> for each <br>
@@ -439,16 +439,16 @@ public class HtmlUtils {
                     appendNewlines(mSpannableStringBuilder, 1);
                 }
                 start(mSpannableStringBuilder, new Code(inPre));
-            } else if (tag.length() == 2 &&
-                       Character.toLowerCase(tag.charAt(0)) == 'h' &&
-                       tag.charAt(1) >= '1' && tag.charAt(1) <= '6') {
+            } else if (tag.length() == 2
+                       && Character.toLowerCase(tag.charAt(0)) == 'h'
+                       && tag.charAt(1) >= '1' && tag.charAt(1) <= '6') {
                 startHeading(mSpannableStringBuilder, attributes, tag.charAt(1) - '1');
             } else if (tag.equalsIgnoreCase("img")) {
                 startImg(mSpannableStringBuilder, attributes, mImageGetter);
             }
         }
 
-        private void handleEndTag(String tag) {
+        private void handleEndTag(final String tag) {
             if (tag.equalsIgnoreCase("br")) {
                 handleBr(mSpannableStringBuilder);
             } else if (tag.equalsIgnoreCase("p")) {
@@ -523,14 +523,14 @@ public class HtmlUtils {
                     setSpanFromMark(mSpannableStringBuilder, code,
                                     new TypefaceSpan("monospace"), backgroundSpan);
                 }
-            } else if (tag.length() == 2 &&
-                       Character.toLowerCase(tag.charAt(0)) == 'h' &&
-                       tag.charAt(1) >= '1' && tag.charAt(1) <= '6') {
+            } else if (tag.length() == 2
+                       && Character.toLowerCase(tag.charAt(0)) == 'h'
+                       && tag.charAt(1) >= '1' && tag.charAt(1) <= '6') {
                 endHeading(mSpannableStringBuilder);
             }
         }
 
-        private static void appendNewlines(Editable text, int minNewline) {
+        private static void appendNewlines(final Editable text, final int minNewline) {
             final int len = text.length();
 
             if (len == 0) {
@@ -547,11 +547,11 @@ public class HtmlUtils {
             }
         }
 
-        private static void startBlockElement(Editable text, Attributes attributes) {
+        private static void startBlockElement(final Editable text, final Attributes attributes) {
             startBlockElement(text, attributes, 2);
         }
 
-        private static void startBlockElement(Editable text, Attributes attributes, int newlines) {
+        private static void startBlockElement(final Editable text, final Attributes attributes, final int newlines) {
             appendNewlines(text, newlines);
             start(text, new Newline(newlines));
 
@@ -571,7 +571,7 @@ public class HtmlUtils {
             }
         }
 
-        private static void endBlockElement(Editable text) {
+        private static void endBlockElement(final Editable text) {
             Newline n = getLast(text, Newline.class);
             if (n != null) {
                 appendNewlines(text, n.mNumNewlines);
@@ -584,11 +584,11 @@ public class HtmlUtils {
             }
         }
 
-        private static void handleBr(Editable text) {
+        private static void handleBr(final Editable text) {
             text.append('\n');
         }
 
-        private void startLi(Editable text, Attributes attributes) {
+        private void startLi(final Editable text, final Attributes attributes) {
             ListItem item = new ListItem(getLast(text, List.class), attributes);
             startBlockElement(text, attributes, 1);
             start(text, item);
@@ -598,7 +598,7 @@ public class HtmlUtils {
             startCssStyle(text, attributes);
         }
 
-        private void endLi(Editable text) {
+        private void endLi(final Editable text) {
             endCssStyle(text);
             endBlockElement(text);
             ListItem item = getLast(text, ListItem.class);
@@ -611,22 +611,22 @@ public class HtmlUtils {
             }
         }
 
-        private void startBlockquote(Editable text, Attributes attributes) {
+        private void startBlockquote(final Editable text, final Attributes attributes) {
             startBlockElement(text, attributes);
             start(text, new Blockquote());
         }
 
-        private void endBlockquote(Editable text) {
+        private void endBlockquote(final Editable text) {
             endBlockElement(text);
             end(text, Blockquote.class, new ReplySpan(mReplyMargin, mReplyMarkerSize, 0xffdddddd));
         }
 
-        private void startHeading(Editable text, Attributes attributes, int level) {
+        private void startHeading(final Editable text, final Attributes attributes, final int level) {
             startBlockElement(text, attributes);
             start(text, new Heading(level));
         }
 
-        private static void endHeading(Editable text) {
+        private static void endHeading(final Editable text) {
             // RelativeSizeSpan and StyleSpan are CharacterStyles
             // Their ranges should not include the newlines at the end
             Heading h = getLast(text, Heading.class);
@@ -638,7 +638,7 @@ public class HtmlUtils {
             endBlockElement(text);
         }
 
-        private static <T> T getLast(Spanned text, Class<T> kind) {
+        private static <T> T getLast(final Spanned text, final Class<T> kind) {
             /*
              * This knows that the last returned object from getSpans()
              * will be the most recently added.
@@ -652,7 +652,7 @@ public class HtmlUtils {
             }
         }
 
-        private static void setSpanFromMark(Spannable text, Object mark, Object... spans) {
+        private static void setSpanFromMark(final Spannable text, final Object mark, final Object... spans) {
             int where = text.getSpanStart(mark);
             text.removeSpan(mark);
             int len = text.length();
@@ -666,19 +666,19 @@ public class HtmlUtils {
             }
         }
 
-        private static void start(Editable text, Object mark) {
+        private static void start(final Editable text, final Object mark) {
             int len = text.length();
             text.setSpan(mark, len, len, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
         }
 
-        private static void end(Editable text, Class<?> kind, Object repl) {
+        private static void end(final Editable text, final Class<?> kind, final Object repl) {
             Object obj = getLast(text, kind);
             if (obj != null) {
                 setSpanFromMark(text, obj, repl);
             }
         }
 
-        private void startCssStyle(Editable text, Attributes attributes) {
+        private void startCssStyle(final Editable text, final Attributes attributes) {
             String style = attributes.getValue("", "style");
             if (style != null) {
                 Matcher m = getForegroundColorPattern().matcher(style);
@@ -707,7 +707,7 @@ public class HtmlUtils {
             }
         }
 
-        private static void endCssStyle(Editable text) {
+        private static void endCssStyle(final Editable text) {
             Strikethrough s = getLast(text, Strikethrough.class);
             if (s != null) {
                 setSpanFromMark(text, s, new StrikethroughSpan());
@@ -724,7 +724,7 @@ public class HtmlUtils {
             }
         }
 
-        private static Integer parseColor(String colorString) {
+        private static Integer parseColor(final String colorString) {
             if (colorString == null) {
                 return null;
             }
@@ -736,8 +736,8 @@ public class HtmlUtils {
             }
         }
 
-        private static void startImg(Editable text, Attributes attributes,
-                                     android.text.Html.ImageGetter img) {
+        private static void startImg(final Editable text, final Attributes attributes,
+                                     final android.text.Html.ImageGetter img) {
             String src = attributes.getValue("", "src");
             Drawable d = img.getDrawable(src);
 
@@ -748,7 +748,7 @@ public class HtmlUtils {
                          Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
 
-        private void startFont(Editable text, Attributes attributes) {
+        private void startFont(final Editable text, final Attributes attributes) {
             String color = attributes.getValue("", "color");
             String face = attributes.getValue("", "face");
 
@@ -764,7 +764,7 @@ public class HtmlUtils {
             }
         }
 
-        private static void endFont(Editable text) {
+        private static void endFont(final Editable text) {
             Font font = getLast(text, Font.class);
             if (font != null) {
                 setSpanFromMark(text, font, new TypefaceSpan(font.mFace));
@@ -777,12 +777,12 @@ public class HtmlUtils {
             }
         }
 
-        private static void startA(Editable text, Attributes attributes) {
+        private static void startA(final Editable text, final Attributes attributes) {
             String href = attributes.getValue("", "href");
             start(text, new Href(href));
         }
 
-        private static void endA(Editable text) {
+        private static void endA(final Editable text) {
             Href h = getLast(text, Href.class);
             if (h != null) {
                 if (h.mHref != null) {
@@ -791,7 +791,7 @@ public class HtmlUtils {
             }
         }
 
-        public void setDocumentLocator(Locator locator) {
+        public void setDocumentLocator(final Locator locator) {
         }
 
         public void startDocument() throws SAXException {
@@ -800,22 +800,22 @@ public class HtmlUtils {
         public void endDocument() throws SAXException {
         }
 
-        public void startPrefixMapping(String prefix, String uri) throws SAXException {
+        public void startPrefixMapping(final String prefix, final String uri) throws SAXException {
         }
 
-        public void endPrefixMapping(String prefix) throws SAXException {
+        public void endPrefixMapping(final String prefix) throws SAXException {
         }
 
-        public void startElement(String uri, String localName, String qName, Attributes attributes)
+        public void startElement(final String uri, final String localName, final String qName, final Attributes attributes)
         throws SAXException {
             handleStartTag(localName, attributes);
         }
 
-        public void endElement(String uri, String localName, String qName) throws SAXException {
+        public void endElement(final String uri, final String localName, final String qName) throws SAXException {
             handleEndTag(localName);
         }
 
-        public void characters(char ch[], int start, int length) throws SAXException {
+        public void characters(final char ch[], final int start, final int length) throws SAXException {
             if (getLast(mSpannableStringBuilder, Pre.class) != null) {
                 /* We're in a pre block, so keep whitespace intact. */
                 for (int i = 0; i < length; i++) {
@@ -859,16 +859,16 @@ public class HtmlUtils {
             mSpannableStringBuilder.append(sb);
         }
 
-        public void ignorableWhitespace(char ch[], int start, int length) throws SAXException {
+        public void ignorableWhitespace(final char ch[], final int start, final int length) throws SAXException {
         }
 
-        public void processingInstruction(String target, String data) throws SAXException {
+        public void processingInstruction(final String target, final String data) throws SAXException {
         }
 
-        public void skippedEntity(String name) throws SAXException {
+        public void skippedEntity(final String name) throws SAXException {
         }
 
-        private static int parseIntAttribute(Attributes attributes, String name, int defaultValue) {
+        private static int parseIntAttribute(final Attributes attributes, final String name, final int defaultValue) {
             String value = attributes.getValue("", name);
             if (value != null) {
                 try {
@@ -899,7 +899,7 @@ public class HtmlUtils {
 
         private static class NeedsReversingSpan {
             public final Object mActualSpan;
-            public NeedsReversingSpan(Object actualSpan) {
+            public NeedsReversingSpan(final Object actualSpan) {
                 mActualSpan = actualSpan;
             }
         }
@@ -907,7 +907,7 @@ public class HtmlUtils {
         private static class Code {
             public final boolean mInPre;
 
-            public Code(boolean inPre) {
+            public Code(final boolean inPre) {
                 mInPre = inPre;
             }
         }
@@ -919,7 +919,7 @@ public class HtmlUtils {
             public List() {
                 mOrdered = false;
             }
-            public List(int position) {
+            public List(final int position) {
                 mOrdered = true;
                 mPosition = position;
             }
@@ -929,7 +929,7 @@ public class HtmlUtils {
             public final boolean mOrdered;
             public final int mPosition;
 
-            public ListItem(List list, Attributes attrs) {
+            public ListItem(final List list, final Attributes attrs) {
                 mOrdered = list != null && list.mOrdered;
                 int position = list != null ? list.mPosition : -1;
                 if (mOrdered) {
@@ -945,7 +945,7 @@ public class HtmlUtils {
         private static class Font {
             public final String mFace;
 
-            public Font(String face) {
+            public Font(final String face) {
                 mFace = face;
             }
         }
@@ -953,7 +953,7 @@ public class HtmlUtils {
         private static class Href {
             public final String mHref;
 
-            public Href(String href) {
+            public Href(final String href) {
                 mHref = href;
             }
         }
@@ -961,7 +961,7 @@ public class HtmlUtils {
         private static class Foreground {
             private final int mForegroundColor;
 
-            public Foreground(int foregroundColor) {
+            public Foreground(final int foregroundColor) {
                 mForegroundColor = foregroundColor;
             }
         }
@@ -969,7 +969,7 @@ public class HtmlUtils {
         private static class Background {
             private final int mBackgroundColor;
 
-            public Background(int backgroundColor) {
+            public Background(final int backgroundColor) {
                 mBackgroundColor = backgroundColor;
             }
         }
@@ -977,7 +977,7 @@ public class HtmlUtils {
         private static class Heading {
             private final int mLevel;
 
-            public Heading(int level) {
+            public Heading(final int level) {
                 mLevel = level;
             }
         }
@@ -985,7 +985,7 @@ public class HtmlUtils {
         private static class Newline {
             private final int mNumNewlines;
 
-            public Newline(int numNewlines) {
+            public Newline(final int numNewlines) {
                 mNumNewlines = numNewlines;
             }
         }
@@ -993,7 +993,7 @@ public class HtmlUtils {
         private static class Alignment {
             private final Layout.Alignment mAlignment;
 
-            public Alignment(Layout.Alignment alignment) {
+            public Alignment(final Layout.Alignment alignment) {
                 mAlignment = alignment;
             }
         }

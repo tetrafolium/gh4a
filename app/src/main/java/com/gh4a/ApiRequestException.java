@@ -18,7 +18,7 @@ public class ApiRequestException extends RuntimeException {
     private final ClientErrorResponse mResponse;
     private final int mStatus;
 
-    public ApiRequestException(Response response) {
+    public ApiRequestException(final Response response) {
         mStatus = response.code();
 
         ClientErrorResponse error = null;
@@ -69,7 +69,7 @@ public class ApiRequestException extends RuntimeException {
         }
     }
 
-    private String formatFieldError(ClientErrorResponse.FieldError error) {
+    private String formatFieldError(final ClientErrorResponse.FieldError error) {
         switch (error.reason()) {
         case Invalid:
             return String.format("Value for field %1$s is invalid", error.field());

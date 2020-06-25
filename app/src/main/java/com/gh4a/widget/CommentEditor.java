@@ -27,22 +27,22 @@ public class CommentEditor extends AppCompatMultiAutoCompleteTextView
     @StringRes
     private int mLockedHintResId;
 
-    public CommentEditor(Context context) {
+    public CommentEditor(final Context context) {
         super(context);
         initialize(context);
     }
 
-    public CommentEditor(Context context, AttributeSet attrs) {
+    public CommentEditor(final Context context, final AttributeSet attrs) {
         super(context, attrs);
         initialize(context);
     }
 
-    public CommentEditor(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CommentEditor(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initialize(context);
     }
 
-    private void initialize(Context context) {
+    private void initialize(final Context context) {
         int inputType = (getInputType() | InputType.TYPE_TEXT_FLAG_AUTO_CORRECT)
                         & ~InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE;
         setInputType(inputType);
@@ -57,7 +57,7 @@ public class CommentEditor extends AppCompatMultiAutoCompleteTextView
         setOnEditorActionListener(this);
     }
 
-    public void setMentionUsers(Set<User> users) {
+    public void setMentionUsers(final Set<User> users) {
         mMentionAdapter.replace(users);
     }
 
@@ -65,7 +65,7 @@ public class CommentEditor extends AppCompatMultiAutoCompleteTextView
         return mMentionAdapter.getUnfilteredUsers();
     }
 
-    public void setCommentEditorHintResId(@StringRes int resId) {
+    public void setCommentEditorHintResId(final @StringRes int resId) {
         mCommentEditorHintResId = resId;
         updateLockState();
     }
@@ -75,7 +75,7 @@ public class CommentEditor extends AppCompatMultiAutoCompleteTextView
         return mLockedHintResId;
     }
 
-    public void setLocked(boolean locked, @StringRes int lockedHintResId) {
+    public void setLocked(final boolean locked, final @StringRes int lockedHintResId) {
         mLocked = locked;
         mLockedHintResId = lockedHintResId;
         updateLockState();
@@ -85,7 +85,7 @@ public class CommentEditor extends AppCompatMultiAutoCompleteTextView
         return mLocked;
     }
 
-    public void addQuote(CharSequence text) {
+    public void addQuote(final CharSequence text) {
         if (mLocked) {
             return;
         }
@@ -94,7 +94,7 @@ public class CommentEditor extends AppCompatMultiAutoCompleteTextView
         focusEnd();
     }
 
-    public void addText(CharSequence text) {
+    public void addText(final CharSequence text) {
         if (mLocked) {
             return;
         }
@@ -121,7 +121,7 @@ public class CommentEditor extends AppCompatMultiAutoCompleteTextView
     }
 
     @Override
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+    public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
         if (actionId == EditorInfo.IME_ACTION_DONE) {
             UiUtils.hideImeForView(this);
             return true;

@@ -15,7 +15,7 @@ public abstract class ListDataBaseFragment<T> extends LoadingListFragmentBase {
     private Disposable mSubscription;
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         setContentShown(false);
@@ -39,13 +39,13 @@ public abstract class ListDataBaseFragment<T> extends LoadingListFragmentBase {
         return !mAdapter.isCardStyle();
     }
 
-    protected void onAddData(RootAdapter<T, ?> adapter, List<T> data) {
+    protected void onAddData(final RootAdapter<T, ?> adapter, final List<T> data) {
         adapter.addAll(data);
         adapter.notifyDataSetChanged();
     }
 
     @Override
-    protected void onRecyclerViewInflated(RecyclerView view, LayoutInflater inflater) {
+    protected void onRecyclerViewInflated(final RecyclerView view, final LayoutInflater inflater) {
         super.onRecyclerViewInflated(view, inflater);
         mAdapter = onCreateAdapter();
         view.setAdapter(mAdapter);
@@ -57,7 +57,7 @@ public abstract class ListDataBaseFragment<T> extends LoadingListFragmentBase {
         return mAdapter.isCardStyle();
     }
 
-    private void loadData(boolean force) {
+    private void loadData(final boolean force) {
         List<T> initialData = force ? null : onGetInitialData();
         if (initialData != null) {
             handleNewData(initialData);
@@ -68,7 +68,7 @@ public abstract class ListDataBaseFragment<T> extends LoadingListFragmentBase {
         }
     }
 
-    private void handleNewData(List<T> result) {
+    private void handleNewData(final List<T> result) {
         mAdapter.clear();
         onAddData(mAdapter, result);
         setContentShown(true);

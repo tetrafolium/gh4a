@@ -71,8 +71,8 @@ class EventViewHolder
     private final StyleableTextView mMessageView;
     private final View mAvatarContainer;
 
-    public EventViewHolder(View itemView, String repoOwner, String repoName,
-                           boolean isPullRequest) {
+    public EventViewHolder(final View itemView, final String repoOwner, final String repoName,
+                           final boolean isPullRequest) {
         super(itemView);
 
         mContext = itemView.getContext();
@@ -89,7 +89,7 @@ class EventViewHolder
     }
 
     @Override
-    public void bind(TimelineItem.TimelineEvent item) {
+    public void bind(final TimelineItem.TimelineEvent item) {
         User user = item.event.assigner() != null
                     ? item.event.assigner() : item.event.actor();
         AvatarHandler.assignAvatar(mAvatarView, user);
@@ -107,8 +107,8 @@ class EventViewHolder
                                          mMessageView.getTypefaceValue(), mIsPullRequest));
     }
 
-    private CharSequence formatEvent(final IssueEvent event, final User user, int typefaceValue,
-                                     boolean isPullRequestEvent) {
+    private CharSequence formatEvent(final IssueEvent event, final User user, final int typefaceValue,
+                                     final boolean isPullRequestEvent) {
         String textBase = null;
         int textResId = 0;
 
@@ -274,7 +274,7 @@ class EventViewHolder
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         if (v.getId() == R.id.avatar_container) {
             User user = (User) v.getTag();
             Intent intent = UserActivity.makeIntent(mContext, user);

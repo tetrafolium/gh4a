@@ -13,18 +13,18 @@ import com.gh4a.utils.StringUtils;
 import com.meisolsson.githubsdk.model.ReleaseAsset;
 
 public class ReleaseAssetAdapter extends RootAdapter<ReleaseAsset, ReleaseAssetAdapter.ViewHolder> {
-    public ReleaseAssetAdapter(Context context) {
+    public ReleaseAssetAdapter(final Context context) {
         super(context);
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
         View v = inflater.inflate(R.layout.row_download, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, ReleaseAsset asset) {
+    public void onBindViewHolder(final ViewHolder holder, final ReleaseAsset asset) {
         holder.tvTitle.setText(asset.name());
         if (!StringUtils.isBlank(asset.label())) {
             holder.tvDesc.setVisibility(View.VISIBLE);
@@ -40,7 +40,7 @@ public class ReleaseAssetAdapter extends RootAdapter<ReleaseAsset, ReleaseAssetA
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ViewHolder(View view) {
+        private ViewHolder(final View view) {
             super(view);
             tvTitle = view.findViewById(R.id.tv_title);
             tvDesc = view.findViewById(R.id.tv_desc);

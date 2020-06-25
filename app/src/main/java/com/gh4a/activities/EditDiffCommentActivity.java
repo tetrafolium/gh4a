@@ -17,9 +17,9 @@ import com.meisolsson.githubsdk.service.repositories.RepositoryCommentService;
 import io.reactivex.Single;
 
 public class EditDiffCommentActivity extends EditCommentActivity {
-    public static Intent makeIntent(Context context, String repoOwner, String repoName,
-                                    String commitId, String path, String line, int leftLine, int rightLine, int position,
-                                    long id, String body) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
+                                    final String commitId, final String path, final String line, final int leftLine, final int rightLine, final int position,
+                                    final long id, final String body) {
         Intent intent = new Intent(context, EditDiffCommentActivity.class)
         .putExtra("commit_id", commitId)
         .putExtra("path", path)
@@ -32,7 +32,7 @@ public class EditDiffCommentActivity extends EditCommentActivity {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         View header = getLayoutInflater().inflate(R.layout.edit_commit_comment_header, null);
@@ -48,8 +48,8 @@ public class EditDiffCommentActivity extends EditCommentActivity {
     }
 
     @Override
-    protected Single<GitHubCommentBase> createComment(String repoOwner, String repoName,
-            String body, long replyToCommentId) {
+    protected Single<GitHubCommentBase> createComment(final String repoOwner, final String repoName,
+            final String body, final long replyToCommentId) {
         Bundle extras = getIntent().getExtras();
         String commitId = extras.getString("commit_id");
         RepositoryCommentService service = ServiceFactory.get(RepositoryCommentService.class, false);
@@ -63,8 +63,8 @@ public class EditDiffCommentActivity extends EditCommentActivity {
     }
 
     @Override
-    protected Single<GitHubCommentBase> editComment(String repoOwner, String repoName,
-            long commentId, String body) {
+    protected Single<GitHubCommentBase> editComment(final String repoOwner, final String repoName,
+            final long commentId, final String body) {
         RepositoryCommentService service = ServiceFactory.get(RepositoryCommentService.class, false);
         CommentRequest request = CommentRequest.builder().body(body).build();
         return service.editCommitComment(repoOwner, repoName, commentId, request)

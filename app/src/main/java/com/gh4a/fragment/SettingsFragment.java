@@ -49,7 +49,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     private IntegerListPreference mNotificationIntervalPref;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(final Context context) {
         super.onAttach(context);
         if (!(context instanceof OnStateChangeListener)) {
             throw new IllegalArgumentException("Activity must implement OnStateChangeListener");
@@ -58,13 +58,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     }
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {
         getPreferenceManager().setSharedPreferencesName(PREF_NAME);
         addPreferencesFromResource(R.xml.settings);
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         mThemePref = (IntegerListPreference) findPreference(KEY_THEME);
@@ -86,7 +86,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     }
 
     @Override
-    public boolean onPreferenceChange(Preference pref, Object newValue) {
+    public boolean onPreferenceChange(final Preference pref, final Object newValue) {
         if (pref == mThemePref) {
             mListener.onThemeChanged();
             return true;
@@ -110,7 +110,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     }
 
     @Override
-    public boolean onPreferenceClick(Preference pref) {
+    public boolean onPreferenceClick(final Preference pref) {
         if (pref == mAboutPref) {
             AboutDialog d = new AboutDialog(getActivity(), Gh4Application.get().isAuthorized());
             d.setTitle(getAppName());
@@ -141,7 +141,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     }
 
     private static class AboutDialog extends AppCompatDialog implements View.OnClickListener {
-        public AboutDialog(Context context, boolean loggedIn) {
+        public AboutDialog(final Context context, final boolean loggedIn) {
             super(context);
 
             setContentView(R.layout.about_dialog);
@@ -160,7 +160,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         }
 
         @Override
-        public void onClick(View view) {
+        public void onClick(final View view) {
             Context context = getContext();
             int id = view.getId();
 
@@ -184,7 +184,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     }
 
     private static class OpenSourceComponentListDialog extends AlertDialog {
-        public OpenSourceComponentListDialog(Context context) {
+        public OpenSourceComponentListDialog(final Context context) {
             super(context);
 
             LayoutInflater inflater = LayoutInflater.from(context);
@@ -200,26 +200,26 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
     private static class OpenSourceComponentAdapter extends BaseAdapter {
         private static final String[][] COMPONENTS = new String[][] {
-            { "android-gif-drawable", "https://github.com/koral--/android-gif-drawable" },
-            { "Android-Job", "https://github.com/evernote/android-job" },
-            { "AndroidSVG", "https://github.com/BigBadaboom/androidsvg" },
-            { "emoji-java", "https://github.com/vdurmont/emoji-java" },
-            { "GitHubSdk", "https://github.com/maniac103/GitHubSdk" },
-            { "HoloColorPicker", "https://github.com/LarsWerkman/HoloColorPicker" },
-            { "MarkdownEdit", "https://github.com/Tunous/MarkdownEdit" },
-            { "Material Design Icons", "https://github.com/google/material-design-icons" },
-            { "PrettyTime", "https://github.com/ocpsoft/prettytime" },
-            { "Recycler Fast Scroll", "https://github.com/pluscubed/recycler-fast-scroll" },
-            { "Retrofit", "https://github.com/square/retrofit" },
-            { "RxAndroid", "https://github.com/ReactiveX/RxAndroid" },
-            { "RxJava", "https://github.com/ReactiveX/RxJava" },
-            { "RxLoader", "https://github.com/maniac103/RxLoader" },
-            { "SmoothProgressBar", "https://github.com/castorflex/SmoothProgressBar" },
+            {"android-gif-drawable", "https://github.com/koral--/android-gif-drawable" },
+            {"Android-Job", "https://github.com/evernote/android-job" },
+            {"AndroidSVG", "https://github.com/BigBadaboom/androidsvg" },
+            {"emoji-java", "https://github.com/vdurmont/emoji-java" },
+            {"GitHubSdk", "https://github.com/maniac103/GitHubSdk" },
+            {"HoloColorPicker", "https://github.com/LarsWerkman/HoloColorPicker" },
+            {"MarkdownEdit", "https://github.com/Tunous/MarkdownEdit" },
+            {"Material Design Icons", "https://github.com/google/material-design-icons" },
+            {"PrettyTime", "https://github.com/ocpsoft/prettytime" },
+            {"Recycler Fast Scroll", "https://github.com/pluscubed/recycler-fast-scroll" },
+            {"Retrofit", "https://github.com/square/retrofit" },
+            {"RxAndroid", "https://github.com/ReactiveX/RxAndroid" },
+            {"RxJava", "https://github.com/ReactiveX/RxJava" },
+            {"RxLoader", "https://github.com/maniac103/RxLoader" },
+            {"SmoothProgressBar", "https://github.com/castorflex/SmoothProgressBar" },
         };
 
         private final LayoutInflater mInflater;
 
-        public OpenSourceComponentAdapter(Context context) {
+        public OpenSourceComponentAdapter(final Context context) {
             mInflater = LayoutInflater.from(context);
         }
 
@@ -229,17 +229,17 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         }
 
         @Override
-        public Object getItem(int position) {
+        public Object getItem(final int position) {
             return COMPONENTS[position];
         }
 
         @Override
-        public long getItemId(int position) {
+        public long getItemId(final int position) {
             return position;
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, final View convertView, final ViewGroup parent) {
             if (convertView == null) {
                 convertView = mInflater.inflate(R.layout.open_source_component_item, parent, false);
             }

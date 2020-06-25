@@ -14,7 +14,7 @@ public class PrivateEventListFragment extends EventListFragment {
     private String mLogin;
     private String mOrganization;
 
-    public static PrivateEventListFragment newInstance(String login, String organization) {
+    public static PrivateEventListFragment newInstance(final String login, final String organization) {
         PrivateEventListFragment f = new PrivateEventListFragment();
         Bundle args = new Bundle();
         args.putString("login", login);
@@ -24,14 +24,14 @@ public class PrivateEventListFragment extends EventListFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLogin = getArguments().getString("login");
         mOrganization = getArguments().getString("org");
     }
 
     @Override
-    protected Single<Response<Page<GitHubEvent>>> loadPage(int page, boolean bypassCache) {
+    protected Single<Response<Page<GitHubEvent>>> loadPage(final int page, final boolean bypassCache) {
         final EventService service = ServiceFactory.get(EventService.class, bypassCache);
         return mOrganization != null
                ? service.getOrganizationEvents(mLogin, mOrganization, page)

@@ -14,7 +14,7 @@ import retrofit2.Response;
 public class RepositoryEventListFragment extends EventListFragment {
     private Repository mRepository;
 
-    public static RepositoryEventListFragment newInstance(Repository repository) {
+    public static RepositoryEventListFragment newInstance(final Repository repository) {
         RepositoryEventListFragment f = new RepositoryEventListFragment();
         Bundle args = new Bundle();
         args.putParcelable("repository", repository);
@@ -23,13 +23,13 @@ public class RepositoryEventListFragment extends EventListFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mRepository = getArguments().getParcelable("repository");
     }
 
     @Override
-    protected Single<Response<Page<GitHubEvent>>> loadPage(int page, boolean bypassCache) {
+    protected Single<Response<Page<GitHubEvent>>> loadPage(final int page, final boolean bypassCache) {
         final EventService service = ServiceFactory.get(EventService.class, bypassCache);
         return service.getRepositoryEvents(mRepository.owner().login(), mRepository.name(), page);
     }

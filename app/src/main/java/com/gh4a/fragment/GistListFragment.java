@@ -17,7 +17,7 @@ import retrofit2.Response;
 
 public class GistListFragment extends PagedDataBaseFragment<Gist> implements
     RootAdapter.OnItemClickListener<Gist> {
-    public static GistListFragment newInstance(String userLogin, boolean starred) {
+    public static GistListFragment newInstance(final String userLogin, final boolean starred) {
         Bundle args = new Bundle();
         args.putString("user", userLogin);
         args.putBoolean("starred", starred);
@@ -31,7 +31,7 @@ public class GistListFragment extends PagedDataBaseFragment<Gist> implements
     private boolean mShowStarred;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mUserLogin = getArguments().getString("user");
@@ -39,7 +39,7 @@ public class GistListFragment extends PagedDataBaseFragment<Gist> implements
     }
 
     @Override
-    protected Single<Response<Page<Gist>>> loadPage(int page, boolean bypassCache) {
+    protected Single<Response<Page<Gist>>> loadPage(final int page, final boolean bypassCache) {
         final GistService service = ServiceFactory.get(GistService.class, bypassCache);
         return mShowStarred
                ? service.getUserStarredGists(page)
@@ -59,7 +59,7 @@ public class GistListFragment extends PagedDataBaseFragment<Gist> implements
     }
 
     @Override
-    public void onItemClick(Gist gist) {
+    public void onItemClick(final Gist gist) {
         startActivity(GistActivity.makeIntent(getActivity(), gist.id()));
     }
 }

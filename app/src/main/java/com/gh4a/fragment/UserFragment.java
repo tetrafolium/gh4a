@@ -59,7 +59,7 @@ import retrofit2.Response;
 
 public class UserFragment extends LoadingFragmentBase implements
     OverviewRow.OnIconClickListener, View.OnClickListener {
-    public static UserFragment newInstance(User user) {
+    public static UserFragment newInstance(final User user) {
         UserFragment f = new UserFragment();
 
         Bundle args = new Bundle();
@@ -81,7 +81,7 @@ public class UserFragment extends LoadingFragmentBase implements
     private boolean mIsSelf;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mUser = getArguments().getParcelable("user");
         mIsSelf = ApiHelpers.loginEquals(mUser, Gh4Application.get().getAuthLogin());
@@ -89,7 +89,7 @@ public class UserFragment extends LoadingFragmentBase implements
     }
 
     @Override
-    protected View onCreateContentView(LayoutInflater inflater, ViewGroup parent) {
+    protected View onCreateContentView(final LayoutInflater inflater, final ViewGroup parent) {
         mContentView = inflater.inflate(R.layout.user, parent, false);
         return mContentView;
     }
@@ -104,7 +104,7 @@ public class UserFragment extends LoadingFragmentBase implements
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         fillData();
@@ -189,7 +189,7 @@ public class UserFragment extends LoadingFragmentBase implements
         fillTextView(R.id.tv_location, mUser.location());
     }
 
-    private static int orZero(Integer count) {
+    private static int orZero(final Integer count) {
         return count != null ? count : 0;
     }
 
@@ -201,7 +201,7 @@ public class UserFragment extends LoadingFragmentBase implements
         mFollowersRow.setToggleState(following);
     }
 
-    private void fillTextView(int id, String text) {
+    private void fillTextView(final int id, final String text) {
         TextView view = mContentView.findViewById(id);
         if (!StringUtils.isBlank(text)) {
             view.setText(text);
@@ -212,7 +212,7 @@ public class UserFragment extends LoadingFragmentBase implements
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
         int id = view.getId();
         Intent intent = null;
 
@@ -230,13 +230,13 @@ public class UserFragment extends LoadingFragmentBase implements
     }
 
     @Override
-    public void onIconClick(OverviewRow row) {
+    public void onIconClick(final OverviewRow row) {
         if (mIsFollowing != null) {
             toggleFollowingState();
         }
     }
 
-    private void fillTopRepos(Collection<Repository> topRepos) {
+    private void fillTopRepos(final Collection<Repository> topRepos) {
         View progress = mContentView.findViewById(R.id.pb_top_repos);
         LinearLayout ll = mContentView.findViewById(R.id.ll_top_repos);
         ll.removeAllViews();
@@ -284,7 +284,7 @@ public class UserFragment extends LoadingFragmentBase implements
         progress.setVisibility(View.GONE);
     }
 
-    private void fillOrganizations(List<User> organizations) {
+    private void fillOrganizations(final List<User> organizations) {
         ViewGroup llOrgs = mContentView.findViewById(R.id.ll_orgs);
         LinearLayout llOrg = mContentView.findViewById(R.id.ll_org);
         int count = organizations != null ? organizations.size() : 0;
@@ -331,7 +331,7 @@ public class UserFragment extends LoadingFragmentBase implements
         });
     }
 
-    private void loadTopRepositories(boolean force) {
+    private void loadTopRepositories(final boolean force) {
         RepositoryService service = ServiceFactory.get(RepositoryService.class, force, null, null, 5);
         final Single<Response<Page<Repository>>> observable;
 
@@ -357,7 +357,7 @@ public class UserFragment extends LoadingFragmentBase implements
         .subscribe(this::fillTopRepos, this::handleLoadFailure);
     }
 
-    private void loadOrganizationsIfUser(boolean force) {
+    private void loadOrganizationsIfUser(final boolean force) {
         if (mUser.type() != UserType.User) {
             fillOrganizations(null);
             return;
@@ -373,7 +373,7 @@ public class UserFragment extends LoadingFragmentBase implements
         .subscribe(this::fillOrganizations, this::handleLoadFailure);
     }
 
-    private void loadOrganizationMemberCountIfOrg(boolean force) {
+    private void loadOrganizationMemberCountIfOrg(final boolean force) {
         if (mUser.type() != UserType.Organization) {
             return;
         }
@@ -389,7 +389,7 @@ public class UserFragment extends LoadingFragmentBase implements
         }, this::handleLoadFailure);
     }
 
-    private void loadIsFollowingStateIfNeeded(boolean force) {
+    private void loadIsFollowingStateIfNeeded(final boolean force) {
         if (!canFollowUser()) {
             mIsFollowing = false;
             updateFollowingUi();

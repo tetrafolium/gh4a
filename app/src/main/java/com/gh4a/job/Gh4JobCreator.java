@@ -5,7 +5,7 @@ import com.evernote.android.job.JobCreator;
 
 public class Gh4JobCreator implements JobCreator {
     @Override
-    public Job create(String tag) {
+    public Job create(final String tag) {
         switch (tag) {
         case NotificationsJob.TAG:
             return new NotificationsJob();

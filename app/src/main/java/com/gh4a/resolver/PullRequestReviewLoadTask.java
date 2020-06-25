@@ -23,8 +23,8 @@ public class PullRequestReviewLoadTask extends UrlLoadTask {
     @VisibleForTesting
     protected final IntentUtils.InitialCommentMarker mMarker;
 
-    public PullRequestReviewLoadTask(FragmentActivity activity, String repoOwner, String repoName,
-                                     int pullRequestNumber, IntentUtils.InitialCommentMarker marker) {
+    public PullRequestReviewLoadTask(final FragmentActivity activity, final String repoOwner, final String repoName,
+                                     final int pullRequestNumber, final IntentUtils.InitialCommentMarker marker) {
         super(activity);
         mRepoOwner = repoOwner;
         mRepoName = repoName;

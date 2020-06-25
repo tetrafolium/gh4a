@@ -65,7 +65,7 @@ public class Github4AndroidActivity extends BaseActivity implements
     private View mProgress;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Gh4Application app = Gh4Application.get();
@@ -93,13 +93,13 @@ public class Github4AndroidActivity extends BaseActivity implements
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
+    protected void onNewIntent(final Intent intent) {
         if (!handleIntent(intent)) {
             super.onNewIntent(intent);
         }
     }
 
-    private boolean handleIntent(Intent intent) {
+    private boolean handleIntent(final Intent intent) {
         Uri data = intent.getData();
         if (data != null
                 && data.getScheme().equals(CALLBACK_URI.getScheme())
@@ -135,7 +135,7 @@ public class Github4AndroidActivity extends BaseActivity implements
     }
 
     @IdRes
-    protected int getInitialLeftDrawerSelection(Menu menu) {
+    protected int getInitialLeftDrawerSelection(final Menu menu) {
         menu.setGroupCheckable(R.id.navigation, false, false);
         menu.setGroupCheckable(R.id.explore, false, false);
         menu.setGroupVisible(R.id.my_items, false);
@@ -143,7 +143,7 @@ public class Github4AndroidActivity extends BaseActivity implements
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    public boolean onNavigationItemSelected(final @NonNull MenuItem item) {
         super.onNavigationItemSelected(item);
         switch (item.getItemId()) {
         case R.id.settings:
@@ -174,7 +174,7 @@ public class Github4AndroidActivity extends BaseActivity implements
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQUEST_SETTINGS) {
             boolean themeChange = data != null
                                   && data.getBooleanExtra(SettingsActivity.RESULT_EXTRA_THEME_CHANGED, false);
@@ -190,7 +190,7 @@ public class Github4AndroidActivity extends BaseActivity implements
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
         if (view.getId() == R.id.oauth_login_button) {
             launchOauthLogin(this);
             mContent.setVisibility(View.GONE);
@@ -202,18 +202,18 @@ public class Github4AndroidActivity extends BaseActivity implements
     }
 
     @Override
-    public void onLoginFinished(String token, User user) {
+    public void onLoginFinished(final String token, final User user) {
         Gh4Application.get().addAccount(user, token);
         goToToplevelActivity();
         finish();
     }
 
     @Override
-    public void onLoginFailed(Throwable error) {
+    public void onLoginFailed(final Throwable error) {
         handleLoadFailure(error);
     }
 
-    public static void launchOauthLogin(Activity activity) {
+    public static void launchOauthLogin(final Activity activity) {
         Uri uri = Uri.parse(OAUTH_URL)
                   .buildUpon()
                   .appendQueryParameter(PARAM_CLIENT_ID, BuildConfig.CLIENT_ID)

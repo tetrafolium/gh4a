@@ -11,7 +11,7 @@ public class BlogFactory extends FragmentFactory {
         R.string.blog
     };
 
-    public BlogFactory(HomeActivity activity) {
+    public BlogFactory(final HomeActivity activity) {
         super(activity);
     }
 
@@ -26,7 +26,7 @@ public class BlogFactory extends FragmentFactory {
     }
 
     @Override
-    protected Fragment makeFragment(int position) {
+    protected Fragment makeFragment(final int position) {
         return BlogListFragment.newInstance();
     }
 }

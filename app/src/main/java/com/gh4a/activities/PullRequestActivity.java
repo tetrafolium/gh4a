@@ -73,11 +73,11 @@ import io.reactivex.Single;
 
 public class PullRequestActivity extends BaseFragmentPagerActivity implements
     View.OnClickListener, PullRequestFilesFragment.CommentUpdateListener {
-    public static Intent makeIntent(Context context, String repoOwner, String repoName, int number) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName, final int number) {
         return makeIntent(context, repoOwner, repoName, number, -1, null);
     }
-    public static Intent makeIntent(Context context, String repoOwner, String repoName,
-                                    int number, int initialPage, IntentUtils.InitialCommentMarker initialComment) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
+                                    final int number, final int initialPage, final IntentUtils.InitialCommentMarker initialComment) {
         return new Intent(context, PullRequestActivity.class)
                .putExtra("owner", repoOwner)
                .putExtra("repo", repoName)
@@ -115,7 +115,7 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
     };
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         LayoutInflater inflater = LayoutInflater.from(UiUtils.makeHeaderThemedContext(this));
@@ -146,7 +146,7 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.pullrequest_menu, menu);
 
         Gh4Application app = Gh4Application.get();
@@ -196,7 +196,7 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case R.id.pull_merge:
             showMergeDialog();
@@ -225,7 +225,7 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQUEST_EDIT_ISSUE) {
             if (resultCode == Activity.RESULT_OK) {
                 setResult(Activity.RESULT_OK);
@@ -244,7 +244,7 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         mRepoOwner = extras.getString("owner");
         mRepoName = extras.getString("repo");
@@ -285,7 +285,7 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected Fragment makeFragment(int position) {
+    protected Fragment makeFragment(final int position) {
         if (position == 1) {
             PullRequestMarker base = mPullRequest.base();
             PullRequestMarker head = mPullRequest.head();
@@ -303,21 +303,21 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected void onFragmentInstantiated(Fragment f, int position) {
+    protected void onFragmentInstantiated(final Fragment f, final int position) {
         if (position == 0) {
             mPullRequestFragment = (PullRequestFragment) f;
         }
     }
 
     @Override
-    protected void onFragmentDestroyed(Fragment f) {
+    protected void onFragmentDestroyed(final Fragment f) {
         if (f == mPullRequestFragment) {
             mPullRequestFragment = null;
         }
     }
 
     @Override
-    protected boolean fragmentNeedsRefresh(Fragment object) {
+    protected boolean fragmentNeedsRefresh(final Fragment object) {
         return true;
     }
 
@@ -334,7 +334,7 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         if (v == mEditFab) {
             Intent editIntent = IssueEditActivity.makeEditIntent(this, mRepoOwner, mRepoName, mIssue);
             startActivityForResult(editIntent, REQUEST_EDIT_ISSUE);
@@ -379,13 +379,13 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
         mergeMethod.setAdapter(adapter);
         mergeMethod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(final AdapterView<?> parent, final View view, final int position, final long id) {
                 int editorVisibility = position == 2 ? View.GONE : View.VISIBLE;
                 editorNotice.setVisibility(editorVisibility);
                 editor.setVisibility(editorVisibility);
             }
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+            public void onNothingSelected(final AdapterView<?> adapterView) {
 
             }
         });
@@ -481,7 +481,7 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
         supportInvalidateOptionsMenu();
     }
 
-    private void updatePullRequestState(boolean open) {
+    private void updatePullRequestState(final boolean open) {
         @StringRes int dialogMessageResId = open ? R.string.opening_msg : R.string.closing_msg;
         @StringRes int errorMessageResId = open ? R.string.issue_error_reopen : R.string.issue_error_close;
         String errorMessage = getString(errorMessageResId, mPullRequest.number());
@@ -500,7 +500,7 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
         }, error -> handleActionFailure("Updating pull request failed", error));
     }
 
-    private void mergePullRequest(String commitMessage, MergeRequest.Method mergeMethod) {
+    private void mergePullRequest(final String commitMessage, final MergeRequest.Method mergeMethod) {
         String errorMessage = getString(R.string.pull_error_merge, mPullRequest.number());
         PullRequestService service = ServiceFactory.get(PullRequestService.class, false);
         MergeRequest request = MergeRequest.builder()
@@ -522,7 +522,7 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
         }, error -> handleActionFailure("Merging pull request failed", error));
     }
 
-    private void load(boolean force) {
+    private void load(final boolean force) {
         PullRequestService prService = ServiceFactory.get(PullRequestService.class, force);
         IssueService issueService = ServiceFactory.get(IssueService.class, force);
 
@@ -552,7 +552,7 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
         }, this::handleLoadFailure);
     }
 
-    private void loadPendingReview(boolean force) {
+    private void loadPendingReview(final boolean force) {
         String ownLogin = Gh4Application.get().getAuthLogin();
         PullRequestReviewService service = ServiceFactory.get(PullRequestReviewService.class, force);
 
@@ -578,7 +578,7 @@ public class PullRequestActivity extends BaseFragmentPagerActivity implements
         final @StringRes int textResId;
         final MergeRequest.Method action;
 
-        public MergeMethodDesc(@StringRes int textResId, MergeRequest.Method action) {
+        public MergeMethodDesc(final @StringRes int textResId, final MergeRequest.Method action) {
             this.textResId = textResId;
             this.action = action;
         }

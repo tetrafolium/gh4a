@@ -18,7 +18,7 @@ class ReplyViewHolder extends TimelineItemAdapter.TimelineItemViewHolder<Timelin
 
     private final Button mReplyButton;
 
-    public ReplyViewHolder(View itemView, Callback callback) {
+    public ReplyViewHolder(final View itemView, final Callback callback) {
         super(itemView);
 
         mCallback = callback;
@@ -28,7 +28,7 @@ class ReplyViewHolder extends TimelineItemAdapter.TimelineItemViewHolder<Timelin
     }
 
     @Override
-    public void bind(TimelineItem.Reply item) {
+    public void bind(final TimelineItem.Reply item) {
         boolean selected = item.timelineComment.comment().id() == mCallback.getSelectedCommentId();
         mReplyButton.setTag(item.timelineComment);
         mReplyButton.setText(selected ? R.string.reply_selected : R.string.reply);

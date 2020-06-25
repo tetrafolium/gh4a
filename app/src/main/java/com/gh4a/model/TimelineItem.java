@@ -50,12 +50,12 @@ public abstract class TimelineItem {
 
         private Diff diff;
 
-        public TimelineComment(@NonNull GitHubComment comment) {
+        public TimelineComment(final @NonNull GitHubComment comment) {
             this.comment = comment;
             this.file = null;
         }
 
-        public TimelineComment(@NonNull ReviewComment comment, @Nullable GitHubFile file) {
+        public TimelineComment(final @NonNull ReviewComment comment, final @Nullable GitHubFile file) {
             this.comment = comment;
             this.file = file;
         }
@@ -68,7 +68,7 @@ public abstract class TimelineItem {
             return comment instanceof ReviewComment ? (ReviewComment) comment : null;
         }
 
-        public void setReactions(Reactions reactions) {
+        public void setReactions(final Reactions reactions) {
             if (comment instanceof ReviewComment) {
                 comment = ((ReviewComment) comment).toBuilder().reactions(reactions).build();
             } else {
@@ -92,12 +92,12 @@ public abstract class TimelineItem {
         }
 
         @Nullable
-        public Intent makeDiffIntent(Context context) {
+        public Intent makeDiffIntent(final Context context) {
             return makeDiffIntent(context, -1, false);
         }
 
         @Nullable
-        public Intent makeDiffIntent(Context context, int line, boolean isRightNumber) {
+        public Intent makeDiffIntent(final Context context, final int line, final boolean isRightNumber) {
             ReviewComment reviewComment = getReviewComment();
             if (file == null || reviewComment == null) {
                 return null;
@@ -125,7 +125,7 @@ public abstract class TimelineItem {
         @NonNull
         public final IssueEvent event;
 
-        public TimelineEvent(@NonNull IssueEvent event) {
+        public TimelineEvent(final @NonNull IssueEvent event) {
             this.event = event;
         }
 
@@ -151,7 +151,7 @@ public abstract class TimelineItem {
         @NonNull
         private final Map<String, Diff> diffHunksBySpecialId = new HashMap<>();
 
-        public TimelineReview(@NonNull Review review) {
+        public TimelineReview(final @NonNull Review review) {
             this.review = review;
         }
 
@@ -184,8 +184,8 @@ public abstract class TimelineItem {
          * @param file The commit file in which the comment was created.
          * @param addNewDiffHunk {@code true} if new diff hunk should be created if it's not found.
          */
-        public void addComment(@NonNull ReviewComment comment, @Nullable GitHubFile file,
-                               boolean addNewDiffHunk) {
+        public void addComment(final @NonNull ReviewComment comment, final @Nullable GitHubFile file,
+                               final boolean addNewDiffHunk) {
             // Comments are grouped by a special diff hunk id which is a combination of these 3
             // fields. By using this id we can display comments and their replies together under
             // a single diff hunk.
@@ -207,8 +207,8 @@ public abstract class TimelineItem {
                     return;
                 }
 
-                if (diffHunk.getCreatedAt() != null &&
-                        diffHunk.getCreatedAt().after(comment.createdAt())) {
+                if (diffHunk.getCreatedAt() != null
+                        && diffHunk.getCreatedAt().after(comment.createdAt())) {
                     // Because we are adding all of the comments in order based on their creation
                     // date and also first add only comments from the initial review we know that
                     // if something comes out of order then our initial comment was a reply.
@@ -234,12 +234,12 @@ public abstract class TimelineItem {
          *
          * @param comment The comment for which to return the special id.
          */
-        public static String getDiffHunkId(ReviewComment comment) {
-            return comment.originalCommitId() + comment.path() +
-                   comment.originalPosition();
+        public static String getDiffHunkId(final ReviewComment comment) {
+            return comment.originalCommitId() + comment.path()
+                   + comment.originalPosition();
         }
 
-        public Diff(TimelineComment timelineComment) {
+        public Diff(final TimelineComment timelineComment) {
             timelineComment.diff = this;
             comments.add(timelineComment);
         }
@@ -260,7 +260,7 @@ public abstract class TimelineItem {
          * Mark that this diff hunk corresponds to an initial review comment that was created as
          * reply to different review comment.
          */
-        public void setIsReply(boolean isReply) {
+        public void setIsReply(final boolean isReply) {
             mIsReply = isReply;
         }
 
@@ -298,7 +298,7 @@ public abstract class TimelineItem {
         }
 
         @Override
-        public int compareTo(@NonNull Diff other) {
+        public int compareTo(final @NonNull Diff other) {
             ReviewComment comment = getInitialComment();
             ReviewComment otherComment = other.getInitialComment();
 
@@ -340,7 +340,7 @@ public abstract class TimelineItem {
         @NonNull
         public final TimelineComment timelineComment;
 
-        public Reply(@NonNull TimelineComment timelineComment) {
+        public Reply(final @NonNull TimelineComment timelineComment) {
             this.timelineComment = timelineComment;
         }
 

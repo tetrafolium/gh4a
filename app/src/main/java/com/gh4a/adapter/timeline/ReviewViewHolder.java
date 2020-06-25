@@ -68,9 +68,9 @@ class ReviewViewHolder
         void quoteText(CharSequence text);
     }
 
-    public ReviewViewHolder(View itemView, HttpImageGetter imageGetter,
-                            String repoOwner, String repoName, int issueNumber,
-                            boolean displayReviewDetails, Callback callback) {
+    public ReviewViewHolder(final View itemView, final HttpImageGetter imageGetter,
+                            final String repoOwner, final String repoName, final int issueNumber,
+                            final boolean displayReviewDetails, final Callback callback) {
         super(itemView);
 
         mContext = itemView.getContext();
@@ -101,14 +101,14 @@ class ReviewViewHolder
         mEventIconView = itemView.findViewById(R.id.iv_event_icon);
         mQuoteActionModeCallback = new UiUtils.QuoteActionModeCallback(mBodyView) {
             @Override
-            public void onTextQuoted(CharSequence text) {
+            public void onTextQuoted(final CharSequence text) {
                 mCallback.quoteText(text);
             }
         };
     }
 
     @Override
-    public void bind(TimelineItem.TimelineReview item) {
+    public void bind(final TimelineItem.TimelineReview item) {
         Review review = item.review();
         mShowDetailsButton.setTag(review);
 
@@ -209,7 +209,7 @@ class ReviewViewHolder
     }
 
     @DrawableRes
-    private int getEventIconResId(Review review) {
+    private int getEventIconResId(final Review review) {
         @AttrRes int iconResAttr = R.attr.timelineEventReviewed;
         switch (review.state()) {
         case Approved:
@@ -261,7 +261,7 @@ class ReviewViewHolder
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         switch (v.getId()) {
         case R.id.avatar_container: {
             User user = (User) v.getTag();
@@ -291,7 +291,7 @@ class ReviewViewHolder
     }
 
     @Override
-    public boolean onMenuItemClick(MenuItem item) {
+    public boolean onMenuItemClick(final MenuItem item) {
         Review review = (Review) ivMenu.getTag();
 
         switch (item.getItemId()) {
@@ -312,7 +312,7 @@ class ReviewViewHolder
         public boolean isOutdated;
         public int count;
 
-        public FileDetails(View row, boolean isOutdated, int count) {
+        public FileDetails(final View row, final boolean isOutdated, final int count) {
             this.row = row;
             this.isOutdated = isOutdated;
             this.count = count;

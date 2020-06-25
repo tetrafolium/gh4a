@@ -32,19 +32,19 @@ import com.meisolsson.githubsdk.model.User;
 public class GistAdapter extends RootAdapter<Gist, GistAdapter.ViewHolder> {
     private final String mOwnerLogin;
 
-    public GistAdapter(Context context, String owner) {
+    public GistAdapter(final Context context, final String owner) {
         super(context);
         mOwnerLogin = owner;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
         View v = inflater.inflate(R.layout.row_gist, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, Gist gist) {
+    public void onBindViewHolder(final ViewHolder holder, final Gist gist) {
         User user = gist.owner();
         boolean isSelf = user != null && TextUtils.equals(user.login(), mOwnerLogin);
 
@@ -65,7 +65,7 @@ public class GistAdapter extends RootAdapter<Gist, GistAdapter.ViewHolder> {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ViewHolder(View view) {
+        private ViewHolder(final View view) {
             super(view);
             tvTitle = view.findViewById(R.id.tv_title);
             tvCreator = view.findViewById(R.id.tv_creator);

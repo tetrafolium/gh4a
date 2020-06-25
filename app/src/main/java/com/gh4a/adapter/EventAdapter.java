@@ -73,13 +73,13 @@ import com.vdurmont.emoji.EmojiParser;
 import java.util.List;
 
 public class EventAdapter extends RootAdapter<GitHubEvent, EventAdapter.EventViewHolder> {
-    public EventAdapter(Context context) {
+    public EventAdapter(final Context context) {
         super(context);
     }
 
     @Override
-    public EventViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent,
-            int viewType) {
+    public EventViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent,
+            final int viewType) {
         View v = inflater.inflate(R.layout.row_event, parent, false);
         EventViewHolder holder = new EventViewHolder(v);
         holder.ivGravatar.setOnClickListener(this);
@@ -87,7 +87,7 @@ public class EventAdapter extends RootAdapter<GitHubEvent, EventAdapter.EventVie
     }
 
     @Override
-    public void onBindViewHolder(EventViewHolder holder, GitHubEvent event) {
+    public void onBindViewHolder(final EventViewHolder holder, final GitHubEvent event) {
         User actor = event.actor();
 
         AvatarHandler.assignAvatar(holder.ivGravatar, actor);
@@ -105,7 +105,7 @@ public class EventAdapter extends RootAdapter<GitHubEvent, EventAdapter.EventVie
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         if (v.getId() == R.id.iv_gravatar) {
             User actor = (User) v.getTag();
             Intent intent = UserActivity.makeIntent(mContext, actor);
@@ -122,7 +122,7 @@ public class EventAdapter extends RootAdapter<GitHubEvent, EventAdapter.EventVie
         return true;
     }
 
-    private CharSequence formatDescription(GitHubEvent event, int typefaceValue) {
+    private CharSequence formatDescription(final GitHubEvent event, final int typefaceValue) {
         GitHubEventType eventType = event.type();
         GitHubEvent.RepoIdentifier eventRepo = event.repo();
 
@@ -292,7 +292,7 @@ public class EventAdapter extends RootAdapter<GitHubEvent, EventAdapter.EventVie
         return null;
     }
 
-    private String getFirstLine(String input) {
+    private String getFirstLine(final String input) {
         if (input == null) {
             return null;
         }
@@ -303,7 +303,7 @@ public class EventAdapter extends RootAdapter<GitHubEvent, EventAdapter.EventVie
         return input.substring(0, pos);
     }
 
-    private String formatTitle(GitHubEvent event) {
+    private String formatTitle(final GitHubEvent event) {
         GitHubEvent.RepoIdentifier eventRepo = event.repo();
         Resources res = mContext.getResources();
 
@@ -503,7 +503,7 @@ public class EventAdapter extends RootAdapter<GitHubEvent, EventAdapter.EventVie
         return "";
     }
 
-    public static boolean hasInvalidPayload(GitHubEvent event) {
+    public static boolean hasInvalidPayload(final GitHubEvent event) {
         GitHubPayload payload = event.payload();
         if (payload == null) {
             return true;
@@ -513,14 +513,14 @@ public class EventAdapter extends RootAdapter<GitHubEvent, EventAdapter.EventVie
         return GitHubPayload.class.equals(payload.getClass());
     }
 
-    private String formatFromRepoIdentifier(GitHubEvent.RepoIdentifier repository) {
+    private String formatFromRepoIdentifier(final GitHubEvent.RepoIdentifier repository) {
         if (repository != null) {
             return repository.repoWithUserName();
         }
         return mContext.getString(R.string.deleted);
     }
 
-    private String formatToRepoName(Repository repository) {
+    private String formatToRepoName(final Repository repository) {
         if (repository != null && repository.owner() != null) {
             return repository.owner().login() + "/" + repository.name();
         }
@@ -531,7 +531,7 @@ public class EventAdapter extends RootAdapter<GitHubEvent, EventAdapter.EventVie
      * The Class ViewHolder.
      */
     public static class EventViewHolder extends RecyclerView.ViewHolder {
-        private EventViewHolder(View view) {
+        private EventViewHolder(final View view) {
             super(view);
             ivGravatar = view.findViewById(R.id.iv_gravatar);
             tvActor = view.findViewById(R.id.tv_actor);

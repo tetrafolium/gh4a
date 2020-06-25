@@ -13,18 +13,18 @@ import com.gh4a.utils.StringUtils;
 import com.meisolsson.githubsdk.model.Release;
 
 public class ReleaseAdapter extends RootAdapter<Release, ReleaseAdapter.ViewHolder> {
-    public ReleaseAdapter(Context context) {
+    public ReleaseAdapter(final Context context) {
         super(context);
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
         View v = inflater.inflate(R.layout.row_release, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, Release release) {
+    public void onBindViewHolder(final ViewHolder holder, final Release release) {
         String name = release.name();
         if (TextUtils.isEmpty(name)) {
             name = release.tagName();
@@ -35,7 +35,7 @@ public class ReleaseAdapter extends RootAdapter<Release, ReleaseAdapter.ViewHold
                                    StringUtils.formatRelativeTime(mContext, release.createdAt(), true)));
     }
 
-    private String formatReleaseType(Release release) {
+    private String formatReleaseType(final Release release) {
         if (release.draft()) {
             return mContext.getString(R.string.release_type_draft);
         }
@@ -46,7 +46,7 @@ public class ReleaseAdapter extends RootAdapter<Release, ReleaseAdapter.ViewHold
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ViewHolder(View view) {
+        private ViewHolder(final View view) {
             super(view);
             tvTitle = view.findViewById(R.id.tv_title);
             tvType = view.findViewById(R.id.tv_type);

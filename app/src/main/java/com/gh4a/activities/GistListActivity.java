@@ -25,7 +25,7 @@ import com.gh4a.R;
 import com.gh4a.fragment.GistListFragment;
 
 public class GistListActivity extends FragmentContainerActivity {
-    public static Intent makeIntent(Context context, String user) {
+    public static Intent makeIntent(final Context context, final String user) {
         return new Intent(context, GistListActivity.class)
                .putExtra("user", user);
     }
@@ -45,7 +45,7 @@ public class GistListActivity extends FragmentContainerActivity {
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         mUserLogin = extras.getString("user");
     }

@@ -32,7 +32,7 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class StargazerListFragment extends PagedDataBaseFragment<User> {
-    public static StargazerListFragment newInstance(String repoOwner, String repoName) {
+    public static StargazerListFragment newInstance(final String repoOwner, final String repoName) {
         StargazerListFragment f = new StargazerListFragment();
 
         Bundle args = new Bundle();
@@ -47,7 +47,7 @@ public class StargazerListFragment extends PagedDataBaseFragment<User> {
     private String mRepoName;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mRepoOwner = getArguments().getString("owner");
         mRepoName = getArguments().getString("repo");
@@ -64,7 +64,7 @@ public class StargazerListFragment extends PagedDataBaseFragment<User> {
     }
 
     @Override
-    public void onItemClick(User user) {
+    public void onItemClick(final User user) {
         Intent intent = UserActivity.makeIntent(getActivity(), user);
         if (intent != null) {
             startActivity(intent);
@@ -72,7 +72,7 @@ public class StargazerListFragment extends PagedDataBaseFragment<User> {
     }
 
     @Override
-    protected Single<Response<Page<User>>> loadPage(int page, boolean bypassCache) {
+    protected Single<Response<Page<User>>> loadPage(final int page, final boolean bypassCache) {
         final StarringService service = ServiceFactory.get(StarringService.class, bypassCache);
         return service.getStargazers(mRepoOwner, mRepoName, page);
     }

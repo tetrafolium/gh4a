@@ -46,7 +46,7 @@ public class UserPasswordLoginDialogFragment extends DialogFragment implements
         void onLoginFailed(Throwable error);
     }
 
-    public static UserPasswordLoginDialogFragment newInstance(String scopes) {
+    public static UserPasswordLoginDialogFragment newInstance(final String scopes) {
         UserPasswordLoginDialogFragment f = new UserPasswordLoginDialogFragment();
         Bundle args = new Bundle();
         args.putString("scopes", scopes);
@@ -69,7 +69,7 @@ public class UserPasswordLoginDialogFragment extends DialogFragment implements
     private Handler mHandler = new Handler();
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(final Context context) {
         super.onAttach(context);
         if (!(context instanceof ParentCallback)) {
             throw new IllegalArgumentException("Activity must implement ParentCallback");
@@ -79,7 +79,7 @@ public class UserPasswordLoginDialogFragment extends DialogFragment implements
 
     @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         View view = inflater.inflate(R.layout.login_dialog, null);
 
@@ -113,7 +113,7 @@ public class UserPasswordLoginDialogFragment extends DialogFragment implements
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         if (mWaitingForOtpCode) {
             mOtpCode = mOtpCodeEditor.getText();
             mRetryProcessor.onNext(0);
@@ -133,14 +133,14 @@ public class UserPasswordLoginDialogFragment extends DialogFragment implements
 
     private void updateOkButtonState() {
         boolean enable =
-            mProgressContainer.getVisibility() == View.VISIBLE ? false :
-            mWaitingForOtpCode ? !mOtpCodeEditor.hasError() :
-            !mUserName.hasError() && !mPassword.hasError();
+            mProgressContainer.getVisibility() == View.VISIBLE ? false
+            : mWaitingForOtpCode ? !mOtpCodeEditor.hasError()
+            : !mUserName.hasError() && !mPassword.hasError();
         if (mOkButton != null) {
             mOkButton.setEnabled(enable);
         }
     }
-    private void updateContainerVisibility(boolean busy) {
+    private void updateContainerVisibility(final boolean busy) {
         mCredentialsContainer.setVisibility(!mWaitingForOtpCode && !busy ? View.VISIBLE : View.GONE);
         mOtpCodeContainer.setVisibility(mWaitingForOtpCode && !busy ? View.VISIBLE : View.GONE);
         mProgressContainer.setVisibility(busy ? View.VISIBLE : View.GONE);
@@ -174,7 +174,7 @@ public class UserPasswordLoginDialogFragment extends DialogFragment implements
                     new LoginService.AuthorizationRequest("", "dummy", "");
                     service.createAuthorization(dummyRequest)
                     .compose(RxUtils::doInBackground)
-                    .subscribe(ignoredResponse -> {}, ignoredError -> {});
+                    .subscribe(ignoredResponse -> { }, ignoredError -> { });
                 }
             }
             if (!mWaitingForOtpCode) {
@@ -236,7 +236,7 @@ public class UserPasswordLoginDialogFragment extends DialogFragment implements
         }
     }
 
-    private Single<Pair<String, User>> makeLoginSingle(LoginService.AuthorizationRequest request) {
+    private Single<Pair<String, User>> makeLoginSingle(final LoginService.AuthorizationRequest request) {
         return getService().createAuthorization(request)
                .map(ApiHelpers::throwOnFailure)
                .compose(RxUtils::doInBackground)
@@ -255,7 +255,7 @@ public class UserPasswordLoginDialogFragment extends DialogFragment implements
         private TextInputEditText mEditor;
         private TextInputLayout mWrapper;
 
-        public WrappedEditor(View parent, @IdRes int editorResId, @IdRes int wrapperResId) {
+        public WrappedEditor(final View parent, final @IdRes int editorResId, final @IdRes int wrapperResId) {
             mEditor = parent.findViewById(editorResId);
             mWrapper = parent.findViewById(wrapperResId);
             mEditor.addTextChangedListener(this);
@@ -272,15 +272,15 @@ public class UserPasswordLoginDialogFragment extends DialogFragment implements
         }
 
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
         }
 
         @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
         }
 
         @Override
-        public void afterTextChanged(Editable s) {
+        public void afterTextChanged(final Editable s) {
             if (TextUtils.isEmpty(s)) {
                 mWrapper.setError(getString(R.string.credentials_error_empty));
             } else {

@@ -49,8 +49,8 @@ public class LinkParser {
      * loadTask} to execute that task in background.
      */
     @Nullable
-    public static ParseResult parseUri(FragmentActivity activity, @NonNull Uri uri,
-                                       IntentUtils.InitialCommentMarker initialCommentFallback) {
+    public static ParseResult parseUri(final FragmentActivity activity, final @NonNull Uri uri,
+                                       final IntentUtils.InitialCommentMarker initialCommentFallback) {
         List<String> parts = new ArrayList<>(uri.getPathSegments());
 
         if ("gist.github.com".equals(uri.getHost())) {
@@ -120,7 +120,7 @@ public class LinkParser {
     }
 
     @Nullable
-    private static ParseResult parseGistLink(FragmentActivity activity, List<String> parts) {
+    private static ParseResult parseGistLink(final FragmentActivity activity, final List<String> parts) {
         if (!parts.isEmpty()) {
             String gistId = parts.get(parts.size() - 1);
             return new ParseResult(GistActivity.makeIntent(activity, gistId));
@@ -129,7 +129,7 @@ public class LinkParser {
     }
 
     @Nullable
-    private static ParseResult parseBlogLink(FragmentActivity activity, List<String> parts) {
+    private static ParseResult parseBlogLink(final FragmentActivity activity, final List<String> parts) {
         if (parts.size() == 1) {
             return new ParseResult(new Intent(activity, BlogListActivity.class));
         }
@@ -137,7 +137,7 @@ public class LinkParser {
     }
 
     @Nullable
-    private static ParseResult parseNewBlogLink(FragmentActivity activity, List<String> parts) {
+    private static ParseResult parseNewBlogLink(final FragmentActivity activity, final List<String> parts) {
         if (parts.size() == 0) {
             return new ParseResult(new Intent(activity, BlogListActivity.class));
         }
@@ -145,8 +145,8 @@ public class LinkParser {
     }
 
     @Nullable
-    private static ParseResult parseOrganizationLink(FragmentActivity activity,
-            List<String> parts) {
+    private static ParseResult parseOrganizationLink(final FragmentActivity activity,
+            final List<String> parts) {
         String org = parts.size() >= 2 ? parts.get(1) : null;
         String action = parts.size() >= 3 ? parts.get(2) : null;
 
@@ -159,8 +159,8 @@ public class LinkParser {
         return new ParseResult(UserActivity.makeIntent(activity, org));
     }
 
-    private static ParseResult parseUserLink(FragmentActivity activity, @NonNull Uri uri,
-            String user) {
+    private static ParseResult parseUserLink(final FragmentActivity activity, final @NonNull Uri uri,
+            final String user) {
         String tab = uri.getQueryParameter("tab");
         if (tab != null) {
             switch (tab) {
@@ -179,7 +179,7 @@ public class LinkParser {
         return new ParseResult(UserActivity.makeIntent(activity, user));
     }
 
-    private static ParseResult parseSearchLink(FragmentActivity activity, @NonNull Uri uri) {
+    private static ParseResult parseSearchLink(final FragmentActivity activity, final @NonNull Uri uri) {
         String type = uri.getQueryParameter("type");
         int typeInt = SearchActivity.SEARCH_TYPE_REPO;
         if (type != null) {
@@ -202,8 +202,8 @@ public class LinkParser {
     }
 
     @NonNull
-    private static ParseResult parseReleaseLink(FragmentActivity activity, List<String> parts,
-            String user, String repo, String id) {
+    private static ParseResult parseReleaseLink(final FragmentActivity activity, final List<String> parts,
+            final String user, final String repo, final String id) {
         if ("tag".equals(id)) {
             final String release = parts.size() >= 5 ? parts.get(4) : null;
             if (release != null) {
@@ -221,8 +221,8 @@ public class LinkParser {
     }
 
     @NonNull
-    private static ParseResult parseCommitsLink(FragmentActivity activity, List<String> parts,
-            String user, String repo, String action) {
+    private static ParseResult parseCommitsLink(final FragmentActivity activity, final List<String> parts,
+            final String user, final String repo, final String action) {
         int page = "tree".equals(action)
                    ? RepositoryActivity.PAGE_FILES
                    : RepositoryActivity.PAGE_COMMITS;
@@ -239,9 +239,9 @@ public class LinkParser {
     }
 
     @Nullable
-    private static ParseResult parseIssuesLink(FragmentActivity activity, @NonNull Uri uri,
-            String user, String repo, String id,
-            IntentUtils.InitialCommentMarker initialCommentFallback) {
+    private static ParseResult parseIssuesLink(final FragmentActivity activity, final @NonNull Uri uri,
+            final String user, final String repo, final String id,
+            final IntentUtils.InitialCommentMarker initialCommentFallback) {
         if (StringUtils.isBlank(id)) {
             return new ParseResult(IssueListActivity.makeIntent(activity, user, repo));
         }
@@ -260,9 +260,9 @@ public class LinkParser {
     }
 
     @Nullable
-    private static ParseResult parsePullRequestLink(FragmentActivity activity, @NonNull Uri uri,
-            List<String> parts, String user, String repo, String id,
-            IntentUtils.InitialCommentMarker initialCommentFallback) {
+    private static ParseResult parsePullRequestLink(final FragmentActivity activity, final @NonNull Uri uri,
+            final List<String> parts, final String user, final String repo, final String id,
+            final IntentUtils.InitialCommentMarker initialCommentFallback) {
         if (StringUtils.isBlank(id)) {
             return null;
         }
@@ -324,7 +324,7 @@ public class LinkParser {
                                pullRequestNumber, page, initialComment));
     }
 
-    private static int parsePullRequestPage(String target) {
+    private static int parsePullRequestPage(final String target) {
         if (target == null) {
             return -1;
         }
@@ -338,9 +338,9 @@ public class LinkParser {
     }
 
     @Nullable
-    private static ParseResult parseCommitLink(FragmentActivity activity, @NonNull Uri uri,
-            String user, String repo, String id,
-            IntentUtils.InitialCommentMarker initialCommentFallback) {
+    private static ParseResult parseCommitLink(final FragmentActivity activity, final @NonNull Uri uri,
+            final String user, final String repo, final String id,
+            final IntentUtils.InitialCommentMarker initialCommentFallback) {
         if (StringUtils.isBlank(id)) {
             return null;
         }
@@ -359,8 +359,8 @@ public class LinkParser {
     }
 
     @Nullable
-    private static ParseResult parseBlobLink(FragmentActivity activity, @NonNull Uri uri,
-            List<String> parts, String user, String repo, String id) {
+    private static ParseResult parseBlobLink(final FragmentActivity activity, final @NonNull Uri uri,
+            final List<String> parts, final String user, final String repo, final String id) {
         if (StringUtils.isBlank(id) || parts.size() < 4) {
             return null;
         }
@@ -370,8 +370,8 @@ public class LinkParser {
     }
 
     @Nullable
-    private static ParseResult parseCompareLink(FragmentActivity activity,
-            String user, String repo, String id) {
+    private static ParseResult parseCompareLink(final FragmentActivity activity,
+            final String user, final String repo, final String id) {
         if (id == null) {
             return null;
         }
@@ -386,7 +386,7 @@ public class LinkParser {
     }
 
     private static IntentUtils.InitialCommentMarker generateInitialCommentMarkerWithoutFallback(
-        String fragment, String prefix) {
+        final String fragment, final String prefix) {
         if (fragment == null || !fragment.startsWith(prefix)) {
             return null;
         }
@@ -399,14 +399,14 @@ public class LinkParser {
     }
 
     private static IntentUtils.InitialCommentMarker generateInitialCommentMarker(
-        String fragment, String prefix, IntentUtils.InitialCommentMarker fallback) {
+        final String fragment, final String prefix, final IntentUtils.InitialCommentMarker fallback) {
         IntentUtils.InitialCommentMarker initialCommentMarker =
             generateInitialCommentMarkerWithoutFallback(fragment, prefix);
         return initialCommentMarker != null ? initialCommentMarker : fallback;
     }
 
-    private static DiffHighlightId extractDiffId(String fragment, String prefix,
-            boolean isMd5Hash) {
+    private static DiffHighlightId extractDiffId(final String fragment, final String prefix,
+            final boolean isMd5Hash) {
         if (fragment == null || !fragment.startsWith(prefix)) {
             return null;
         }
@@ -452,12 +452,12 @@ public class LinkParser {
         @Nullable
         public final UrlLoadTask loadTask;
 
-        public ParseResult(@NonNull UrlLoadTask loadTask) {
+        public ParseResult(final @NonNull UrlLoadTask loadTask) {
             this.intent = null;
             this.loadTask = loadTask;
         }
 
-        public ParseResult(@NonNull Intent intent) {
+        public ParseResult(final @NonNull Intent intent) {
             this.intent = intent;
             this.loadTask = null;
         }

@@ -37,8 +37,8 @@ public class RefPathDisambiguationTask extends UrlLoadTask {
     @VisibleForTesting
     protected final boolean mGoToFileViewer;
 
-    public RefPathDisambiguationTask(FragmentActivity activity, String repoOwner,
-                                     String repoName, String refAndPath, int initialPage) {
+    public RefPathDisambiguationTask(final FragmentActivity activity, final String repoOwner,
+                                     final String repoName, final String refAndPath, final int initialPage) {
         super(activity);
         mRepoOwner = repoOwner;
         mRepoName = repoName;
@@ -48,8 +48,8 @@ public class RefPathDisambiguationTask extends UrlLoadTask {
         mGoToFileViewer = false;
     }
 
-    public RefPathDisambiguationTask(FragmentActivity activity, String repoOwner,
-                                     String repoName, String refAndPath, String fragment) {
+    public RefPathDisambiguationTask(final FragmentActivity activity, final String repoOwner,
+                                     final String repoName, final String refAndPath, final String fragment) {
         super(activity);
         mRepoOwner = repoOwner;
         mRepoName = repoName;
@@ -96,7 +96,7 @@ public class RefPathDisambiguationTask extends UrlLoadTask {
         });
     }
 
-    private Single<Optional<Pair<String, String>>> matchBranch(Single<List<Branch>> input) {
+    private Single<Optional<Pair<String, String>>> matchBranch(final Single<List<Branch>> input) {
         return input.map(branches -> {
             for (Branch branch : branches) {
                 if (TextUtils.equals(mRefAndPath, branch.name())) {

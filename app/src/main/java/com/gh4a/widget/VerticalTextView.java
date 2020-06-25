@@ -11,7 +11,7 @@ import android.view.Gravity;
 public class VerticalTextView extends StyleableTextView {
     private final boolean mTopDown;
 
-    public VerticalTextView(Context context, AttributeSet attrs) {
+    public VerticalTextView(final Context context, final AttributeSet attrs) {
         super(context, attrs);
 
         final int gravity = getGravity();
@@ -25,13 +25,13 @@ public class VerticalTextView extends StyleableTextView {
 
     @Override
     @SuppressWarnings("SuspiciousNameCombination")
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
         super.onMeasure(heightMeasureSpec, widthMeasureSpec);
         setMeasuredDimension(getMeasuredHeight(), getMeasuredWidth());
     }
 
     @Override
-    public void onDraw(@NonNull Canvas canvas) {
+    public void onDraw(final @NonNull Canvas canvas) {
         Layout layout = getLayout();
         if (layout == null) {
             return;

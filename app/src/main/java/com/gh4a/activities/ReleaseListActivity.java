@@ -25,7 +25,7 @@ import com.gh4a.R;
 import com.gh4a.fragment.ReleaseListFragment;
 
 public class ReleaseListActivity extends FragmentContainerActivity {
-    public static Intent makeIntent(Context context, String repoOwner, String repoName) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName) {
         return new Intent(context, ReleaseListActivity.class)
                .putExtra("owner", repoOwner)
                .putExtra("repo", repoName);
@@ -47,7 +47,7 @@ public class ReleaseListActivity extends FragmentContainerActivity {
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         mUserLogin = extras.getString("owner");
         mRepoName = extras.getString("repo");

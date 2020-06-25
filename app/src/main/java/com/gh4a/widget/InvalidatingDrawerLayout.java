@@ -9,38 +9,38 @@ import android.util.AttributeSet;
 public class InvalidatingDrawerLayout extends DrawerLayout {
     private Drawable mStatusBarBackground;
 
-    public InvalidatingDrawerLayout(Context context) {
+    public InvalidatingDrawerLayout(final Context context) {
         super(context);
     }
 
-    public InvalidatingDrawerLayout(Context context, AttributeSet attrs) {
+    public InvalidatingDrawerLayout(final Context context, final AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public InvalidatingDrawerLayout(Context context, AttributeSet attrs, int defStyle) {
+    public InvalidatingDrawerLayout(final Context context, final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
     }
 
     @Override
-    public void setStatusBarBackground(Drawable bg) {
+    public void setStatusBarBackground(final Drawable bg) {
         super.setStatusBarBackground(bg);
         updateStatusBarDrawable();
     }
 
     @Override
-    public void setStatusBarBackground(int resId) {
+    public void setStatusBarBackground(final int resId) {
         super.setStatusBarBackground(resId);
         updateStatusBarDrawable();
     }
 
     @Override
-    public void setStatusBarBackgroundColor(int color) {
+    public void setStatusBarBackgroundColor(final int color) {
         super.setStatusBarBackgroundColor(color);
         updateStatusBarDrawable();
     }
 
     @Override
-    protected boolean verifyDrawable(@NonNull Drawable who) {
+    protected boolean verifyDrawable(final @NonNull Drawable who) {
         return super.verifyDrawable(who) || who == mStatusBarBackground;
     }
 

@@ -55,15 +55,15 @@ import io.reactivex.disposables.Disposable;
 public class ReleaseInfoActivity extends BaseActivity implements
     View.OnClickListener, SwipeRefreshLayout.ChildScrollDelegate,
     RootAdapter.OnItemClickListener<ReleaseAsset> {
-    public static Intent makeIntent(Context context, String repoOwner, String repoName, long id) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName, final long id) {
         return new Intent(context, ReleaseInfoActivity.class)
                .putExtra("owner", repoOwner)
                .putExtra("repo", repoName)
                .putExtra("id", id);
     }
 
-    public static Intent makeIntent(Context context, String repoOwner, String repoName,
-                                    Release release) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
+                                    final Release release) {
         return new Intent(context, ReleaseInfoActivity.class)
                .putExtra("owner", repoOwner)
                .putExtra("repo", repoName)
@@ -83,7 +83,7 @@ public class ReleaseInfoActivity extends BaseActivity implements
     private HttpImageGetter mImageGetter;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.release);
@@ -113,7 +113,7 @@ public class ReleaseInfoActivity extends BaseActivity implements
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         mRepoOwner = extras.getString("owner");
         mRepoName = extras.getString("repo");
@@ -122,13 +122,13 @@ public class ReleaseInfoActivity extends BaseActivity implements
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.release, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         if (item.getItemId() == R.id.browser) {
             IntentUtils.launchBrowser(this, Uri.parse(mRelease.htmlUrl()));
             return true;
@@ -225,7 +225,7 @@ public class ReleaseInfoActivity extends BaseActivity implements
         }
     }
 
-    private void fillNotes(Optional<String> bodyHtmlOpt) {
+    private void fillNotes(final Optional<String> bodyHtmlOpt) {
         TextView body = findViewById(R.id.tv_release_notes);
 
         if (bodyHtmlOpt.isPresent()) {
@@ -240,13 +240,13 @@ public class ReleaseInfoActivity extends BaseActivity implements
     }
 
     @Override
-    public void onItemClick(ReleaseAsset item) {
+    public void onItemClick(final ReleaseAsset item) {
         UiUtils.enqueueDownloadWithPermissionCheck(this, item.url(),
                 item.contentType(), item.name(), item.label(), "application/octet-stream");
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         Intent intent = null;
 
         switch (v.getId()) {
@@ -264,7 +264,7 @@ public class ReleaseInfoActivity extends BaseActivity implements
         }
     }
 
-    private void loadRelease(boolean force) {
+    private void loadRelease(final boolean force) {
         RepositoryReleaseService service = ServiceFactory.get(RepositoryReleaseService.class, force);
 
         service.getRelease(mRepoOwner, mRepoName, mReleaseId)

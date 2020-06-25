@@ -16,12 +16,12 @@ import com.gh4a.utils.StringUtils;
 import com.meisolsson.githubsdk.model.User;
 
 public class ContributorAdapter extends RootAdapter<User, ContributorAdapter.ViewHolder> {
-    public ContributorAdapter(Context context) {
+    public ContributorAdapter(final Context context) {
         super(context);
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
         View v = inflater.inflate(R.layout.row_gravatar_twoline, parent, false);
         ViewHolder holder = new ViewHolder(v);
         holder.ivGravatar.setOnClickListener(this);
@@ -29,7 +29,7 @@ public class ContributorAdapter extends RootAdapter<User, ContributorAdapter.Vie
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, User contributor) {
+    public void onBindViewHolder(final ViewHolder holder, final User contributor) {
         AvatarHandler.assignAvatar(holder.ivGravatar, contributor);
         holder.ivGravatar.setTag(contributor);
 
@@ -39,7 +39,7 @@ public class ContributorAdapter extends RootAdapter<User, ContributorAdapter.Vie
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         if (v.getId() == R.id.iv_gravatar) {
             User contributor = (User) v.getTag();
             Intent intent = UserActivity.makeIntent(mContext, contributor);
@@ -52,7 +52,7 @@ public class ContributorAdapter extends RootAdapter<User, ContributorAdapter.Vie
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ViewHolder(View view) {
+        private ViewHolder(final View view) {
             super(view);
             ivGravatar = view.findViewById(R.id.iv_gravatar);
             tvTitle = view.findViewById(R.id.tv_title);

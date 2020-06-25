@@ -39,7 +39,7 @@ public class StarredRepositoryListFragment extends PagedDataBaseFragment<Reposit
     private static final String STATE_KEY_SORT_ORDER = "sort_order";
     private static final String STATE_KEY_SORT_DIRECTION = "sort_direction";
 
-    public static StarredRepositoryListFragment newInstance(String login) {
+    public static StarredRepositoryListFragment newInstance(final String login) {
         StarredRepositoryListFragment f = new StarredRepositoryListFragment();
 
         Bundle args = new Bundle();
@@ -55,7 +55,7 @@ public class StarredRepositoryListFragment extends PagedDataBaseFragment<Reposit
     private RepositoryListContainerFragment.SortDrawerHelper mSortHelper;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLogin = getArguments().getString("user");
 
@@ -69,21 +69,21 @@ public class StarredRepositoryListFragment extends PagedDataBaseFragment<Reposit
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(STATE_KEY_SORT_ORDER, mSortOrder);
         outState.putString(STATE_KEY_SORT_DIRECTION, mSortDirection);
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.repo_starred_list_menu, menu);
         mSortHelper.selectSortType(menu, mSortOrder, mSortDirection, true);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         String[] sortOrderAndDirection = mSortHelper.handleSelectionAndGetSortOrder(item);
         if (sortOrderAndDirection == null) {
             return false;
@@ -106,12 +106,12 @@ public class StarredRepositoryListFragment extends PagedDataBaseFragment<Reposit
     }
 
     @Override
-    public void onItemClick(Repository repository) {
+    public void onItemClick(final Repository repository) {
         startActivity(RepositoryActivity.makeIntent(getActivity(), repository));
     }
 
     @Override
-    protected Single<Response<Page<Repository>>> loadPage(int page, boolean bypassCache) {
+    protected Single<Response<Page<Repository>>> loadPage(final int page, final boolean bypassCache) {
         final StarringService service = ServiceFactory.get(StarringService.class, bypassCache);
         final HashMap<String, String> filterData = new HashMap<>();
         filterData.put("sort", mSortOrder);

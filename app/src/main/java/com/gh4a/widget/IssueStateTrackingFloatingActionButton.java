@@ -11,33 +11,33 @@ public class IssueStateTrackingFloatingActionButton extends FloatingActionButton
     private IssueState mState;
     private boolean mMerged;
 
-    private static final int[] STATE_CLOSED = { R.attr.state_closed };
-    private static final int[] STATE_MERGED = { R.attr.state_merged };
+    private static final int[] STATE_CLOSED = {R.attr.state_closed };
+    private static final int[] STATE_MERGED = {R.attr.state_merged };
 
-    public IssueStateTrackingFloatingActionButton(Context context) {
+    public IssueStateTrackingFloatingActionButton(final Context context) {
         super(context);
     }
 
-    public IssueStateTrackingFloatingActionButton(Context context, AttributeSet attrs) {
+    public IssueStateTrackingFloatingActionButton(final Context context, final AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public IssueStateTrackingFloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr) {
+    public IssueStateTrackingFloatingActionButton(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public void setState(IssueState state) {
+    public void setState(final IssueState state) {
         mState = state;
         refreshDrawableState();
     }
 
-    public void setMerged(boolean merged) {
+    public void setMerged(final boolean merged) {
         mMerged = merged;
         refreshDrawableState();
     }
 
     @Override
-    public int[] onCreateDrawableState(int extraSpace) {
+    public int[] onCreateDrawableState(final int extraSpace) {
         final int[] drawableState = super.onCreateDrawableState(extraSpace + 2);
         if (mState == IssueState.Closed) {
             mergeDrawableStates(drawableState, STATE_CLOSED);

@@ -22,7 +22,7 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class RepositorySearchFragment extends PagedDataBaseFragment<Repository> {
-    public static RepositorySearchFragment newInstance(String userLogin) {
+    public static RepositorySearchFragment newInstance(final String userLogin) {
         RepositorySearchFragment f = new RepositorySearchFragment();
 
         Bundle args = new Bundle();
@@ -32,7 +32,7 @@ public class RepositorySearchFragment extends PagedDataBaseFragment<Repository> 
         return f;
     }
 
-    public void setQuery(String query) {
+    public void setQuery(final String query) {
         getArguments().putString("query", query);
         if (isAdded()) {
             onRefresh();
@@ -40,7 +40,7 @@ public class RepositorySearchFragment extends PagedDataBaseFragment<Repository> 
     }
 
     @Override
-    protected Single<Response<Page<Repository>>> loadPage(int page, boolean bypassCache) {
+    protected Single<Response<Page<Repository>>> loadPage(final int page, final boolean bypassCache) {
         String login = getArguments().getString("user");
         String query = getArguments().getString("query");
 
@@ -70,7 +70,7 @@ public class RepositorySearchFragment extends PagedDataBaseFragment<Repository> 
     }
 
     @Override
-    public void onItemClick(Repository item) {
+    public void onItemClick(final Repository item) {
         startActivity(RepositoryActivity.makeIntent(getActivity(), item));
     }
 }

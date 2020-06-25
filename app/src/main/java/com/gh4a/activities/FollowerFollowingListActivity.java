@@ -25,7 +25,7 @@ import com.gh4a.R;
 import com.gh4a.fragment.FollowersFollowingListFragment;
 
 public class FollowerFollowingListActivity extends FragmentContainerActivity {
-    public static Intent makeIntent(Context context, String user, boolean showFollowers) {
+    public static Intent makeIntent(final Context context, final String user, final boolean showFollowers) {
         return new Intent(context, FollowerFollowingListActivity.class)
                .putExtra("user", user)
                .putExtra("show_followers", showFollowers);
@@ -47,7 +47,7 @@ public class FollowerFollowingListActivity extends FragmentContainerActivity {
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         mShowFollowers = extras.getBoolean("show_followers");
         mUserLogin = extras.getString("user");

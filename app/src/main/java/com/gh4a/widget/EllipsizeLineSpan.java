@@ -13,19 +13,19 @@ public class EllipsizeLineSpan extends ReplacementSpan implements
     private final Rect mClipRect = new Rect();
     private final int mBottomMargin;
 
-    public EllipsizeLineSpan(int bottomMargin) {
+    public EllipsizeLineSpan(final int bottomMargin) {
         mBottomMargin = bottomMargin;
     }
 
     @Override
-    public void drawBackground(Canvas c, Paint p, int left, int right, int top,
-                               int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
+    public void drawBackground(final Canvas c, final Paint p, final int left, final int right, final int top,
+                               final int baseline, final int bottom, final CharSequence text, final int start, final int end, final int lnum) {
         c.getClipBounds(mClipRect);
     }
 
     @Override
-    public int getSize(@NonNull Paint paint, CharSequence text,
-                       int start, int end, Paint.FontMetricsInt fm) {
+    public int getSize(final @NonNull Paint paint, final CharSequence text,
+                       final int start, final int end, final Paint.FontMetricsInt fm) {
         if (fm != null) {
             paint.getFontMetricsInt(fm);
         }
@@ -34,8 +34,8 @@ public class EllipsizeLineSpan extends ReplacementSpan implements
     }
 
     @Override
-    public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end,
-                     float x, int top, int y, int bottom, @NonNull Paint paint) {
+    public void draw(final @NonNull Canvas canvas, final CharSequence text, final int start, final int end,
+                     final float x, final int top, final int y, final int bottom, final @NonNull Paint paint) {
         float textWidth = paint.measureText(text, start, end);
 
         if (x + (int) Math.ceil(textWidth) < mClipRect.right) {
@@ -52,8 +52,8 @@ public class EllipsizeLineSpan extends ReplacementSpan implements
     }
 
     @Override
-    public void chooseHeight(CharSequence text, int start, int end, int spanstartv,
-                             int v, Paint.FontMetricsInt fm) {
+    public void chooseHeight(final CharSequence text, final int start, final int end, final int spanstartv,
+                             final int v, final Paint.FontMetricsInt fm) {
         fm.descent += mBottomMargin;
         fm.bottom += mBottomMargin;
     }

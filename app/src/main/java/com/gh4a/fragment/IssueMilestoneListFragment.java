@@ -42,8 +42,8 @@ public class IssueMilestoneListFragment extends ListDataBaseFragment<Milestone> 
     private boolean mShowClosed;
     private boolean mFromPullRequest;
 
-    public static IssueMilestoneListFragment newInstance(String repoOwner, String repoName,
-            boolean showClosed, boolean fromPullRequest) {
+    public static IssueMilestoneListFragment newInstance(final String repoOwner, final String repoName,
+            final boolean showClosed, final boolean fromPullRequest) {
         IssueMilestoneListFragment f = new IssueMilestoneListFragment();
 
         Bundle args = new Bundle();
@@ -59,7 +59,7 @@ public class IssueMilestoneListFragment extends ListDataBaseFragment<Milestone> 
     private static final int REQUEST_EDIT_MILESTONE = 2000;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         mRepoOwner = args.getString("owner");
@@ -83,14 +83,14 @@ public class IssueMilestoneListFragment extends ListDataBaseFragment<Milestone> 
     }
 
     @Override
-    public void onItemClick(Milestone milestone) {
+    public void onItemClick(final Milestone milestone) {
         startActivityForResult(IssueMilestoneEditActivity.makeEditIntent(
                                    getActivity(), mRepoOwner, mRepoName, milestone, mFromPullRequest),
                                REQUEST_EDIT_MILESTONE);
     }
 
     @Override
-    protected Single<List<Milestone>> onCreateDataSingle(boolean bypassCache) {
+    protected Single<List<Milestone>> onCreateDataSingle(final boolean bypassCache) {
         final IssueMilestoneService service =
             ServiceFactory.get(IssueMilestoneService.class, bypassCache);
         String targetState = mShowClosed ? "closed" : "open";
@@ -100,7 +100,7 @@ public class IssueMilestoneListFragment extends ListDataBaseFragment<Milestone> 
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQUEST_EDIT_MILESTONE) {
             if (resultCode == Activity.RESULT_OK) {
                 onRefresh();

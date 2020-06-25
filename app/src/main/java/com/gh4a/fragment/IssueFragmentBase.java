@@ -98,8 +98,8 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
     private HttpImageGetter mImageGetter;
     private EditorBottomSheet mBottomSheet;
 
-    protected static Bundle buildArgs(String repoOwner, String repoName,
-                                      Issue issue, boolean isCollaborator, IntentUtils.InitialCommentMarker initialComment) {
+    protected static Bundle buildArgs(final String repoOwner, final String repoName,
+                                      final Issue issue, final boolean isCollaborator, final IntentUtils.InitialCommentMarker initialComment) {
         Bundle args = new Bundle();
         args.putString("owner", repoOwner);
         args.putString("repo", repoName);
@@ -110,7 +110,7 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
@@ -125,8 +125,8 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
         View listContent = super.onCreateView(inflater, container, savedInstanceState);
         View v = inflater.inflate(R.layout.comment_list, container, false);
 
@@ -146,7 +146,7 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getBaseActivity().addAppBarOffsetListener(mBottomSheet);
     }
@@ -166,7 +166,7 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
     }
 
     @Override
-    protected void onRecyclerViewInflated(RecyclerView view, LayoutInflater inflater) {
+    protected void onRecyclerViewInflated(final RecyclerView view, final LayoutInflater inflater) {
         super.onRecyclerViewInflated(view, inflater);
 
         mListHeaderView = inflater.inflate(R.layout.issue_comment_list_header, view, false);
@@ -174,7 +174,7 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(final Bundle savedInstanceState) {
         fillData();
         fillLabels(mIssue.labels());
         updateCommentLockState();
@@ -229,13 +229,13 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
     }
 
     @Override
-    protected void setHighlightColors(int colorAttrId, int statusBarColorAttrId) {
+    protected void setHighlightColors(final int colorAttrId, final int statusBarColorAttrId) {
         super.setHighlightColors(colorAttrId, statusBarColorAttrId);
         mBottomSheet.setHighlightColor(colorAttrId);
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.issue_fragment_menu, menu);
 
@@ -251,14 +251,14 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         if (mReactionMenuHelper != null && mReactionMenuHelper.onItemClick(item)) {
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public void reloadEvents(boolean alsoClearCaches) {
+    public void reloadEvents(final boolean alsoClearCaches) {
         if (mAdapter != null && !alsoClearCaches) {
             // Don't clear adapter's cache, we're only interested in the new event
             mAdapter.suppressCacheClearOnNextClear();
@@ -275,7 +275,7 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
     }
 
     @Override
-    protected void onAddData(RootAdapter<TimelineItem, ?> adapter, List<TimelineItem> data) {
+    protected void onAddData(final RootAdapter<TimelineItem, ?> adapter, final List<TimelineItem> data) {
         super.onAddData(adapter, data);
         if (mInitialComment != null) {
             for (int i = 0; i < data.size(); i++) {
@@ -312,13 +312,13 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
     }
 
     @Override
-    protected void setContentShown(boolean shown) {
+    protected void setContentShown(final boolean shown) {
         super.setContentShown(shown);
         mListShown = shown;
         updateCommentSectionVisibility(getView());
     }
 
-    private void updateCommentSectionVisibility(View v) {
+    private void updateCommentSectionVisibility(final View v) {
         if (v == null) {
             return;
         }
@@ -369,7 +369,7 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
                 descriptionView.setCustomSelectionActionModeCallback(
                 new UiUtils.QuoteActionModeCallback(descriptionView) {
                     @Override
-                    public void onTextQuoted(CharSequence text) {
+                    public void onTextQuoted(final CharSequence text) {
                         quoteText(text);
                     }
                 });
@@ -423,7 +423,7 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
         bindSpecialViews(mListHeaderView);
     }
 
-    private void fillLabels(List<Label> labels) {
+    private void fillLabels(final List<Label> labels) {
         View labelGroup = mListHeaderView.findViewById(R.id.label_container);
         if (labels != null && !labels.isEmpty()) {
             TextView labelView = mListHeaderView.findViewById(R.id.labels);
@@ -440,14 +440,14 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
     }
 
     @Override
-    public Single<List<Reaction>> loadReactionDetails(ReactionBar.Item item, boolean bypassCache) {
+    public Single<List<Reaction>> loadReactionDetails(final ReactionBar.Item item, final boolean bypassCache) {
         final ReactionService service = ServiceFactory.get(ReactionService.class, bypassCache);
         return ApiHelpers.PageIterator
                .toSingle(page -> service.getIssueReactions(mRepoOwner, mRepoName, mIssue.number(), page));
     }
 
     @Override
-    public Single<Reaction> addReaction(ReactionBar.Item item, String content) {
+    public Single<Reaction> addReaction(final ReactionBar.Item item, final String content) {
         ReactionService service = ServiceFactory.get(ReactionService.class, false);
         ReactionRequest request = ReactionRequest.builder().content(content).build();
         return service.createIssueReaction(mRepoOwner, mRepoName, mIssue.number(), request)
@@ -456,22 +456,22 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
 
     @Override
     public Single<List<Reaction>> loadReactionDetails(final GitHubCommentBase comment,
-            boolean bypassCache) {
+            final boolean bypassCache) {
         final ReactionService service = ServiceFactory.get(ReactionService.class, bypassCache);
         return ApiHelpers.PageIterator
                .toSingle(page -> service.getIssueCommentReactions(mRepoOwner, mRepoName, comment.id(), page));
     }
 
     @Override
-    public Single<Reaction> addReaction(GitHubCommentBase comment, String content) {
+    public Single<Reaction> addReaction(final GitHubCommentBase comment, final String content) {
         ReactionService service = ServiceFactory.get(ReactionService.class, false);
         ReactionRequest request = ReactionRequest.builder().content(content).build();
-        return service.createIssueCommentReaction(mRepoOwner, mRepoName,comment.id(), request)
+        return service.createIssueCommentReaction(mRepoOwner, mRepoName, comment.id(), request)
                .map(ApiHelpers::throwOnFailure);
     }
 
     @Override
-    public void onReactionsUpdated(ReactionBar.Item item, Reactions reactions) {
+    public void onReactionsUpdated(final ReactionBar.Item item, final Reactions reactions) {
         mIssue = mIssue.toBuilder().reactions(reactions).build();
         if (mListHeaderView != null) {
             ReactionBar bar = mListHeaderView.findViewById(R.id.reactions);
@@ -484,7 +484,7 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         if (v.getId() == R.id.tv_extra) {
             User user = (User) v.getTag();
             addText(StringUtils.formatMention(getContext(), user));
@@ -497,7 +497,7 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQUEST_EDIT) {
             if (resultCode == Activity.RESULT_OK) {
                 reloadEvents(true);
@@ -509,17 +509,17 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
     }
 
     @Override
-    public void quoteText(CharSequence text) {
+    public void quoteText(final CharSequence text) {
         mBottomSheet.addQuote(text);
     }
 
     @Override
-    public void addText(CharSequence text) {
+    public void addText(final CharSequence text) {
         mBottomSheet.addText(text);
     }
 
     @Override
-    public Single<?> onEditorDoSend(String comment) {
+    public Single<?> onEditorDoSend(final String comment) {
         IssueCommentService service = ServiceFactory.get(IssueCommentService.class, false);
         CommentRequest request = CommentRequest.builder().body(comment).build();
         return service.createIssueComment(mRepoOwner, mRepoName, mIssue.number(), request)
@@ -550,25 +550,25 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
     }
 
     @Override
-    public String getShareSubject(GitHubCommentBase comment) {
+    public String getShareSubject(final GitHubCommentBase comment) {
         return getString(R.string.share_comment_subject, comment.id(), mIssue.number(),
                          mRepoOwner + "/" + mRepoName);
     }
 
     @Override
-    public void onToggleAdvancedMode(boolean advancedMode) {
+    public void onToggleAdvancedMode(final boolean advancedMode) {
         getBaseActivity().collapseAppBar();
         getBaseActivity().setAppBarLocked(advancedMode);
         mBottomSheet.resetPeekHeight(0);
     }
 
     @Override
-    public void onScrollingInBasicEditor(boolean scrolling) {
+    public void onScrollingInBasicEditor(final boolean scrolling) {
         getBaseActivity().setAppBarLocked(scrolling);
     }
 
     @Override
-    public void onReplyCommentSelected(long replyToId) {
+    public void onReplyCommentSelected(final long replyToId) {
         // Not used in this screen
     }
 
@@ -582,7 +582,7 @@ public abstract class IssueFragmentBase extends ListDataBaseFragment<TimelineIte
     protected abstract void assignHighlightColor();
     protected abstract Single<Response<Void>> doDeleteComment(GitHubCommentBase comment);
 
-    private void handleDeleteComment(GitHubCommentBase comment) {
+    private void handleDeleteComment(final GitHubCommentBase comment) {
         doDeleteComment(comment)
         .map(ApiHelpers::mapToBooleanOrThrowOnFailure)
         .compose(RxUtils.wrapForBackgroundTask(getBaseActivity(),

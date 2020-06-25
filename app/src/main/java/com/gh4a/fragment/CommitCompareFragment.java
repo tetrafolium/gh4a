@@ -40,14 +40,14 @@ import io.reactivex.Single;
 
 public class CommitCompareFragment extends ListDataBaseFragment<Commit> implements
     RootAdapter.OnItemClickListener<Commit> {
-    public static CommitCompareFragment newInstance(String repoOwner, String repoName,
-            String baseRef, String headRef) {
+    public static CommitCompareFragment newInstance(final String repoOwner, final String repoName,
+            final String baseRef, final String headRef) {
         return newInstance(repoOwner, repoName, -1, null, baseRef, null, headRef);
     }
 
-    public static CommitCompareFragment newInstance(String repoOwner, String repoName,
-            int pullRequestNumber, String baseRefLabel, String baseRef,
-            String headRefLabel, String headRef) {
+    public static CommitCompareFragment newInstance(final String repoOwner, final String repoName,
+            final int pullRequestNumber, final String baseRefLabel, final String baseRef,
+            final String headRefLabel, final String headRef) {
         Bundle args = new Bundle();
         args.putString("owner", repoOwner);
         args.putString("repo", repoName);
@@ -73,7 +73,7 @@ public class CommitCompareFragment extends ListDataBaseFragment<Commit> implemen
     private int mPullRequestNumber;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
@@ -99,14 +99,14 @@ public class CommitCompareFragment extends ListDataBaseFragment<Commit> implemen
     }
 
     @Override
-    public void onItemClick(Commit commit) {
+    public void onItemClick(final Commit commit) {
         Intent intent = CommitActivity.makeIntent(getActivity(),
                         mRepoOwner, mRepoName, mPullRequestNumber, commit.sha());
         startActivityForResult(intent, REQUEST_COMMIT);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQUEST_COMMIT) {
             if (resultCode == Activity.RESULT_OK) {
                 // comments were updated
@@ -118,7 +118,7 @@ public class CommitCompareFragment extends ListDataBaseFragment<Commit> implemen
     }
 
     @Override
-    protected Single<List<Commit>> onCreateDataSingle(boolean bypassCache) {
+    protected Single<List<Commit>> onCreateDataSingle(final boolean bypassCache) {
         RepositoryCommitService service = ServiceFactory.get(RepositoryCommitService.class, bypassCache);
 
         Single<CommitCompare> compareSingle = service.compareCommits(mRepoOwner, mRepoName, mBase, mHead)
@@ -141,6 +141,6 @@ public class CommitCompareFragment extends ListDataBaseFragment<Commit> implemen
                .map(CommitCompare::commits)
                // Bummer, at least one branch was deleted.
                // Can't do anything here, so return an empty list.
-               .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND,new ArrayList<>()));
+               .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, new ArrayList<>()));
     }
 }

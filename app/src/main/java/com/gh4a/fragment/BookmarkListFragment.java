@@ -29,14 +29,14 @@ public class BookmarkListFragment extends LoadingListFragmentBase implements
     private BookmarkAdapter mAdapter;
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setContentShown(false);
         getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
-    protected void onRecyclerViewInflated(final RecyclerView view, LayoutInflater inflater) {
+    protected void onRecyclerViewInflated(final RecyclerView view, final LayoutInflater inflater) {
         super.onRecyclerViewInflated(view, inflater);
         mAdapter = new BookmarkAdapter(getActivity(), this);
         view.setAdapter(mAdapter);
@@ -50,13 +50,13 @@ public class BookmarkListFragment extends LoadingListFragmentBase implements
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+    public Loader<Cursor> onCreateLoader(final int id, final Bundle args) {
         return new CursorLoader(getActivity(), BookmarksProvider.Columns.CONTENT_URI,
                                 null, null, null, BookmarksProvider.Columns.ORDER_ID + " ASC");
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(final Loader<Cursor> loader, final Cursor data) {
         mAdapter.swapCursor(data);
         setContentShown(true);
         updateEmptyState();
@@ -71,7 +71,7 @@ public class BookmarkListFragment extends LoadingListFragmentBase implements
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(final Loader<Cursor> loader) {
         mAdapter.swapCursor(null);
         updateEmptyState();
     }
@@ -91,12 +91,12 @@ public class BookmarkListFragment extends LoadingListFragmentBase implements
     }
 
     @Override
-    public void onItemClick(long id, String url) {
+    public void onItemClick(final long id, final String url) {
         startActivity(BrowseFilter.makeRedirectionIntent(getActivity(), Uri.parse(url), null));
     }
 
     @Override
-    public void onItemDrag(RecyclerView.ViewHolder viewHolder) {
+    public void onItemDrag(final RecyclerView.ViewHolder viewHolder) {
         mItemTouchHelper.startDrag(viewHolder);
     }
 
@@ -104,7 +104,7 @@ public class BookmarkListFragment extends LoadingListFragmentBase implements
         private final BaseActivity mBaseActivity;
         private final BookmarkAdapter mAdapter;
 
-        public BookmarkDragHelperCallback(BaseActivity baseActivity, BookmarkAdapter adapter) {
+        public BookmarkDragHelperCallback(final BaseActivity baseActivity, final BookmarkAdapter adapter) {
             super(ItemTouchHelper.UP | ItemTouchHelper.DOWN,
                   ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
             mBaseActivity = baseActivity;
@@ -112,8 +112,8 @@ public class BookmarkListFragment extends LoadingListFragmentBase implements
         }
 
         @Override
-        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
-                              RecyclerView.ViewHolder target) {
+        public boolean onMove(final RecyclerView recyclerView, final RecyclerView.ViewHolder viewHolder,
+                              final RecyclerView.ViewHolder target) {
             int fromPos = viewHolder.getAdapterPosition();
             int toPos = target.getAdapterPosition();
 
@@ -122,12 +122,12 @@ public class BookmarkListFragment extends LoadingListFragmentBase implements
         }
 
         @Override
-        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+        public void onSwiped(final RecyclerView.ViewHolder viewHolder, final int direction) {
             mAdapter.onItemSwiped(viewHolder);
         }
 
         @Override
-        public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
+        public void onSelectedChanged(final RecyclerView.ViewHolder viewHolder, final int actionState) {
             super.onSelectedChanged(viewHolder, actionState);
 
             boolean isDragging = actionState == ItemTouchHelper.ACTION_STATE_DRAG;

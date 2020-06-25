@@ -29,15 +29,15 @@ public class CommitStatusBox extends LinearLayoutCompat implements View.OnClickL
     private final ImageView mDropDownIcon;
     private final View mHeader;
 
-    public CommitStatusBox(Context context) {
+    public CommitStatusBox(final Context context) {
         this(context, null);
     }
 
-    public CommitStatusBox(Context context, AttributeSet attrs) {
+    public CommitStatusBox(final Context context, final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public CommitStatusBox(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CommitStatusBox(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         setOrientation(VERTICAL);
@@ -55,7 +55,7 @@ public class CommitStatusBox extends LinearLayoutCompat implements View.OnClickL
         mHeader.setOnClickListener(this);
     }
 
-    public void fillStatus(List<Status> statuses, PullRequest.MergeableState mergableState) {
+    public void fillStatus(final List<Status> statuses, final PullRequest.MergeableState mergableState) {
         final int statusIconDrawableAttrId;
         final int statusLabelResId;
         switch (mergableState) {
@@ -167,7 +167,7 @@ public class CommitStatusBox extends LinearLayoutCompat implements View.OnClickL
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         switch (v.getId()) {
         case R.id.row_commit_status:
             Status status = (Status) v.getTag();
@@ -179,7 +179,7 @@ public class CommitStatusBox extends LinearLayoutCompat implements View.OnClickL
         }
     }
 
-    private void setSummaryText(int failingCount, int pendingCount, int successCount) {
+    private void setSummaryText(final int failingCount, final int pendingCount, final int successCount) {
         ArrayList<String> summaryList = new ArrayList<>();
         if (failingCount > 0) {
             summaryList.add(getContext().getString(R.string.check_failing, failingCount));
@@ -197,7 +197,7 @@ public class CommitStatusBox extends LinearLayoutCompat implements View.OnClickL
                                  sumCount, summary));
     }
 
-    private void setStatusesExpanded(boolean expanded) {
+    private void setStatusesExpanded(final boolean expanded) {
         mStatusContainer.setVisibility(expanded ? View.VISIBLE : View.GONE);
         int drawableAttr = expanded ? R.attr.dropUpArrowIcon : R.attr.dropDownArrowIcon;
         int drawableRes = UiUtils.resolveDrawable(getContext(), drawableAttr);

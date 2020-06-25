@@ -42,8 +42,8 @@ public class RepositoryListFragment extends PagedDataBaseFragment<Repository> {
     private String mRepoType;
     private final Map<String, String> mFilterData = new HashMap<>();
 
-    public static RepositoryListFragment newInstance(String login, boolean isOrg,
-            String repoType, String sortOrder, String sortDirection) {
+    public static RepositoryListFragment newInstance(final String login, final boolean isOrg,
+            final String repoType, final String sortOrder, final String sortDirection) {
         RepositoryListFragment f = new RepositoryListFragment();
 
         Bundle args = new Bundle();
@@ -58,7 +58,7 @@ public class RepositoryListFragment extends PagedDataBaseFragment<Repository> {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         final Bundle args = getArguments();
@@ -106,8 +106,8 @@ public class RepositoryListFragment extends PagedDataBaseFragment<Repository> {
     }
 
     @Override
-    protected void onAddData(RootAdapter<Repository, ? extends RecyclerView.ViewHolder> adapter,
-                             Collection<Repository> repositories) {
+    protected void onAddData(final RootAdapter<Repository, ? extends RecyclerView.ViewHolder> adapter,
+                             final Collection<Repository> repositories) {
         if ("sources".equals(mRepoType) || "forks".equals(mRepoType)) {
             for (Repository repository : repositories) {
                 if ("sources".equals(mRepoType) && !repository.isFork()) {
@@ -123,12 +123,12 @@ public class RepositoryListFragment extends PagedDataBaseFragment<Repository> {
     }
 
     @Override
-    public void onItemClick(Repository repository) {
+    public void onItemClick(final Repository repository) {
         startActivity(RepositoryActivity.makeIntent(getActivity(), repository));
     }
 
     @Override
-    protected Single<Response<Page<Repository>>> loadPage(int page, boolean bypassCache) {
+    protected Single<Response<Page<Repository>>> loadPage(final int page, final boolean bypassCache) {
         final RepositoryService service = ServiceFactory.get(RepositoryService.class, bypassCache);
         return ApiHelpers.loginEquals(mLogin, Gh4Application.get().getAuthLogin())
                ? service.getUserRepositories(mFilterData, page)

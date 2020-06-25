@@ -25,8 +25,8 @@ public class PullRequestReviewDiffLoadTask extends UrlLoadTask {
     @VisibleForTesting
     protected final int mPullRequestNumber;
 
-    public PullRequestReviewDiffLoadTask(FragmentActivity activity, String repoOwner,
-                                         String repoName, DiffHighlightId diffId, int pullRequestNumber) {
+    public PullRequestReviewDiffLoadTask(final FragmentActivity activity, final String repoOwner,
+                                         final String repoName, final DiffHighlightId diffId, final int pullRequestNumber) {
         super(activity);
         mRepoOwner = repoOwner;
         mRepoName = repoName;

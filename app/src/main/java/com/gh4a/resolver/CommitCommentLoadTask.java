@@ -33,8 +33,8 @@ public class CommitCommentLoadTask extends UrlLoadTask {
     @VisibleForTesting
     protected final IntentUtils.InitialCommentMarker mMarker;
 
-    public CommitCommentLoadTask(FragmentActivity activity, String repoOwner, String repoName,
-                                 String commitSha, IntentUtils.InitialCommentMarker marker) {
+    public CommitCommentLoadTask(final FragmentActivity activity, final String repoOwner, final String repoName,
+                                 final String commitSha, final IntentUtils.InitialCommentMarker marker) {
         super(activity);
         mRepoOwner = repoOwner;
         mRepoName = repoName;
@@ -47,9 +47,9 @@ public class CommitCommentLoadTask extends UrlLoadTask {
         return load(mActivity, mRepoOwner, mRepoName, mCommitSha, mMarker);
     }
 
-    public static Single<Optional<Intent>> load(Context context,
-            String repoOwner, String repoName, String commitSha,
-            IntentUtils.InitialCommentMarker marker) {
+    public static Single<Optional<Intent>> load(final Context context,
+            final String repoOwner, final String repoName, final String commitSha,
+            final IntentUtils.InitialCommentMarker marker) {
         RepositoryCommitService commitService = ServiceFactory.get(RepositoryCommitService.class, false);
         RepositoryCommentService commentService =
             ServiceFactory.get(RepositoryCommentService.class, false);

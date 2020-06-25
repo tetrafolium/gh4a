@@ -47,7 +47,7 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class GistActivity extends BaseActivity implements View.OnClickListener {
-    public static Intent makeIntent(Context context, String gistId) {
+    public static Intent makeIntent(final Context context, final String gistId) {
         return new Intent(context, GistActivity.class)
                .putExtra("id", gistId);
     }
@@ -60,7 +60,7 @@ public class GistActivity extends BaseActivity implements View.OnClickListener {
     private Boolean mIsStarred;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.gist);
@@ -77,7 +77,7 @@ public class GistActivity extends BaseActivity implements View.OnClickListener {
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         mGistId = extras.getString("id");
     }
@@ -130,20 +130,20 @@ public class GistActivity extends BaseActivity implements View.OnClickListener {
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
         GistFile file = (GistFile) view.getTag();
         startActivity(GistViewerActivity.makeIntent(this, mGistId, file.filename()));
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.gist_menu, menu);
 
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public boolean onPrepareOptionsMenu(final Menu menu) {
         boolean authorized = Gh4Application.get().isAuthorized();
 
         MenuItem starAction = menu.findItem(R.id.star);
@@ -169,7 +169,7 @@ public class GistActivity extends BaseActivity implements View.OnClickListener {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case R.id.share:
             String login = ApiHelpers.getUserLogin(this, mGist.owner());
@@ -207,7 +207,7 @@ public class GistActivity extends BaseActivity implements View.OnClickListener {
         });
     }
 
-    private void loadGist(boolean force) {
+    private void loadGist(final boolean force) {
         GistService service = ServiceFactory.get(GistService.class, force);
         service.getGist(mGistId)
         .map(ApiHelpers::throwOnFailure)
@@ -219,7 +219,7 @@ public class GistActivity extends BaseActivity implements View.OnClickListener {
         }, this::handleLoadFailure);
     }
 
-    private void loadStarredState(boolean force) {
+    private void loadStarredState(final boolean force) {
         GistService service = ServiceFactory.get(GistService.class, force);
         service.checkIfGistIsStarred(mGistId)
         .map(ApiHelpers::mapToBooleanOrThrowOnFailure)

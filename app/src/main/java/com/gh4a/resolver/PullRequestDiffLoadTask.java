@@ -23,15 +23,15 @@ public class PullRequestDiffLoadTask extends DiffLoadTask<ReviewComment> {
     @VisibleForTesting
     protected final int mPullRequestNumber;
 
-    public PullRequestDiffLoadTask(FragmentActivity activity, String repoOwner, String repoName,
-                                   DiffHighlightId diffId, int pullRequestNumber) {
+    public PullRequestDiffLoadTask(final FragmentActivity activity, final String repoOwner, final String repoName,
+                                   final DiffHighlightId diffId, final int pullRequestNumber) {
         super(activity, repoOwner, repoName, diffId);
         mPullRequestNumber = pullRequestNumber;
     }
 
     @Override
-    protected @NonNull Intent getLaunchIntent(String sha, @NonNull GitHubFile file,
-            List<ReviewComment> comments, DiffHighlightId diffId) {
+    protected @NonNull Intent getLaunchIntent(final String sha, final @NonNull GitHubFile file,
+            final List<ReviewComment> comments, final DiffHighlightId diffId) {
         return PullRequestDiffViewerActivity.makeIntent(mActivity, mRepoOwner,
                 mRepoName, mPullRequestNumber, sha, file.filename(), file.patch(),
                 comments, -1, diffId.startLine, diffId.endLine, diffId.right, null);
@@ -39,7 +39,7 @@ public class PullRequestDiffLoadTask extends DiffLoadTask<ReviewComment> {
 
     @NonNull
     @Override
-    protected Intent getFallbackIntent(String sha) {
+    protected Intent getFallbackIntent(final String sha) {
         return PullRequestActivity.makeIntent(mActivity, mRepoOwner, mRepoName,
                                               mPullRequestNumber);
     }

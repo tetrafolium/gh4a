@@ -24,8 +24,8 @@ public class ReleaseLoadTask extends UrlLoadTask {
     @VisibleForTesting
     protected final long mId;
 
-    public ReleaseLoadTask(FragmentActivity activity, String repoOwner, String repoName,
-                           String tagName) {
+    public ReleaseLoadTask(final FragmentActivity activity, final String repoOwner, final String repoName,
+                           final String tagName) {
         super(activity);
         mRepoOwner = repoOwner;
         mRepoName = repoName;
@@ -33,7 +33,7 @@ public class ReleaseLoadTask extends UrlLoadTask {
         mId = -1;
     }
 
-    public ReleaseLoadTask(FragmentActivity activity, String repoOwner, String repoName, long id) {
+    public ReleaseLoadTask(final FragmentActivity activity, final String repoOwner, final String repoName, final long id) {
         super(activity);
         mRepoOwner = repoOwner;
         mRepoName = repoName;

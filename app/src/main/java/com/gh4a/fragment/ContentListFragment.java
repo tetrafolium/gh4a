@@ -84,8 +84,8 @@ public class ContentListFragment extends ListDataBaseFragment<Content> implement
         Set<String> getSubModuleNames(ContentListFragment fragment);
     }
 
-    public static ContentListFragment newInstance(Repository repository,
-            String path, ArrayList<Content> contents, String ref) {
+    public static ContentListFragment newInstance(final Repository repository,
+            final String path, final ArrayList<Content> contents, final String ref) {
         ContentListFragment f = new ContentListFragment();
 
         Bundle args = new Bundle();
@@ -99,7 +99,7 @@ public class ContentListFragment extends ListDataBaseFragment<Content> implement
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mRepository = getArguments().getParcelable("repo");
         mPath = getArguments().getString("path");
@@ -110,7 +110,7 @@ public class ContentListFragment extends ListDataBaseFragment<Content> implement
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(final Context context) {
         super.onAttach(context);
         if (getParentFragment() instanceof ParentCallback) {
             mCallback = (ParentCallback) getParentFragment();
@@ -131,7 +131,7 @@ public class ContentListFragment extends ListDataBaseFragment<Content> implement
     }
 
     @Override
-    protected void onRecyclerViewInflated(RecyclerView view, LayoutInflater inflater) {
+    protected void onRecyclerViewInflated(final RecyclerView view, final LayoutInflater inflater) {
         super.onRecyclerViewInflated(view, inflater);
         registerForContextMenu(view);
     }
@@ -142,7 +142,7 @@ public class ContentListFragment extends ListDataBaseFragment<Content> implement
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(final ContextMenu menu, final View v, final ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
 
         ContextMenuAwareRecyclerView.RecyclerContextMenuInfo info =
@@ -156,7 +156,7 @@ public class ContentListFragment extends ListDataBaseFragment<Content> implement
     }
 
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
+    public boolean onContextItemSelected(final MenuItem item) {
         ContextMenuAwareRecyclerView.RecyclerContextMenuInfo info =
             (ContextMenuAwareRecyclerView.RecyclerContextMenuInfo) item.getMenuInfo();
         if (info.position >= mAdapter.getItemCount()) {
@@ -177,7 +177,7 @@ public class ContentListFragment extends ListDataBaseFragment<Content> implement
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQUEST_FILE_HISTORY && resultCode == Activity.RESULT_OK) {
             Commit commit = data.getParcelableExtra("commit");
             mCallback.onCommitSelected(commit);
@@ -190,25 +190,25 @@ public class ContentListFragment extends ListDataBaseFragment<Content> implement
         return mPath;
     }
 
-    public void onSubModuleNamesChanged(Set<String> subModules) {
+    public void onSubModuleNamesChanged(final Set<String> subModules) {
         if (mAdapter != null) {
             mAdapter.setSubModuleNames(subModules);
         }
     }
 
     @Override
-    protected void onAddData(RootAdapter<Content, ?> adapter, List<Content> data) {
+    protected void onAddData(final RootAdapter<Content, ?> adapter, final List<Content> data) {
         super.onAddData(adapter, data);
         mCallback.onContentsLoaded(this, data);
     }
 
     @Override
-    public void onItemClick(Content content) {
+    public void onItemClick(final Content content) {
         mCallback.onTreeSelected(content);
     }
 
     @Override
-    protected Single<List<Content>> onCreateDataSingle(boolean bypassCache) {
+    protected Single<List<Content>> onCreateDataSingle(final boolean bypassCache) {
         RepositoryContentService contentService =
             ServiceFactory.get(RepositoryContentService.class, bypassCache);
         String repoOwner = mRepository.owner().login();

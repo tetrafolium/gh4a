@@ -18,17 +18,17 @@ public class MarkdownButtonsBar extends FrameLayout implements View.OnClickListe
     private ToggleableBottomSheetBehavior mBottomSheetBehavior;
     private View mContainer;
 
-    public MarkdownButtonsBar(Context context) {
+    public MarkdownButtonsBar(final Context context) {
         super(context);
         initialize();
     }
 
-    public MarkdownButtonsBar(Context context, AttributeSet attrs) {
+    public MarkdownButtonsBar(final Context context, final AttributeSet attrs) {
         super(context, attrs);
         initialize();
     }
 
-    public MarkdownButtonsBar(Context context, AttributeSet attrs, int defStyleAttr) {
+    public MarkdownButtonsBar(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initialize();
     }
@@ -48,7 +48,7 @@ public class MarkdownButtonsBar extends FrameLayout implements View.OnClickListe
                           R.id.md_divider, R.id.md_code, R.id.md_quote, R.id.md_link, R.id.md_image);
     }
 
-    private void initializeButtons(View view, int... ids) {
+    private void initializeButtons(final View view, final int... ids) {
         for (int id : ids) {
             View button = view.findViewById(id);
             button.setOnClickListener(this);
@@ -56,20 +56,20 @@ public class MarkdownButtonsBar extends FrameLayout implements View.OnClickListe
         }
     }
 
-    public void setButtonsBackgroundColor(@ColorInt int color) {
+    public void setButtonsBackgroundColor(final @ColorInt int color) {
         mContainer.setBackgroundColor(color);
     }
 
-    public void setEditText(EditText editText) {
+    public void setEditText(final EditText editText) {
         mEditText = editText;
     }
 
-    public void setBottomSheetBehavior(ToggleableBottomSheetBehavior behavior) {
+    public void setBottomSheetBehavior(final ToggleableBottomSheetBehavior behavior) {
         mBottomSheetBehavior = behavior;
     }
 
     @Override
-    public boolean onTouch(View view, MotionEvent event) {
+    public boolean onTouch(final View view, final MotionEvent event) {
         if (mBottomSheetBehavior == null) return false;
 
         switch (event.getAction()) {
@@ -85,7 +85,7 @@ public class MarkdownButtonsBar extends FrameLayout implements View.OnClickListe
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         if (mEditText == null) {
             return;
         }

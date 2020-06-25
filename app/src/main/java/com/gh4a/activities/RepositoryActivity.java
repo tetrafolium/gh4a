@@ -45,24 +45,24 @@ import io.reactivex.Single;
 public class RepositoryActivity extends BaseFragmentPagerActivity implements
     CommitListFragment.ContextSelectionCallback,
     ContentListContainerFragment.CommitSelectionCallback {
-    public static Intent makeIntent(Context context, Repository repo) {
+    public static Intent makeIntent(final Context context, final Repository repo) {
         return makeIntent(context, repo, null);
     }
 
-    public static Intent makeIntent(Context context, Repository repo, String ref) {
+    public static Intent makeIntent(final Context context, final Repository repo, final String ref) {
         return makeIntent(context, repo.owner().login(), repo.name(), ref);
     }
 
-    public static Intent makeIntent(Context context, String repoOwner, String repoName) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName) {
         return makeIntent(context, repoOwner, repoName, null);
     }
 
-    public static Intent makeIntent(Context context, String repoOwner, String repoName, String ref) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName, final String ref) {
         return makeIntent(context, repoOwner, repoName, ref, null, PAGE_REPO_OVERVIEW);
     }
 
-    public static Intent makeIntent(Context context, String repoOwner, String repoName, String ref,
-                                    String initialPath, int initialPage) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName, final String ref,
+                                    final String initialPath, final int initialPage) {
         if (TextUtils.isEmpty(ref)) {
             ref = null;
         }
@@ -104,7 +104,7 @@ public class RepositoryActivity extends BaseFragmentPagerActivity implements
     private RepositoryEventListFragment mActivityFragment;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
@@ -121,7 +121,7 @@ public class RepositoryActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         mRepoOwner = extras.getString("owner");
         mRepoName = extras.getString("repo");
@@ -131,13 +131,13 @@ public class RepositoryActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(STATE_KEY_SELECTED_REF, mSelectedRef);
     }
 
     @Override
-    public void onCommitSelectedAsBase(Commit commit) {
+    public void onCommitSelectedAsBase(final Commit commit) {
         setSelectedRef(commit.sha());
     }
 
@@ -170,7 +170,7 @@ public class RepositoryActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected Fragment makeFragment(int position) {
+    protected Fragment makeFragment(final int position) {
         switch (position) {
         case 0:
             return RepositoryFragment.newInstance(mRepository, mSelectedRef);
@@ -188,7 +188,7 @@ public class RepositoryActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected void onFragmentInstantiated(Fragment f, int position) {
+    protected void onFragmentInstantiated(final Fragment f, final int position) {
         switch (position) {
         case 0:
             mRepositoryFragment = (RepositoryFragment) f;
@@ -206,7 +206,7 @@ public class RepositoryActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected void onFragmentDestroyed(Fragment f) {
+    protected void onFragmentDestroyed(final Fragment f) {
         if (f == mRepositoryFragment) {
             mRepositoryFragment = null;
         } else if (f == mContentListFragment) {
@@ -219,7 +219,7 @@ public class RepositoryActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected boolean fragmentNeedsRefresh(Fragment fragment) {
+    protected boolean fragmentNeedsRefresh(final Fragment fragment) {
         if (fragment instanceof CommitListFragment && mCommitListFragment == null) {
             return true;
         } else if (fragment instanceof ContentListContainerFragment
@@ -259,14 +259,14 @@ public class RepositoryActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.repo_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public boolean onPrepareOptionsMenu(final Menu menu) {
         if (mRepository == null) {
             menu.removeItem(R.id.ref);
             menu.removeItem(R.id.bookmark);
@@ -289,7 +289,7 @@ public class RepositoryActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         Uri url = IntentUtils.createBaseUriForRepo(mRepoOwner, mRepoName).build();
         switch (item.getItemId()) {
         case R.id.ref:
@@ -352,7 +352,7 @@ public class RepositoryActivity extends BaseFragmentPagerActivity implements
         .show();
     }
 
-    private void setSelectedRef(String selectedRef) {
+    private void setSelectedRef(final String selectedRef) {
         mSelectedRef = selectedRef;
         clearRefDependentFragments();
         updateTitle();
@@ -368,7 +368,7 @@ public class RepositoryActivity extends BaseFragmentPagerActivity implements
         mCommitListFragment = null;
     }
 
-    private void loadRepository(boolean force) {
+    private void loadRepository(final boolean force) {
         RepositoryService service = ServiceFactory.get(RepositoryService.class, force);
         service.getRepository(mRepoOwner, mRepoName)
         .map(ApiHelpers::throwOnFailure)
@@ -434,17 +434,17 @@ public class RepositoryActivity extends BaseFragmentPagerActivity implements
         }
 
         @Override
-        public Branch getItem(int position) {
+        public Branch getItem(final int position) {
             return mItems.get(position);
         }
 
         @Override
-        public long getItemId(int position) {
+        public long getItemId(final int position) {
             return position;
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, final View convertView, final ViewGroup parent) {
             if (convertView == null) {
                 convertView = mInflater.inflate(R.layout.row_branch, parent, false);
             }

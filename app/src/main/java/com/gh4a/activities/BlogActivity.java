@@ -24,14 +24,14 @@ import com.gh4a.R;
 import com.gh4a.model.Feed;
 
 public class BlogActivity extends WebViewerActivity {
-    public static Intent makeIntent(Context context, Feed blog) {
+    public static Intent makeIntent(final Context context, final Feed blog) {
         return new Intent(context, BlogActivity.class)
                .putExtra("title", blog.getTitle())
                .putExtra("content", blog.getContent());
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         onDataReady();
@@ -56,7 +56,7 @@ public class BlogActivity extends WebViewerActivity {
     }
 
     @Override
-    protected String generateHtml(String cssTheme, boolean addTitleHeader) {
+    protected String generateHtml(final String cssTheme, final boolean addTitleHeader) {
         String title = addTitleHeader ? getDocumentTitle() : null;
         return wrapUnthemedHtml(getIntent().getStringExtra("content"), cssTheme, title);
     }

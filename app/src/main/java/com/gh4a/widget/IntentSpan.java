@@ -17,13 +17,13 @@ public class IntentSpan extends ClickableSpan {
         Intent getIntent(Context context);
     }
 
-    public IntentSpan(@NonNull Context context, @NonNull IntentCallback cb) {
+    public IntentSpan(final @NonNull Context context, final @NonNull IntentCallback cb) {
         mContext = context;
         mCallback = cb;
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
         Intent intent = mCallback.getIntent(mContext);
         if (intent != null) {
             mContext.startActivity(intent);
@@ -31,7 +31,7 @@ public class IntentSpan extends ClickableSpan {
     }
 
     @Override
-    public void updateDrawState(@NonNull TextPaint ds) {
+    public void updateDrawState(final @NonNull TextPaint ds) {
         ds.setUnderlineText(false);
         ds.setColor(UiUtils.resolveColor(mContext, android.R.attr.textColorLink));
     }

@@ -25,15 +25,15 @@ public class PullRequestBranchInfoView extends RelativeLayout implements View.On
     private PullRequestMarker mSourceMarker;
     private PullRequestMarker mTargetMarker;
 
-    public PullRequestBranchInfoView(Context context) {
+    public PullRequestBranchInfoView(final Context context) {
         this(context, null);
     }
 
-    public PullRequestBranchInfoView(Context context, AttributeSet attrs) {
+    public PullRequestBranchInfoView(final Context context, final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public PullRequestBranchInfoView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public PullRequestBranchInfoView(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         inflate(context, R.layout.view_pull_request_branch_info, this);
@@ -45,8 +45,8 @@ public class PullRequestBranchInfoView extends RelativeLayout implements View.On
         mTargetBranchView.setOnClickListener(this);
     }
 
-    public void bind(PullRequestMarker sourceMarker, PullRequestMarker targetMarker,
-                     GitReference sourceReference) {
+    public void bind(final PullRequestMarker sourceMarker, final PullRequestMarker targetMarker,
+                     final GitReference sourceReference) {
         mSourceMarker = sourceMarker;
         mTargetMarker = targetMarker;
         formatMarkerText(mSourceBranchView, R.string.pull_request_from, sourceMarker,
@@ -54,8 +54,8 @@ public class PullRequestBranchInfoView extends RelativeLayout implements View.On
         formatMarkerText(mTargetBranchView, R.string.pull_request_to, targetMarker, true);
     }
 
-    private void formatMarkerText(StyleableTextView view, @StringRes int formatResId,
-                                  final PullRequestMarker marker, boolean makeClickable) {
+    private void formatMarkerText(final StyleableTextView view, final @StringRes int formatResId,
+                                  final PullRequestMarker marker, final boolean makeClickable) {
         SpannableStringBuilder builder = StringUtils.applyBoldTags(
                                              getContext().getString(formatResId), view.getTypefaceValue());
         int pos = builder.toString().indexOf("[ref]");
@@ -75,7 +75,7 @@ public class PullRequestBranchInfoView extends RelativeLayout implements View.On
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         PullRequestMarker marker = v.getId() == R.id.tv_pr_from ? mSourceMarker : mTargetMarker;
         if (marker.repo() != null) {
             Intent intent = RepositoryActivity.makeIntent(getContext(), marker.repo(),

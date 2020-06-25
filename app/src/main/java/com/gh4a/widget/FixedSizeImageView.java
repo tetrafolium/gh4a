@@ -30,31 +30,31 @@ import android.util.AttributeSet;
 public class FixedSizeImageView extends AppCompatImageView {
     private boolean mSuppressLayoutRequest;
 
-    public FixedSizeImageView(Context context) {
+    public FixedSizeImageView(final Context context) {
         super(context);
     }
 
-    public FixedSizeImageView(Context context, AttributeSet attrs) {
+    public FixedSizeImageView(final Context context, final AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public FixedSizeImageView(Context context, AttributeSet attrs, int defStyle) {
+    public FixedSizeImageView(final Context context, final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
     }
 
-    public void setImageResource(int resId) {
+    public void setImageResource(final int resId) {
         mSuppressLayoutRequest = true;
         super.setImageResource(resId);
         mSuppressLayoutRequest = false;
     }
 
-    public void setImageURI(Uri uri) {
+    public void setImageURI(final Uri uri) {
         mSuppressLayoutRequest = true;
         super.setImageURI(uri);
         mSuppressLayoutRequest = false;
     }
 
-    public void setImageDrawable(Drawable drawable) {
+    public void setImageDrawable(final Drawable drawable) {
         mSuppressLayoutRequest = true;
         super.setImageDrawable(drawable);
         mSuppressLayoutRequest = false;

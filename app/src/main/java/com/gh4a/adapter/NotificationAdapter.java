@@ -41,7 +41,7 @@ public class NotificationAdapter extends
     private final Context mContext;
     private final OnNotificationActionCallback mActionCallback;
 
-    public NotificationAdapter(Context context, OnNotificationActionCallback actionCallback) {
+    public NotificationAdapter(final Context context, final OnNotificationActionCallback actionCallback) {
         super(context);
         mContext = context;
         mActionCallback = actionCallback;
@@ -61,8 +61,8 @@ public class NotificationAdapter extends
         return false;
     }
 
-    public boolean markAsRead(@Nullable Repository repository,
-                              @Nullable NotificationThread notification) {
+    public boolean markAsRead(final @Nullable Repository repository,
+                              final @Nullable NotificationThread notification) {
         NotificationHolder previousRepoItem = null;
         int unreadNotificationsInSameRepoCount = 0;
         boolean hasReadEverything = true;
@@ -111,8 +111,8 @@ public class NotificationAdapter extends
     }
 
     @Override
-    protected ViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent,
-                                            int viewType) {
+    protected ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent,
+                                            final int viewType) {
         int layoutResId = viewType == VIEW_TYPE_NOTIFICATION_HEADER
                           ? R.layout.row_notification_header
                           : R.layout.row_notification;
@@ -121,7 +121,7 @@ public class NotificationAdapter extends
     }
 
     @Override
-    protected int getItemViewType(NotificationHolder item) {
+    protected int getItemViewType(final NotificationHolder item) {
         if (item.notification == null) {
             return VIEW_TYPE_NOTIFICATION_HEADER;
         }
@@ -129,7 +129,7 @@ public class NotificationAdapter extends
     }
 
     @Override
-    protected void onBindViewHolder(ViewHolder holder, NotificationHolder item) {
+    protected void onBindViewHolder(final ViewHolder holder, final NotificationHolder item) {
         holder.ivAction.setTag(item);
 
         float alpha = item.isRead() ? 0.5f : 1f;
@@ -175,7 +175,7 @@ public class NotificationAdapter extends
             item.isLastRepositoryNotification() ? View.VISIBLE : View.GONE);
     }
 
-    private int getIconResId(String subjectType) {
+    private int getIconResId(final String subjectType) {
         if (SUBJECT_ISSUE.equals(subjectType)) {
             return UiUtils.resolveDrawable(mContext, R.attr.issueIcon);
         }
@@ -194,7 +194,7 @@ public class NotificationAdapter extends
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
         PopupMenu.OnMenuItemClickListener {
-        public ViewHolder(View view, OnNotificationActionCallback actionCallback) {
+        public ViewHolder(final View view, final OnNotificationActionCallback actionCallback) {
             super(view);
             mActionCallback = actionCallback;
 
@@ -226,7 +226,7 @@ public class NotificationAdapter extends
         private final OnNotificationActionCallback mActionCallback;
 
         @Override
-        public void onClick(View v) {
+        public void onClick(final View v) {
             switch (v.getId()) {
             case R.id.iv_action: {
                 NotificationHolder notificationHolder = (NotificationHolder) v.getTag();
@@ -250,7 +250,7 @@ public class NotificationAdapter extends
         }
 
         @Override
-        public boolean onMenuItemClick(MenuItem item) {
+        public boolean onMenuItemClick(final MenuItem item) {
             NotificationHolder notificationHolder = (NotificationHolder) ivAction.getTag();
 
             switch (item.getItemId()) {

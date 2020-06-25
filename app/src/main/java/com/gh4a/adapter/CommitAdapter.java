@@ -37,12 +37,12 @@ import com.meisolsson.githubsdk.model.git.GitUser;
 import com.vdurmont.emoji.EmojiParser;
 
 public class CommitAdapter extends RootAdapter<Commit, CommitAdapter.ViewHolder> {
-    public CommitAdapter(Context context) {
+    public CommitAdapter(final Context context) {
         super(context);
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
         View v = inflater.inflate(R.layout.row_commit, parent, false);
         ViewHolder holder = new ViewHolder(v);
         holder.ivGravatar.setOnClickListener(this);
@@ -50,7 +50,7 @@ public class CommitAdapter extends RootAdapter<Commit, CommitAdapter.ViewHolder>
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, Commit commit) {
+    public void onBindViewHolder(final ViewHolder holder, final Commit commit) {
         User author = commit.author();
         if (author != null && !TextUtils.isEmpty(author.login())) {
             AvatarHandler.assignAvatar(holder.ivGravatar, author);
@@ -87,7 +87,7 @@ public class CommitAdapter extends RootAdapter<Commit, CommitAdapter.ViewHolder>
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         if (v.getId() == R.id.iv_gravatar) {
             Commit commit = (Commit) v.getTag();
             Intent intent = UserActivity.makeIntent(mContext, ApiHelpers.getAuthorLogin(commit));
@@ -100,7 +100,7 @@ public class CommitAdapter extends RootAdapter<Commit, CommitAdapter.ViewHolder>
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ViewHolder(View view) {
+        private ViewHolder(final View view) {
             super(view);
             tvSha = view.findViewById(R.id.tv_sha);
             tvSha.setTypeface(Typeface.MONOSPACE);

@@ -43,22 +43,22 @@ import java.util.List;
 
 public class CommitActivity extends BaseFragmentPagerActivity implements
     CommitFragment.CommentUpdateListener, CommitNoteFragment.CommentUpdateListener {
-    public static Intent makeIntent(Context context, String repoOwner, String repoName, String sha) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName, final String sha) {
         return makeIntent(context, repoOwner, repoName, -1, sha, null);
     }
 
-    public static Intent makeIntent(Context context, String repoOwner, String repoName,
-                                    int pullRequestNumber, String sha) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
+                                    final int pullRequestNumber, final String sha) {
         return makeIntent(context, repoOwner, repoName, pullRequestNumber, sha, null);
     }
 
-    public static Intent makeIntent(Context context, String repoOwner, String repoName,
-                                    String sha, IntentUtils.InitialCommentMarker initialComment) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
+                                    final String sha, final IntentUtils.InitialCommentMarker initialComment) {
         return makeIntent(context, repoOwner, repoName, -1, sha, initialComment);
     }
 
-    private static Intent makeIntent(Context context, String repoOwner, String repoName,
-                                     int pullRequestNumber, String sha, IntentUtils.InitialCommentMarker initialComment) {
+    private static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
+                                     final int pullRequestNumber, final String sha, final IntentUtils.InitialCommentMarker initialComment) {
         return new Intent(context, CommitActivity.class)
                .putExtra("owner", repoOwner)
                .putExtra("repo", repoName)
@@ -84,7 +84,7 @@ public class CommitActivity extends BaseFragmentPagerActivity implements
     };
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentShown(false);
@@ -110,7 +110,7 @@ public class CommitActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         mRepoOwner = extras.getString("owner");
         mRepoName = extras.getString("repo");
@@ -136,7 +136,7 @@ public class CommitActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected Fragment makeFragment(int position) {
+    protected Fragment makeFragment(final int position) {
         if (position == 1) {
             Fragment f = CommitNoteFragment.newInstance(mRepoOwner, mRepoName, mObjectSha,
                          mCommit, mComments, mInitialComment);
@@ -149,7 +149,7 @@ public class CommitActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected boolean fragmentNeedsRefresh(Fragment object) {
+    protected boolean fragmentNeedsRefresh(final Fragment object) {
         return true;
     }
 
@@ -159,7 +159,7 @@ public class CommitActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.commit_menu, menu);
 
@@ -175,7 +175,7 @@ public class CommitActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         Uri diffUri = IntentUtils.createBaseUriForRepo(mRepoOwner, mRepoName)
                       .appendPath("commit")
                       .appendPath(mObjectSha)
@@ -211,7 +211,7 @@ public class CommitActivity extends BaseFragmentPagerActivity implements
         }
     }
 
-    private void loadCommit(boolean force) {
+    private void loadCommit(final boolean force) {
         RepositoryCommitService service = ServiceFactory.get(RepositoryCommitService.class, force);
 
         service.getCommit(mRepoOwner, mRepoName, mObjectSha)
@@ -223,7 +223,7 @@ public class CommitActivity extends BaseFragmentPagerActivity implements
         }, this::handleLoadFailure);
     }
 
-    private void loadComments(boolean force) {
+    private void loadComments(final boolean force) {
         final RepositoryCommentService service =
             ServiceFactory.get(RepositoryCommentService.class, force);
         ApiHelpers.PageIterator

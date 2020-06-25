@@ -29,7 +29,7 @@ public class SearchAdapter extends RootAdapter<Object, RecyclerView.ViewHolder> 
     private CodeSearchAdapter mCodeAdapter;
     private int mMode;
 
-    public SearchAdapter(Context context, Callback callback) {
+    public SearchAdapter(final Context context, final Callback callback) {
         super(context);
         mUserAdapter = new UserAdapter(context);
         mRepoAdapter = new RepositoryAdapter(context);
@@ -37,13 +37,13 @@ public class SearchAdapter extends RootAdapter<Object, RecyclerView.ViewHolder> 
         mMode = SearchFragment.SEARCH_TYPE_REPO;
     }
 
-    public void setMode(int mode) {
+    public void setMode(final int mode) {
         mMode = mode;
         clear();
     }
 
     @Override
-    public int getItemViewType(Object item) {
+    public int getItemViewType(final Object item) {
         if (item instanceof User) {
             return mUserAdapter.getItemViewType((User) item) + 10000;
         } else if (item instanceof Repository) {
@@ -54,17 +54,17 @@ public class SearchAdapter extends RootAdapter<Object, RecyclerView.ViewHolder> 
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(LayoutInflater inflater,
-            ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(final LayoutInflater inflater,
+            final ViewGroup parent, final int viewType) {
         RootAdapter<?, ? extends RecyclerView.ViewHolder> adapter =
-            mMode == SearchFragment.SEARCH_TYPE_REPO ? mRepoAdapter :
-            mMode == SearchFragment.SEARCH_TYPE_USER ? mUserAdapter :
-            mCodeAdapter;
+            mMode == SearchFragment.SEARCH_TYPE_REPO ? mRepoAdapter
+            : mMode == SearchFragment.SEARCH_TYPE_USER ? mUserAdapter
+            : mCodeAdapter;
         return adapter.onCreateViewHolder(inflater, parent, viewType % 10000);
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, Object item) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final Object item) {
         if (item instanceof User) {
             mUserAdapter.onBindViewHolder((UserAdapter.ViewHolder) holder, (User) item);
         } else if (item instanceof Repository) {
@@ -77,20 +77,20 @@ public class SearchAdapter extends RootAdapter<Object, RecyclerView.ViewHolder> 
     public static class CodeSearchAdapter extends RootAdapter<SearchCode, CodeSearchAdapter.ViewHolder> {
         private final Callback mCallback;
 
-        public CodeSearchAdapter(Context context, Callback callback) {
+        public CodeSearchAdapter(final Context context, final Callback callback) {
             super(context);
             mCallback = callback;
         }
 
         @Override
-        public ViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent,
-                                             int viewType) {
+        public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent,
+                                             final int viewType) {
             View v = inflater.inflate(R.layout.row_code_search, parent, false);
             return new ViewHolder(v);
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder holder, SearchCode result) {
+        public void onBindViewHolder(final ViewHolder holder, final SearchCode result) {
             Repository repo = result.repository();
             holder.tvTitle.setText(result.name());
             holder.tvRepo.setText(repo.owner().login() + "/" + repo.name());
@@ -138,7 +138,7 @@ public class SearchAdapter extends RootAdapter<Object, RecyclerView.ViewHolder> 
         }
 
         @Override
-        public void onClick(View view) {
+        public void onClick(final View view) {
             if (view.getId() == R.id.tv_match) {
                 SearchCode searchResult = (SearchCode) view.getTag();
                 mCallback.onSearchFragmentClick(searchResult,
@@ -150,7 +150,7 @@ public class SearchAdapter extends RootAdapter<Object, RecyclerView.ViewHolder> 
         }
 
         public static class ViewHolder extends RecyclerView.ViewHolder {
-            private ViewHolder(View view) {
+            private ViewHolder(final View view) {
                 super(view);
                 tvTitle = view.findViewById(R.id.tv_title);
                 tvRepo = view.findViewById(R.id.tv_repo);

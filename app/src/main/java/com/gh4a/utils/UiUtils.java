@@ -58,8 +58,8 @@ import java.util.List;
 public class UiUtils {
     public static final LinkMovementMethod CHECKING_LINK_METHOD = new LinkMovementMethod() {
         @Override
-        public boolean onTouchEvent(@NonNull TextView widget,
-                                    @NonNull Spannable buffer, @NonNull MotionEvent event) {
+        public boolean onTouchEvent(final @NonNull TextView widget,
+                                    final @NonNull Spannable buffer, final @NonNull MotionEvent event) {
             try {
                 return super.onTouchEvent(widget, buffer, event);
             } catch (ActivityNotFoundException e) {
@@ -75,7 +75,7 @@ public class UiUtils {
         }
     };
 
-    public static void hideImeForView(View view) {
+    public static void hideImeForView(final View view) {
         if (view == null) {
             return;
         }
@@ -84,7 +84,7 @@ public class UiUtils {
         imm.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
-    public static void showImeForView(View view) {
+    public static void showImeForView(final View view) {
         if (view == null) {
             return;
         }
@@ -93,7 +93,7 @@ public class UiUtils {
         imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
     }
 
-    public static int textColorForBackground(Context context, int backgroundColor) {
+    public static int textColorForBackground(final Context context, final int backgroundColor) {
         int red = Color.red(backgroundColor);
         int green = Color.green(backgroundColor);
         int blue = Color.blue(backgroundColor);
@@ -105,7 +105,7 @@ public class UiUtils {
         return ContextCompat.getColor(context, R.color.label_fg_light);
     }
 
-    public static void trySetListOverscrollColor(RecyclerView view, int color) {
+    public static void trySetListOverscrollColor(final RecyclerView view, final int color) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             RecyclerViewEdgeColorHelper helper =
                 (RecyclerViewEdgeColorHelper) view.getTag(R.id.EdgeColorHelper);
@@ -126,12 +126,12 @@ public class UiUtils {
         private static Method sTopEnsureMethod, sBottomEnsureMethod;
         private static Field sTopEffectField, sBottomEffectField;
 
-        public RecyclerViewEdgeColorHelper(RecyclerView view) {
+        public RecyclerViewEdgeColorHelper(final RecyclerView view) {
             mView = view;
             mColor = 0;
             mView.getViewTreeObserver().addOnGlobalLayoutListener(this);
         }
-        public void setColor(int color) {
+        public void setColor(final int color) {
             mColor = color;
             applyIfPossible();
         }
@@ -164,7 +164,7 @@ public class UiUtils {
             applyColor(mBottomEffect);
         }
 
-        private void applyColor(EdgeEffect effect) {
+        private void applyColor(final EdgeEffect effect) {
             if (effect != null) {
                 final int alpha = Color.alpha(effect.getColor());
                 effect.setColor(Color.argb(alpha, Color.red(mColor),
@@ -193,7 +193,7 @@ public class UiUtils {
         }
     }
 
-    public static int mixColors(int startColor, int endColor, float fraction) {
+    public static int mixColors(final int startColor, final int endColor, final float fraction) {
         // taken from ArgbEvaluator.evaluate
         int startA = (startColor >> 24) & 0xff;
         int startR = (startColor >> 16) & 0xff;
@@ -205,20 +205,20 @@ public class UiUtils {
         int endG = (endColor >> 8) & 0xff;
         int endB = endColor & 0xff;
 
-        return ((startA + (int)(fraction * (endA - startA))) << 24) |
-               ((startR + (int)(fraction * (endR - startR))) << 16) |
-               ((startG + (int)(fraction * (endG - startG))) << 8) |
-               ((startB + (int)(fraction * (endB - startB))));
+        return ((startA + (int) (fraction * (endA - startA))) << 24)
+               | ((startR + (int) (fraction * (endR - startR))) << 16)
+               | ((startG + (int) (fraction * (endG - startG))) << 8)
+               | ((startB + (int) (fraction * (endB - startB))));
     }
 
-    public static boolean canViewScrollUp(View view) {
+    public static boolean canViewScrollUp(final View view) {
         if (view == null) {
             return false;
         }
         return view.canScrollVertically(-1);
     }
 
-    public static Context makeHeaderThemedContext(Context context) {
+    public static Context makeHeaderThemedContext(final Context context) {
         @StyleRes int themeResId = resolveDrawable(context, R.attr.headerTheme);
         if (themeResId != 0) {
             return new ContextThemeWrapper(context, themeResId);
@@ -226,7 +226,7 @@ public class UiUtils {
         return context;
     }
 
-    public static Dialog createProgressDialog(Context context, @StringRes int messageResId) {
+    public static Dialog createProgressDialog(final Context context, final @StringRes int messageResId) {
         View content = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null);
         TextView message = content.findViewById(R.id.message);
 
@@ -236,7 +236,7 @@ public class UiUtils {
                .create();
     }
 
-    public static int resolveDrawable(Context context, @AttrRes int styledAttributeId) {
+    public static int resolveDrawable(final Context context, final @AttrRes int styledAttributeId) {
         TypedArray a = context.obtainStyledAttributes(new int[] {
                            styledAttributeId
                        });
@@ -245,7 +245,7 @@ public class UiUtils {
         return resource;
     }
 
-    public static @ColorInt int resolveColor(Context context, @AttrRes int styledAttributeId) {
+    public static @ColorInt int resolveColor(final Context context, final @AttrRes int styledAttributeId) {
         TypedArray a = context.obtainStyledAttributes(new int[] {
                            styledAttributeId
                        });
@@ -254,8 +254,8 @@ public class UiUtils {
         return color;
     }
 
-    private static void enqueueDownload(Context context, Uri uri, String fileName,
-                                        String description, String mimeType, String mediaType, boolean wifiOnly) {
+    private static void enqueueDownload(final Context context, final Uri uri, final String fileName,
+                                        final String description, final String mimeType, final String mediaType, final boolean wifiOnly) {
         final DownloadManager dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         DownloadManager.Request request = new DownloadManager.Request(uri)
         .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
@@ -289,7 +289,7 @@ public class UiUtils {
                                    R.string.download_permission_rationale);
     }
 
-    private static void enqueueDownload(final Context context, String url, final String mimeType,
+    private static void enqueueDownload(final Context context, final String url, final String mimeType,
                                         final String fileName, final String description, final String mediaType) {
         if (url == null) {
             return;
@@ -320,24 +320,24 @@ public class UiUtils {
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public static boolean downloadNeedsWarning(Context context) {
+    public static boolean downloadNeedsWarning(final Context context) {
         ConnectivityManager cm =
             (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         return cm.isActiveNetworkMetered();
     }
 
     public static abstract class EmptinessWatchingTextWatcher implements TextWatcher {
-        public EmptinessWatchingTextWatcher(EditText editor) {
+        public EmptinessWatchingTextWatcher(final EditText editor) {
             afterTextChanged(editor.getText());
         }
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
         }
         @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
         }
         @Override
-        public void afterTextChanged(Editable s) {
+        public void afterTextChanged(final Editable s) {
             onIsEmpty(s == null || s.length() == 0);
         }
         public abstract void onIsEmpty(boolean isEmpty);
@@ -346,21 +346,21 @@ public class UiUtils {
     public static class ButtonEnableTextWatcher extends EmptinessWatchingTextWatcher {
         private final View mView;
 
-        public ButtonEnableTextWatcher(EditText editor, View view) {
+        public ButtonEnableTextWatcher(final EditText editor, final View view) {
             super(editor);
             mView = view;
             afterTextChanged(editor.getText());
         }
 
         @Override
-        public void onIsEmpty(boolean isEmpty) {
+        public void onIsEmpty(final boolean isEmpty) {
             if (mView != null) {
                 mView.setEnabled(!isEmpty);
             }
         }
     }
 
-    public static CharSequence getSelectedText(TextView view) {
+    public static CharSequence getSelectedText(final TextView view) {
         int min = 0;
         int max = view.length();
 
@@ -378,23 +378,23 @@ public class UiUtils {
     public static abstract class QuoteActionModeCallback implements ActionMode.Callback {
         private final TextView mView;
 
-        public QuoteActionModeCallback(TextView view) {
+        public QuoteActionModeCallback(final TextView view) {
             mView = view;
         }
 
         @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        public boolean onCreateActionMode(final ActionMode mode, final Menu menu) {
             mode.getMenuInflater().inflate(R.menu.comment_selection_menu, menu);
             return true;
         }
 
         @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        public boolean onPrepareActionMode(final ActionMode mode, final Menu menu) {
             return false;
         }
 
         @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        public boolean onActionItemClicked(final ActionMode mode, final MenuItem item) {
             if (item.getItemId() != R.id.quote) {
                 return false;
             }
@@ -405,7 +405,7 @@ public class UiUtils {
         }
 
         @Override
-        public void onDestroyActionMode(ActionMode mode) {
+        public void onDestroyActionMode(final ActionMode mode) {
         }
 
         public abstract void onTextQuoted(CharSequence text);
@@ -413,7 +413,7 @@ public class UiUtils {
 
     public static class WhitespaceTokenizer implements MultiAutoCompleteTextView.Tokenizer {
         @Override
-        public int findTokenStart(CharSequence text, int cursor) {
+        public int findTokenStart(final CharSequence text, final int cursor) {
             while (cursor > 0 && !Character.isWhitespace(text.charAt(cursor - 1))) {
                 cursor--;
             }
@@ -422,7 +422,7 @@ public class UiUtils {
         }
 
         @Override
-        public int findTokenEnd(CharSequence text, int cursor) {
+        public int findTokenEnd(final CharSequence text, final int cursor) {
             int len = text.length();
 
             while (cursor < len) {
@@ -437,13 +437,13 @@ public class UiUtils {
         }
 
         @Override
-        public CharSequence terminateToken(CharSequence text) {
+        public CharSequence terminateToken(final CharSequence text) {
             return text;
         }
     }
 
     @NonNull
-    public static SpannableStringBuilder formatLabelList(Context context, List<Label> labels) {
+    public static SpannableStringBuilder formatLabelList(final Context context, final List<Label> labels) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         for (Label label : labels) {
             int pos = builder.length();
@@ -454,7 +454,7 @@ public class UiUtils {
         return builder;
     }
 
-    public static int limitViewHeight(int heightMeasureSpec, int maxHeight) {
+    public static int limitViewHeight(final int heightMeasureSpec, final int maxHeight) {
         int heightSize = View.MeasureSpec.getSize(heightMeasureSpec);
         int heightMode = View.MeasureSpec.getMode(heightMeasureSpec);
 
@@ -473,8 +473,8 @@ public class UiUtils {
         return heightMeasureSpec;
     }
 
-    public static void setMenuItemText(Context context, MenuItem item, String title,
-                                       String subtitle) {
+    public static void setMenuItemText(final Context context, final MenuItem item, final String title,
+                                       final String subtitle) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         builder.append(title).append("\n");
 

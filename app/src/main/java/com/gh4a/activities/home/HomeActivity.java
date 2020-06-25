@@ -53,7 +53,7 @@ import java.util.HashMap;
 public class HomeActivity extends BaseFragmentPagerActivity implements
     View.OnClickListener, RepositoryListContainerFragment.Callback,
     NotificationListFragment.ParentCallback, UserPasswordLoginDialogFragment.ParentCallback {
-    public static Intent makeIntent(Context context, @IdRes int initialPageId) {
+    public static Intent makeIntent(final Context context, final @IdRes int initialPageId) {
         String initialPage = START_PAGE_MAPPING.get(initialPageId);
         Intent intent = new Intent(context, HomeActivity.class);
         if (initialPage != null) {
@@ -62,8 +62,8 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
         return intent;
     }
 
-    public static Intent makeNotificationsIntent(Context context, String repoOwner,
-            String repoName) {
+    public static Intent makeNotificationsIntent(final Context context, final String repoOwner,
+            final String repoName) {
         return makeIntent(context, R.id.notifications)
                .putExtra(NotificationListFragment.EXTRA_INITIAL_REPO_OWNER, repoOwner)
                .putExtra(NotificationListFragment.EXTRA_INITIAL_REPO_NAME, repoName);
@@ -107,7 +107,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         mUserLogin = Gh4Application.get().getAuthLogin();
         if (savedInstanceState != null) {
             mSelectedFactoryId = savedInstanceState.getInt(STATE_KEY_FACTORY_ITEM);
@@ -136,7 +136,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
         return getString(mFactory.getTitleResId());
     }
 
-    private void updateNotificationIndicator(int checkedItemId) {
+    private void updateNotificationIndicator(final int checkedItemId) {
         if (mNotificationsIndicator == null) {
             return;
         }
@@ -148,7 +148,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
         mNotificationsIndicator.setImageDrawable(mNotificationsIndicatorIcon);
     }
 
-    public void setNotificationsIndicatorVisible(boolean visible) {
+    public void setNotificationsIndicatorVisible(final boolean visible) {
         if (mNotificationsIndicator != null) {
             mNotificationsIndicator.setVisibility(visible ? View.VISIBLE : View.GONE);
             mNotificationsMenuItem.setIcon(visible
@@ -158,14 +158,14 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(STATE_KEY_FACTORY_ITEM, mSelectedFactoryId);
         mFactory.onSaveInstanceState(outState);
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    protected void onRestoreInstanceState(final Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         if (savedInstanceState != null) {
             mFactory.onRestoreInstanceState(savedInstanceState);
@@ -173,7 +173,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
         updateDrawerMode(!mDrawerInAccountMode);
     }
 
@@ -183,7 +183,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected int getInitialLeftDrawerSelection(Menu menu) {
+    protected int getInitialLeftDrawerSelection(final Menu menu) {
         mLeftDrawerMenu = menu;
 
         mNotificationsMenuItem = menu.findItem(R.id.notifications);
@@ -207,13 +207,13 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected void onPrepareRightNavigationDrawerMenu(Menu menu) {
+    protected void onPrepareRightNavigationDrawerMenu(final Menu menu) {
         super.onPrepareRightNavigationDrawerMenu(menu);
         mFactory.prepareToolDrawerMenu(menu);
     }
 
     @Override
-    protected void configureLeftDrawerHeader(View header) {
+    protected void configureLeftDrawerHeader(final View header) {
         super.configureLeftDrawerHeader(header);
 
         mAvatarView = header.findViewById(R.id.avatar);
@@ -234,7 +234,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    public boolean onNavigationItemSelected(final @NonNull MenuItem item) {
         super.onNavigationItemSelected(item);
 
         updateNotificationIndicator(item.getItemId());
@@ -279,14 +279,14 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected void onDrawerClosed(boolean right) {
+    protected void onDrawerClosed(final boolean right) {
         super.onDrawerClosed(right);
         if (!right) {
             updateDrawerMode(false);
         }
     }
 
-    private void switchActiveUser(String login) {
+    private void switchActiveUser(final String login) {
         Gh4Application.get().setActiveLogin(login);
         mUserLogin = login;
         onRefresh();
@@ -295,7 +295,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
         recreate();
     }
 
-    private FragmentFactory getFactoryForItem(int id) {
+    private FragmentFactory getFactoryForItem(final int id) {
         switch (id) {
         case R.id.news_feed:
             return new NewsFeedFactory(this, mUserLogin);
@@ -334,33 +334,33 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected Fragment makeFragment(int position) {
+    protected Fragment makeFragment(final int position) {
         return mFactory.makeFragment(position);
     }
 
     @Override
-    protected void onFragmentInstantiated(Fragment f, int position) {
+    protected void onFragmentInstantiated(final Fragment f, final int position) {
         mFactory.onFragmentInstantiated(f, position);
     }
 
     @Override
-    protected void onFragmentDestroyed(Fragment f) {
+    protected void onFragmentDestroyed(final Fragment f) {
         mFactory.onFragmentDestroyed(f);
     }
 
     @Override
-    public void onLoginFinished(String token, User user) {
+    public void onLoginFinished(final String token, final User user) {
         Gh4Application.get().addAccount(user, token);
         switchActiveUser(user.login());
     }
 
     @Override
-    public void onLoginFailed(Throwable error) {
+    public void onLoginFailed(final Throwable error) {
         // TODO
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         if (mFactory.onCreateOptionsMenu(menu)) {
             return true;
         }
@@ -368,7 +368,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         if (mFactory.onOptionsItemSelected(item)) {
             return true;
         }
@@ -376,7 +376,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQUEST_SETTINGS) {
             if (data.getBooleanExtra(SettingsActivity.RESULT_EXTRA_THEME_CHANGED, false)) {
                 goToToplevelActivity();
@@ -426,7 +426,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected boolean fragmentNeedsRefresh(Fragment object) {
+    protected boolean fragmentNeedsRefresh(final Fragment object) {
         return true;
     }
 
@@ -487,7 +487,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
         mFactory.setUserInfo(mUserInfo);
     }
 
-    private void updateDrawerMode(boolean accountMode) {
+    private void updateDrawerMode(final boolean accountMode) {
         mLeftDrawerMenu.setGroupVisible(R.id.my_items, !accountMode);
         mLeftDrawerMenu.setGroupVisible(R.id.navigation, !accountMode);
         mLeftDrawerMenu.setGroupVisible(R.id.explore, !accountMode);
@@ -523,7 +523,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
         mDrawerInAccountMode = accountMode;
     }
 
-    private void switchTo(int itemId, FragmentFactory factory) {
+    private void switchTo(final int itemId, final FragmentFactory factory) {
         if (mFactory != null) {
             mFactory.onDestroy();
         }
@@ -544,7 +544,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
         invalidateTabs();
     }
 
-    private void loadUserInfo(boolean force) {
+    private void loadUserInfo(final boolean force) {
         UserService service = ServiceFactory.get(UserService.class, force);
         service.getUser(mUserLogin)
         .map(ApiHelpers::throwOnFailure)
@@ -556,7 +556,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
         }, this::handleLoadFailure);
     }
 
-    private void loadNotificationIndicator(boolean force) {
+    private void loadNotificationIndicator(final boolean force) {
         NotificationService service = ServiceFactory.get(
                                           NotificationService.class, force, null, null, 1);
         HashMap<String, Object> options = new HashMap<>();
@@ -574,7 +574,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
         DialogInterface.OnClickListener {
         @NonNull
         @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
+        public Dialog onCreateDialog(final Bundle savedInstanceState) {
             return new AlertDialog.Builder(getActivity())
                    .setMessage(R.string.login_mode_dialog_text)
                    .setPositiveButton(R.string.login_mode_button_oauth, this)
@@ -584,7 +584,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
         }
 
         @Override
-        public void onClick(DialogInterface dialog, int which) {
+        public void onClick(final DialogInterface dialog, final int which) {
             if (which == DialogInterface.BUTTON_POSITIVE) {
                 new BrowserLogoutDialogFragment().show(getFragmentManager(), "browserlogout");
             } else {
@@ -598,7 +598,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
         DialogInterface.OnClickListener {
         @NonNull
         @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
+        public Dialog onCreateDialog(final Bundle savedInstanceState) {
             return new AlertDialog.Builder(getActivity())
                    .setTitle(R.string.browser_logout_dialog_title)
                    .setMessage(R.string.browser_logout_dialog_text)
@@ -608,7 +608,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
         }
 
         @Override
-        public void onClick(DialogInterface dialog, int which) {
+        public void onClick(final DialogInterface dialog, final int which) {
             if (which == DialogInterface.BUTTON_NEUTRAL) {
                 Github4AndroidActivity.launchOauthLogin(getActivity());
             } else if (which == DialogInterface.BUTTON_POSITIVE) {
@@ -624,7 +624,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
         DialogInterface.OnClickListener {
         @NonNull
         @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
+        public Dialog onCreateDialog(final Bundle savedInstanceState) {
             return new AlertDialog.Builder(getActivity())
                    .setMessage(R.string.browser_logout_completed_dialog_text)
                    .setPositiveButton(R.string.continue_login, this)
@@ -632,7 +632,7 @@ public class HomeActivity extends BaseFragmentPagerActivity implements
         }
 
         @Override
-        public void onClick(DialogInterface dialog, int which) {
+        public void onClick(final DialogInterface dialog, final int which) {
             Github4AndroidActivity.launchOauthLogin(getActivity());
         }
     }

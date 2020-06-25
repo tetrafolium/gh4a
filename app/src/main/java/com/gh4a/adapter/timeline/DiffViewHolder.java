@@ -50,7 +50,7 @@ class DiffViewHolder extends TimelineItemAdapter.TimelineItemViewHolder<Timeline
     private final int mIssueNumber;
     private final float mInitialDiffTextSize;
 
-    public DiffViewHolder(View itemView, String repoOwner, String repoName, int issueNumber) {
+    public DiffViewHolder(final View itemView, final String repoOwner, final String repoName, final int issueNumber) {
         super(itemView);
 
         mRepoOwner = repoOwner;
@@ -79,7 +79,7 @@ class DiffViewHolder extends TimelineItemAdapter.TimelineItemViewHolder<Timeline
     }
 
     @Override
-    public void bind(TimelineItem.Diff item) {
+    public void bind(final TimelineItem.Diff item) {
         ReviewComment comment = item.getInitialComment();
 
         mFileTextView.setTag(item.getInitialTimelineComment());
@@ -172,7 +172,7 @@ class DiffViewHolder extends TimelineItemAdapter.TimelineItemViewHolder<Timeline
                ? DIFF_SIZE_MULTIPLIERS[textSizeSetting] : 1F;
     }
 
-    private void appendLineNumber(SpannableStringBuilder builder, int maxLength, String numberText,
+    private void appendLineNumber(final SpannableStringBuilder builder, final int maxLength, final String numberText,
                                   final int number, final TimelineItem.Diff diff, final boolean isRightNumber) {
         int start = builder.length();
 
@@ -189,12 +189,12 @@ class DiffViewHolder extends TimelineItemAdapter.TimelineItemViewHolder<Timeline
         if (!TextUtils.isEmpty(numberText)) {
             builder.setSpan(new ClickableSpan() {
                 @Override
-                public void onClick(View widget) {
+                public void onClick(final View widget) {
                     showPopupMenu(diff, number, isRightNumber);
                 }
 
                 @Override
-                public void updateDrawState(TextPaint ds) {
+                public void updateDrawState(final TextPaint ds) {
                     ds.setColor(mSecondaryTextColor);
                 }
             }, start, builder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -202,7 +202,7 @@ class DiffViewHolder extends TimelineItemAdapter.TimelineItemViewHolder<Timeline
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
         if (view.getId() == R.id.tv_file) {
             TimelineItem.TimelineComment timelineComment =
                 (TimelineItem.TimelineComment) view.getTag();
@@ -214,7 +214,7 @@ class DiffViewHolder extends TimelineItemAdapter.TimelineItemViewHolder<Timeline
         }
     }
 
-    private Uri createUrl(TimelineItem.Diff diff, int line, boolean isRightLine) {
+    private Uri createUrl(final TimelineItem.Diff diff, final int line, final boolean isRightLine) {
         ReviewComment comment = diff.getInitialComment();
         String fragment = "discussion-diff-" + comment.id() + (isRightLine ? "R" : "L") + line;
         return IntentUtils.createBaseUriForRepo(mRepoOwner, mRepoName)
@@ -257,8 +257,8 @@ class DiffViewHolder extends TimelineItemAdapter.TimelineItemViewHolder<Timeline
         private final boolean mIsLastLine;
         private final int mLineNumberLength;
 
-        public DiffLineSpan(int backgroundColor, int numberBackgroundColor, int padding,
-                            boolean isFirstLine, boolean isLastLine, int lineNumberLength) {
+        public DiffLineSpan(final int backgroundColor, final int numberBackgroundColor, final int padding,
+                            final boolean isFirstLine, final boolean isLastLine, final int lineNumberLength) {
             super();
             mBackgroundColor = backgroundColor;
             mLineNumberBackgroundColor = numberBackgroundColor;
@@ -269,8 +269,8 @@ class DiffViewHolder extends TimelineItemAdapter.TimelineItemViewHolder<Timeline
         }
 
         @Override
-        public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline,
-                                   int bottom, CharSequence text, int start, int end, int lnum) {
+        public void drawBackground(final Canvas c, final Paint p, final int left, final int right, final int top, final int baseline,
+                                   final int bottom, final CharSequence text, final int start, final int end, final int lnum) {
             final int paintColor = p.getColor();
             float width = p.measureText(text, start, start + mLineNumberLength);
             int bgTop = top - (mIsFirstLine ? mPadding : 0);

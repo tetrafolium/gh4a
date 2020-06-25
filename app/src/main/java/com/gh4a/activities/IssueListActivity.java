@@ -60,12 +60,12 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
     View.OnClickListener, LoadingListFragmentBase.OnRecyclerViewCreatedListener,
     SearchView.OnCloseListener, SearchView.OnQueryTextListener,
     MenuItem.OnActionExpandListener {
-    public static Intent makeIntent(Context context, String repoOwner, String repoName) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName) {
         return makeIntent(context, repoOwner, repoName, false);
     }
 
-    public static Intent makeIntent(Context context, String repoOwner, String repoName,
-                                    boolean isPullRequest) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
+                                    final boolean isPullRequest) {
         return new Intent(context, IssueListActivity.class)
                .putExtra("owner", repoOwner)
                .putExtra("repo", repoName)
@@ -120,13 +120,13 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
     };
 
     private static final int[][] HEADER_COLOR_ATTRS = new int[][] {
-        { R.attr.colorIssueOpen, R.attr.colorIssueOpenDark },
-        { R.attr.colorIssueClosed, R.attr.colorIssueClosedDark },
-        { R.attr.colorPullRequestMerged, R.attr.colorPullRequestMergedDark }
+        {R.attr.colorIssueOpen, R.attr.colorIssueOpenDark },
+        {R.attr.colorIssueClosed, R.attr.colorIssueClosedDark },
+        {R.attr.colorPullRequestMerged, R.attr.colorPullRequestMergedDark }
     };
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mUserLogin = Gh4Application.get().getAuthLogin();
@@ -165,7 +165,7 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         mRepoOwner = extras.getString("owner");
         mRepoName = extras.getString("repo");
@@ -184,7 +184,7 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(STATE_KEY_SEARCH_QUERY, mSearchQuery);
         outState.putBoolean(STATE_KEY_SEARCH_MODE, mSearchMode);
@@ -201,14 +201,14 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    public void onRecyclerViewCreated(Fragment fragment, RecyclerView recyclerView) {
+    public void onRecyclerViewCreated(final Fragment fragment, final RecyclerView recyclerView) {
         if (fragment == mOpenFragment) {
             recyclerView.setTag(R.id.FloatingActionButtonScrollEnabled, new Object());
         }
     }
 
     @Override
-    protected void onPageMoved(int position, float fraction) {
+    protected void onPageMoved(final int position, final float fraction) {
         super.onPageMoved(position, fraction);
         if (!mSearchMode && mCreateFab != null) {
             float openFraction = 1 - position - fraction;
@@ -224,7 +224,7 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected Fragment makeFragment(int position) {
+    protected Fragment makeFragment(final int position) {
         final @StringRes int emptyTextResId;
         final String query;
 
@@ -252,26 +252,26 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected void onFragmentInstantiated(Fragment f, int position) {
+    protected void onFragmentInstantiated(final Fragment f, final int position) {
         if (position == 0) {
             mOpenFragment = (IssueListFragment) f;
         }
     }
 
     @Override
-    protected void onFragmentDestroyed(Fragment f) {
+    protected void onFragmentDestroyed(final Fragment f) {
         if (f == mOpenFragment) {
             mOpenFragment = null;
         }
     }
 
     @Override
-    protected boolean fragmentNeedsRefresh(Fragment object) {
+    protected boolean fragmentNeedsRefresh(final Fragment object) {
         return true;
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQUEST_ISSUE_CREATE) {
             if (resultCode == Activity.RESULT_OK && data.hasExtra("issue")) {
                 Issue issue = data.getParcelableExtra("issue");
@@ -305,32 +305,32 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    protected void onPrepareRightNavigationDrawerMenu(Menu menu) {
+    protected void onPrepareRightNavigationDrawerMenu(final Menu menu) {
         super.onPrepareRightNavigationDrawerMenu(menu);
         MenuItem milestoneFilterItem = menu.findItem(R.id.filter_by_milestone);
         if (milestoneFilterItem != null) {
             final String subtitle =
-                mSelectedMilestone == null ? getString(R.string.issue_filter_by_any_milestone) :
-                mSelectedMilestone.isEmpty() ? getString(R.string.issue_filter_by_no_milestone) :
-                mSelectedMilestone;
+                mSelectedMilestone == null ? getString(R.string.issue_filter_by_any_milestone)
+                : mSelectedMilestone.isEmpty() ? getString(R.string.issue_filter_by_no_milestone)
+                : mSelectedMilestone;
             UiUtils.setMenuItemText(this, milestoneFilterItem,
                                     getString(R.string.issue_filter_by_milestone), subtitle);
         }
         MenuItem labelFilterItem = menu.findItem(R.id.filter_by_label);
         if (labelFilterItem != null) {
             final String subtitle =
-                mSelectedLabel == null ? getString(R.string.issue_filter_by_any_label) :
-                mSelectedLabel.isEmpty() ? getString(R.string.issue_filter_by_no_label) :
-                mSelectedLabel;
+                mSelectedLabel == null ? getString(R.string.issue_filter_by_any_label)
+                : mSelectedLabel.isEmpty() ? getString(R.string.issue_filter_by_no_label)
+                : mSelectedLabel;
             UiUtils.setMenuItemText(this, labelFilterItem,
                                     getString(R.string.issue_filter_by_labels), subtitle);
         }
         MenuItem assigneeFilterItem = menu.findItem(R.id.filter_by_assignee);
         if (assigneeFilterItem != null) {
             final String subtitle =
-                mSelectedAssignee == null ? getString(R.string.issue_filter_by_any_assignee) :
-                mSelectedAssignee.isEmpty() ? getString(R.string.issue_filter_by_no_assignee) :
-                mSelectedAssignee;
+                mSelectedAssignee == null ? getString(R.string.issue_filter_by_any_assignee)
+                : mSelectedAssignee.isEmpty() ? getString(R.string.issue_filter_by_no_assignee)
+                : mSelectedAssignee;
             UiUtils.setMenuItemText(this, assigneeFilterItem,
                                     getString(R.string.issue_filter_by_assignee), subtitle);
         }
@@ -344,7 +344,7 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    public boolean onNavigationItemSelected(final @NonNull MenuItem item) {
         super.onNavigationItemSelected(item);
 
         if (mSortHelper.handleItemSelection(item)) {
@@ -379,7 +379,7 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.issue_list_menu, menu);
 
         MenuItem searchItem = menu.findItem(R.id.search);
@@ -402,7 +402,7 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         if (item.getItemId() == R.id.overflow) {
             toggleRightSideDrawer();
             return true;
@@ -423,13 +423,13 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    public boolean onMenuItemActionExpand(MenuItem item) {
+    public boolean onMenuItemActionExpand(final MenuItem item) {
         mSearchIsExpanded = true;
         return true;
     }
 
     @Override
-    public boolean onMenuItemActionCollapse(MenuItem item) {
+    public boolean onMenuItemActionCollapse(final MenuItem item) {
         mSearchIsExpanded = false;
         mSearchQuery = null;
         setSearchMode(false);
@@ -445,20 +445,20 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
     }
 
     @Override
-    public boolean onQueryTextSubmit(String query) {
+    public boolean onQueryTextSubmit(final String query) {
         mSearchQuery = query;
         setSearchMode(true);
         return true;
     }
 
     @Override
-    public boolean onQueryTextChange(String newText) {
+    public boolean onQueryTextChange(final String newText) {
         mSearchQuery = newText;
         return false;
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
         Intent intent = IssueEditActivity.makeCreateIntent(this, mRepoOwner, mRepoName);
         startActivityForResult(intent, REQUEST_ISSUE_CREATE);
     }
@@ -468,7 +468,7 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
         return RepositoryActivity.makeIntent(this, mRepoOwner, mRepoName);
     }
 
-    private void setSearchMode(boolean enabled) {
+    private void setSearchMode(final boolean enabled) {
         boolean changed = mSearchMode != enabled;
         mSearchMode = enabled;
         if (mCreateFab != null) {
@@ -480,7 +480,7 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
         }
     }
 
-    private String getIssueState(int position) {
+    private String getIssueState(final int position) {
         switch (position) {
         case 1:
             return ApiHelpers.IssueState.CLOSED;
@@ -491,7 +491,7 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
         }
     }
 
-    private String getIssueType(int position) {
+    private String getIssueType(final int position) {
         String type = "is:" + getIssueState(position);
         if (position == 1 && mIsPullRequest) {
             type += " is:" + ApiHelpers.IssueState.UNMERGED;
@@ -509,7 +509,7 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
         }
     }
 
-    private String buildFilterItem(String type, String value) {
+    private String buildFilterItem(final String type, final String value) {
         if (!TextUtils.isEmpty(value)) {
             return type + ":\"" + value + "\"";
         } else if (value == null) {
@@ -678,7 +678,7 @@ public class IssueListActivity extends BaseFragmentPagerActivity implements
         .show();
     }
 
-    private void loadCollaboratorStatus(boolean force) {
+    private void loadCollaboratorStatus(final boolean force) {
         SingleFactory.isAppUserRepoCollaborator(mRepoOwner, mRepoName, force)
         .compose(makeLoaderSingle(ID_LOADER_COLLABORATOR_STATUS, force))
         .subscribe(result -> {

@@ -12,17 +12,17 @@ import com.gh4a.utils.UiUtils;
 public class HeightLimitedLinearLayout extends LinearLayout {
     private int mMaxHeight = -1;
 
-    public HeightLimitedLinearLayout(Context context) {
+    public HeightLimitedLinearLayout(final Context context) {
         super(context);
     }
 
-    public HeightLimitedLinearLayout(Context context,
-                                     @Nullable AttributeSet attrs) {
+    public HeightLimitedLinearLayout(final Context context,
+                                     final @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public HeightLimitedLinearLayout(Context context,
-                                     @Nullable AttributeSet attrs, int defStyleAttr) {
+    public HeightLimitedLinearLayout(final Context context,
+                                     final @Nullable AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         if (attrs != null) {
@@ -44,7 +44,7 @@ public class HeightLimitedLinearLayout extends LinearLayout {
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
         if (mMaxHeight > 0) {
             heightMeasureSpec = UiUtils.limitViewHeight(heightMeasureSpec, mMaxHeight);
         }

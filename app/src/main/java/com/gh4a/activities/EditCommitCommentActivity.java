@@ -13,16 +13,16 @@ import com.meisolsson.githubsdk.service.repositories.RepositoryCommentService;
 import io.reactivex.Single;
 
 public class EditCommitCommentActivity extends EditCommentActivity {
-    public static Intent makeIntent(Context context, String repoOwner, String repoName,
-                                    String commitSha, long id, String body) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
+                                    final String commitSha, final long id, final String body) {
         Intent intent = new Intent(context, EditCommitCommentActivity.class)
         .putExtra("commit", commitSha);
         return EditCommentActivity.fillInIntent(intent, repoOwner, repoName, id, 0L, body, 0);
     }
 
     @Override
-    protected Single<GitHubCommentBase> createComment(String repoOwner, String repoName,
-            String body, long replyToCommentId) {
+    protected Single<GitHubCommentBase> createComment(final String repoOwner, final String repoName,
+            final String body, final long replyToCommentId) {
         RepositoryCommentService service = ServiceFactory.get(RepositoryCommentService.class, false);
         CreateCommitComment request = CreateCommitComment.builder().body(body).build();
         String sha = getIntent().getStringExtra("commit");
@@ -31,8 +31,8 @@ public class EditCommitCommentActivity extends EditCommentActivity {
     }
 
     @Override
-    protected Single<GitHubCommentBase> editComment(String repoOwner, String repoName,
-            long commentId, String body) {
+    protected Single<GitHubCommentBase> editComment(final String repoOwner, final String repoName,
+            final long commentId, final String body) {
         RepositoryCommentService service = ServiceFactory.get(RepositoryCommentService.class, false);
         CommentRequest request = CommentRequest.builder().body(body).build();
         return service.editCommitComment(repoOwner, repoName, commentId, request)

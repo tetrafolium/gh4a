@@ -11,7 +11,7 @@ public class TimelineFactory extends FragmentFactory {
         R.string.pub_timeline
     };
 
-    public TimelineFactory(HomeActivity activity) {
+    public TimelineFactory(final HomeActivity activity) {
         super(activity);
     }
 
@@ -26,7 +26,7 @@ public class TimelineFactory extends FragmentFactory {
     }
 
     @Override
-    protected Fragment makeFragment(int position) {
+    protected Fragment makeFragment(final int position) {
         return PublicTimelineFragment.newInstance();
     }
 }

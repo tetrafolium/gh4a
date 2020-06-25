@@ -74,7 +74,7 @@ public class CommitNoteAdapter extends RootAdapter<GitComment, CommitNoteAdapter
 
     private final ViewHolder.Callback mHolderCallback = new ViewHolder.Callback() {
         @Override
-        public boolean onCommentMenuItemClick(GitComment item, MenuItem menuItem) {
+        public boolean onCommentMenuItemClick(final GitComment item, final MenuItem menuItem) {
             switch (menuItem.getItemId()) {
             case R.id.edit:
                 mActionCallback.editComment(item);
@@ -94,13 +94,13 @@ public class CommitNoteAdapter extends RootAdapter<GitComment, CommitNoteAdapter
         }
 
         @Override
-        public void quoteText(CharSequence text) {
+        public void quoteText(final CharSequence text) {
             mActionCallback.quoteText(text);
         }
     };
 
-    public CommitNoteAdapter(Context context, String repoOwner, String repoName,
-                             OnCommentAction actionCallback) {
+    public CommitNoteAdapter(final Context context, final String repoOwner, final String repoName,
+                             final OnCommentAction actionCallback) {
         super(context);
         mImageGetter = new HttpImageGetter(context);
         mRepoOwner = repoOwner;
@@ -140,7 +140,7 @@ public class CommitNoteAdapter extends RootAdapter<GitComment, CommitNoteAdapter
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         if (v.getId() == R.id.iv_gravatar) {
             User user = (User) v.getTag();
             Intent intent = UserActivity.makeIntent(mContext, user);
@@ -156,7 +156,7 @@ public class CommitNoteAdapter extends RootAdapter<GitComment, CommitNoteAdapter
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
         View v = inflater.inflate(R.layout.row_timeline_comment, parent, false);
         ViewHolder holder = new ViewHolder(v, mHolderCallback, this, mReactionDetailsCache);
         holder.ivGravatar.setOnClickListener(this);
@@ -165,7 +165,7 @@ public class CommitNoteAdapter extends RootAdapter<GitComment, CommitNoteAdapter
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, GitComment item) {
+    public void onBindViewHolder(final ViewHolder holder, final GitComment item) {
         final User user = item.user();
         final String login = ApiHelpers.getUserLogin(mContext, user);
         final Date createdAt = item.createdAt();
@@ -207,7 +207,7 @@ public class CommitNoteAdapter extends RootAdapter<GitComment, CommitNoteAdapter
     }
 
     @Override
-    public Single<List<Reaction>> loadReactionDetails(ReactionBar.Item item, boolean bypassCache) {
+    public Single<List<Reaction>> loadReactionDetails(final ReactionBar.Item item, final boolean bypassCache) {
         final GitComment comment = ((ViewHolder) item).mBoundItem;
         final ReactionService service = ServiceFactory.get(ReactionService.class, bypassCache);
         return ApiHelpers.PageIterator
@@ -215,7 +215,7 @@ public class CommitNoteAdapter extends RootAdapter<GitComment, CommitNoteAdapter
     }
 
     @Override
-    public Single<Reaction> addReaction(ReactionBar.Item item, String content) {
+    public Single<Reaction> addReaction(final ReactionBar.Item item, final String content) {
         GitComment comment = ((ViewHolder) item).mBoundItem;
         ReactionService service = ServiceFactory.get(ReactionService.class, false);
         ReactionRequest request = ReactionRequest.builder().content(content).build();
@@ -224,7 +224,7 @@ public class CommitNoteAdapter extends RootAdapter<GitComment, CommitNoteAdapter
     }
 
     @Override
-    public void onReactionsUpdated(ReactionBar.Item item, Reactions reactions) {
+    public void onReactionsUpdated(final ReactionBar.Item item, final Reactions reactions) {
         ViewHolder holder = (ViewHolder) item;
         holder.mBoundItem = holder.mBoundItem.toBuilder().reactions(reactions).build();
         holder.reactions.setReactions(reactions);
@@ -241,9 +241,9 @@ public class CommitNoteAdapter extends RootAdapter<GitComment, CommitNoteAdapter
             void quoteText(CharSequence text);
         }
 
-        private ViewHolder(View view, Callback callback,
-                           ReactionBar.Callback reactionCallback,
-                           ReactionBar.ReactionDetailsCache reactionDetailsCache) {
+        private ViewHolder(final View view, final Callback callback,
+                           final ReactionBar.Callback reactionCallback,
+                           final ReactionBar.ReactionDetailsCache reactionDetailsCache) {
             super(view);
             mCallback = callback;
 
@@ -252,7 +252,7 @@ public class CommitNoteAdapter extends RootAdapter<GitComment, CommitNoteAdapter
             tvDesc.setMovementMethod(UiUtils.CHECKING_LINK_METHOD);
             tvDesc.setCustomSelectionActionModeCallback(new UiUtils.QuoteActionModeCallback(tvDesc) {
                 @Override
-                public void onTextQuoted(CharSequence text) {
+                public void onTextQuoted(final CharSequence text) {
                     mCallback.quoteText(text);
                 }
             });
@@ -296,7 +296,7 @@ public class CommitNoteAdapter extends RootAdapter<GitComment, CommitNoteAdapter
         }
 
         @Override
-        public void onClick(View v) {
+        public void onClick(final View v) {
             if (v.getId() == R.id.iv_menu) {
                 if (mReactionMenuHelper != null) {
                     mReactionMenuHelper.startLoadingIfNeeded();
@@ -306,7 +306,7 @@ public class CommitNoteAdapter extends RootAdapter<GitComment, CommitNoteAdapter
         }
 
         @Override
-        public boolean onMenuItemClick(MenuItem menuItem) {
+        public boolean onMenuItemClick(final MenuItem menuItem) {
             if (mReactionMenuHelper != null && mReactionMenuHelper.onItemClick(menuItem)) {
                 return true;
             }

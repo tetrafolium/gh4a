@@ -13,14 +13,14 @@ public class UserFollowersLoadTask extends UserLoadTask {
     @VisibleForTesting
     protected final boolean mShowFollowers;
 
-    public UserFollowersLoadTask(FragmentActivity activity, String userLogin,
-                                 boolean showFollowers) {
+    public UserFollowersLoadTask(final FragmentActivity activity, final String userLogin,
+                                 final boolean showFollowers) {
         super(activity, userLogin);
         mShowFollowers = showFollowers;
     }
 
     @Override
-    protected Intent getIntent(User user) {
+    protected Intent getIntent(final User user) {
         if (user.type() == UserType.Organization) {
             return UserActivity.makeIntent(mActivity, user);
         }

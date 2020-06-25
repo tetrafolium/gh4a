@@ -69,8 +69,8 @@ class CommentViewHolder
         Single<Reaction> addReaction(TimelineItem.TimelineComment item, String content);
     }
 
-    public CommentViewHolder(View view, HttpImageGetter imageGetter, String repoOwner,
-                             ReactionBar.ReactionDetailsCache reactionDetailsCache, Callback callback) {
+    public CommentViewHolder(final View view, final HttpImageGetter imageGetter, final String repoOwner,
+                             final ReactionBar.ReactionDetailsCache reactionDetailsCache, final Callback callback) {
         super(view);
 
         mContext = view.getContext();
@@ -103,14 +103,14 @@ class CommentViewHolder
                 reactItem.getSubMenu(), this, this, reactionDetailsCache);
         mQuoteActionModeCallback = new UiUtils.QuoteActionModeCallback(tvDesc) {
             @Override
-            public void onTextQuoted(CharSequence text) {
+            public void onTextQuoted(final CharSequence text) {
                 mCallback.quoteText(text);
             }
         };
     }
 
     @Override
-    public void bind(TimelineItem.TimelineComment item) {
+    public void bind(final TimelineItem.TimelineComment item) {
         mBoundItem = item;
 
         User user = item.getUser();
@@ -178,7 +178,7 @@ class CommentViewHolder
     }
 
     @Nullable
-    private String getAuthorAssociation(TimelineItem.TimelineComment item) {
+    private String getAuthorAssociation(final TimelineItem.TimelineComment item) {
         AuthorAssociation authorAssociation = item.comment().authorAssociation();
         if (authorAssociation == null) {
             return null;
@@ -202,7 +202,7 @@ class CommentViewHolder
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         switch (v.getId()) {
         case R.id.iv_menu:
             mReactionMenuHelper.startLoadingIfNeeded();
@@ -225,7 +225,7 @@ class CommentViewHolder
     }
 
     @Override
-    public boolean onMenuItemClick(MenuItem menuItem) {
+    public boolean onMenuItemClick(final MenuItem menuItem) {
         TimelineItem.TimelineComment comment = (TimelineItem.TimelineComment) ivMenu.getTag();
         if (mReactionMenuHelper.onItemClick(menuItem)) {
             return true;
@@ -238,7 +238,7 @@ class CommentViewHolder
         return mBoundItem.comment().id();
     }
 
-    public void updateReactions(Reactions reactions) {
+    public void updateReactions(final Reactions reactions) {
         if (mBoundItem != null) {
             mBoundItem.setReactions(reactions);
         }
@@ -248,12 +248,12 @@ class CommentViewHolder
 
 
     @Override
-    public Single<List<Reaction>> loadReactionDetails(ReactionBar.Item item, boolean bypassCache) {
+    public Single<List<Reaction>> loadReactionDetails(final ReactionBar.Item item, final boolean bypassCache) {
         return mCallback.loadReactionDetails(mBoundItem, bypassCache);
     }
 
     @Override
-    public Single<Reaction> addReaction(ReactionBar.Item item, String content) {
+    public Single<Reaction> addReaction(final ReactionBar.Item item, final String content) {
         return mCallback.addReaction(mBoundItem, content);
     }
 }

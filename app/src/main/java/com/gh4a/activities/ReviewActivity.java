@@ -18,8 +18,8 @@ public class ReviewActivity extends FragmentContainerActivity {
 
     private String mTitle;
 
-    public static Intent makeIntent(Context context, String repoOwner, String repoName,
-                                    int issueNumber, Review review, IntentUtils.InitialCommentMarker initialComment) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
+                                    final int issueNumber, final Review review, final IntentUtils.InitialCommentMarker initialComment) {
         return new Intent(context, ReviewActivity.class)
                .putExtra("repo_owner", repoOwner)
                .putExtra("repo_name", repoName)
@@ -48,7 +48,7 @@ public class ReviewActivity extends FragmentContainerActivity {
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         mRepoOwner = extras.getString("repo_owner");
         mRepoName = extras.getString("repo_name");
@@ -59,13 +59,13 @@ public class ReviewActivity extends FragmentContainerActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.review_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case R.id.share:
             IntentUtils.share(this, mTitle, Uri.parse(mReview.htmlUrl()));

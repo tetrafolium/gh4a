@@ -51,8 +51,8 @@ public class BookmarksProvider extends ContentProvider {
     private DbHelper mDbHelper;
 
     // url must be resolvable by BrowseFilter!
-    public static void saveBookmark(Context context, String name, int type, String url,
-                                    String extraData, boolean showToast) {
+    public static void saveBookmark(final Context context, final String name, final int type, final String url,
+                                    final String extraData, final boolean showToast) {
         ContentResolver cr = context.getContentResolver();
 
         ContentValues cv = new ContentValues();
@@ -67,9 +67,9 @@ public class BookmarksProvider extends ContentProvider {
         }
     }
 
-    private static int getNextOrderId(ContentResolver cr) {
+    private static int getNextOrderId(final ContentResolver cr) {
         Cursor query = cr.query(Columns.CONTENT_URI,
-                                new String[] { "COUNT(*)" },
+                                new String[] {"COUNT(*)" },
                                 null, null, null);
 
         int orderId = 0;
@@ -82,20 +82,20 @@ public class BookmarksProvider extends ContentProvider {
         return orderId;
     }
 
-    public static void removeBookmark(Context context, String url) {
+    public static void removeBookmark(final Context context, final String url) {
         int removedRows = context.getContentResolver().delete(Columns.CONTENT_URI,
                           Columns.URI + " = ?",
-                          new String[] { url });
+                          new String[] {url });
         if (removedRows > 0) {
             Toast.makeText(context, R.string.bookmark_removed, Toast.LENGTH_SHORT).show();
         }
     }
 
-    public static boolean hasBookmarked(Context context, String url) {
+    public static boolean hasBookmarked(final Context context, final String url) {
         Cursor cursor = context.getContentResolver().query(Columns.CONTENT_URI,
-                        new String[] { Columns._ID },
+                        new String[] {Columns._ID },
                         Columns.URI + " = ?",
-                        new String[] { url },
+                        new String[] {url },
                         null);
 
         boolean hasBookmarked = false;
@@ -106,7 +106,7 @@ public class BookmarksProvider extends ContentProvider {
         return hasBookmarked;
     }
 
-    public static void reorderBookmark(Context context, long id, int orderId) {
+    public static void reorderBookmark(final Context context, final long id, final int orderId) {
         ContentValues cv = new ContentValues();
         cv.put(Columns.ORDER_ID, orderId);
         Uri uri = ContentUris.withAppendedId(Columns.CONTENT_URI, id);
@@ -120,8 +120,8 @@ public class BookmarksProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(@NonNull Uri uri, String[] projection, String selection,
-                        String[] selectionArgs, String sortOrder) {
+    public Cursor query(final @NonNull Uri uri, final String[] projection, final String selection,
+                        final String[] selectionArgs, final String sortOrder) {
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         int match = sURIMatcher.match(uri);
 
@@ -151,12 +151,12 @@ public class BookmarksProvider extends ContentProvider {
     }
 
     @Override
-    public String getType(@NonNull Uri uri) {
+    public String getType(final @NonNull Uri uri) {
         return null;
     }
 
     @Override
-    public Uri insert(@NonNull Uri uri, ContentValues values) {
+    public Uri insert(final @NonNull Uri uri, final ContentValues values) {
         if (sURIMatcher.match(uri) != MATCH_ALL) {
             return null;
         }
@@ -173,8 +173,8 @@ public class BookmarksProvider extends ContentProvider {
     }
 
     @Override
-    public int update(@NonNull Uri uri, ContentValues values, String selection,
-                      String[] selectionArgs) {
+    public int update(final @NonNull Uri uri, final ContentValues values, final String selection,
+                      final String[] selectionArgs) {
         int count;
         int match = sURIMatcher.match(uri);
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
@@ -189,7 +189,7 @@ public class BookmarksProvider extends ContentProvider {
                     "Cannot update URI " + uri + " with a where clause");
             }
             count = db.update(DbHelper.BOOKMARKS_TABLE, values, Columns._ID + " = ?",
-                              new String[] { uri.getLastPathSegment() });
+                              new String[] {uri.getLastPathSegment() });
             break;
         default:
             throw new UnsupportedOperationException("Cannot update that URI: " + uri);
@@ -203,7 +203,7 @@ public class BookmarksProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
+    public int delete(final @NonNull Uri uri, final String selection, final String[] selectionArgs) {
         int match = sURIMatcher.match(uri);
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
@@ -216,7 +216,7 @@ public class BookmarksProvider extends ContentProvider {
                     "Cannot delete URI " + uri + " with a where clause");
             }
             selection = Columns._ID + " = ?";
-            selectionArgs = new String[] { uri.getLastPathSegment() };
+            selectionArgs = new String[] {uri.getLastPathSegment() };
             break;
         default:
             throw new UnsupportedOperationException("Cannot delete the URI " + uri);

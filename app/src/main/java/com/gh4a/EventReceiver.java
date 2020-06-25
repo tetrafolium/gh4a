@@ -26,7 +26,7 @@ import android.content.Intent;
 public class EventReceiver extends BroadcastReceiver {
     @SuppressLint("InlinedApi")
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(final Context context, final Intent intent) {
         if (DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(intent.getAction())) {
             try {
                 Intent downloadManagerIntent = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);

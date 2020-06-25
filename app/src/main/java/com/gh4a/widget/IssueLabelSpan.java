@@ -24,7 +24,7 @@ public class IssueLabelSpan extends ReplacementSpan {
     private int mAscent;
     private int mDescent;
 
-    public IssueLabelSpan(Context context, Label label, boolean withMargin) {
+    public IssueLabelSpan(final Context context, final Label label, final boolean withMargin) {
         super();
         mBgColor = ApiHelpers.colorForLabel(label);
         mFgColor = UiUtils.textColorForBackground(context, mBgColor);
@@ -37,8 +37,8 @@ public class IssueLabelSpan extends ReplacementSpan {
     }
 
     @Override
-    public int getSize(@NonNull Paint paint, CharSequence text,
-                       int start, int end, Paint.FontMetricsInt fm) {
+    public int getSize(final @NonNull Paint paint, final CharSequence text,
+                       final int start, final int end, final Paint.FontMetricsInt fm) {
         paint.setTextSize(mTextSize);
         if (fm != null) {
             paint.getFontMetricsInt(fm);
@@ -56,8 +56,8 @@ public class IssueLabelSpan extends ReplacementSpan {
 
     @SuppressWarnings("UnnecessaryLocalVariable")
     @Override
-    public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end,
-                     float x, int top, int y, int bottom, @NonNull Paint paint) {
+    public void draw(final @NonNull Canvas canvas, final CharSequence text, final int start, final int end,
+                     final float x, final int top, final int y, final int bottom, final @NonNull Paint paint) {
         paint.setTextSize(mTextSize);
         float textSize = paint.measureText(text, start, end);
 

@@ -49,10 +49,10 @@ import retrofit2.Response;
 
 public abstract class DiffViewerActivity<C extends PositionalCommentBase> extends WebViewerActivity
     implements ReactionBar.Callback, ReactionBar.ReactionDetailsCache.Listener {
-    protected static <C extends PositionalCommentBase> Intent fillInIntent(Intent baseIntent,
-            String repoOwner, String repoName, String commitSha, String path, String diff,
-            List<C> comments, int initialLine, int highlightStartLine, int highlightEndLine,
-            boolean highlightisRight, IntentUtils.InitialCommentMarker initialComment) {
+    protected static <C extends PositionalCommentBase> Intent fillInIntent(final Intent baseIntent,
+            final String repoOwner, final String repoName, final String commitSha, final String path, final String diff,
+            final List<C> comments, final int initialLine, final int highlightStartLine, final int highlightEndLine,
+            final boolean highlightisRight, final IntentUtils.InitialCommentMarker initialComment) {
         return baseIntent.putExtra("owner", repoOwner)
                .putExtra("repo", repoName)
                .putExtra("sha", commitSha)
@@ -123,7 +123,7 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
 
     protected static class CommitCommentWrapper implements ReactionBar.Item {
         public PositionalCommentBase comment;
-        public CommitCommentWrapper(PositionalCommentBase comment) {
+        public CommitCommentWrapper(final PositionalCommentBase comment) {
             this.comment = comment;
         }
         @Override
@@ -141,7 +141,7 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
 
     @Override
     @SuppressWarnings("unchecked")
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         loadComments(true, false);
@@ -166,7 +166,7 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         mRepoOwner = extras.getString("owner");
         mRepoName = extras.getString("repo");
@@ -195,7 +195,7 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.file_viewer_menu, menu);
 
@@ -207,14 +207,14 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
     }
 
     @Override
-    public void onReactionsUpdated(ReactionBar.Item item, Reactions reactions) {
+    public void onReactionsUpdated(final ReactionBar.Item item, final Reactions reactions) {
         CommitCommentWrapper comment = (CommitCommentWrapper) item;
         comment.comment = onUpdateReactions(comment.comment, reactions);
         onDataReady();
     }
 
     @Override
-    protected String generateHtml(String cssTheme, boolean addTitleHeader) {
+    protected String generateHtml(final String cssTheme, final boolean addTitleHeader) {
         StringBuilder content = new StringBuilder();
         boolean authorized = Gh4Application.get().isAuthorized();
         String title = addTitleHeader ? getDocumentTitle() : null;
@@ -336,7 +336,7 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
         return content.toString();
     }
 
-    private void appendReactionSpan(StringBuilder content, int count, String iconPathContents) {
+    private void appendReactionSpan(final StringBuilder content, final int count, final String iconPathContents) {
         if (count == 0) {
             return;
         }
@@ -353,7 +353,7 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         Uri url = createUrl("", 0L);
 
         switch (item.getItemId()) {
@@ -372,7 +372,7 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQUEST_EDIT) {
             if (resultCode == RESULT_OK) {
                 refresh();
@@ -382,7 +382,7 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
         }
     }
 
-    private void addCommentsToMap(List<C> comments) {
+    private void addCommentsToMap(final List<C> comments) {
         mCommitCommentsByPos.clear();
         for (PositionalCommentBase comment : comments) {
             if (!TextUtils.equals(comment.path(), mPath)) {
@@ -399,7 +399,7 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
     }
 
     @Override
-    protected void handleUrlLoad(Uri uri) {
+    protected void handleUrlLoad(final Uri uri) {
         if (!uri.getScheme().equals("comment")) {
             super.handleUrlLoad(uri);
             return;
@@ -439,11 +439,11 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
     protected abstract PositionalCommentBase onUpdateReactions(PositionalCommentBase comment,
             Reactions reactions);
 
-    private String createLineLinkId(int line, boolean isRight) {
+    private String createLineLinkId(final int line, final boolean isRight) {
         return (isRight ? "R" : "L") + line;
     }
 
-    private void deleteComment(long id) {
+    private void deleteComment(final long id) {
         doDeleteComment(id)
         .map(ApiHelpers::mapToBooleanOrThrowOnFailure)
         .compose(RxUtils.wrapForBackgroundTask(this, R.string.deleting_msg,
@@ -452,7 +452,7 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
                    error -> handleActionFailure("Comment deletion failed", error));
     }
 
-    private void loadComments(boolean useIntentExtraIfPresent, boolean force) {
+    private void loadComments(final boolean useIntentExtraIfPresent, final boolean force) {
         List<C> intentComments = useIntentExtraIfPresent
                                  ? getIntent().getParcelableArrayListExtra("comments") : null;
         Single<List<C>> commentSingle = intentComments != null
@@ -475,8 +475,8 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
         private final boolean mIsRightLine;
         private ReactionBar.AddReactionMenuHelper mReactionMenuHelper;
 
-        public CommentActionPopup(long id, int position, String lineText,
-                                  int leftLine, int rightLine, int x, int y, boolean isRightLine) {
+        public CommentActionPopup(final long id, final int position, final String lineText,
+                                  final int leftLine, final int rightLine, final int x, final int y, final boolean isRightLine) {
             super(DiffViewerActivity.this, findViewById(R.id.popup_helper));
 
             mId = id;
@@ -494,7 +494,7 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
             if (id == 0 || !canReply()) {
                 menu.removeItem(R.id.reply);
             }
-            if (id == 0|| !ApiHelpers.loginEquals(comment.comment.user(), ownLogin)) {
+            if (id == 0 || !ApiHelpers.loginEquals(comment.comment.user(), ownLogin)) {
                 menu.removeItem(R.id.edit);
                 menu.removeItem(R.id.delete);
             }
@@ -517,7 +517,7 @@ public abstract class DiffViewerActivity<C extends PositionalCommentBase> extend
         }
 
         @Override
-        public boolean onMenuItemClick(MenuItem item) {
+        public boolean onMenuItemClick(final MenuItem item) {
             if (mReactionMenuHelper != null && mReactionMenuHelper.onItemClick(item)) {
                 return true;
             }

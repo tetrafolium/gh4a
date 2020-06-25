@@ -26,7 +26,7 @@ public class RepositoryFactory extends FragmentFactory {
     private static final String PREF_KEY_SORT_ORDER = "home_repo_list_sort_order";
     private static final String PREF_KEY_SORT_DIR = "home_repo_list_sort_dir";
 
-    public RepositoryFactory(HomeActivity activity, String userLogin, SharedPreferences prefs) {
+    public RepositoryFactory(final HomeActivity activity, final String userLogin, final SharedPreferences prefs) {
         super(activity);
         mUserLogin = userLogin;
 
@@ -50,14 +50,14 @@ public class RepositoryFactory extends FragmentFactory {
         int sortMenuResId = mSortDrawerHelper.getMenuResId();
         int filterMenuResId = mFilterDrawerHelper.getMenuResId();
         if (sortMenuResId == 0) {
-            return new int[] { filterMenuResId };
+            return new int[] {filterMenuResId };
         } else {
-            return new int[] { sortMenuResId, filterMenuResId };
+            return new int[] {sortMenuResId, filterMenuResId };
         }
     }
 
     @Override
-    protected void prepareToolDrawerMenu(Menu menu) {
+    protected void prepareToolDrawerMenu(final Menu menu) {
         super.prepareToolDrawerMenu(menu);
         if (mFragment != null) {
             mFilterDrawerHelper.selectFilterType(menu, mFragment.getFilterType());
@@ -67,7 +67,7 @@ public class RepositoryFactory extends FragmentFactory {
     }
 
     @Override
-    protected boolean onDrawerItemSelected(MenuItem item) {
+    protected boolean onDrawerItemSelected(final MenuItem item) {
         String type = mFilterDrawerHelper.handleSelectionAndGetFilterType(item);
         if (type != null) {
             mFragment.setFilterType(type);
@@ -90,7 +90,7 @@ public class RepositoryFactory extends FragmentFactory {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mFragment != null) {
             mActivity.getSupportFragmentManager().putFragment(outState, STATE_KEY_FRAGMENT, mFragment);
@@ -106,7 +106,7 @@ public class RepositoryFactory extends FragmentFactory {
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle state) {
+    protected void onRestoreInstanceState(final Bundle state) {
         super.onRestoreInstanceState(state);
         mFragment = (RepositoryListContainerFragment)
                     mActivity.getSupportFragmentManager().getFragment(state, STATE_KEY_FRAGMENT);
@@ -117,18 +117,18 @@ public class RepositoryFactory extends FragmentFactory {
     }
 
     @Override
-    protected Fragment makeFragment(int position) {
+    protected Fragment makeFragment(final int position) {
         return RepositoryListContainerFragment.newInstance(mUserLogin, false);
     }
 
     @Override
-    protected void onFragmentInstantiated(Fragment f, int position) {
+    protected void onFragmentInstantiated(final Fragment f, final int position) {
         mFragment = (RepositoryListContainerFragment) f;
         restorePreviouslySelectedFilterAndSort();
     }
 
     @Override
-    protected void onFragmentDestroyed(Fragment f) {
+    protected void onFragmentDestroyed(final Fragment f) {
         if (f == mFragment) {
             mFragment.destroyChildren();
             mFragment = null;

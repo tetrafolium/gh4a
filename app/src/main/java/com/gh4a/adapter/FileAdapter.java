@@ -35,23 +35,23 @@ import java.util.Set;
 public class FileAdapter extends RootAdapter<Content, FileAdapter.ViewHolder> {
     private Set<String> mSubModuleNames;
 
-    public FileAdapter(Context context) {
+    public FileAdapter(final Context context) {
         super(context);
     }
 
-    public void setSubModuleNames(Set<String> subModules) {
+    public void setSubModuleNames(final Set<String> subModules) {
         mSubModuleNames = subModules;
         notifyDataSetChanged();
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
         View v = inflater.inflate(R.layout.row_file_manager, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, Content content) {
+    public void onBindViewHolder(final ViewHolder holder, final Content content) {
         String name = content.name();
         boolean isSubModule = mSubModuleNames != null && mSubModuleNames.contains(name);
 
@@ -66,7 +66,7 @@ public class FileAdapter extends RootAdapter<Content, FileAdapter.ViewHolder> {
         }
     }
 
-    private int getIconId(ContentType type, String fileName) {
+    private int getIconId(final ContentType type, final String fileName) {
         int iconId;
         if (mSubModuleNames != null && mSubModuleNames.contains(fileName)) {
             iconId = R.attr.submoduleIcon;
@@ -82,7 +82,7 @@ public class FileAdapter extends RootAdapter<Content, FileAdapter.ViewHolder> {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ViewHolder(View view) {
+        private ViewHolder(final View view) {
             super(view);
             icon = view.findViewById(R.id.iv_icon);
             fileName = view.findViewById(R.id.tv_text);

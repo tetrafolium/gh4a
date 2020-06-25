@@ -83,8 +83,8 @@ public class PullRequestFragment extends IssueFragmentBase {
     private GitReference mHeadReference;
     private boolean mHasLoadedHeadReference;
 
-    public static PullRequestFragment newInstance(PullRequest pr, Issue issue,
-            boolean isCollaborator, IntentUtils.InitialCommentMarker initialComment) {
+    public static PullRequestFragment newInstance(final PullRequest pr, final Issue issue,
+            final boolean isCollaborator, final IntentUtils.InitialCommentMarker initialComment) {
         PullRequestFragment f = new PullRequestFragment();
 
         Repository repo = pr.base().repo();
@@ -96,7 +96,7 @@ public class PullRequestFragment extends IssueFragmentBase {
         return f;
     }
 
-    public void updateState(PullRequest pr) {
+    public void updateState(final PullRequest pr) {
         mIssue = mIssue.toBuilder().state(pr.state()).build();
         mPullRequest = mPullRequest.toBuilder()
                        .state(pr.state())
@@ -109,21 +109,21 @@ public class PullRequestFragment extends IssueFragmentBase {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         mPullRequest = getArguments().getParcelable("pr");
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         loadHeadReference(false);
         loadCommitStatusesIfOpen(false);
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.pull_request_fragment_menu, menu);
 
@@ -140,7 +140,7 @@ public class PullRequestFragment extends IssueFragmentBase {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case R.id.delete_branch:
             showDeleteRestoreBranchConfirmDialog(mHeadReference == null);
@@ -162,7 +162,7 @@ public class PullRequestFragment extends IssueFragmentBase {
     }
 
     @Override
-    protected void bindSpecialViews(View headerView) {
+    protected void bindSpecialViews(final View headerView) {
         if (!mHasLoadedHeadReference) {
             return;
         }
@@ -183,13 +183,13 @@ public class PullRequestFragment extends IssueFragmentBase {
         }
     }
 
-    private void fillStatus(List<Status> statuses) {
+    private void fillStatus(final List<Status> statuses) {
         CommitStatusBox commitStatusBox = mListHeaderView.findViewById(R.id.commit_status_box);
         commitStatusBox.fillStatus(statuses, mPullRequest.mergeableState());
     }
 
     @Override
-    protected Single<List<TimelineItem>> onCreateDataSingle(boolean bypassCache) {
+    protected Single<List<TimelineItem>> onCreateDataSingle(final boolean bypassCache) {
         final int issueNumber = mIssue.number();
         final IssueEventService eventService =
             ServiceFactory.get(IssueEventService.class, bypassCache);
@@ -325,7 +325,7 @@ public class PullRequestFragment extends IssueFragmentBase {
     }
 
     @Override
-    public void editComment(GitHubCommentBase comment) {
+    public void editComment(final GitHubCommentBase comment) {
         final @AttrRes int highlightColorAttr = mPullRequest.merged()
                                                 ? R.attr.colorPullRequestMerged
                                                 : mPullRequest.state() == IssueState.Closed
@@ -340,7 +340,7 @@ public class PullRequestFragment extends IssueFragmentBase {
 
 
     @Override
-    protected Single<Response<Void>> doDeleteComment(GitHubCommentBase comment) {
+    protected Single<Response<Void>> doDeleteComment(final GitHubCommentBase comment) {
         if (comment instanceof ReviewComment) {
             PullRequestReviewCommentService service =
                 ServiceFactory.get(PullRequestReviewCommentService.class, false);
@@ -423,7 +423,7 @@ public class PullRequestFragment extends IssueFragmentBase {
         (lhs, rhs) -> rhs.updatedAt().compareTo(lhs.updatedAt());
     private static final Comparator<Status> STATUS_AND_CONTEXT_COMPARATOR = new Comparator<Status>() {
         @Override
-        public int compare(Status lhs, Status rhs) {
+        public int compare(final Status lhs, final Status rhs) {
             int lhsSeverity = getStateSeverity(lhs);
             int rhsSeverity = getStateSeverity(rhs);
             if (lhsSeverity != rhsSeverity) {
@@ -433,7 +433,7 @@ public class PullRequestFragment extends IssueFragmentBase {
             }
         }
 
-        private int getStateSeverity(Status status) {
+        private int getStateSeverity(final Status status) {
             switch (status.state()) {
             case Success:
                 return 0;
@@ -446,7 +446,7 @@ public class PullRequestFragment extends IssueFragmentBase {
         }
     };
 
-    private void loadCommitStatusesIfOpen(boolean force) {
+    private void loadCommitStatusesIfOpen(final boolean force) {
         if (mPullRequest.state() != IssueState.Open) {
             return;
         }
@@ -478,7 +478,7 @@ public class PullRequestFragment extends IssueFragmentBase {
         .subscribe(this::fillStatus, this::handleLoadFailure);
     }
 
-    private void loadHeadReference(boolean force) {
+    private void loadHeadReference(final boolean force) {
         GitService service = ServiceFactory.get(GitService.class, force);
 
         PullRequestMarker head = mPullRequest.head();

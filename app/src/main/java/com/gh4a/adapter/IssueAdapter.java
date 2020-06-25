@@ -33,12 +33,12 @@ import com.gh4a.widget.LabelBadgeView;
 import com.meisolsson.githubsdk.model.Issue;
 
 public class IssueAdapter extends RootAdapter<Issue, IssueAdapter.ViewHolder> {
-    public IssueAdapter(Context context) {
+    public IssueAdapter(final Context context) {
         super(context);
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
         View v = inflater.inflate(R.layout.row_issue, parent, false);
         ViewHolder holder = new ViewHolder(v);
         holder.ivGravatar.setOnClickListener(this);
@@ -46,7 +46,7 @@ public class IssueAdapter extends RootAdapter<Issue, IssueAdapter.ViewHolder> {
     }
 
     @Override
-    protected void onBindViewHolder(ViewHolder holder, Issue issue) {
+    protected void onBindViewHolder(final ViewHolder holder, final Issue issue) {
         AvatarHandler.assignAvatar(holder.ivGravatar, issue.user());
         holder.ivGravatar.setTag(issue);
 
@@ -73,7 +73,7 @@ public class IssueAdapter extends RootAdapter<Issue, IssueAdapter.ViewHolder> {
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         if (v.getId() == R.id.iv_gravatar) {
             Issue issue = (Issue) v.getTag();
             Intent intent = UserActivity.makeIntent(mContext, issue.user());
@@ -86,7 +86,7 @@ public class IssueAdapter extends RootAdapter<Issue, IssueAdapter.ViewHolder> {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ViewHolder(View view) {
+        private ViewHolder(final View view) {
             super(view);
             ivGravatar = view.findViewById(R.id.iv_gravatar);
             tvDesc = view.findViewById(R.id.tv_desc);

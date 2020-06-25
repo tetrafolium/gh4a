@@ -29,7 +29,7 @@ public class Trend {
     private final int newStars;
     private final int forks;
 
-    public Trend(String owner, String repo, String desc, String lang, int stars, int newStars, int forks) {
+    public Trend(final String owner, final String repo, final String desc, final String lang, final int stars, final int newStars, final int forks) {
         this.repoOwner = owner;
         this.repoName = repo;
         this.description = desc;

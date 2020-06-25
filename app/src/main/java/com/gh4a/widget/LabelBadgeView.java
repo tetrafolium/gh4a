@@ -20,11 +20,11 @@ public class LabelBadgeView extends View {
     private int mBadgesPerRow;
     private final Paint mBadgePaint;
 
-    public LabelBadgeView(Context context, AttributeSet attrs) {
+    public LabelBadgeView(final Context context, final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public LabelBadgeView(Context context, AttributeSet attrs, int defStyle) {
+    public LabelBadgeView(final Context context, final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
         setWillNotDraw(false);
 
@@ -40,7 +40,7 @@ public class LabelBadgeView extends View {
         mBadgePaint.setAntiAlias(true);
     }
 
-    public void setLabels(List<Label> labels) {
+    public void setLabels(final List<Label> labels) {
         int count = labels != null ? labels.size() : 0;
         mColors = new int[count];
         for (int i = 0; i < count; i++) {
@@ -50,7 +50,7 @@ public class LabelBadgeView extends View {
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
         int specWidth = MeasureSpec.getSize(widthMeasureSpec);
         int maxWidth = Integer.MAX_VALUE;
 
@@ -77,7 +77,7 @@ public class LabelBadgeView extends View {
     }
 
     @Override
-    protected void dispatchDraw(Canvas canvas) {
+    protected void dispatchDraw(final Canvas canvas) {
         super.dispatchDraw(canvas);
 
         if (mColors == null) {
@@ -90,7 +90,7 @@ public class LabelBadgeView extends View {
         int pb = getPaddingBottom();
 
         int horizontalSpacing = (mBadgesPerRow - 1) * mBadgeSpacing;
-        int verticalSpacing = (getBadgeRows()- 1) * mBadgeSpacing;
+        int verticalSpacing = (getBadgeRows() - 1) * mBadgeSpacing;
         float availableHorizontal = canvas.getWidth() - pl - pr - horizontalSpacing;
         float availableVertical = canvas.getHeight() - pt - pb - verticalSpacing;
         float badgeSize = Math.min(availableHorizontal / mBadgesPerRow,

@@ -27,21 +27,21 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class IssueFragment extends IssueFragmentBase {
-    public static IssueFragment newInstance(String repoOwner, String repoName, Issue issue,
-                                            boolean isCollaborator, IntentUtils.InitialCommentMarker initialComment) {
+    public static IssueFragment newInstance(final String repoOwner, final String repoName, final Issue issue,
+                                            final boolean isCollaborator, final IntentUtils.InitialCommentMarker initialComment) {
         IssueFragment f = new IssueFragment();
         f.setArguments(buildArgs(repoOwner, repoName, issue, isCollaborator, initialComment));
         return f;
     }
 
-    public void updateState(Issue issue) {
+    public void updateState(final Issue issue) {
         mIssue = mIssue.toBuilder().state(issue.state()).build();
         assignHighlightColor();
         reloadEvents(false);
     }
 
     @Override
-    protected void bindSpecialViews(View headerView) {
+    protected void bindSpecialViews(final View headerView) {
         TextView tvPull = headerView.findViewById(R.id.tv_pull);
         if (mIssue.pullRequest() != null && mIssue.pullRequest().diffUrl() != null) {
             tvPull.setVisibility(View.VISIBLE);
@@ -61,7 +61,7 @@ public class IssueFragment extends IssueFragmentBase {
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         if (v.getId() == R.id.tv_pull) {
             startActivity(PullRequestActivity.makeIntent(getActivity(),
                           mRepoOwner, mRepoName, mIssue.number()));
@@ -71,7 +71,7 @@ public class IssueFragment extends IssueFragmentBase {
     }
 
     @Override
-    protected Single<List<TimelineItem>> onCreateDataSingle(boolean bypassCache) {
+    protected Single<List<TimelineItem>> onCreateDataSingle(final boolean bypassCache) {
         final int issueNumber = mIssue.number();
         final IssueEventService eventService = ServiceFactory.get(IssueEventService.class, bypassCache);
         final IssueCommentService commentService =
@@ -95,7 +95,7 @@ public class IssueFragment extends IssueFragmentBase {
     }
 
     @Override
-    public void editComment(GitHubCommentBase comment) {
+    public void editComment(final GitHubCommentBase comment) {
         @AttrRes int highlightColorAttr = mIssue.state() == IssueState.Closed
                                           ? R.attr.colorIssueClosed : R.attr.colorIssueOpen;
         Intent intent = EditIssueCommentActivity.makeIntent(getActivity(), mRepoOwner, mRepoName,
@@ -104,7 +104,7 @@ public class IssueFragment extends IssueFragmentBase {
     }
 
     @Override
-    protected Single<Response<Void>> doDeleteComment(GitHubCommentBase comment) {
+    protected Single<Response<Void>> doDeleteComment(final GitHubCommentBase comment) {
         IssueCommentService service = ServiceFactory.get(IssueCommentService.class, false);
         return service.deleteIssueComment(mRepoOwner, mRepoName, comment.id());
     }

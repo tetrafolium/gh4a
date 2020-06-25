@@ -26,18 +26,18 @@ public class SwipeRefreshLayout extends android.support.v4.widget.SwipeRefreshLa
     private boolean mAppBarCanScrollUp;
 
 
-    public SwipeRefreshLayout(Context context, AttributeSet attrs) {
+    public SwipeRefreshLayout(final Context context, final AttributeSet attrs) {
         super(context, attrs);
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
         mNestedScrollingChildHelper = new NestedScrollingChildHelper(this);
         setNestedScrollingEnabled(true);
     }
 
-    public void setAppBarLayout(AppBarLayout abl) {
+    public void setAppBarLayout(final AppBarLayout abl) {
         abl.addOnOffsetChangedListener(this);
     }
 
-    public void setChildScrollDelegate(ChildScrollDelegate delegate) {
+    public void setChildScrollDelegate(final ChildScrollDelegate delegate) {
         mChildScrollDelegate = delegate;
     }
 
@@ -53,18 +53,18 @@ public class SwipeRefreshLayout extends android.support.v4.widget.SwipeRefreshLa
     }
 
     @Override
-    public void onOffsetChanged(AppBarLayout abl, int verticalOffset) {
+    public void onOffsetChanged(final AppBarLayout abl, final int verticalOffset) {
         mAppBarCanScrollUp = verticalOffset != 0;
     }
 
     @Override
-    public boolean onStartNestedScroll(View child, View target, int nestedScrollAxes) {
+    public boolean onStartNestedScroll(final View child, final View target, final int nestedScrollAxes) {
         // Leave nested scrolling up to CoordinatorLayout
         return false;
     }
 
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent event) {
+    public boolean onInterceptTouchEvent(final MotionEvent event) {
         if (event.getAction() != MotionEvent.ACTION_DOWN && shouldPreventRefresh()) {
             return false;
         }
@@ -95,7 +95,7 @@ public class SwipeRefreshLayout extends android.support.v4.widget.SwipeRefreshLa
     }
 
     @Override
-    public void setNestedScrollingEnabled(boolean enabled) {
+    public void setNestedScrollingEnabled(final boolean enabled) {
         if (mNestedScrollingChildHelper != null) {
             mNestedScrollingChildHelper.setNestedScrollingEnabled(enabled);
         }
@@ -107,7 +107,7 @@ public class SwipeRefreshLayout extends android.support.v4.widget.SwipeRefreshLa
     }
 
     @Override
-    public boolean startNestedScroll(int axes) {
+    public boolean startNestedScroll(final int axes) {
         return mNestedScrollingChildHelper.startNestedScroll(axes);
     }
 
@@ -122,24 +122,24 @@ public class SwipeRefreshLayout extends android.support.v4.widget.SwipeRefreshLa
     }
 
     @Override
-    public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed,
-                                        int dyUnconsumed, int[] offsetInWindow) {
+    public boolean dispatchNestedScroll(final int dxConsumed, final int dyConsumed, final int dxUnconsumed,
+                                        final int dyUnconsumed, final int[] offsetInWindow) {
         return mNestedScrollingChildHelper.dispatchNestedScroll(dxConsumed, dyConsumed,
                 dxUnconsumed, dyUnconsumed, offsetInWindow);
     }
 
     @Override
-    public boolean dispatchNestedPreScroll(int dx, int dy, int[] consumed, int[] offsetInWindow) {
+    public boolean dispatchNestedPreScroll(final int dx, final int dy, final int[] consumed, final int[] offsetInWindow) {
         return mNestedScrollingChildHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow);
     }
 
     @Override
-    public boolean dispatchNestedFling(float velocityX, float velocityY, boolean consumed) {
+    public boolean dispatchNestedFling(final float velocityX, final float velocityY, final boolean consumed) {
         return mNestedScrollingChildHelper.dispatchNestedFling(velocityX, velocityY, consumed);
     }
 
     @Override
-    public boolean dispatchNestedPreFling(float velocityX, float velocityY) {
+    public boolean dispatchNestedPreFling(final float velocityX, final float velocityY) {
         return mNestedScrollingChildHelper.dispatchNestedPreFling(velocityX, velocityY);
     }
 

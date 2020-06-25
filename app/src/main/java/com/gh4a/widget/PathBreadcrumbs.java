@@ -22,17 +22,17 @@ public class PathBreadcrumbs extends HorizontalScrollView implements View.OnClic
     private SelectionCallback mCallback;
     private LayoutInflater mInflater;
 
-    public PathBreadcrumbs(Context context) {
+    public PathBreadcrumbs(final Context context) {
         super(context);
         init();
     }
 
-    public PathBreadcrumbs(Context context, AttributeSet attrs) {
+    public PathBreadcrumbs(final Context context, final AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public PathBreadcrumbs(Context context, AttributeSet attrs, int defStyleAttr) {
+    public PathBreadcrumbs(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
@@ -48,7 +48,7 @@ public class PathBreadcrumbs extends HorizontalScrollView implements View.OnClic
                     ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 
-    public void setPath(@NonNull String path) {
+    public void setPath(final @NonNull String path) {
         mItems.clear();
         mChildFrame.removeAllViews();
         addCrumb("", "/");
@@ -72,7 +72,7 @@ public class PathBreadcrumbs extends HorizontalScrollView implements View.OnClic
         }
     }
 
-    private void addCrumb(@NonNull String path, String title) {
+    private void addCrumb(final @NonNull String path, final String title) {
         ViewGroup view = (ViewGroup) mInflater.inflate(R.layout.breadcrumb, mChildFrame, false);
         view.setTag(mItems.size());
         view.setOnClickListener(this);
@@ -90,7 +90,7 @@ public class PathBreadcrumbs extends HorizontalScrollView implements View.OnClic
     }
 
     @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+    protected void onLayout(final boolean changed, final int l, final int t, final int r, final int b) {
         super.onLayout(changed, l, t, r, b);
         //RTL works fine like this
         View child = mChildFrame.getChildAt(mActive);
@@ -99,12 +99,12 @@ public class PathBreadcrumbs extends HorizontalScrollView implements View.OnClic
         }
     }
 
-    public void setCallback(SelectionCallback callback) {
+    public void setCallback(final SelectionCallback callback) {
         mCallback = callback;
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         if (mCallback != null) {
             int index = (Integer) v.getTag();
             int size = mItems.size();

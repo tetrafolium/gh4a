@@ -29,7 +29,7 @@ public class FileUtils {
         MIME_TYPE_OVERRIDES.put("properties", "text/x-java-properties");
     }
 
-    public static boolean save(File file, InputStream inputStream) {
+    public static boolean save(final File file, final InputStream inputStream) {
         OutputStream out = null;
         try {
             out = new FileOutputStream(file);
@@ -58,7 +58,7 @@ public class FileUtils {
         return false;
     }
 
-    public static String getFileExtension(String filename) {
+    public static String getFileExtension(final String filename) {
         int mid = filename.lastIndexOf(".");
         if (mid == -1) {
             return "";
@@ -67,7 +67,7 @@ public class FileUtils {
         return filename.substring(mid + 1, filename.length());
     }
 
-    public static String getFileName(String path) {
+    public static String getFileName(final String path) {
         if (StringUtils.isBlank(path)) {
             return "";
         }
@@ -78,23 +78,23 @@ public class FileUtils {
         return path.substring(mid + 1, path.length());
     }
 
-    public static boolean isImage(String filename) {
+    public static boolean isImage(final String filename) {
         String mime = getMimeTypeFor(filename);
         return mime != null && mime.startsWith("image/");
     }
 
-    public static boolean isBinaryFormat(String filename) {
+    public static boolean isBinaryFormat(final String filename) {
         String mime = getMimeTypeFor(filename);
         return mime != null && !mime.startsWith("text/")
                // cover cases like application/xhtml+xml or image/svg+xml
                && !mime.endsWith("+xml");
     }
 
-    public static boolean isMarkdown(String filename) {
+    public static boolean isMarkdown(final String filename) {
         return isExtensionIn(filename, MARKDOWN_EXTS);
     }
 
-    public static String getMimeTypeFor(String filename) {
+    public static String getMimeTypeFor(final String filename) {
         String extension = filename == null ? null : getFileExtension(filename);
         if (StringUtils.isBlank(extension)) {
             return null;
@@ -105,7 +105,7 @@ public class FileUtils {
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
     }
 
-    private static boolean isExtensionIn(String filename, List<String> extensions) {
+    private static boolean isExtensionIn(final String filename, final List<String> extensions) {
         String extension = filename == null ? null : getFileExtension(filename);
         if (StringUtils.isBlank(extension)) {
             return false;

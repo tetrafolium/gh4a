@@ -38,11 +38,11 @@ public class IntentUtils {
     private IntentUtils() {
     }
 
-    public static void launchBrowser(Context context, Uri uri) {
+    public static void launchBrowser(final Context context, final Uri uri) {
         launchBrowser(context, uri, 0);
     }
 
-    public static void launchBrowser(Context context, Uri uri, int flags) {
+    public static void launchBrowser(final Context context, final Uri uri, final int flags) {
         if (uri == null) {
             return;
         }
@@ -62,18 +62,18 @@ public class IntentUtils {
     // When doing that, pass a dummy URI to the resolver and swap in our real URI
     // later, as otherwise the system might return our package only if it's set
     // to handle the Github URIs by default
-    private static Uri buildDummyUri(Uri uri) {
+    private static Uri buildDummyUri(final Uri uri) {
         return uri.buildUpon().authority("www.somedummy.com").build();
     }
 
-    private static Intent createBrowserIntent(Context context, Uri uri) {
+    private static Intent createBrowserIntent(final Context context, final Uri uri) {
         final Uri dummyUri = buildDummyUri(uri);
         final Intent browserIntent = new Intent(Intent.ACTION_VIEW, dummyUri)
         .addCategory(Intent.CATEGORY_BROWSABLE);
         return createActivityChooserIntent(context, browserIntent, uri);
     }
 
-    public static Intent createViewerOrBrowserIntent(Context context, Uri uri, String mime) {
+    public static Intent createViewerOrBrowserIntent(final Context context, final Uri uri, final String mime) {
         final Uri dummyUri = buildDummyUri(uri);
         final Intent viewIntent = new Intent(Intent.ACTION_VIEW).setDataAndType(dummyUri, mime);
         final Intent resolvedViewIntent = createActivityChooserIntent(context, viewIntent, uri);
@@ -83,7 +83,7 @@ public class IntentUtils {
         return createBrowserIntent(context, uri);
     }
 
-    public static void openInCustomTabOrBrowser(Activity activity, Uri uri) {
+    public static void openInCustomTabOrBrowser(final Activity activity, final Uri uri) {
         String pkg = CustomTabsHelper.getPackageNameToUse(activity);
         if (pkg != null) {
             int color = UiUtils.resolveColor(activity, R.attr.colorPrimary);
@@ -98,19 +98,19 @@ public class IntentUtils {
         }
     }
 
-    public static Uri.Builder createBaseUriForUser(String user) {
+    public static Uri.Builder createBaseUriForUser(final String user) {
         return new Uri.Builder()
                .scheme("https")
                .authority("github.com")
                .appendPath(user);
     }
 
-    public static Uri.Builder createBaseUriForRepo(String repoOwner, String repoName) {
+    public static Uri.Builder createBaseUriForRepo(final String repoOwner, final String repoName) {
         return createBaseUriForUser(repoOwner)
                .appendPath(repoName);
     }
 
-    public static void share(Context context, String subject, Uri url) {
+    public static void share(final Context context, final String subject, final Uri url) {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
@@ -119,14 +119,14 @@ public class IntentUtils {
             Intent.createChooser(shareIntent, context.getString(R.string.share_title)));
     }
 
-    public static void copyToClipboard(Context context, CharSequence label, CharSequence text) {
+    public static void copyToClipboard(final Context context, final CharSequence label, final CharSequence text) {
         ClipboardManager clipboardManager =
             (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clipData = ClipData.newPlainText(label, text);
         clipboardManager.setPrimaryClip(clipData);
     }
 
-    private static Intent createActivityChooserIntent(Context context, Intent intent, Uri uri) {
+    private static Intent createActivityChooserIntent(final Context context, final Intent intent, final Uri uri) {
         final PackageManager pm = context.getPackageManager();
         final List<ResolveInfo> activities = pm.queryIntentActivities(intent,
                                              PackageManager.MATCH_DEFAULT_ONLY);
@@ -167,7 +167,7 @@ public class IntentUtils {
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    public static void startNewTask(@NonNull Context context, @NonNull Intent intent) {
+    public static void startNewTask(final @NonNull Context context, final @NonNull Intent intent) {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
@@ -178,12 +178,12 @@ public class IntentUtils {
         context.startActivity(intent);
     }
 
-    public static boolean isNewTaskIntent(@Nullable Intent intent) {
+    public static boolean isNewTaskIntent(final @Nullable Intent intent) {
         return intent != null && intent.getBooleanExtra(EXTRA_NEW_TASK, false);
     }
 
-    public static void putParcelableToBundleCompressed(Bundle bundle,
-            String key, Parcelable parcelable, int thresholdBytes) {
+    public static void putParcelableToBundleCompressed(final Bundle bundle,
+            final String key, final Parcelable parcelable, final int thresholdBytes) {
         Parcel parcel = Parcel.obtain();
         parcel.writeParcelable(parcelable, 0);
         byte[] bytes = parcel.marshall();
@@ -203,7 +203,7 @@ public class IntentUtils {
         bundle.putParcelable(key, parcelable);
     }
 
-    public static <T> T readCompressedParcelableFromBundle(Bundle bundle, String key) {
+    public static <T> T readCompressedParcelableFromBundle(final Bundle bundle, final String key) {
         byte[] uncompressedData = null;
 
         if (bundle.containsKey(key + "_compressed")) {
@@ -238,20 +238,20 @@ public class IntentUtils {
         public final long commentId;
         public final Date date;
 
-        public InitialCommentMarker(long commentId) {
+        public InitialCommentMarker(final long commentId) {
             this(commentId, null);
         }
 
-        public InitialCommentMarker(Date date) {
+        public InitialCommentMarker(final Date date) {
             this(-1, date);
         }
 
-        private InitialCommentMarker(long commentId, Date date) {
+        private InitialCommentMarker(final long commentId, final Date date) {
             this.commentId = commentId;
             this.date = date;
         }
 
-        public boolean matches(long id, Date date) {
+        public boolean matches(final long id, final Date date) {
             if (commentId >= 0 && id >= 0) {
                 return commentId == id;
             }
@@ -267,7 +267,7 @@ public class IntentUtils {
         }
 
         @Override
-        public void writeToParcel(Parcel out, int flags) {
+        public void writeToParcel(final Parcel out, final int flags) {
             out.writeLong(commentId);
             out.writeLong(date != null ? date.getTime() : -1);
         }
@@ -275,19 +275,19 @@ public class IntentUtils {
         public static final Parcelable.Creator<InitialCommentMarker> CREATOR =
         new Parcelable.ClassLoaderCreator<InitialCommentMarker>() {
             @Override
-            public InitialCommentMarker createFromParcel(Parcel in, ClassLoader loader) {
+            public InitialCommentMarker createFromParcel(final Parcel in, final ClassLoader loader) {
                 return createFromParcel(in);
             }
 
             @Override
-            public InitialCommentMarker createFromParcel(Parcel in) {
+            public InitialCommentMarker createFromParcel(final Parcel in) {
                 long commentId = in.readLong();
                 long timeMillis = in.readLong();
                 return new InitialCommentMarker(commentId,
                                                 timeMillis != -1 ? new Date(timeMillis) : null);
             }
             @Override
-            public InitialCommentMarker[] newArray(int size) {
+            public InitialCommentMarker[] newArray(final int size) {
                 return new InitialCommentMarker[size];
             }
         };

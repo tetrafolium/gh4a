@@ -33,15 +33,15 @@ public class OverviewRow extends LinearLayoutCompat implements View.OnClickListe
     private String mActionHintUnchecked;
     private boolean mDisplayRedirectArrowWhenClickable;
 
-    public OverviewRow(Context context) {
+    public OverviewRow(final Context context) {
         this(context, null);
     }
 
-    public OverviewRow(Context context, AttributeSet attrs) {
+    public OverviewRow(final Context context, final AttributeSet attrs) {
         this(context, attrs, R.attr.overviewRowStyle);
     }
 
-    public OverviewRow(Context context, AttributeSet attrs, int defStyle) {
+    public OverviewRow(final Context context, final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
 
         inflate(getContext(), R.layout.overview_row, this);
@@ -65,7 +65,7 @@ public class OverviewRow extends LinearLayoutCompat implements View.OnClickListe
     }
 
     @Override
-    public void drawableHotspotChanged(float x, float y) {
+    public void drawableHotspotChanged(final float x, final float y) {
         super.drawableHotspotChanged(x, y);
     }
 
@@ -75,12 +75,12 @@ public class OverviewRow extends LinearLayoutCompat implements View.OnClickListe
     }
 
 
-    public void setText(CharSequence text) {
+    public void setText(final CharSequence text) {
         mLabel.setText(text);
         mProgress.setVisibility(text != null ? View.GONE : View.VISIBLE);
     }
 
-    public void setClickIntent(Intent intent) {
+    public void setClickIntent(final Intent intent) {
         mClickIntent = intent;
         if (intent != null) {
             setOnClickListener(this);
@@ -90,27 +90,27 @@ public class OverviewRow extends LinearLayoutCompat implements View.OnClickListe
     }
 
     @Override
-    public void setClickable(boolean clickable) {
+    public void setClickable(final boolean clickable) {
         super.setClickable(clickable);
         if (mDisplayRedirectArrowWhenClickable) {
             mRedirectNotice.setVisibility(clickable ? VISIBLE : GONE);
         }
     }
 
-    public void setIconClickListener(OnIconClickListener l) {
+    public void setIconClickListener(final OnIconClickListener l) {
         mIcon.setOnClickListener(l != null ? this : null);
         mIcon.setEnabled(l != null);
         mIconClickListener = l;
         updateIconTint();
     }
 
-    public void setToggleState(boolean active) {
+    public void setToggleState(final boolean active) {
         mIcon.setImageState(
-            active ? new int[] { android.R.attr.state_checked } : new int[0], true);
+            active ? new int[] {android.R.attr.state_checked } : new int[0], true);
         TooltipCompat.setTooltipText(mIcon, active ? mActionHintChecked : mActionHintUnchecked);
     }
 
-    private void setIcon(Drawable icon) {
+    private void setIcon(final Drawable icon) {
         if (icon == null) {
             mIcon.setVisibility(View.GONE);
         } else {
@@ -133,7 +133,7 @@ public class OverviewRow extends LinearLayoutCompat implements View.OnClickListe
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
         if (view == mIcon) {
             mIconClickListener.onIconClick(this);
         } else if (mClickIntent != null) {

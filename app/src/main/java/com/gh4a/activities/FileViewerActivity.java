@@ -53,24 +53,24 @@ import io.reactivex.Single;
 
 public class FileViewerActivity extends WebViewerActivity
     implements PopupMenu.OnMenuItemClickListener {
-    public static Intent makeIntent(Context context, String repoOwner, String repoName,
-                                    String ref, String fullPath) {
+    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
+                                    final String ref, final String fullPath) {
         return makeIntent(context, repoOwner, repoName, ref, fullPath, -1, -1, null);
     }
 
-    public static Intent makeIntentWithHighlight(Context context, String repoOwner, String repoName,
-            String ref, String fullPath, int highlightStart, int highlightEnd) {
+    public static Intent makeIntentWithHighlight(final Context context, final String repoOwner, final String repoName,
+            final String ref, final String fullPath, final int highlightStart, final int highlightEnd) {
         return makeIntent(context, repoOwner, repoName, ref, fullPath, highlightStart, highlightEnd,
                           null);
     }
 
-    public static Intent makeIntentWithSearchMatch(Context context, String repoOwner,
-            String repoName, String ref, String fullPath, TextMatch textMatch) {
+    public static Intent makeIntentWithSearchMatch(final Context context, final String repoOwner,
+            final String repoName, final String ref, final String fullPath, final TextMatch textMatch) {
         return makeIntent(context, repoOwner, repoName, ref, fullPath, -1, -1, textMatch);
     }
 
-    private static Intent makeIntent(Context context, String repoOwner, String repoName, String ref,
-                                     String fullPath, int highlightStart, int highlightEnd, TextMatch textMatch) {
+    private static Intent makeIntent(final Context context, final String repoOwner, final String repoName, final String ref,
+                                     final String fullPath, final int highlightStart, final int highlightEnd, final TextMatch textMatch) {
         return new Intent(context, FileViewerActivity.class)
                .putExtra("owner", repoOwner)
                .putExtra("repo", repoName)
@@ -97,7 +97,7 @@ public class FileViewerActivity extends WebViewerActivity
     private static final String RAW_URL_FORMAT = "https://raw.githubusercontent.com/%s/%s/%s/%s";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         String filename = FileUtils.getFileName(mPath);
@@ -121,7 +121,7 @@ public class FileViewerActivity extends WebViewerActivity
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         mRepoOwner = extras.getString("owner");
         mRepoName = extras.getString("repo");
@@ -145,12 +145,12 @@ public class FileViewerActivity extends WebViewerActivity
     }
 
     @Override
-    protected String generateHtml(String cssTheme, boolean addTitleHeader) {
+    protected String generateHtml(final String cssTheme, final boolean addTitleHeader) {
         String base64Data = mContent.content();
         if (base64Data != null && FileUtils.isImage(mPath)) {
             String title = addTitleHeader ? getDocumentTitle() : null;
-            String imageUrl = "data:" + FileUtils.getMimeTypeFor(mPath) +
-                              ";base64," + base64Data;
+            String imageUrl = "data:" + FileUtils.getMimeTypeFor(mPath)
+                              + ";base64," + base64Data;
             return highlightImage(imageUrl, cssTheme, title);
         } else if (base64Data != null && FileUtils.isMarkdown(mPath) && !mViewRawText) {
             return generateMarkdownHtml(base64Data,
@@ -163,7 +163,7 @@ public class FileViewerActivity extends WebViewerActivity
         }
     }
 
-    private void findMatchingLines(String data) {
+    private void findMatchingLines(final String data) {
         if (mTextMatch == null) {
             return;
         }
@@ -201,7 +201,7 @@ public class FileViewerActivity extends WebViewerActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.file_viewer_menu, menu);
 
@@ -222,7 +222,7 @@ public class FileViewerActivity extends WebViewerActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         Uri.Builder urlBuilder = IntentUtils.createBaseUriForRepo(mRepoOwner, mRepoName)
                                  .appendPath("blob")
                                  .appendPath(mRef);
@@ -258,7 +258,7 @@ public class FileViewerActivity extends WebViewerActivity
     }
 
     @Override
-    public boolean onMenuItemClick(MenuItem item) {
+    public boolean onMenuItemClick(final MenuItem item) {
         switch (item.getItemId()) {
         case R.id.share:
             if (mLastTouchedLine > 0) {
@@ -272,7 +272,7 @@ public class FileViewerActivity extends WebViewerActivity
     }
 
     @Override
-    protected void onLineTouched(int line, int x, int y) {
+    protected void onLineTouched(final int line, final int x, final int y) {
         super.onLineTouched(line, x, y);
 
         mLastTouchedLine = line;
@@ -317,7 +317,7 @@ public class FileViewerActivity extends WebViewerActivity
         }
     }
 
-    private static String highlightImage(String imageUrl, String cssTheme, String title) {
+    private static String highlightImage(final String imageUrl, final String cssTheme, final String title) {
         StringBuilder content = new StringBuilder();
         content.append("<html><head>");
         writeCssInclude(content, "text", cssTheme);
@@ -331,7 +331,7 @@ public class FileViewerActivity extends WebViewerActivity
         return content.toString();
     }
 
-    private void loadFile(boolean force) {
+    private void loadFile(final boolean force) {
         RepositoryContentService service = ServiceFactory.get(RepositoryContentService.class, force);
         service.getContents(mRepoOwner, mRepoName, mPath, mRef)
         .map(ApiHelpers::throwOnFailure)

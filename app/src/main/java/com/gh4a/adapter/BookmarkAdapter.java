@@ -43,7 +43,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
 
     private final List<Integer> mPositions = new ArrayList<>();
 
-    public BookmarkAdapter(Context context, OnItemInteractListener listener) {
+    public BookmarkAdapter(final Context context, final OnItemInteractListener listener) {
         super();
         setHasStableIds(true);
         mInflater = LayoutInflater.from(context);
@@ -52,7 +52,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
         mItemInteractListener = listener;
     }
 
-    public void swapCursor(Cursor cursor) {
+    public void swapCursor(final Cursor cursor) {
         if (cursor == mCursor) {
             return;
         }
@@ -75,7 +75,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
         notifyDataSetChanged();
     }
 
-    public void updateOrder(Context context) {
+    public void updateOrder(final Context context) {
         for (int newPosition = 0; newPosition < mPositions.size(); newPosition++) {
             Integer oldPosition = mPositions.get(newPosition);
             if (newPosition != oldPosition && mCursor.moveToPosition(oldPosition)) {
@@ -85,12 +85,12 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
         }
     }
 
-    private boolean moveCursorToPosition(int position) {
+    private boolean moveCursorToPosition(final int position) {
         return mCursor.moveToPosition(mPositions.get(position));
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
         View view = mInflater.inflate(R.layout.row_bookmark, parent, false);
         ViewHolder vh = new ViewHolder(view, mItemInteractListener);
         if (mItemInteractListener != null) {
@@ -101,7 +101,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         if (!moveCursorToPosition(position)) {
             return;
         }
@@ -137,12 +137,12 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
     }
 
     @Override
-    public long getItemId(int position) {
+    public long getItemId(final int position) {
         return moveCursorToPosition(position) ? mCursor.getLong(mIdColumnIndex) : -1;
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
         ViewHolder vh = (ViewHolder) view.getTag();
         int position = vh.getAdapterPosition();
         if (position != RecyclerView.NO_POSITION && moveCursorToPosition(position)) {
@@ -151,12 +151,12 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
         }
     }
 
-    public void onItemMoved(int fromPos, int toPos) {
+    public void onItemMoved(final int fromPos, final int toPos) {
         mPositions.add(toPos, mPositions.remove(fromPos));
         notifyItemMoved(fromPos, toPos);
     }
 
-    public void onItemSwiped(RecyclerView.ViewHolder viewHolder) {
+    public void onItemSwiped(final RecyclerView.ViewHolder viewHolder) {
         int position = viewHolder.getAdapterPosition();
         if (position == RecyclerView.NO_POSITION || !moveCursorToPosition(position)) {
             return;
@@ -187,7 +187,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
         private final TextView mTitle;
         private final TextView mExtra;
 
-        public ViewHolder(View view, OnItemInteractListener itemInteractListener) {
+        public ViewHolder(final View view, final OnItemInteractListener itemInteractListener) {
             super(view);
             mItemInteractListener = itemInteractListener;
             mIcon = view.findViewById(R.id.iv_icon);
@@ -197,7 +197,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
         }
 
         @Override
-        public boolean onTouch(View v, MotionEvent event) {
+        public boolean onTouch(final View v, final MotionEvent event) {
             if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                 mItemInteractListener.onItemDrag(this);
             }

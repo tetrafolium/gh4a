@@ -96,7 +96,7 @@ public abstract class EventListFragment extends PagedDataBaseFragment<GitHubEven
     };
 
     @Override
-    protected void onRecyclerViewInflated(RecyclerView view, LayoutInflater inflater) {
+    protected void onRecyclerViewInflated(final RecyclerView view, final LayoutInflater inflater) {
         super.onRecyclerViewInflated(view, inflater);
         registerForContextMenu(view);
     }
@@ -114,7 +114,7 @@ public abstract class EventListFragment extends PagedDataBaseFragment<GitHubEven
     }
 
     @Override
-    public void onItemClick(GitHubEvent event) {
+    public void onItemClick(final GitHubEvent event) {
         if (EventAdapter.hasInvalidPayload(event)) {
             return;
         }
@@ -323,7 +323,7 @@ public abstract class EventListFragment extends PagedDataBaseFragment<GitHubEven
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(final ContextMenu menu, final View v, final ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
 
         ContextMenuAwareRecyclerView.RecyclerContextMenuInfo info =
@@ -408,7 +408,7 @@ public abstract class EventListFragment extends PagedDataBaseFragment<GitHubEven
             IssueCommentPayload payload = (IssueCommentPayload) event.payload();
             boolean isPullRequest = payload.issue().pullRequest() != null;
             menu.add(getString(isPullRequest ? R.string.menu_pulls : R.string.menu_issues))
-            .setIntent(IssueListActivity.makeIntent(getActivity(),repoOwner, repoName, isPullRequest));
+            .setIntent(IssueListActivity.makeIntent(getActivity(), repoOwner, repoName, isPullRequest));
             break;
         }
 
@@ -459,7 +459,7 @@ public abstract class EventListFragment extends PagedDataBaseFragment<GitHubEven
     }
 
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
+    public boolean onContextItemSelected(final MenuItem item) {
         ContextMenuAwareRecyclerView.RecyclerContextMenuInfo info =
             (ContextMenuAwareRecyclerView.RecyclerContextMenuInfo) item.getMenuInfo();
         if (info.position >= mAdapter.getItemCount()) {

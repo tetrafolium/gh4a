@@ -30,7 +30,7 @@ import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
 
 public class RxUtils {
-    public static <T> SingleTransformer<List<T>, List<T>> filter(Predicate<T> predicate) {
+    public static <T> SingleTransformer<List<T>, List<T>> filter(final Predicate<T> predicate) {
         return upstream -> upstream.map(list -> {
             List<T> result = new ArrayList<>();
             for (T item : list) {
@@ -42,7 +42,7 @@ public class RxUtils {
         });
     }
 
-    public static <T> SingleTransformer<List<T>, Optional<T>> filterAndMapToFirst(Predicate<T> predicate) {
+    public static <T> SingleTransformer<List<T>, Optional<T>> filterAndMapToFirst(final Predicate<T> predicate) {
         return upstream -> upstream.map(list -> {
             for (T item : list) {
                 if (predicate.test(item)) {
@@ -53,7 +53,7 @@ public class RxUtils {
         });
     }
 
-    public static <T, R> SingleTransformer<List<T>, List<R>> mapList(Function<T, R> transformer) {
+    public static <T, R> SingleTransformer<List<T>, List<R>> mapList(final Function<T, R> transformer) {
         return upstream -> upstream.map(list -> {
             List<R> result = new ArrayList<>();
             for (T item : list) {
@@ -63,7 +63,7 @@ public class RxUtils {
         });
     }
 
-    public static <T> SingleTransformer<List<T>, List<T>> sortList(Comparator<? super T> comparator) {
+    public static <T> SingleTransformer<List<T>, List<T>> sortList(final Comparator<? super T> comparator) {
         return upstream ->  upstream.map(list -> {
             list = new ArrayList<>(list);
             Collections.sort(list, comparator);
@@ -71,7 +71,7 @@ public class RxUtils {
         });
     }
 
-    public static <T> SingleTransformer<T, T> mapFailureToValue(int code, T value) {
+    public static <T> SingleTransformer<T, T> mapFailureToValue(final int code, final T value) {
         return upstream -> upstream.onErrorResumeNext(error -> {
             if (error instanceof ApiRequestException) {
                 if (((ApiRequestException) error).getStatus() == code) {
@@ -82,7 +82,7 @@ public class RxUtils {
         });
     }
 
-    public static <T> Single<T> doInBackground(Single<T> upstream) {
+    public static <T> Single<T> doInBackground(final Single<T> upstream) {
         return upstream.subscribeOn(Schedulers.newThread())
                .observeOn(AndroidSchedulers.mainThread());
     }
@@ -121,7 +121,7 @@ public class RxUtils {
             private ProgressDialogFragment mFragment;
 
             @Override
-            public SingleSource<T> apply(Single<T> upstream) {
+            public SingleSource<T> apply(final Single<T> upstream) {
                 return upstream
                        .doOnSubscribe(disposable -> showDialog())
                        .doOnError(throwable -> hideDialog())
@@ -150,17 +150,17 @@ public class RxUtils {
         return new SingleTransformer<T, T>() {
             private final PublishProcessor<Integer> mRetryProcessor = PublishProcessor.create();
             @Override
-            public SingleSource<T> apply(Single<T> upstream) {
+            public SingleSource<T> apply(final Single<T> upstream) {
                 return upstream
                        .doOnError(error -> showSnackbar(error))
                        .retryWhen(handler -> handler.flatMap(error -> mRetryProcessor));
             }
 
-            private void showSnackbar(Throwable error) {
+            private void showSnackbar(final Throwable error) {
                 Snackbar.make(rootLayout, errorMessage, Snackbar.LENGTH_LONG)
                 .addCallback(new Snackbar.BaseCallback<Snackbar>() {
                     @Override
-                    public void onDismissed(Snackbar snackbar, int event) {
+                    public void onDismissed(final Snackbar snackbar, final int event) {
                         // Propagate error if opportunity to retry isn't used, either
                         // by dismissing the Snackbar or letting it time out
                         if (event == DISMISS_EVENT_SWIPE || event == DISMISS_EVENT_TIMEOUT) {
@@ -174,11 +174,11 @@ public class RxUtils {
         };
     }
 
-    public static <T> Single<Response<Page<T>>> searchPageAdapter(Single<Response<SearchPage<T>>> upstream) {
+    public static <T> Single<Response<Page<T>>> searchPageAdapter(final Single<Response<SearchPage<T>>> upstream) {
         return searchPageAdapter(upstream, item -> item);
     }
 
-    public static <U, D> Single<Response<Page<D>>> searchPageAdapter(Single<Response<SearchPage<U>>> upstream, Optional.Mapper<U, D> mapper) {
+    public static <U, D> Single<Response<Page<D>>> searchPageAdapter(final Single<Response<SearchPage<U>>> upstream, final Optional.Mapper<U, D> mapper) {
         return upstream.map(response -> {
             if (response.isSuccessful()) {
                 return Response.success(new ApiHelpers.SearchPageAdapter<U, D>(response.body(), mapper));
@@ -190,7 +190,7 @@ public class RxUtils {
     public static class ProgressDialogFragment extends DialogFragment {
         @android.support.annotation.NonNull
         @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
+        public Dialog onCreateDialog(final Bundle savedInstanceState) {
             int messageResId = getArguments().getInt("message_res", 0);
             return UiUtils.createProgressDialog(getActivity(), messageResId);
         }

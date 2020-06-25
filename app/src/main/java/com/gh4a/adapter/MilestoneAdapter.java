@@ -33,20 +33,20 @@ public class MilestoneAdapter extends RootAdapter<Milestone, MilestoneAdapter.Vi
     private final int mTextColorPrimary;
     private final int mTextColorSecondary;
 
-    public MilestoneAdapter(Context context) {
+    public MilestoneAdapter(final Context context) {
         super(context);
         mTextColorPrimary = UiUtils.resolveColor(context, android.R.attr.textColorPrimary);
         mTextColorSecondary = UiUtils.resolveColor(context, android.R.attr.textColorSecondary);
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
         View v = inflater.inflate(R.layout.row_milestone, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, Milestone milestone) {
+    public void onBindViewHolder(final ViewHolder holder, final Milestone milestone) {
         holder.tvTitle.setText(milestone.title());
         holder.tvTitle.setTextColor(milestone.state() == IssueState.Closed
                                     ? mTextColorSecondary : mTextColorPrimary);
@@ -73,7 +73,7 @@ public class MilestoneAdapter extends RootAdapter<Milestone, MilestoneAdapter.Vi
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ViewHolder(View view) {
+        private ViewHolder(final View view) {
             super(view);
             tvTitle = view.findViewById(R.id.tv_title);
             tvDesc = view.findViewById(R.id.tv_desc);

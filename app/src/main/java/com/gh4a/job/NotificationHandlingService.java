@@ -27,19 +27,19 @@ public class NotificationHandlingService extends IntentService {
     private static final String ACTION_HANDLE_NOTIFICATION_DISMISS =
         "com.gh4a.action.HANDLE_NOTIFICATION_DISMISS";
 
-    public static Intent makeMarkNotificationsSeenIntent(Context context) {
+    public static Intent makeMarkNotificationsSeenIntent(final Context context) {
         return new Intent(context, NotificationHandlingService.class)
                .setAction(ACTION_MARK_SEEN);
     }
 
-    public static Intent makeHandleDismissIntent(Context context, int notificationId) {
+    public static Intent makeHandleDismissIntent(final Context context, final int notificationId) {
         return new Intent(context, NotificationHandlingService.class)
                .setAction(ACTION_HANDLE_NOTIFICATION_DISMISS)
                .putExtra(EXTRA_NOTIFICATION_ID, notificationId);
     }
 
-    public static Intent makeMarkReposNotificationsAsReadActionIntent(Context context,
-            int notificationId, String repoOwner, String repoName) {
+    public static Intent makeMarkReposNotificationsAsReadActionIntent(final Context context,
+            final int notificationId, final String repoOwner, final String repoName) {
         return new Intent(context, NotificationHandlingService.class)
                .setAction(ACTION_MARK_READ)
                .putExtra(EXTRA_NOTIFICATION_ID, notificationId)
@@ -48,8 +48,8 @@ public class NotificationHandlingService extends IntentService {
                .putExtra(EXTRA_TIMESTAMP, System.currentTimeMillis());
     }
 
-    public static Intent makeOpenNotificationActionIntent(Context context,
-            String repoOwner, String repoName) {
+    public static Intent makeOpenNotificationActionIntent(final Context context,
+            final String repoOwner, final String repoName) {
         return new Intent(context, NotificationHandlingService.class)
                .setAction(ACTION_OPEN_NOTIFICATION)
                .putExtra(EXTRA_REPO_OWNER, repoOwner)
@@ -61,7 +61,7 @@ public class NotificationHandlingService extends IntentService {
     }
 
     @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
+    protected void onHandleIntent(final @Nullable Intent intent) {
         if (intent == null) {
             return;
         }
@@ -101,7 +101,7 @@ public class NotificationHandlingService extends IntentService {
         }
     }
 
-    private void markNotificationAsRead(String repoOwner, String repoName, long timestamp) {
+    private void markNotificationAsRead(final String repoOwner, final String repoName, final long timestamp) {
         NotificationService service = ServiceFactory.get(NotificationService.class, false);
         NotificationReadRequest request = NotificationReadRequest.builder()
                                           .lastReadAt(new Date(timestamp))

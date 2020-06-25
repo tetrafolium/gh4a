@@ -29,12 +29,12 @@ import com.gh4a.fragment.RepositoryListContainerFragment;
 
 public class RepositoryListActivity extends FragmentContainerActivity implements
     RepositoryListContainerFragment.Callback {
-    public static Intent makeIntent(Context context, String user, boolean userIsOrg) {
+    public static Intent makeIntent(final Context context, final String user, final boolean userIsOrg) {
         return makeIntent(context, user, userIsOrg, null);
     }
 
-    public static Intent makeIntent(Context context, String user, boolean userIsOrg,
-                                    String defaultFilter) {
+    public static Intent makeIntent(final Context context, final String user, final boolean userIsOrg,
+                                    final String defaultFilter) {
         return new Intent(context, RepositoryListActivity.class)
                .putExtra("user", user)
                .putExtra("is_org", userIsOrg)
@@ -49,7 +49,7 @@ public class RepositoryListActivity extends FragmentContainerActivity implements
     private RepositoryListContainerFragment.SortDrawerHelper mSortDrawerHelper;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mFragment = (RepositoryListContainerFragment) getFragment();
@@ -70,7 +70,7 @@ public class RepositoryListActivity extends FragmentContainerActivity implements
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         Bundle data = getIntent().getExtras();
         mUserLogin = data.getString("user");
@@ -95,14 +95,14 @@ public class RepositoryListActivity extends FragmentContainerActivity implements
         int sortMenuResId = mSortDrawerHelper.getMenuResId();
         int filterMenuResId = mFilterDrawerHelper.getMenuResId();
         if (sortMenuResId == 0) {
-            return new int[] { filterMenuResId };
+            return new int[] {filterMenuResId };
         } else {
-            return new int[] { sortMenuResId, filterMenuResId };
+            return new int[] {sortMenuResId, filterMenuResId };
         }
     }
 
     @Override
-    protected void onPrepareRightNavigationDrawerMenu(Menu menu) {
+    protected void onPrepareRightNavigationDrawerMenu(final Menu menu) {
         if (mFragment != null) {
             mFilterDrawerHelper.selectFilterType(menu, mFragment.getFilterType());
             mSortDrawerHelper.selectSortType(menu, mFragment.getSortOrder(),
@@ -111,7 +111,7 @@ public class RepositoryListActivity extends FragmentContainerActivity implements
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    public boolean onNavigationItemSelected(final @NonNull MenuItem item) {
         super.onNavigationItemSelected(item);
         String type = mFilterDrawerHelper.handleSelectionAndGetFilterType(item);
         if (type != null) {

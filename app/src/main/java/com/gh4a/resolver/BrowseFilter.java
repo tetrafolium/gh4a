@@ -13,15 +13,15 @@ import com.gh4a.utils.IntentUtils;
 public class BrowseFilter extends AppCompatActivity {
     private static final String EXTRA_INITIAL_COMMENT = "initial_comment";
 
-    public static Intent makeRedirectionIntent(Context context, Uri uri,
-            IntentUtils.InitialCommentMarker initialComment) {
+    public static Intent makeRedirectionIntent(final Context context, final Uri uri,
+            final IntentUtils.InitialCommentMarker initialComment) {
         Intent intent = new Intent(context, BrowseFilter.class);
         intent.setData(uri);
         intent.putExtra(EXTRA_INITIAL_COMMENT, initialComment);
         return intent;
     }
 
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         setTheme(Gh4Application.THEME == R.style.DarkTheme
                  ? R.style.TransparentDarkTheme : R.style.TransparentLightTheme);
 

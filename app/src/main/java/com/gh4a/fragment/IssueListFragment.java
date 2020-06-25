@@ -48,8 +48,8 @@ public class IssueListFragment extends PagedDataBaseFragment<Issue> {
     private boolean mShowRepository;
     private String mIssueState;
 
-    public static IssueListFragment newInstance(String query, String sortMode, String order,
-            String state, int emptyTextResId, boolean showRepository) {
+    public static IssueListFragment newInstance(final String query, final String sortMode, final String order,
+            final String state, final int emptyTextResId, final boolean showRepository) {
         IssueListFragment f = new IssueListFragment();
 
         Bundle args = new Bundle();
@@ -65,7 +65,7 @@ public class IssueListFragment extends PagedDataBaseFragment<Issue> {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
@@ -78,7 +78,7 @@ public class IssueListFragment extends PagedDataBaseFragment<Issue> {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         switch (mIssueState) {
@@ -96,7 +96,7 @@ public class IssueListFragment extends PagedDataBaseFragment<Issue> {
     }
 
     @Override
-    public void onItemClick(Issue issue) {
+    public void onItemClick(final Issue issue) {
         String[] urlPart = issue.url().split("/");
         Intent intent = issue.pullRequest() != null
                         ? PullRequestActivity.makeIntent(getActivity(), urlPart[4], urlPart[5], issue.number())
@@ -105,7 +105,7 @@ public class IssueListFragment extends PagedDataBaseFragment<Issue> {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQUEST_ISSUE) {
             if (resultCode == Activity.RESULT_OK) {
                 super.onRefresh();
@@ -129,7 +129,7 @@ public class IssueListFragment extends PagedDataBaseFragment<Issue> {
     }
 
     @Override
-    protected Single<Response<Page<Issue>>> loadPage(int page, boolean bypassCache) {
+    protected Single<Response<Page<Issue>>> loadPage(final int page, final boolean bypassCache) {
         final SearchService service = ServiceFactory.get(SearchService.class, bypassCache);
         return service.searchIssues(mQuery, mSortMode, mOrder, page)
                .compose(RxUtils::searchPageAdapter);
@@ -160,7 +160,7 @@ public class IssueListFragment extends PagedDataBaseFragment<Issue> {
             return mSortAscending ? "asc" : "desc";
         }
 
-        public boolean handleItemSelection(MenuItem item) {
+        public boolean handleItemSelection(final MenuItem item) {
             switch (item.getItemId()) {
             case R.id.sort_created_asc:
                 updateSortMode(SORT_MODE_CREATED, true);
@@ -185,7 +185,7 @@ public class IssueListFragment extends PagedDataBaseFragment<Issue> {
             return false;
         }
 
-        protected void updateSortMode(String sortMode, boolean ascending) {
+        protected void updateSortMode(final String sortMode, final boolean ascending) {
             mSortAscending = ascending;
             mSortMode = sortMode;
         }

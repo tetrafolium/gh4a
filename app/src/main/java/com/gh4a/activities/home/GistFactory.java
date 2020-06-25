@@ -13,7 +13,7 @@ public class GistFactory extends FragmentFactory {
         R.string.mine, R.string.starred
     };
 
-    public GistFactory(HomeActivity activity, String userLogin) {
+    public GistFactory(final HomeActivity activity, final String userLogin) {
         super(activity);
         mUserLogin = userLogin;
     }
@@ -29,7 +29,7 @@ public class GistFactory extends FragmentFactory {
     }
 
     @Override
-    protected Fragment makeFragment(int position) {
+    protected Fragment makeFragment(final int position) {
         return GistListFragment.newInstance(mUserLogin, position == 1);
     }
 }

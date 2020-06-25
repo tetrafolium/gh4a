@@ -39,7 +39,7 @@ public class TrendingFragment extends ListDataBaseFragment<Trend> implements
     private String mType;
     private @StringRes int mStarsTemplate;
 
-    public static TrendingFragment newInstance(String type) {
+    public static TrendingFragment newInstance(final String type) {
         if (type == null) {
             return null;
         }
@@ -66,7 +66,7 @@ public class TrendingFragment extends ListDataBaseFragment<Trend> implements
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mType = getArguments().getString("type");
         mStarsTemplate = getArguments().getInt("stars_template", 0);
@@ -85,7 +85,7 @@ public class TrendingFragment extends ListDataBaseFragment<Trend> implements
     }
 
     @Override
-    public void onItemClick(Trend trend) {
+    public void onItemClick(final Trend trend) {
         String owner = trend.getRepoOwner();
         String name = trend.getRepoName();
         if (owner != null && name != null) {
@@ -94,7 +94,7 @@ public class TrendingFragment extends ListDataBaseFragment<Trend> implements
     }
 
     @Override
-    protected Single<List<Trend>> onCreateDataSingle(boolean bypassCache) {
+    protected Single<List<Trend>> onCreateDataSingle(final boolean bypassCache) {
         return SingleFactory.loadTrends(mType);
     }
 }

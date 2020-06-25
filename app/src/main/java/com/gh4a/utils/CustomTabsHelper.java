@@ -40,7 +40,7 @@ public class CustomTabsHelper {
 
     private static String sPackageNameToUse;
 
-    private CustomTabsHelper() {}
+    private CustomTabsHelper() { }
 
     /**
      * Goes through all apps that handle VIEW intents and have a warmup service. Picks
@@ -52,7 +52,7 @@ public class CustomTabsHelper {
      * @param context {@link Context} to use for accessing {@link PackageManager}.
      * @return The package name recommended to use for connecting to custom tabs related components.
      */
-    public static String getPackageNameToUse(Context context) {
+    public static String getPackageNameToUse(final Context context) {
         if (sPackageNameToUse != null) return sPackageNameToUse;
 
         PackageManager pm = context.getPackageManager();
@@ -103,7 +103,7 @@ public class CustomTabsHelper {
      * @param intent The intent to check with.
      * @return Whether there is a specialized handler for the given intent.
      */
-    private static boolean hasSpecializedHandlerIntents(Context context, Intent intent) {
+    private static boolean hasSpecializedHandlerIntents(final Context context, final Intent intent) {
         try {
             PackageManager pm = context.getPackageManager();
             List<ResolveInfo> handlers = pm.queryIntentActivities(

@@ -31,19 +31,19 @@ public class IssueLabelAdapter extends
         public boolean isEditing;
         private final Label mLabel;
 
-        public EditableLabel(String color) {
+        public EditableLabel(final String color) {
             super();
             newlyAdded = true;
             isEditing = true;
             editedColor = color;
             mLabel = null;
         }
-        public EditableLabel(Label label) {
+        public EditableLabel(final Label label) {
             newlyAdded = false;
             isEditing = false;
             mLabel = label;
         }
-        private EditableLabel(Parcel in) {
+        private EditableLabel(final Parcel in) {
             editedName = in.readString();
             editedColor = in.readString();
             newlyAdded = in.readInt() != 0;
@@ -76,7 +76,7 @@ public class IssueLabelAdapter extends
         }
 
         @Override
-        public void writeToParcel(Parcel parcel, int flags) {
+        public void writeToParcel(final Parcel parcel, final int flags) {
             parcel.writeString(editedName);
             parcel.writeString(editedColor);
             parcel.writeInt(newlyAdded ? 1 : 0);
@@ -86,35 +86,35 @@ public class IssueLabelAdapter extends
 
         public static Parcelable.Creator<EditableLabel> CREATOR = new Parcelable.Creator<EditableLabel>() {
             @Override
-            public EditableLabel createFromParcel(Parcel parcel) {
+            public EditableLabel createFromParcel(final Parcel parcel) {
                 return new EditableLabel(parcel);
             }
 
             @Override
-            public EditableLabel[] newArray(int size) {
+            public EditableLabel[] newArray(final int size) {
                 return new EditableLabel[size];
             }
         };
     }
 
-    public IssueLabelAdapter(Context context) {
+    public IssueLabelAdapter(final Context context) {
         super(context);
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
         View v = inflater.inflate(R.layout.row_issue_label, parent, false);
         final ViewHolder holder = new ViewHolder(v);
 
         holder.editor.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
             }
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
             }
             @Override
-            public void afterTextChanged(Editable s) {
+            public void afterTextChanged(final Editable s) {
                 if (holder.lastAssignedLabel != null) {
                     holder.lastAssignedLabel.editedName = s.toString();
                 }
@@ -136,7 +136,7 @@ public class IssueLabelAdapter extends
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, EditableLabel label) {
+    public void onBindViewHolder(final ViewHolder holder, final EditableLabel label) {
         holder.lastAssignedLabel = label;
 
         holder.collapsedContainer.setVisibility(label.isEditing ? View.GONE : View.VISIBLE);
@@ -156,7 +156,7 @@ public class IssueLabelAdapter extends
         holder.editor.setText(label.editedName != null ? label.editedName : label.name());
     }
 
-    private void assignColor(ViewHolder holder, String colorString) {
+    private void assignColor(final ViewHolder holder, final String colorString) {
         int color = Color.parseColor("#" + colorString);
         int textColor = UiUtils.textColorForBackground(mContext, color);
 
@@ -170,7 +170,7 @@ public class IssueLabelAdapter extends
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         View parent = (View) v.getParent();
         if (parent.getId() == R.id.colors) {
             final ViewHolder holder = (ViewHolder) parent.getTag();
@@ -188,7 +188,7 @@ public class IssueLabelAdapter extends
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ViewHolder(View view) {
+        private ViewHolder(final View view) {
             super(view);
             color = view.findViewById(R.id.view_color);
             label = view.findViewById(R.id.tv_title);

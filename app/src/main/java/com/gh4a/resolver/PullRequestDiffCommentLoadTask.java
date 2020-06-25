@@ -35,9 +35,9 @@ public class PullRequestDiffCommentLoadTask extends UrlLoadTask {
     @VisibleForTesting
     protected final int mPage;
 
-    public PullRequestDiffCommentLoadTask(FragmentActivity activity, String repoOwner,
-                                          String repoName, int pullRequestNumber, IntentUtils.InitialCommentMarker marker,
-                                          int page) {
+    public PullRequestDiffCommentLoadTask(final FragmentActivity activity, final String repoOwner,
+                                          final String repoName, final int pullRequestNumber, final IntentUtils.InitialCommentMarker marker,
+                                          final int page) {
         super(activity);
         mRepoOwner = repoOwner;
         mRepoName = repoName;

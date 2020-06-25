@@ -20,7 +20,7 @@ public class Optional<T> {
         mValue = null;
     }
 
-    private Optional(T value) {
+    private Optional(final T value) {
         if (value == null) {
             throw new NullPointerException("value must not be null");
         }
@@ -31,11 +31,11 @@ public class Optional<T> {
         return new Optional<>();
     }
 
-    public static <T> Optional<T> of(T value) {
+    public static <T> Optional<T> of(final T value) {
         return new Optional<>(value);
     }
 
-    public static <T> Optional<T> ofWithNull(T value) {
+    public static <T> Optional<T> ofWithNull(final T value) {
         return value == null ? absent() : of(value);
     }
 
@@ -54,39 +54,39 @@ public class Optional<T> {
         return mValue;
     }
 
-    public Optional<T> or(Supplier<T> supplier) {
+    public Optional<T> or(final Supplier<T> supplier) {
         return of(mValue != null ? mValue : supplier.get());
     }
 
-    public Optional<T> orOptional(Supplier<Optional<T>> supplier) {
+    public Optional<T> orOptional(final Supplier<Optional<T>> supplier) {
         if (mValue != null) {
             return of(mValue);
         }
         return supplier.get();
     }
 
-    public Single<Optional<T>> orSingle(Supplier<Single<T>> supplier) {
+    public Single<Optional<T>> orSingle(final Supplier<Single<T>> supplier) {
         if (isPresent()) {
             return Single.just(of(mValue));
         }
         return supplier.get().map(Optional::of);
     }
 
-    public Single<Optional<T>> orOptionalSingle(Supplier<Single<Optional<T>>> supplier) {
+    public Single<Optional<T>> orOptionalSingle(final Supplier<Single<Optional<T>>> supplier) {
         if (isPresent()) {
             return Single.just(of(mValue));
         }
         return supplier.get();
     }
 
-    public <R> Optional<R> map(Mapper<T, R> mapper) {
+    public <R> Optional<R> map(final Mapper<T, R> mapper) {
         if (mValue == null) {
             return absent();
         }
         return of(mapper.map(mValue));
     }
 
-    public <R> Single<Optional<R>> flatMap(Mapper<T, Single<R>> mapper) {
+    public <R> Single<Optional<R>> flatMap(final Mapper<T, Single<R>> mapper) {
         if (mValue == null) {
             return Single.just(absent());
         }

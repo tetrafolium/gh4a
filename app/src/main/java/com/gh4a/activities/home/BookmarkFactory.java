@@ -14,7 +14,7 @@ public class BookmarkFactory extends FragmentFactory {
 
     private final String mUserLogin;
 
-    public BookmarkFactory(HomeActivity activity, String userLogin) {
+    public BookmarkFactory(final HomeActivity activity, final String userLogin) {
         super(activity);
         mUserLogin = userLogin;
     }
@@ -31,7 +31,7 @@ public class BookmarkFactory extends FragmentFactory {
     }
 
     @Override
-    protected Fragment makeFragment(int position) {
+    protected Fragment makeFragment(final int position) {
         if (position == 1) {
             return StarredRepositoryListFragment.newInstance(mUserLogin);
         }

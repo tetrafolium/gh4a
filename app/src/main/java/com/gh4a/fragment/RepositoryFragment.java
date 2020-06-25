@@ -71,7 +71,7 @@ import retrofit2.Response;
 
 public class RepositoryFragment extends LoadingFragmentBase implements
     OverviewRow.OnIconClickListener, View.OnClickListener {
-    public static RepositoryFragment newInstance(Repository repository, String ref) {
+    public static RepositoryFragment newInstance(final Repository repository, final String ref) {
         RepositoryFragment f = new RepositoryFragment();
 
         Bundle args = new Bundle();
@@ -105,14 +105,14 @@ public class RepositoryFragment extends LoadingFragmentBase implements
     private boolean mIsReadmeExpanded = false;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mRepository = getArguments().getParcelable("repo");
         mRef = getArguments().getString("ref");
     }
 
     @Override
-    protected View onCreateContentView(LayoutInflater inflater, ViewGroup parent) {
+    protected View onCreateContentView(final LayoutInflater inflater, final ViewGroup parent) {
         mContentView = inflater.inflate(R.layout.repository, parent, false);
         mReadmeView = mContentView.findViewById(R.id.readme);
         mLoadingView = mContentView.findViewById(R.id.pb_readme);
@@ -161,7 +161,7 @@ public class RepositoryFragment extends LoadingFragmentBase implements
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         mImageGetter = new HttpImageGetter(getActivity());
@@ -197,13 +197,13 @@ public class RepositoryFragment extends LoadingFragmentBase implements
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(STATE_KEY_IS_README_EXPANDED, mIsReadmeExpanded);
         outState.putBoolean(STATE_KEY_IS_README_LOADED, mIsReadmeLoaded);
     }
 
-    public void setRef(String ref) {
+    public void setRef(final String ref) {
         mRef = ref;
         getArguments().putString("ref", ref);
 
@@ -298,7 +298,7 @@ public class RepositoryFragment extends LoadingFragmentBase implements
     }
 
     @NonNull
-    private SpannableString getForkedFromTextWithHighlight(Repository parent) {
+    private SpannableString getForkedFromTextWithHighlight(final Repository parent) {
         String forkedFromText = getString(R.string.forked_from, parent.fullName());
         SpannableString spannableString = new SpannableString(forkedFromText);
         ForegroundColorSpan colorSpan = new ForegroundColorSpan(UiUtils.resolveColor(getContext(), android.R.attr.textColorLink));
@@ -306,7 +306,7 @@ public class RepositoryFragment extends LoadingFragmentBase implements
         return spannableString;
     }
 
-    private void updateClickableLabel(int id, boolean enable) {
+    private void updateClickableLabel(final int id, final boolean enable) {
         View view = mContentView.findViewById(id);
         if (enable) {
             view.setOnClickListener(this);
@@ -316,7 +316,7 @@ public class RepositoryFragment extends LoadingFragmentBase implements
         }
     }
 
-    private void fillTextView(int id, int stringId, String text) {
+    private void fillTextView(final int id, final int stringId, final String text) {
         TextView view = mContentView.findViewById(id);
 
         if (!StringUtils.isBlank(text)) {
@@ -344,7 +344,7 @@ public class RepositoryFragment extends LoadingFragmentBase implements
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
         int id = view.getId();
 
         if (id == R.id.readme_title) {
@@ -374,7 +374,7 @@ public class RepositoryFragment extends LoadingFragmentBase implements
     }
 
     @Override
-    public void onIconClick(OverviewRow row) {
+    public void onIconClick(final OverviewRow row) {
         if (row == mWatcherRow && mIsWatching != null) {
             mWatcherRow.setText(null);
             toggleWatchingState();
@@ -405,7 +405,7 @@ public class RepositoryFragment extends LoadingFragmentBase implements
     }
 
 
-    private void loadReadme(boolean force) {
+    private void loadReadme(final boolean force) {
         Context context = getActivity();
         Long id = mRepository.id();
         String repoOwner = mRepository.owner().login();
@@ -443,7 +443,7 @@ public class RepositoryFragment extends LoadingFragmentBase implements
         }, this::handleLoadFailure);
     }
 
-    private void loadPullRequestCount(boolean force) {
+    private void loadPullRequestCount(final boolean force) {
         SearchService service = ServiceFactory.get(SearchService.class, force, null, null, 1);
         String query = String.format(Locale.US, "type:pr repo:%s/%s state:open",
                                      mRepository.owner().login(), mRepository.name());
@@ -517,7 +517,7 @@ public class RepositoryFragment extends LoadingFragmentBase implements
     }
 
 
-    private void loadStarringState(boolean force) {
+    private void loadStarringState(final boolean force) {
         if (!Gh4Application.get().isAuthorized()) {
             return;
         }
@@ -534,7 +534,7 @@ public class RepositoryFragment extends LoadingFragmentBase implements
         }, this::handleLoadFailure);
     }
 
-    private void loadWatchingState(boolean force) {
+    private void loadWatchingState(final boolean force) {
         if (!Gh4Application.get().isAuthorized()) {
             return;
         }

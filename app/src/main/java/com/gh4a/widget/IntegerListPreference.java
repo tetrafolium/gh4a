@@ -5,16 +5,16 @@ import android.support.v7.preference.ListPreference;
 import android.util.AttributeSet;
 
 public class IntegerListPreference extends ListPreference {
-    public IntegerListPreference(Context context) {
+    public IntegerListPreference(final Context context) {
         super(context);
     }
 
-    public IntegerListPreference(Context context, AttributeSet attrs) {
+    public IntegerListPreference(final Context context, final AttributeSet attrs) {
         super(context, attrs);
     }
 
     @Override
-    protected boolean persistString(String value) {
+    protected boolean persistString(final String value) {
         if (value == null) {
             return false;
         }
@@ -22,7 +22,7 @@ public class IntegerListPreference extends ListPreference {
     }
 
     @Override
-    protected String getPersistedString(String defaultReturnValue) {
+    protected String getPersistedString(final String defaultReturnValue) {
         if (!getSharedPreferences().contains(getKey())) {
             return defaultReturnValue;
         }

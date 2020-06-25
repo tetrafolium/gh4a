@@ -23,13 +23,13 @@ import com.meisolsson.githubsdk.model.User;
 import com.meisolsson.githubsdk.service.users.UserService;
 
 public class UserActivity extends BaseFragmentPagerActivity {
-    public static Intent makeIntent(Context context, User user) {
+    public static Intent makeIntent(final Context context, final User user) {
         // User responses from other endpoints are likely to not be complete, so
         // we only use the login from it and reload all other info
         return makeIntent(context, user != null ? user.login() : null);
     }
 
-    public static Intent makeIntent(Context context, String login) {
+    public static Intent makeIntent(final Context context, final String login) {
         if (login == null) {
             return null;
         }
@@ -48,7 +48,7 @@ public class UserActivity extends BaseFragmentPagerActivity {
     };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentShown(false);
@@ -62,7 +62,7 @@ public class UserActivity extends BaseFragmentPagerActivity {
     }
 
     @Override
-    protected void onInitExtras(Bundle extras) {
+    protected void onInitExtras(final Bundle extras) {
         super.onInitExtras(extras);
         mUserLogin = extras.getString("login");
     }
@@ -83,7 +83,7 @@ public class UserActivity extends BaseFragmentPagerActivity {
     }
 
     @Override
-    protected Fragment makeFragment(int position) {
+    protected Fragment makeFragment(final int position) {
         switch (position) {
         case 0:
             return UserFragment.newInstance(mUser);
@@ -94,14 +94,14 @@ public class UserActivity extends BaseFragmentPagerActivity {
     }
 
     @Override
-    protected void onFragmentInstantiated(Fragment f, int position) {
+    protected void onFragmentInstantiated(final Fragment f, final int position) {
         if (position == 0) {
             mUserFragment = (UserFragment) f;
         }
     }
 
     @Override
-    protected void onFragmentDestroyed(Fragment f) {
+    protected void onFragmentDestroyed(final Fragment f) {
         if (f == mUserFragment) {
             mUserFragment = null;
         }
@@ -113,14 +113,14 @@ public class UserActivity extends BaseFragmentPagerActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.user_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public boolean onPrepareOptionsMenu(final Menu menu) {
         MenuItem bookmarkAction = menu.findItem(R.id.bookmark);
         if (bookmarkAction != null) {
             String url = "https://github.com/" + mUserLogin;
@@ -139,7 +139,7 @@ public class UserActivity extends BaseFragmentPagerActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         Uri url = IntentUtils.createBaseUriForUser(mUserLogin).build();
         switch (item.getItemId()) {
         case R.id.share: {
@@ -167,7 +167,7 @@ public class UserActivity extends BaseFragmentPagerActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadUser(boolean force) {
+    private void loadUser(final boolean force) {
         UserService service = ServiceFactory.get(UserService.class, force);
         service.getUser(mUserLogin)
         .map(ApiHelpers::throwOnFailure)

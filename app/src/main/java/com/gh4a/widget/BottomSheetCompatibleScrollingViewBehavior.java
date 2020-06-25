@@ -8,8 +8,8 @@ import android.view.View;
 public class BottomSheetCompatibleScrollingViewBehavior extends AppBarLayout.ScrollingViewBehavior {
 
     @Override
-    public boolean onRequestChildRectangleOnScreen(CoordinatorLayout parent, View child,
-            Rect rectangle, boolean immediate) {
+    public boolean onRequestChildRectangleOnScreen(final CoordinatorLayout parent, final View child,
+            final Rect rectangle, final boolean immediate) {
         return true;
     }
 }

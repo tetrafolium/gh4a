@@ -57,7 +57,7 @@ public class NotificationsJob extends Job {
 
     private static final Object sPrefsLock = new Object();
 
-    public static void scheduleJob(int intervalMinutes) {
+    public static void scheduleJob(final int intervalMinutes) {
         new JobRequest.Builder(TAG)
         .setPeriodic(TimeUnit.MINUTES.toMillis(intervalMinutes),
                      TimeUnit.MINUTES.toMillis(5))
@@ -72,7 +72,7 @@ public class NotificationsJob extends Job {
         JobManager.instance().cancelAllForTag(NotificationsJob.TAG);
     }
 
-    public static void createNotificationChannels(Context context) {
+    public static void createNotificationChannels(final Context context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return;
         }
@@ -87,7 +87,7 @@ public class NotificationsJob extends Job {
         notificationManager.createNotificationChannel(channel);
     }
 
-    public static void markNotificationsAsSeen(Context context) {
+    public static void markNotificationsAsSeen(final Context context) {
         NotificationManager notificationManager =
             (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
@@ -99,7 +99,7 @@ public class NotificationsJob extends Job {
         .apply();
     }
 
-    public static void handleNotificationDismiss(Context context, int id) {
+    public static void handleNotificationDismiss(final Context context, final int id) {
         SharedPreferences prefs =
             context.getSharedPreferences(SettingsFragment.PREF_NAME, Context.MODE_PRIVATE);
         String idString = String.valueOf(id);
@@ -124,7 +124,7 @@ public class NotificationsJob extends Job {
 
     @NonNull
     @Override
-    protected Result onRunJob(Params params) {
+    protected Result onRunJob(final Params params) {
         List<List<NotificationThread>> notifsGroupedByRepo = new ArrayList<>();
         try {
             NotificationListLoadResult result =
@@ -194,8 +194,8 @@ public class NotificationsJob extends Job {
         return Result.SUCCESS;
     }
 
-    private void showRepoNotification(NotificationManagerCompat nm,
-                                      List<NotificationThread> notifications, long lastCheck) {
+    private void showRepoNotification(final NotificationManagerCompat nm,
+                                      final List<NotificationThread> notifications, final long lastCheck) {
         Repository repository = notifications.get(0).repository();
         final int id = repository.id().intValue();
         String title = repository.owner().login() + "/" + repository.name();
@@ -254,8 +254,8 @@ public class NotificationsJob extends Job {
             NotificationThread n = notifications.get(i);
             style.addMessage(n.subject().title(),
                              n.updatedAt().getTime(), determineNotificationTypeLabel(n));
-            hasNewNotification = hasNewNotification ||
-                                 n.updatedAt().getTime() > lastCheck;
+            hasNewNotification = hasNewNotification
+                                 || n.updatedAt().getTime() > lastCheck;
         }
         builder.setStyle(style);
 
@@ -266,8 +266,8 @@ public class NotificationsJob extends Job {
         nm.notify(id, builder.build());
     }
 
-    private void showSummaryNotification(NotificationManagerCompat nm,
-                                         List<List<NotificationThread>> notificationsPerRepo, boolean hasNewNotification) {
+    private void showSummaryNotification(final NotificationManagerCompat nm,
+                                         final List<List<NotificationThread>> notificationsPerRepo, final boolean hasNewNotification) {
         int totalCount = 0;
         for (List<NotificationThread> list : notificationsPerRepo) {
             totalCount += list.size();
@@ -337,7 +337,7 @@ public class NotificationsJob extends Job {
         nm.notify(0, builder.build());
     }
 
-    private String determineNotificationTypeLabel(NotificationThread n) {
+    private String determineNotificationTypeLabel(final NotificationThread n) {
         final Resources res = getContext().getResources();
         switch (n.subject().type()) {
         case NotificationAdapter.SUBJECT_COMMIT:
@@ -358,7 +358,7 @@ public class NotificationsJob extends Job {
                .setColor(ContextCompat.getColor(getContext(), R.color.octodroid));
     }
 
-    private Bitmap loadRoundUserAvatar(User user) {
+    private Bitmap loadRoundUserAvatar(final User user) {
         Bitmap avatar = AvatarHandler.loadUserAvatarSynchronously(getContext(), user);
         if (avatar == null) {
             return null;

@@ -72,7 +72,7 @@ public abstract class RootAdapter<T, VH extends RecyclerView.ViewHolder>
 
     private final Filter mFilter = new Filter() {
         @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
+        protected FilterResults performFiltering(final CharSequence constraint) {
             FilterResults results = new FilterResults();
             if (TextUtils.isEmpty(constraint)) {
                 results.values = mUnfilteredObjects;
@@ -92,7 +92,7 @@ public abstract class RootAdapter<T, VH extends RecyclerView.ViewHolder>
 
         @SuppressWarnings("unchecked")
         @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
+        protected void publishResults(final CharSequence constraint, final FilterResults results) {
             mObjects = (List<T>) results.values;
             notifyDataSetChanged();
         }
@@ -103,32 +103,32 @@ public abstract class RootAdapter<T, VH extends RecyclerView.ViewHolder>
      *
      * @param context the context
      */
-    protected RootAdapter(Context context) {
+    protected RootAdapter(final Context context) {
         mObjects = new ArrayList<>();
         mUnfilteredObjects = new ArrayList<>();
         mContext = context;
         mInflater = LayoutInflater.from(mContext);
     }
 
-    public void setHeaderView(View headerView) {
+    public void setHeaderView(final View headerView) {
         mHeaderView = headerView;
         notifyDataSetChanged();
     }
 
-    public void setFooterView(View footerView, OnScrolledToFooterListener footerListener) {
+    public void setFooterView(final View footerView, final OnScrolledToFooterListener footerListener) {
         mFooterView = footerView;
         mFooterListener = footerListener;
         notifyDataSetChanged();
     }
 
-    public void setOnItemClickListener(OnItemClickListener<T> listener) {
+    public void setOnItemClickListener(final OnItemClickListener<T> listener) {
         if (mHolderCreated) {
             throw new IllegalStateException("Must not set item click listener after views are bound");
         }
         mItemClickListener = listener;
     }
 
-    public void setContextMenuSupported(boolean supported) {
+    public void setContextMenuSupported(final boolean supported) {
         if (mHolderCreated) {
             throw new IllegalStateException("Must not set context menu state after views are bound");
         }
@@ -143,7 +143,7 @@ public abstract class RootAdapter<T, VH extends RecyclerView.ViewHolder>
     }
 
     @Override
-    public int getItemViewType(int position) {
+    public int getItemViewType(final int position) {
         int itemStart = mHeaderView != null ? 1 : 0;
         if (mHeaderView != null && position == 0) {
             return VIEW_TYPE_HEADER;
@@ -160,11 +160,11 @@ public abstract class RootAdapter<T, VH extends RecyclerView.ViewHolder>
         return mObjects.size();
     }
 
-    public T getItem(int position) {
+    public T getItem(final int position) {
         return mObjects.get(position);
     }
 
-    public T getItemFromAdapterPosition(int position) {
+    public T getItemFromAdapterPosition(final int position) {
         return mObjects.get(position - (mHeaderView != null ? 1 : 0));
     }
 
@@ -173,12 +173,12 @@ public abstract class RootAdapter<T, VH extends RecyclerView.ViewHolder>
      *
      * @param object the object
      */
-    public void add(T object) {
+    public void add(final T object) {
         mUnfilteredObjects.add(object);
         mObjects.add(object);
     }
 
-    public void addAll(Collection<T> objects) {
+    public void addAll(final Collection<T> objects) {
         if (objects != null) {
             mUnfilteredObjects.addAll(objects);
             mObjects.addAll(objects);
@@ -186,7 +186,7 @@ public abstract class RootAdapter<T, VH extends RecyclerView.ViewHolder>
         }
     }
 
-    public void remove(T object) {
+    public void remove(final T object) {
         mUnfilteredObjects.remove(object);
         mObjects.remove(object);
         notifyDataSetChanged();
@@ -198,13 +198,13 @@ public abstract class RootAdapter<T, VH extends RecyclerView.ViewHolder>
         notifyDataSetChanged();
     }
 
-    public void highlight(int position) {
+    public void highlight(final int position) {
         mHighlightPosition = position;
         notifyDataSetChanged();
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
         mHolderCreated = true;
         switch (viewType) {
         case VIEW_TYPE_HEADER:
@@ -225,7 +225,7 @@ public abstract class RootAdapter<T, VH extends RecyclerView.ViewHolder>
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof FooterViewHolder) {
             if (mFooterListener != null) {
                 mFooterListener.onScrolledToFooter();
@@ -249,7 +249,7 @@ public abstract class RootAdapter<T, VH extends RecyclerView.ViewHolder>
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
         VH holder = (VH) view.getTag();
         int position = holder.getAdapterPosition();
         if (position != RecyclerView.NO_POSITION) {
@@ -260,10 +260,10 @@ public abstract class RootAdapter<T, VH extends RecyclerView.ViewHolder>
     protected abstract VH onCreateViewHolder(LayoutInflater inflater, ViewGroup parent,
             int viewType);
     protected abstract void onBindViewHolder(VH holder, T item);
-    protected boolean isFiltered(CharSequence filter, T object) {
+    protected boolean isFiltered(final CharSequence filter, final T object) {
         return true;
     }
-    protected int getItemViewType(T item) {
+    protected int getItemViewType(final T item) {
         return VIEW_TYPE_ITEM;
     }
 
@@ -277,12 +277,12 @@ public abstract class RootAdapter<T, VH extends RecyclerView.ViewHolder>
     }
 
     private static class HeaderViewHolder extends RecyclerView.ViewHolder {
-        public HeaderViewHolder(View v) {
+        public HeaderViewHolder(final View v) {
             super(v);
         }
     }
     private static class FooterViewHolder extends RecyclerView.ViewHolder {
-        public FooterViewHolder(View v) {
+        public FooterViewHolder(final View v) {
             super(v);
         }
     }

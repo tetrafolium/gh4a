@@ -38,7 +38,7 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class NotificationListFragment extends LoadingListFragmentBase implements
-    RootAdapter.OnItemClickListener<NotificationHolder>,NotificationAdapter.OnNotificationActionCallback {
+    RootAdapter.OnItemClickListener<NotificationHolder>, NotificationAdapter.OnNotificationActionCallback {
     public static final String EXTRA_INITIAL_REPO_OWNER = "initial_notification_repo_owner";
     public static final String EXTRA_INITIAL_REPO_NAME = "initial_notification_repo_name";
 
@@ -60,7 +60,7 @@ public class NotificationListFragment extends LoadingListFragmentBase implements
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(final Context context) {
         super.onAttach(context);
 
         if (!(context instanceof ParentCallback)) {
@@ -71,13 +71,13 @@ public class NotificationListFragment extends LoadingListFragmentBase implements
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setContentShown(false);
         loadNotifications(false);
@@ -100,7 +100,7 @@ public class NotificationListFragment extends LoadingListFragmentBase implements
     }
 
     @Override
-    protected void onRecyclerViewInflated(RecyclerView view, LayoutInflater inflater) {
+    protected void onRecyclerViewInflated(final RecyclerView view, final LayoutInflater inflater) {
         super.onRecyclerViewInflated(view, inflater);
         mAdapter = new NotificationAdapter(getActivity(), this);
         mAdapter.setOnItemClickListener(this);
@@ -119,7 +119,7 @@ public class NotificationListFragment extends LoadingListFragmentBase implements
     }
 
     @Override
-    public void onItemClick(NotificationHolder item) {
+    public void onItemClick(final NotificationHolder item) {
         final Intent intent;
 
         if (item.notification == null) {
@@ -144,7 +144,7 @@ public class NotificationListFragment extends LoadingListFragmentBase implements
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         inflater.inflate(R.menu.notification_list_menu, menu);
         mMarkAllAsReadMenuItem = menu.findItem(R.id.mark_all_as_read);
         updateMenuItemVisibility();
@@ -153,7 +153,7 @@ public class NotificationListFragment extends LoadingListFragmentBase implements
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         int itemId = item.getItemId();
         switch (itemId) {
         case R.id.mark_all_as_read:
@@ -186,7 +186,7 @@ public class NotificationListFragment extends LoadingListFragmentBase implements
     }
 
     @Override
-    public void markAsRead(NotificationHolder notificationHolder) {
+    public void markAsRead(final NotificationHolder notificationHolder) {
         if (notificationHolder.notification == null) {
             final Repository repository = notificationHolder.repository;
 
@@ -205,7 +205,7 @@ public class NotificationListFragment extends LoadingListFragmentBase implements
     }
 
     @Override
-    public void unsubscribe(NotificationHolder notificationHolder) {
+    public void unsubscribe(final NotificationHolder notificationHolder) {
         NotificationThread notification = notificationHolder.notification;
         NotificationService service = ServiceFactory.get(NotificationService.class, false);
         SubscriptionRequest request = SubscriptionRequest.builder()
@@ -225,7 +225,7 @@ public class NotificationListFragment extends LoadingListFragmentBase implements
         mMarkAllAsReadMenuItem.setVisible(isContentShown() && mAdapter.hasUnreadNotifications());
     }
 
-    private void scrollToInitialNotification(List<NotificationHolder> notifications) {
+    private void scrollToInitialNotification(final List<NotificationHolder> notifications) {
         Bundle extras = getActivity().getIntent().getExtras();
         if (extras == null) {
             return;
@@ -253,7 +253,7 @@ public class NotificationListFragment extends LoadingListFragmentBase implements
         }
     }
 
-    private void markAsRead(Repository repository, NotificationThread notification) {
+    private void markAsRead(final Repository repository, final NotificationThread notification) {
         NotificationService service = ServiceFactory.get(NotificationService.class, false);
         final Single<Response<Void>> responseSingle;
         if (notification != null) {
@@ -277,7 +277,7 @@ public class NotificationListFragment extends LoadingListFragmentBase implements
                    error -> handleActionFailure("Mark notifications as read failed", error));
     }
 
-    private void handleMarkAsRead(Repository repository, NotificationThread notification) {
+    private void handleMarkAsRead(final Repository repository, final NotificationThread notification) {
         if (mAdapter.markAsRead(repository, notification)) {
             if (!mAll && !mParticipating) {
                 mCallback.setNotificationsIndicatorVisible(false);
@@ -286,7 +286,7 @@ public class NotificationListFragment extends LoadingListFragmentBase implements
         updateMenuItemVisibility();
     }
 
-    private void loadNotifications(boolean force) {
+    private void loadNotifications(final boolean force) {
         SingleFactory.getNotifications(mAll, mParticipating, force)
         .compose(makeLoaderSingle(ID_LOADER_NOTIFICATIONS, force))
         .subscribe(result -> {

@@ -21,8 +21,8 @@ public abstract class DiffLoadTask<C extends PositionalCommentBase> extends UrlL
     protected final String mRepoName;
     protected final DiffHighlightId mDiffId;
 
-    public DiffLoadTask(FragmentActivity activity, String repoOwner, String repoName,
-                        DiffHighlightId diffId) {
+    public DiffLoadTask(final FragmentActivity activity, final String repoOwner, final String repoName,
+                        final DiffHighlightId diffId) {
         super(activity);
         mRepoOwner = repoOwner;
         mRepoName = repoName;

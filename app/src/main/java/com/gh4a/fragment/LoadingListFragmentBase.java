@@ -35,7 +35,7 @@ public abstract class LoadingListFragmentBase extends LoadingFragmentBase implem
     }
 
     @Override
-    protected View onCreateContentView(LayoutInflater inflater, ViewGroup parent) {
+    protected View onCreateContentView(final LayoutInflater inflater, final ViewGroup parent) {
         View view = inflater.inflate(R.layout.list_fragment_content, parent, false);
 
         mEmptyViewContainer = view.findViewById(R.id.empty_view_container);
@@ -79,7 +79,7 @@ public abstract class LoadingListFragmentBase extends LoadingFragmentBase implem
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (getActivity() instanceof OnRecyclerViewCreatedListener) {
             ((OnRecyclerViewCreatedListener) getActivity()).onRecyclerViewCreated(this, mRecyclerView);
@@ -109,7 +109,7 @@ public abstract class LoadingListFragmentBase extends LoadingFragmentBase implem
         mEmptyViewContainer.setVisibility(empty ? View.VISIBLE : View.GONE);
     }
 
-    protected void onRecyclerViewInflated(RecyclerView view, LayoutInflater inflater) {
+    protected void onRecyclerViewInflated(final RecyclerView view, final LayoutInflater inflater) {
     }
 
     protected void scrollToAndHighlightPosition(final int position) {
@@ -129,7 +129,7 @@ public abstract class LoadingListFragmentBase extends LoadingFragmentBase implem
     }
 
     @Override
-    protected void setHighlightColors(int colorAttrId, int statusBarColorAttrId) {
+    protected void setHighlightColors(final int colorAttrId, final int statusBarColorAttrId) {
         super.setHighlightColors(colorAttrId, statusBarColorAttrId);
         UiUtils.trySetListOverscrollColor(mRecyclerView, getHighlightColor());
         mFastScroller.setHandlePressedColor(getHighlightColor());

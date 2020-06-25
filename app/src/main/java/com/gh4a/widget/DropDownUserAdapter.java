@@ -35,14 +35,14 @@ public class DropDownUserAdapter extends BaseAdapter implements Filterable {
     private final LayoutInflater mInflater;
     private ArrayFilter mFilter;
 
-    public DropDownUserAdapter(Context context) {
+    public DropDownUserAdapter(final Context context) {
         mContext = context;
         mUsers = new ArrayList<>();
         mOriginalUsers = new ArrayList<>();
         mInflater = LayoutInflater.from(context);
     }
 
-    public void replace(Set<User> newUsers) {
+    public void replace(final Set<User> newUsers) {
         synchronized (mLock) {
             String ourLogin = Gh4Application.get().getAuthLogin();
             mOriginalUsers.clear();
@@ -73,17 +73,17 @@ public class DropDownUserAdapter extends BaseAdapter implements Filterable {
     }
 
     @Override
-    public User getItem(int position) {
+    public User getItem(final int position) {
         return mUsers.get(position);
     }
 
     @Override
-    public long getItemId(int position) {
+    public long getItemId(final int position) {
         return position;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, final View convertView, final ViewGroup parent) {
         final View view;
 
         if (convertView == null) {
@@ -113,7 +113,7 @@ public class DropDownUserAdapter extends BaseAdapter implements Filterable {
 
     private class ArrayFilter extends Filter {
         @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
+        protected FilterResults performFiltering(final CharSequence constraint) {
             FilterResults results = new FilterResults();
 
             if (TextUtils.isEmpty(constraint)) {
@@ -157,7 +157,7 @@ public class DropDownUserAdapter extends BaseAdapter implements Filterable {
 
         @SuppressWarnings("unchecked")
         @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
+        protected void publishResults(final CharSequence constraint, final FilterResults results) {
             if (results.values != null) {
                 mUsers = (ArrayList<User>) results.values;
             } else {
@@ -171,14 +171,14 @@ public class DropDownUserAdapter extends BaseAdapter implements Filterable {
         }
 
         @Override
-        public CharSequence convertResultToString(Object resultValue) {
+        public CharSequence convertResultToString(final Object resultValue) {
             final User user = (User) resultValue;
             return StringUtils.formatMention(mContext, user);
         }
     }
 
     private static class ViewHolder {
-        private ViewHolder(View view) {
+        private ViewHolder(final View view) {
             ivUser = view.findViewById(R.id.iv_user);
             tvUser = view.findViewById(R.id.tv_user);
         }

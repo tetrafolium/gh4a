@@ -69,7 +69,7 @@ public class TimelineItemAdapter
         }
 
         @Override
-        public void quoteText(CharSequence text) {
+        public void quoteText(final CharSequence text) {
             mActionCallback.quoteText(text);
         }
     };
@@ -81,17 +81,17 @@ public class TimelineItemAdapter
         }
 
         @Override
-        public void quoteText(CharSequence text) {
+        public void quoteText(final CharSequence text) {
             mActionCallback.quoteText(text);
         }
 
         @Override
-        public void addText(CharSequence text) {
+        public void addText(final CharSequence text) {
             mActionCallback.addText(text);
         }
 
         @Override
-        public boolean onMenItemClick(TimelineItem.TimelineComment comment, MenuItem menuItem) {
+        public boolean onMenItemClick(final TimelineItem.TimelineComment comment, final MenuItem menuItem) {
             switch (menuItem.getItemId()) {
             case R.id.edit:
                 mActionCallback.editComment(comment.comment());
@@ -118,13 +118,13 @@ public class TimelineItemAdapter
         }
 
         @Override
-        public Single<List<Reaction>> loadReactionDetails(TimelineItem.TimelineComment item,
-                boolean bypassCache) {
+        public Single<List<Reaction>> loadReactionDetails(final TimelineItem.TimelineComment item,
+                final boolean bypassCache) {
             return mActionCallback.loadReactionDetails(item.comment(), bypassCache);
         }
 
         @Override
-        public Single<Reaction> addReaction(TimelineItem.TimelineComment item, String content) {
+        public Single<Reaction> addReaction(final TimelineItem.TimelineComment item, final String content) {
             return mActionCallback.addReaction(item.comment(), content);
         }
     };
@@ -136,14 +136,14 @@ public class TimelineItemAdapter
         }
 
         @Override
-        public void reply(long replyToId) {
+        public void reply(final long replyToId) {
             mActionCallback.onReplyCommentSelected(replyToId);
             notifyDataSetChanged();
         }
     };
 
-    public TimelineItemAdapter(Context context, String repoOwner, String repoName, int issueNumber,
-                               boolean isPullRequest, boolean displayReviewDetails, OnCommentAction callback) {
+    public TimelineItemAdapter(final Context context, final String repoOwner, final String repoName, final int issueNumber,
+                               final boolean isPullRequest, final boolean displayReviewDetails, final OnCommentAction callback) {
         super(context);
         mImageGetter = new HttpImageGetter(context);
         mRepoOwner = repoOwner;
@@ -154,7 +154,7 @@ public class TimelineItemAdapter
         mActionCallback = callback;
     }
 
-    public void setLocked(boolean locked) {
+    public void setLocked(final boolean locked) {
         mLocked = locked;
         notifyDataSetChanged();
     }
@@ -196,14 +196,14 @@ public class TimelineItemAdapter
     }
 
     @Override
-    public void addAll(Collection<TimelineItem> objects) {
+    public void addAll(final Collection<TimelineItem> objects) {
         mDontClearCacheOnClear = false;
         super.addAll(objects);
     }
 
     @Override
-    public TimelineItemViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent,
-            int viewType) {
+    public TimelineItemViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent,
+            final int viewType) {
         View view;
         TimelineItemViewHolder holder;
         switch (viewType) {
@@ -236,7 +236,7 @@ public class TimelineItemAdapter
     }
 
     @Override
-    protected int getItemViewType(TimelineItem item) {
+    protected int getItemViewType(final TimelineItem item) {
         if (item instanceof TimelineItem.TimelineComment) {
             return VIEW_TYPE_COMMENT;
         }
@@ -256,7 +256,7 @@ public class TimelineItemAdapter
     }
 
     @Override
-    public void onBindViewHolder(TimelineItemViewHolder holder, TimelineItem item) {
+    public void onBindViewHolder(final TimelineItemViewHolder holder, final TimelineItem item) {
         switch (getItemViewType(item)) {
         case VIEW_TYPE_COMMENT:
         case VIEW_TYPE_EVENT:
@@ -271,12 +271,12 @@ public class TimelineItemAdapter
     }
 
     @Override
-    public void onReactionsUpdated(ReactionBar.Item item, Reactions reactions) {
+    public void onReactionsUpdated(final ReactionBar.Item item, final Reactions reactions) {
         CommentViewHolder holder = (CommentViewHolder) item;
         holder.updateReactions(reactions);
     }
 
-    private boolean shouldFadeReplyGroup(TimelineItem item) {
+    private boolean shouldFadeReplyGroup(final TimelineItem item) {
         long replyCommentId = mActionCallback.getSelectedReplyCommentId();
         if (replyCommentId == 0) {
             return false;
@@ -299,7 +299,7 @@ public class TimelineItemAdapter
 
         protected final Context mContext;
 
-        public TimelineItemViewHolder(View itemView) {
+        public TimelineItemViewHolder(final View itemView) {
             super(itemView);
 
             mContext = itemView.getContext();

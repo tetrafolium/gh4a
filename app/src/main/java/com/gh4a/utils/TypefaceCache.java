@@ -43,7 +43,7 @@ public class TypefaceCache {
 
     private static final SparseArray<Typeface> sTypefaces = new SparseArray<>();
 
-    public static Typeface getTypeface(int typeface, int style) {
+    public static Typeface getTypeface(final int typeface, final int style) {
         switch (style) {
         case Typeface.BOLD:
             switch (typeface) {
@@ -66,7 +66,7 @@ public class TypefaceCache {
         return getTypeface(typeface);
     }
 
-    public static Typeface getTypeface(int typeface) {
+    public static Typeface getTypeface(final int typeface) {
         if (typeface < TF_REGULAR || typeface > TF_BOLDCONDENSED) {
             return null;
         }

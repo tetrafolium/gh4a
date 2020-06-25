@@ -11,7 +11,7 @@ import android.view.View;
 public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     private final Drawable mDivider;
 
-    public DividerItemDecoration(Context context) {
+    public DividerItemDecoration(final Context context) {
         final TypedArray a = context.obtainStyledAttributes(null, new int[] {
                                  android.R.attr.listDivider
                              });
@@ -20,7 +20,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void getItemOffsets (Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+    public void getItemOffsets(final Rect outRect, final View view, final RecyclerView parent, final RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
         if (mDivider == null) return;
         if (parent.getChildAdapterPosition(view) < 1) return;
@@ -29,7 +29,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+    public void onDraw(final Canvas c, final RecyclerView parent, final RecyclerView.State state) {
         if (mDivider == null) {
             return;
         }

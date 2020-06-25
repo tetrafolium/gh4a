@@ -82,7 +82,7 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
     private final BottomSheetBehavior.BottomSheetCallback mBehaviorCallback =
     new BottomSheetBehavior.BottomSheetCallback() {
         @Override
-        public void onStateChanged(@NonNull View bottomSheet, int newState) {
+        public void onStateChanged(final @NonNull View bottomSheet, final int newState) {
             if (isInAdvancedMode()
                     && mIsCollapsible
                     && newState == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -91,26 +91,26 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
         }
 
         @Override
-        public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+        public void onSlide(final @NonNull View bottomSheet, final float slideOffset) {
         }
     };
 
-    public EditorBottomSheet(Context context) {
+    public EditorBottomSheet(final Context context) {
         super(context);
         initialize(null);
     }
 
-    public EditorBottomSheet(Context context, AttributeSet attrs) {
+    public EditorBottomSheet(final Context context, final AttributeSet attrs) {
         super(context, attrs);
         initialize(attrs);
     }
 
-    public EditorBottomSheet(Context context, AttributeSet attrs, int defStyleAttr) {
+    public EditorBottomSheet(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initialize(attrs);
     }
 
-    private void initialize(AttributeSet attrs) {
+    private void initialize(final AttributeSet attrs) {
         final Resources res = getResources();
         mBasicPeekHeight = res.getDimensionPixelSize(R.dimen.comment_editor_peek_height);
         mAdvancedPeekHeight = res.getDimensionPixelSize(R.dimen.comment_advanced_editor_peek_height);
@@ -155,17 +155,17 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
         });
     }
 
-    public void addHeaderView(View view) {
+    public void addHeaderView(final View view) {
         mContainer.addView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                            ViewGroup.LayoutParams.WRAP_CONTENT));
         mContainer.setVisibility(View.VISIBLE);
     }
 
-    public void setListener(Listener listener) {
+    public void setListener(final Listener listener) {
         mListener = listener;
     }
 
-    public void setCallback(Callback callback) {
+    public void setCallback(final Callback callback) {
         mCallback = callback;
         updateHint();
     }
@@ -180,7 +180,7 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
         }
     }
 
-    public void setLocked(boolean locked, @StringRes int lockedHintResId) {
+    public void setLocked(final boolean locked, final @StringRes int lockedHintResId) {
         mBasicEditor.setLocked(locked, lockedHintResId);
         if (mAdvancedEditor != null) {
             mAdvancedEditor.setLocked(locked, lockedHintResId);
@@ -189,28 +189,28 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
         setAdvancedMode(false);
     }
 
-    public void setMentionUsers(Set<User> users) {
+    public void setMentionUsers(final Set<User> users) {
         mBasicEditor.setMentionUsers(users);
         if (mAdvancedEditor != null) {
             mAdvancedEditor.setMentionUsers(users);
         }
     }
 
-    public void setHighlightColor(@AttrRes int colorAttrId) {
+    public void setHighlightColor(final @AttrRes int colorAttrId) {
         mHighlightColor = UiUtils.resolveColor(getContext(), colorAttrId);
         if (mMarkdownButtons != null) {
             mMarkdownButtons.setButtonsBackgroundColor(mHighlightColor);
         }
     }
 
-    public void addQuote(CharSequence text) {
+    public void addQuote(final CharSequence text) {
         if (isInAdvancedMode()) {
             mAdvancedEditor.addQuote(text);
         }
         mBasicEditor.addQuote(text);
     }
 
-    public void addText(CharSequence text) {
+    public void addText(final CharSequence text) {
         if (isInAdvancedMode()) {
             mAdvancedEditor.addText(text);
         }
@@ -218,7 +218,7 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
     }
 
     @Override
-    public boolean onTouch(View view, MotionEvent event) {
+    public boolean onTouch(final View view, final MotionEvent event) {
         int action = event.getActionMasked();
         if (action != MotionEvent.ACTION_DOWN && action != MotionEvent.ACTION_UP) {
             return false;
@@ -236,7 +236,7 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         switch (v.getId()) {
         case R.id.iv_advanced_editor_toggle:
             setAdvancedMode(!isInAdvancedMode());
@@ -249,14 +249,14 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
     }
 
     @Override
-    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+    public void onOffsetChanged(final AppBarLayout appBarLayout, final int verticalOffset) {
         mLatestOffset = appBarLayout.getTotalScrollRange() + verticalOffset;
         if (mLatestOffset >= 0) {
             updatePeekHeight(isInAdvancedMode());
         }
     }
 
-    public void setResizingView(View view) {
+    public void setResizingView(final View view) {
         mResizingView = view;
     }
 
@@ -265,12 +265,12 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
                && getBehavior().getPeekHeight() != getHeight();
     }
 
-    public void resetPeekHeight(int totalScrollRange) {
+    public void resetPeekHeight(final int totalScrollRange) {
         mLatestOffset = totalScrollRange;
         updatePeekHeight(isInAdvancedMode());
     }
 
-    private void updatePeekHeight(boolean isInAdvancedMode) {
+    private void updatePeekHeight(final boolean isInAdvancedMode) {
         // Set the bottom padding to make the bottom appear as not moving while the
         // AppBarLayout pushes it down or up.
         setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(), mLatestOffset);
@@ -318,7 +318,7 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
                && mAdvancedEditorContainer.getVisibility() == View.VISIBLE;
     }
 
-    public void setCommentText(CharSequence text, boolean clearFocus) {
+    public void setCommentText(final CharSequence text, final boolean clearFocus) {
         if (isInAdvancedMode()) {
             mAdvancedEditor.setText(text);
             if (clearFocus) {
@@ -339,7 +339,7 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
         return mBasicEditor.getText();
     }
 
-    private void setAdvancedEditorVisible(boolean visible) {
+    private void setAdvancedEditorVisible(final boolean visible) {
         mAdvancedEditorContainer.setVisibility(visible ? View.VISIBLE : View.GONE);
         mBasicEditorScrollView.setVisibility(visible ? View.GONE : View.VISIBLE);
         mTabs.setVisibility(visible ? View.VISIBLE : View.GONE);
@@ -413,7 +413,7 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
         return mBehavior;
     }
 
-    private void send(String comment) {
+    private void send(final String comment) {
         FragmentActivity activity = mCallback.getActivity();
         CoordinatorLayout rootLayout = mCallback.getRootLayout();
 
@@ -434,12 +434,12 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
 
         private final Context mContext;
 
-        public AdvancedEditorPagerAdapter(Context context) {
+        public AdvancedEditorPagerAdapter(final Context context) {
             mContext = context;
         }
 
         @Override
-        public Object instantiateItem(ViewGroup container, int position) {
+        public Object instantiateItem(final ViewGroup container, final int position) {
             @IdRes
             int resId = 0;
             switch (position) {
@@ -454,12 +454,12 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
         }
 
         @Override
-        public boolean isViewFromObject(View view, Object object) {
+        public boolean isViewFromObject(final View view, final Object object) {
             return view == object;
         }
 
         @Override
-        public CharSequence getPageTitle(int position) {
+        public CharSequence getPageTitle(final int position) {
             return mContext.getString(TITLES[position]);
         }
 
@@ -480,7 +480,7 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
     }
 
     @Override
-    protected void onRestoreInstanceState(Parcelable state) {
+    protected void onRestoreInstanceState(final Parcelable state) {
         if (!(state instanceof SavedState)) {
             super.onRestoreInstanceState(state);
             return;
@@ -495,17 +495,17 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
     private static class SavedState extends BaseSavedState {
         boolean isInAdvancedMode;
 
-        public SavedState(Parcel source) {
+        public SavedState(final Parcel source) {
             super(source);
             isInAdvancedMode = source.readByte() == 1;
         }
 
-        public SavedState(Parcelable superState) {
+        public SavedState(final Parcelable superState) {
             super(superState);
         }
 
         @Override
-        public void writeToParcel(Parcel out, int flags) {
+        public void writeToParcel(final Parcel out, final int flags) {
             super.writeToParcel(out, flags);
             out.writeByte((byte) (isInAdvancedMode ? 1 : 0));
         }
@@ -513,12 +513,12 @@ public class EditorBottomSheet extends FrameLayout implements View.OnClickListen
         public static final Parcelable.Creator<SavedState> CREATOR =
         new Parcelable.Creator<SavedState>() {
             @Override
-            public SavedState createFromParcel(Parcel source) {
+            public SavedState createFromParcel(final Parcel source) {
                 return new SavedState(source);
             }
 
             @Override
-            public SavedState[] newArray(int size) {
+            public SavedState[] newArray(final int size) {
                 return new SavedState[size];
             }
         };

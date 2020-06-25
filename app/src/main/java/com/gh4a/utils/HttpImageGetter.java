@@ -68,12 +68,12 @@ public class HttpImageGetter {
         private final List<WeakReference<TextView>> mViewRefs;
         private final Handler mHandler = new Handler();
 
-        public GifCallback(List<WeakReference<TextView>> viewRefs) {
+        public GifCallback(final List<WeakReference<TextView>> viewRefs) {
             mViewRefs = viewRefs;
         }
 
         @Override
-        public void invalidateDrawable(@NonNull Drawable drawable) {
+        public void invalidateDrawable(final @NonNull Drawable drawable) {
             for (WeakReference<TextView> ref : mViewRefs) {
                 TextView view = ref.get();
                 if (view != null) {
@@ -87,13 +87,13 @@ public class HttpImageGetter {
         }
 
         @Override
-        public void scheduleDrawable(@NonNull Drawable drawable,
-                                     @NonNull Runnable runnable, long when) {
+        public void scheduleDrawable(final @NonNull Drawable drawable,
+                                     final @NonNull Runnable runnable, final long when) {
             mHandler.postAtTime(runnable, when);
         }
 
         @Override
-        public void unscheduleDrawable(@NonNull Drawable drawable, @NonNull Runnable runnable) {
+        public void unscheduleDrawable(final @NonNull Drawable drawable, final @NonNull Runnable runnable) {
             mHandler.removeCallbacks(runnable);
         }
     }
@@ -102,7 +102,7 @@ public class HttpImageGetter {
         final WeakReference<GifDrawable> mDrawable;
         final GifCallback mCallback;
 
-        public GifInfo(GifDrawable d, List<WeakReference<TextView>> viewRefs) {
+        public GifInfo(final GifDrawable d, final List<WeakReference<TextView>> viewRefs) {
             mCallback = new GifCallback(viewRefs);
             mDrawable = new WeakReference<>(d);
             d.setCallback(mCallback);
@@ -119,7 +119,7 @@ public class HttpImageGetter {
 
     // interface just used for tracking purposes
     private static class LoadedBitmapDrawable extends BitmapDrawable {
-        public LoadedBitmapDrawable(Resources res, Bitmap bitmap) {
+        public LoadedBitmapDrawable(final Resources res, final Bitmap bitmap) {
             super(res, bitmap);
         }
     }
@@ -129,7 +129,7 @@ public class HttpImageGetter {
         private final ObjectInfo mInfo;
         private Drawable mLoadedImage;
 
-        public PlaceholderDrawable(String url, ObjectInfo info, Drawable placeholder) {
+        public PlaceholderDrawable(final String url, final ObjectInfo info, final Drawable placeholder) {
             super(placeholder);
             setBounds(0, 0, placeholder.getIntrinsicWidth(), placeholder.getIntrinsicHeight());
             mUrl = url;
@@ -140,7 +140,7 @@ public class HttpImageGetter {
             return mUrl;
         }
 
-        public void addLoadedImage(Drawable image, Handler handler) {
+        public void addLoadedImage(final Drawable image, final Handler handler) {
             synchronized (this) {
                 mLoadedImage = image;
                 handler.post(this);
@@ -165,7 +165,7 @@ public class HttpImageGetter {
         private boolean mHasStartedImageLoad;
         private boolean mResumed = true;
 
-        void bind(TextView view, String html) {
+        void bind(final TextView view, final String html) {
             addView(view);
 
             if (mHtml == null) {
@@ -191,11 +191,11 @@ public class HttpImageGetter {
                 mHasStartedImageLoad = true;
             }
         }
-        void unbind(TextView view) {
+        void unbind(final TextView view) {
             removeView(view);
         }
 
-        void encode(Context context, String html) {
+        void encode(final Context context, final String html) {
             CharSequence encoded = HtmlUtils.encode(context, html, this);
             synchronized (this) {
                 mHtml = encoded;
@@ -233,7 +233,7 @@ public class HttpImageGetter {
             }
         }
 
-        void setResumed(boolean resumed) {
+        void setResumed(final boolean resumed) {
             mResumed = resumed;
             for (GifInfo info : mGifs) {
                 GifDrawable drawable = info.mDrawable.get();
@@ -281,7 +281,7 @@ public class HttpImageGetter {
             mHasStartedImageLoad = false;
         }
 
-        private void apply(CharSequence text) {
+        private void apply(final CharSequence text) {
             int visibility = TextUtils.isEmpty(text) ? View.GONE : View.VISIBLE;
             for (int i = 0; i < mViewRefs.size(); i++) {
                 TextView view = mViewRefs.get(i).get();
@@ -292,7 +292,7 @@ public class HttpImageGetter {
             }
         }
 
-        private void addView(TextView view) {
+        private void addView(final TextView view) {
             boolean alreadyPresent = false;
             for (int i = 0; i < mViewRefs.size(); i++) {
                 TextView existing = mViewRefs.get(i).get();
@@ -307,7 +307,7 @@ public class HttpImageGetter {
             }
         }
 
-        private void removeView(TextView view) {
+        private void removeView(final TextView view) {
             for (int i = 0; i < mViewRefs.size(); i++) {
                 TextView existing = mViewRefs.get(i).get();
                 if (existing == null || existing == view) {
@@ -317,7 +317,7 @@ public class HttpImageGetter {
         }
 
         @Override
-        public Drawable getDrawable(String source) {
+        public Drawable getDrawable(final String source) {
             return new PlaceholderDrawable(source, this, mLoadingDrawable);
         }
     }
@@ -337,7 +337,7 @@ public class HttpImageGetter {
 
     private boolean mDestroyed;
 
-    public HttpImageGetter(Context context) {
+    public HttpImageGetter(final Context context) {
         mContext = context;
         mCacheDir = context.getCacheDir();
         mClient = ServiceFactory.getImageHttpClient();
@@ -401,7 +401,7 @@ public class HttpImageGetter {
         }
     }
 
-    private ObjectInfo findOrCreateInfo(Object id) {
+    private ObjectInfo findOrCreateInfo(final Object id) {
         ObjectInfo info = mObjectInfos.get(id);
         if (info == null) {
             info = new ObjectInfo();
@@ -414,13 +414,13 @@ public class HttpImageGetter {
         private final HttpImageGetter mImageGetter;
         private final ObjectInfo mInfo;
 
-        public ImageGetterAsyncTask(HttpImageGetter getter, ObjectInfo info) {
+        public ImageGetterAsyncTask(final HttpImageGetter getter, final ObjectInfo info) {
             mImageGetter = getter;
             mInfo = info;
         }
 
         @Override
-        protected Void doInBackground(PlaceholderDrawable... params) {
+        protected Void doInBackground(final PlaceholderDrawable... params) {
             for (PlaceholderDrawable placeholder : params) {
                 Drawable drawable = mImageGetter.loadImageForUrl(placeholder.getUrl());
                 if (drawable != null) {
@@ -431,14 +431,14 @@ public class HttpImageGetter {
         }
 
         @Override
-        protected void onPostExecute(Void result) {
+        protected void onPostExecute(final Void result) {
             if (!isCancelled()) {
                 mInfo.onImageLoadDone();
             }
         }
     }
 
-    private Drawable loadImageForUrl(String source) {
+    private Drawable loadImageForUrl(final String source) {
         HttpUrl url = source != null ? HttpUrl.parse(source) : null;
         Bitmap bitmap = null;
 
@@ -523,7 +523,7 @@ public class HttpImageGetter {
         }
     }
 
-    private static Bitmap getBitmap(final File image, int width, int height) {
+    private static Bitmap getBitmap(final File image, final int width, final int height) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         RandomAccessFile file = null;
 
@@ -559,8 +559,8 @@ public class HttpImageGetter {
         }
     }
 
-    private static Bitmap renderSvgToBitmap(Resources res, InputStream is,
-                                            int maxWidth, int maxHeight) {
+    private static Bitmap renderSvgToBitmap(final Resources res, final InputStream is,
+                                            final int maxWidth, final int maxHeight) {
         //noinspection TryWithIdenticalCatches
         try {
             SVG svg = SVG.getFromInputStream(is);
