@@ -34,80 +34,80 @@ import com.gh4a.utils.AvatarHandler;
 import java.util.Date;
 
 public class CommonFeedAdapter extends RootAdapter<Feed, CommonFeedAdapter.ViewHolder> {
-    private final boolean mShowExtra;
+private final boolean mShowExtra;
 
-    public CommonFeedAdapter(final Context context, final boolean showExtra) {
-        super(context);
-        mShowExtra = showExtra;
-    }
+public CommonFeedAdapter(final Context context, final boolean showExtra) {
+	super(context);
+	mShowExtra = showExtra;
+}
 
-    @Override
-    public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
-        View v = inflater.inflate(R.layout.row_feed, parent, false);
-        ViewHolder holder = new ViewHolder(v);
-        holder.ivGravatar.setOnClickListener(this);
-        return holder;
-    }
+@Override
+public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
+	View v = inflater.inflate(R.layout.row_feed, parent, false);
+	ViewHolder holder = new ViewHolder(v);
+	holder.ivGravatar.setOnClickListener(this);
+	return holder;
+}
 
-    @Override
-    public void onBindViewHolder(final ViewHolder holder, final Feed feed) {
-        String title = feed.getTitle();
-        holder.tvTitle.setText(title);
-        holder.tvTitle.setVisibility(title != null ? View.VISIBLE : View.GONE);
+@Override
+public void onBindViewHolder(final ViewHolder holder, final Feed feed) {
+	String title = feed.getTitle();
+	holder.tvTitle.setText(title);
+	holder.tvTitle.setVisibility(title != null ? View.VISIBLE : View.GONE);
 
-        holder.tvDesc.setText(feed.getPreview());
-        holder.tvDesc.setGravity(mShowExtra ? Gravity.TOP : Gravity.CENTER_VERTICAL);
+	holder.tvDesc.setText(feed.getPreview());
+	holder.tvDesc.setGravity(mShowExtra ? Gravity.TOP : Gravity.CENTER_VERTICAL);
 
-        if (mShowExtra && feed.getUserId() > 0) {
-            AvatarHandler.assignAvatar(holder.ivGravatar,
-                                       feed.getAuthor(), feed.getUserId(), feed.getAvatarUrl());
-            holder.ivGravatar.setTag(feed);
-            holder.ivGravatar.setVisibility(View.VISIBLE);
-        } else {
-            holder.ivGravatar.setVisibility(View.GONE);
-        }
+	if (mShowExtra && feed.getUserId() > 0) {
+		AvatarHandler.assignAvatar(holder.ivGravatar,
+		                           feed.getAuthor(), feed.getUserId(), feed.getAvatarUrl());
+		holder.ivGravatar.setTag(feed);
+		holder.ivGravatar.setVisibility(View.VISIBLE);
+	} else {
+		holder.ivGravatar.setVisibility(View.GONE);
+	}
 
-        if (mShowExtra) {
-            Date date = feed.getPublished() != null ? feed.getPublished() : feed.getUpdated();
-            String published = date != null
-                               ? DateFormat.getMediumDateFormat(mContext).format(date) : "";
-            holder.tvExtra.setText(feed.getAuthor());
-            holder.tvTimestamp.setText(published);
-            holder.tvExtra.setVisibility(feed.getAuthor() != null ? View.VISIBLE : View.GONE);
-            holder.tvTimestamp.setVisibility(View.VISIBLE);
-        } else {
-            holder.tvExtra.setVisibility(View.GONE);
-            holder.tvTimestamp.setVisibility(View.GONE);
-        }
-    }
+	if (mShowExtra) {
+		Date date = feed.getPublished() != null ? feed.getPublished() : feed.getUpdated();
+		String published = date != null
+		               ? DateFormat.getMediumDateFormat(mContext).format(date) : "";
+		holder.tvExtra.setText(feed.getAuthor());
+		holder.tvTimestamp.setText(published);
+		holder.tvExtra.setVisibility(feed.getAuthor() != null ? View.VISIBLE : View.GONE);
+		holder.tvTimestamp.setVisibility(View.VISIBLE);
+	} else {
+		holder.tvExtra.setVisibility(View.GONE);
+		holder.tvTimestamp.setVisibility(View.GONE);
+	}
+}
 
-    @Override
-    public void onClick(final View v) {
-        if (v.getId() == R.id.iv_gravatar) {
-            Feed feed = (Feed) v.getTag();
-            Intent intent = UserActivity.makeIntent(mContext, feed.getAuthor());
-            if (intent != null) {
-                mContext.startActivity(intent);
-            }
-        } else {
-            super.onClick(v);
-        }
-    }
+@Override
+public void onClick(final View v) {
+	if (v.getId() == R.id.iv_gravatar) {
+		Feed feed = (Feed) v.getTag();
+		Intent intent = UserActivity.makeIntent(mContext, feed.getAuthor());
+		if (intent != null) {
+			mContext.startActivity(intent);
+		}
+	} else {
+		super.onClick(v);
+	}
+}
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ViewHolder(final View view) {
-            super(view);
-            ivGravatar = view.findViewById(R.id.iv_gravatar);
-            tvTitle = view.findViewById(R.id.tv_title);
-            tvDesc = view.findViewById(R.id.tv_desc);
-            tvExtra = view.findViewById(R.id.tv_extra);
-            tvTimestamp = view.findViewById(R.id.tv_timestamp);
-        }
+public static class ViewHolder extends RecyclerView.ViewHolder {
+private ViewHolder(final View view) {
+	super(view);
+	ivGravatar = view.findViewById(R.id.iv_gravatar);
+	tvTitle = view.findViewById(R.id.tv_title);
+	tvDesc = view.findViewById(R.id.tv_desc);
+	tvExtra = view.findViewById(R.id.tv_extra);
+	tvTimestamp = view.findViewById(R.id.tv_timestamp);
+}
 
-        private final ImageView ivGravatar;
-        private final TextView tvTitle;
-        private final TextView tvDesc;
-        private final TextView tvExtra;
-        private final TextView tvTimestamp;
-    }
+private final ImageView ivGravatar;
+private final TextView tvTitle;
+private final TextView tvDesc;
+private final TextView tvExtra;
+private final TextView tvTimestamp;
+}
 }

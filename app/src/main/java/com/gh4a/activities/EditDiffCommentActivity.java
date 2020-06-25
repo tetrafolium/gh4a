@@ -17,57 +17,57 @@ import com.meisolsson.githubsdk.service.repositories.RepositoryCommentService;
 import io.reactivex.Single;
 
 public class EditDiffCommentActivity extends EditCommentActivity {
-    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
-                                    final String commitId, final String path, final String line, final int leftLine, final int rightLine, final int position,
-                                    final long id, final String body) {
-        Intent intent = new Intent(context, EditDiffCommentActivity.class)
-        .putExtra("commit_id", commitId)
-        .putExtra("path", path)
-        .putExtra("line", line)
-        .putExtra("left_line", leftLine)
-        .putExtra("right_line", rightLine)
-        .putExtra("position", position);
-        return EditCommentActivity.fillInIntent(intent,
-                                                repoOwner, repoName, id, 0L, body, R.attr.colorIssueOpen);
-    }
+public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
+                                final String commitId, final String path, final String line, final int leftLine, final int rightLine, final int position,
+                                final long id, final String body) {
+	Intent intent = new Intent(context, EditDiffCommentActivity.class)
+	                .putExtra("commit_id", commitId)
+	                .putExtra("path", path)
+	                .putExtra("line", line)
+	                .putExtra("left_line", leftLine)
+	                .putExtra("right_line", rightLine)
+	                .putExtra("position", position);
+	return EditCommentActivity.fillInIntent(intent,
+	                                        repoOwner, repoName, id, 0L, body, R.attr.colorIssueOpen);
+}
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
 
-        View header = getLayoutInflater().inflate(R.layout.edit_commit_comment_header, null);
-        mEditorSheet.addHeaderView(header);
+	View header = getLayoutInflater().inflate(R.layout.edit_commit_comment_header, null);
+	mEditorSheet.addHeaderView(header);
 
-        TextView line = header.findViewById(R.id.line);
-        Bundle extras = getIntent().getExtras();
-        line.setText(extras.getString("line"));
+	TextView line = header.findViewById(R.id.line);
+	Bundle extras = getIntent().getExtras();
+	line.setText(extras.getString("line"));
 
-        TextView title = header.findViewById(R.id.title);
-        title.setText(getString(R.string.commit_comment_dialog_title, extras.getInt("left_line"),
-                                extras.getInt("right_line")));
-    }
+	TextView title = header.findViewById(R.id.title);
+	title.setText(getString(R.string.commit_comment_dialog_title, extras.getInt("left_line"),
+	                        extras.getInt("right_line")));
+}
 
-    @Override
-    protected Single<GitHubCommentBase> createComment(final String repoOwner, final String repoName,
-            final String body, final long replyToCommentId) {
-        Bundle extras = getIntent().getExtras();
-        String commitId = extras.getString("commit_id");
-        RepositoryCommentService service = ServiceFactory.get(RepositoryCommentService.class, false);
-        CreateCommitComment request = CreateCommitComment.builder()
-                                      .body(body)
-                                      .path(extras.getString("path"))
-                                      .position(extras.getInt("position"))
-                                      .build();
-        return service.createCommitComment(repoOwner, repoName, commitId, request)
-               .map(ApiHelpers::throwOnFailure);
-    }
+@Override
+protected Single<GitHubCommentBase> createComment(final String repoOwner, final String repoName,
+                                                  final String body, final long replyToCommentId) {
+	Bundle extras = getIntent().getExtras();
+	String commitId = extras.getString("commit_id");
+	RepositoryCommentService service = ServiceFactory.get(RepositoryCommentService.class, false);
+	CreateCommitComment request = CreateCommitComment.builder()
+	                              .body(body)
+	                              .path(extras.getString("path"))
+	                              .position(extras.getInt("position"))
+	                              .build();
+	return service.createCommitComment(repoOwner, repoName, commitId, request)
+	       .map(ApiHelpers::throwOnFailure);
+}
 
-    @Override
-    protected Single<GitHubCommentBase> editComment(final String repoOwner, final String repoName,
-            final long commentId, final String body) {
-        RepositoryCommentService service = ServiceFactory.get(RepositoryCommentService.class, false);
-        CommentRequest request = CommentRequest.builder().body(body).build();
-        return service.editCommitComment(repoOwner, repoName, commentId, request)
-               .map(ApiHelpers::throwOnFailure);
-    }
+@Override
+protected Single<GitHubCommentBase> editComment(final String repoOwner, final String repoName,
+                                                final long commentId, final String body) {
+	RepositoryCommentService service = ServiceFactory.get(RepositoryCommentService.class, false);
+	CommentRequest request = CommentRequest.builder().body(body).build();
+	return service.editCommitComment(repoOwner, repoName, commentId, request)
+	       .map(ApiHelpers::throwOnFailure);
+}
 }

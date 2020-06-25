@@ -37,285 +37,285 @@ import java.util.HashMap;
 import java.util.Map;
 
 class ReviewViewHolder
-    extends TimelineItemAdapter.TimelineItemViewHolder<TimelineItem.TimelineReview>
-    implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
+	extends TimelineItemAdapter.TimelineItemViewHolder<TimelineItem.TimelineReview>
+	implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
 
-    private final Context mContext;
-    private final HttpImageGetter mImageGetter;
-    private final String mRepoOwner;
-    private final String mRepoName;
-    private final int mIssueNumber;
-    private final boolean mDisplayReviewDetails;
-    private final Callback mCallback;
+private final Context mContext;
+private final HttpImageGetter mImageGetter;
+private final String mRepoOwner;
+private final String mRepoName;
+private final int mIssueNumber;
+private final boolean mDisplayReviewDetails;
+private final Callback mCallback;
 
-    private final ImageView mAvatarView;
-    private final StyleableTextView mMessageView;
-    private final TextView mBodyView;
-    private final Button mShowDetailsButton;
-    private final View mAvatarContainer;
-    private final ImageView ivMenu;
-    private final PopupMenu mPopupMenu;
-    private final ViewGroup mDetailsContainer;
-    private final View mDetailsDivider;
-    private final View mDetailsHeader;
-    private final ImageView mEventIconView;
+private final ImageView mAvatarView;
+private final StyleableTextView mMessageView;
+private final TextView mBodyView;
+private final Button mShowDetailsButton;
+private final View mAvatarContainer;
+private final ImageView ivMenu;
+private final PopupMenu mPopupMenu;
+private final ViewGroup mDetailsContainer;
+private final View mDetailsDivider;
+private final View mDetailsHeader;
+private final ImageView mEventIconView;
 
-    private final UiUtils.QuoteActionModeCallback mQuoteActionModeCallback;
+private final UiUtils.QuoteActionModeCallback mQuoteActionModeCallback;
 
-    public interface Callback {
-        boolean canQuote();
+public interface Callback {
+boolean canQuote();
 
-        void quoteText(CharSequence text);
-    }
+void quoteText(CharSequence text);
+}
 
-    public ReviewViewHolder(final View itemView, final HttpImageGetter imageGetter,
-                            final String repoOwner, final String repoName, final int issueNumber,
-                            final boolean displayReviewDetails, final Callback callback) {
-        super(itemView);
+public ReviewViewHolder(final View itemView, final HttpImageGetter imageGetter,
+                        final String repoOwner, final String repoName, final int issueNumber,
+                        final boolean displayReviewDetails, final Callback callback) {
+	super(itemView);
 
-        mContext = itemView.getContext();
-        mImageGetter = imageGetter;
-        mRepoOwner = repoOwner;
-        mRepoName = repoName;
-        mIssueNumber = issueNumber;
-        mDisplayReviewDetails = displayReviewDetails;
-        mCallback = callback;
+	mContext = itemView.getContext();
+	mImageGetter = imageGetter;
+	mRepoOwner = repoOwner;
+	mRepoName = repoName;
+	mIssueNumber = issueNumber;
+	mDisplayReviewDetails = displayReviewDetails;
+	mCallback = callback;
 
-        mAvatarView = itemView.findViewById(R.id.iv_gravatar);
-        mMessageView = itemView.findViewById(R.id.tv_message);
-        mBodyView = itemView.findViewById(R.id.tv_desc);
-        mShowDetailsButton = itemView.findViewById(R.id.btn_show_details);
-        mShowDetailsButton.setOnClickListener(this);
-        mAvatarContainer = itemView.findViewById(R.id.avatar_container);
-        mAvatarContainer.setOnClickListener(this);
-        ivMenu = itemView.findViewById(R.id.iv_menu);
-        ivMenu.setOnClickListener(this);
-        mDetailsContainer = itemView.findViewById(R.id.details_container);
-        mDetailsDivider = itemView.findViewById(R.id.details_container_divider);
-        mDetailsHeader = itemView.findViewById(R.id.details_container_header);
+	mAvatarView = itemView.findViewById(R.id.iv_gravatar);
+	mMessageView = itemView.findViewById(R.id.tv_message);
+	mBodyView = itemView.findViewById(R.id.tv_desc);
+	mShowDetailsButton = itemView.findViewById(R.id.btn_show_details);
+	mShowDetailsButton.setOnClickListener(this);
+	mAvatarContainer = itemView.findViewById(R.id.avatar_container);
+	mAvatarContainer.setOnClickListener(this);
+	ivMenu = itemView.findViewById(R.id.iv_menu);
+	ivMenu.setOnClickListener(this);
+	mDetailsContainer = itemView.findViewById(R.id.details_container);
+	mDetailsDivider = itemView.findViewById(R.id.details_container_divider);
+	mDetailsHeader = itemView.findViewById(R.id.details_container_header);
 
-        mPopupMenu = new PopupMenu(mContext, ivMenu);
-        mPopupMenu.getMenuInflater().inflate(R.menu.review_menu, mPopupMenu.getMenu());
-        mPopupMenu.setOnMenuItemClickListener(this);
+	mPopupMenu = new PopupMenu(mContext, ivMenu);
+	mPopupMenu.getMenuInflater().inflate(R.menu.review_menu, mPopupMenu.getMenu());
+	mPopupMenu.setOnMenuItemClickListener(this);
 
-        mEventIconView = itemView.findViewById(R.id.iv_event_icon);
-        mQuoteActionModeCallback = new UiUtils.QuoteActionModeCallback(mBodyView) {
-            @Override
-            public void onTextQuoted(final CharSequence text) {
-                mCallback.quoteText(text);
-            }
-        };
-    }
+	mEventIconView = itemView.findViewById(R.id.iv_event_icon);
+	mQuoteActionModeCallback = new UiUtils.QuoteActionModeCallback(mBodyView) {
+		@Override
+		public void onTextQuoted(final CharSequence text) {
+			mCallback.quoteText(text);
+		}
+	};
+}
 
-    @Override
-    public void bind(final TimelineItem.TimelineReview item) {
-        Review review = item.review();
-        mShowDetailsButton.setTag(review);
+@Override
+public void bind(final TimelineItem.TimelineReview item) {
+	Review review = item.review();
+	mShowDetailsButton.setTag(review);
 
-        AvatarHandler.assignAvatar(mAvatarView, review.user());
-        mAvatarContainer.setTag(review.user());
+	AvatarHandler.assignAvatar(mAvatarView, review.user());
+	mAvatarContainer.setTag(review.user());
 
-        formatTitle(review);
+	formatTitle(review);
 
-        boolean hasBody = !TextUtils.isEmpty(review.body());
-        if (hasBody) {
-            mImageGetter.bind(mBodyView, review.bodyHtml(), review.id());
-            mBodyView.setVisibility(View.VISIBLE);
-        } else {
-            mBodyView.setVisibility(View.GONE);
-        }
+	boolean hasBody = !TextUtils.isEmpty(review.body());
+	if (hasBody) {
+		mImageGetter.bind(mBodyView, review.bodyHtml(), review.id());
+		mBodyView.setVisibility(View.VISIBLE);
+	} else {
+		mBodyView.setVisibility(View.GONE);
+	}
 
-        if (mCallback.canQuote()) {
-            mBodyView.setCustomSelectionActionModeCallback(mQuoteActionModeCallback);
-        } else {
-            mBodyView.setCustomSelectionActionModeCallback(null);
-        }
+	if (mCallback.canQuote()) {
+		mBodyView.setCustomSelectionActionModeCallback(mQuoteActionModeCallback);
+	} else {
+		mBodyView.setCustomSelectionActionModeCallback(null);
+	}
 
-        boolean hasDiffs = !item.getDiffHunks().isEmpty();
-        if (mDisplayReviewDetails && hasDiffs) {
-            LayoutInflater inflater = LayoutInflater.from(mContext);
-            Map<String, FileDetails> files = new HashMap<>();
+	boolean hasDiffs = !item.getDiffHunks().isEmpty();
+	if (mDisplayReviewDetails && hasDiffs) {
+		LayoutInflater inflater = LayoutInflater.from(mContext);
+		Map<String, FileDetails> files = new HashMap<>();
 
-            int viewIndex = 0;
-            for (TimelineItem.Diff diffHunk : item.getDiffHunks()) {
-                ReviewComment commitComment = diffHunk.getInitialComment();
-                String filename = commitComment.path();
-                int commentCount = diffHunk.comments.size();
-                boolean isOutdated = commitComment.position() == null;
+		int viewIndex = 0;
+		for (TimelineItem.Diff diffHunk : item.getDiffHunks()) {
+			ReviewComment commitComment = diffHunk.getInitialComment();
+			String filename = commitComment.path();
+			int commentCount = diffHunk.comments.size();
+			boolean isOutdated = commitComment.position() == null;
 
-                if (files.containsKey(filename)) {
-                    FileDetails details = files.get(filename);
-                    details.isOutdated = details.isOutdated && isOutdated;
-                    details.count += commentCount;
-                    continue;
-                }
+			if (files.containsKey(filename)) {
+				FileDetails details = files.get(filename);
+				details.isOutdated = details.isOutdated && isOutdated;
+				details.count += commentCount;
+				continue;
+			}
 
-                View row = mDetailsContainer.getChildAt(viewIndex);
-                if (row == null) {
-                    row = inflater.inflate(R.layout.row_timeline_review_file_details,
-                                           mDetailsContainer, false);
-                    mDetailsContainer.addView(row);
-                    row.setOnClickListener(this);
-                }
-                row.setTag(review);
-                row.setTag(R.id.review_comment_id, commitComment.id());
+			View row = mDetailsContainer.getChildAt(viewIndex);
+			if (row == null) {
+				row = inflater.inflate(R.layout.row_timeline_review_file_details,
+				                       mDetailsContainer, false);
+				mDetailsContainer.addView(row);
+				row.setOnClickListener(this);
+			}
+			row.setTag(review);
+			row.setTag(R.id.review_comment_id, commitComment.id());
 
-                files.put(filename, new FileDetails(row, isOutdated, commentCount));
+			files.put(filename, new FileDetails(row, isOutdated, commentCount));
 
-                viewIndex += 1;
-            }
+			viewIndex += 1;
+		}
 
-            for (Map.Entry<String, FileDetails> detailsEntry : files.entrySet()) {
-                FileDetails fileDetails = detailsEntry.getValue();
-                TextView tvFile = fileDetails.row.findViewById(R.id.tv_file);
-                tvFile.setText("• " + detailsEntry.getKey());
+		for (Map.Entry<String, FileDetails> detailsEntry : files.entrySet()) {
+			FileDetails fileDetails = detailsEntry.getValue();
+			TextView tvFile = fileDetails.row.findViewById(R.id.tv_file);
+			tvFile.setText("• " + detailsEntry.getKey());
 
-                if (fileDetails.isOutdated) {
-                    tvFile.setPaintFlags(tvFile.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                } else {
-                    tvFile.setPaintFlags(tvFile.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                }
+			if (fileDetails.isOutdated) {
+				tvFile.setPaintFlags(tvFile.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+			} else {
+				tvFile.setPaintFlags(tvFile.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+			}
 
-                TextView tvFileComments =
-                    fileDetails.row.findViewById(R.id.tv_file_comments);
-                tvFileComments.setText(String.valueOf(fileDetails.count));
+			TextView tvFileComments =
+				fileDetails.row.findViewById(R.id.tv_file_comments);
+			tvFileComments.setText(String.valueOf(fileDetails.count));
 
-                fileDetails.row.setVisibility(View.VISIBLE);
-            }
+			fileDetails.row.setVisibility(View.VISIBLE);
+		}
 
-            for (int i = viewIndex; i < mDetailsContainer.getChildCount(); i++) {
-                mDetailsContainer.getChildAt(i).setVisibility(View.GONE);
-            }
+		for (int i = viewIndex; i < mDetailsContainer.getChildCount(); i++) {
+			mDetailsContainer.getChildAt(i).setVisibility(View.GONE);
+		}
 
-            mDetailsContainer.setVisibility(View.VISIBLE);
-            mShowDetailsButton.setVisibility(View.VISIBLE);
-            mDetailsHeader.setVisibility(View.VISIBLE);
-        } else {
-            mDetailsContainer.setVisibility(View.GONE);
-            mShowDetailsButton.setVisibility(View.GONE);
-            mDetailsHeader.setVisibility(View.GONE);
-        }
+		mDetailsContainer.setVisibility(View.VISIBLE);
+		mShowDetailsButton.setVisibility(View.VISIBLE);
+		mDetailsHeader.setVisibility(View.VISIBLE);
+	} else {
+		mDetailsContainer.setVisibility(View.GONE);
+		mShowDetailsButton.setVisibility(View.GONE);
+		mDetailsHeader.setVisibility(View.GONE);
+	}
 
-        if (hasBody && mDisplayReviewDetails && hasDiffs) {
-            mDetailsDivider.setVisibility(View.VISIBLE);
-        } else {
-            mDetailsDivider.setVisibility(View.GONE);
-        }
+	if (hasBody && mDisplayReviewDetails && hasDiffs) {
+		mDetailsDivider.setVisibility(View.VISIBLE);
+	} else {
+		mDetailsDivider.setVisibility(View.GONE);
+	}
 
-        ivMenu.setVisibility(mDisplayReviewDetails ? View.VISIBLE : View.GONE);
-        ivMenu.setTag(review);
+	ivMenu.setVisibility(mDisplayReviewDetails ? View.VISIBLE : View.GONE);
+	ivMenu.setTag(review);
 
-        mEventIconView.setImageResource(getEventIconResId(review));
-    }
+	mEventIconView.setImageResource(getEventIconResId(review));
+}
 
-    @DrawableRes
-    private int getEventIconResId(final Review review) {
-        @AttrRes int iconResAttr = R.attr.timelineEventReviewed;
-        switch (review.state()) {
-        case Approved:
-            iconResAttr = R.attr.timelineEventApproved;
-            break;
-        case ChangesRequested:
-            iconResAttr = R.attr.timelineEventRequestedChanges;
-            break;
-        }
-        return UiUtils.resolveDrawable(mContext, iconResAttr);
-    }
+@DrawableRes
+private int getEventIconResId(final Review review) {
+	@AttrRes int iconResAttr = R.attr.timelineEventReviewed;
+	switch (review.state()) {
+	case Approved:
+		iconResAttr = R.attr.timelineEventApproved;
+		break;
+	case ChangesRequested:
+		iconResAttr = R.attr.timelineEventRequestedChanges;
+		break;
+	}
+	return UiUtils.resolveDrawable(mContext, iconResAttr);
+}
 
-    private void formatTitle(final Review review) {
-        int textResId;
-        switch (review.state()) {
-        case Approved:
-            textResId = R.string.pull_request_event_review_approved;
-            break;
-        case ChangesRequested:
-            textResId = R.string.pull_request_event_review_requested_changes;
-            break;
-        case Dismissed:
-        case Commented:
-        default:
-            textResId = R.string.pull_request_event_review_reviewed;
-            break;
-        case Pending:
-            textResId = R.string.pull_request_event_review_started_review;
-            break;
-        }
+private void formatTitle(final Review review) {
+	int textResId;
+	switch (review.state()) {
+	case Approved:
+		textResId = R.string.pull_request_event_review_approved;
+		break;
+	case ChangesRequested:
+		textResId = R.string.pull_request_event_review_requested_changes;
+		break;
+	case Dismissed:
+	case Commented:
+	default:
+		textResId = R.string.pull_request_event_review_reviewed;
+		break;
+	case Pending:
+		textResId = R.string.pull_request_event_review_started_review;
+		break;
+	}
 
-        String login = review.user().login();
-        String textBase = mContext.getString(textResId, login);
-        SpannableStringBuilder text = StringUtils.applyBoldTags(textBase,
-                                      mMessageView.getTypefaceValue());
+	String login = review.user().login();
+	String textBase = mContext.getString(textResId, login);
+	SpannableStringBuilder text = StringUtils.applyBoldTags(textBase,
+	                                                        mMessageView.getTypefaceValue());
 
-        CharSequence time = review.submittedAt() != null
-                            ? StringUtils.formatRelativeTime(mContext, review.submittedAt(), true) : "";
+	CharSequence time = review.submittedAt() != null
+	                    ? StringUtils.formatRelativeTime(mContext, review.submittedAt(), true) : "";
 
-        int pos = text.toString().indexOf("[time]");
-        if (pos >= 0) {
-            text.replace(pos, pos + 6, time);
-            if (review.submittedAt() != null) {
-                text.setSpan(new TimestampToastSpan(review.submittedAt()), pos,
-                             pos + time.length(), 0);
-            }
-        }
-        mMessageView.setText(text);
-    }
+	int pos = text.toString().indexOf("[time]");
+	if (pos >= 0) {
+		text.replace(pos, pos + 6, time);
+		if (review.submittedAt() != null) {
+			text.setSpan(new TimestampToastSpan(review.submittedAt()), pos,
+			             pos + time.length(), 0);
+		}
+	}
+	mMessageView.setText(text);
+}
 
-    @Override
-    public void onClick(final View v) {
-        switch (v.getId()) {
-        case R.id.avatar_container: {
-            User user = (User) v.getTag();
-            Intent intent = UserActivity.makeIntent(mContext, user);
-            if (intent != null) {
-                mContext.startActivity(intent);
-            }
-            break;
-        }
-        case R.id.btn_show_details: {
-            Review review = (Review) v.getTag();
-            mContext.startActivity(ReviewActivity.makeIntent(mContext, mRepoOwner, mRepoName,
-                                   mIssueNumber, review, null));
-            break;
-        }
-        case R.id.iv_menu:
-            mPopupMenu.show();
-            break;
-        case R.id.review_file_details: {
-            Review review = (Review) v.getTag();
-            long commentId = (long) v.getTag(R.id.review_comment_id);
-            mContext.startActivity(ReviewActivity.makeIntent(mContext, mRepoOwner, mRepoName,
-                                   mIssueNumber, review, new IntentUtils.InitialCommentMarker(commentId)));
-            break;
-        }
-        }
-    }
+@Override
+public void onClick(final View v) {
+	switch (v.getId()) {
+	case R.id.avatar_container: {
+		User user = (User) v.getTag();
+		Intent intent = UserActivity.makeIntent(mContext, user);
+		if (intent != null) {
+			mContext.startActivity(intent);
+		}
+		break;
+	}
+	case R.id.btn_show_details: {
+		Review review = (Review) v.getTag();
+		mContext.startActivity(ReviewActivity.makeIntent(mContext, mRepoOwner, mRepoName,
+		                                                 mIssueNumber, review, null));
+		break;
+	}
+	case R.id.iv_menu:
+		mPopupMenu.show();
+		break;
+	case R.id.review_file_details: {
+		Review review = (Review) v.getTag();
+		long commentId = (long) v.getTag(R.id.review_comment_id);
+		mContext.startActivity(ReviewActivity.makeIntent(mContext, mRepoOwner, mRepoName,
+		                                                 mIssueNumber, review, new IntentUtils.InitialCommentMarker(commentId)));
+		break;
+	}
+	}
+}
 
-    @Override
-    public boolean onMenuItemClick(final MenuItem item) {
-        Review review = (Review) ivMenu.getTag();
+@Override
+public boolean onMenuItemClick(final MenuItem item) {
+	Review review = (Review) ivMenu.getTag();
 
-        switch (item.getItemId()) {
-        case R.id.share:
-            IntentUtils.share(mContext, "Pull Request #" + mIssueNumber + " - Review",
-                              Uri.parse(review.htmlUrl()));
-            return true;
+	switch (item.getItemId()) {
+	case R.id.share:
+		IntentUtils.share(mContext, "Pull Request #" + mIssueNumber + " - Review",
+		                  Uri.parse(review.htmlUrl()));
+		return true;
 
-        case R.id.browser:
-            IntentUtils.launchBrowser(mContext, Uri.parse(review.htmlUrl()));
-            return true;
-        }
-        return false;
-    }
+	case R.id.browser:
+		IntentUtils.launchBrowser(mContext, Uri.parse(review.htmlUrl()));
+		return true;
+	}
+	return false;
+}
 
-    private static class FileDetails {
-        public final View row;
-        public boolean isOutdated;
-        public int count;
+private static class FileDetails {
+public final View row;
+public boolean isOutdated;
+public int count;
 
-        public FileDetails(final View row, final boolean isOutdated, final int count) {
-            this.row = row;
-            this.isOutdated = isOutdated;
-            this.count = count;
-        }
-    }
+public FileDetails(final View row, final boolean isOutdated, final int count) {
+	this.row = row;
+	this.isOutdated = isOutdated;
+	this.count = count;
+}
+}
 }

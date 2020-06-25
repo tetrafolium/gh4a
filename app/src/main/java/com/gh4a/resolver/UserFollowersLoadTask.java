@@ -10,20 +10,20 @@ import com.meisolsson.githubsdk.model.User;
 import com.meisolsson.githubsdk.model.UserType;
 
 public class UserFollowersLoadTask extends UserLoadTask {
-    @VisibleForTesting
-    protected final boolean mShowFollowers;
+@VisibleForTesting
+protected final boolean mShowFollowers;
 
-    public UserFollowersLoadTask(final FragmentActivity activity, final String userLogin,
-                                 final boolean showFollowers) {
-        super(activity, userLogin);
-        mShowFollowers = showFollowers;
-    }
+public UserFollowersLoadTask(final FragmentActivity activity, final String userLogin,
+                             final boolean showFollowers) {
+	super(activity, userLogin);
+	mShowFollowers = showFollowers;
+}
 
-    @Override
-    protected Intent getIntent(final User user) {
-        if (user.type() == UserType.Organization) {
-            return UserActivity.makeIntent(mActivity, user);
-        }
-        return FollowerFollowingListActivity.makeIntent(mActivity, user.login(), mShowFollowers);
-    }
+@Override
+protected Intent getIntent(final User user) {
+	if (user.type() == UserType.Organization) {
+		return UserActivity.makeIntent(mActivity, user);
+	}
+	return FollowerFollowingListActivity.makeIntent(mActivity, user.login(), mShowFollowers);
+}
 }

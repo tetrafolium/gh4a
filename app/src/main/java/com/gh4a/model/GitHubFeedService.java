@@ -6,9 +6,9 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 
 public interface GitHubFeedService {
-    @GET("{url}")
-    Single<Response<GitHubFeed>> getFeed(@Path(value = "url", encoded = true) String url);
+@GET("{url}")
+Single<Response<GitHubFeed> > getFeed(@Path(value = "url", encoded = true) String url);
 
-    @GET("https://github.blog/blog.atom")
-    Single<Response<GitHubFeed>> getBlogFeed();
+@GET("https://github.blog/blog.atom")
+Single<Response<GitHubFeed> > getBlogFeed();
 }

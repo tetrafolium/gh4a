@@ -34,105 +34,105 @@ import com.meisolsson.githubsdk.model.GistFile;
 import com.meisolsson.githubsdk.service.gists.GistService;
 
 public class GistViewerActivity extends WebViewerActivity {
-    public static Intent makeIntent(final Context context, final String id, final String fileName) {
-        return new Intent(context, GistViewerActivity.class)
-               .putExtra("id", id)
-               .putExtra("file", fileName);
-    }
+public static Intent makeIntent(final Context context, final String id, final String fileName) {
+	return new Intent(context, GistViewerActivity.class)
+	       .putExtra("id", id)
+	       .putExtra("file", fileName);
+}
 
-    private static final int ID_LOADER_GIST = 0;
+private static final int ID_LOADER_GIST = 0;
 
-    private String mFileName;
-    private String mGistId;
-    private GistFile mGistFile;
-    private String mGistOwner;
+private String mFileName;
+private String mGistId;
+private GistFile mGistFile;
+private String mGistOwner;
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        loadGist(false);
-    }
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	loadGist(false);
+}
 
-    @Nullable
-    @Override
-    protected String getActionBarTitle() {
-        return mFileName;
-    }
+@Nullable
+@Override
+protected String getActionBarTitle() {
+	return mFileName;
+}
 
-    @Override
-    protected void onInitExtras(final Bundle extras) {
-        super.onInitExtras(extras);
-        mFileName = extras.getString("file");
-        mGistId = extras.getString("id");
-    }
+@Override
+protected void onInitExtras(final Bundle extras) {
+	super.onInitExtras(extras);
+	mFileName = extras.getString("file");
+	mGistId = extras.getString("id");
+}
 
-    @Override
-    protected boolean canSwipeToRefresh() {
-        return true;
-    }
+@Override
+protected boolean canSwipeToRefresh() {
+	return true;
+}
 
-    @Override
-    public void onRefresh() {
-        setContentShown(false);
-        mGistFile = null;
-        loadGist(true);
-        super.onRefresh();
-    }
+@Override
+public void onRefresh() {
+	setContentShown(false);
+	mGistFile = null;
+	loadGist(true);
+	super.onRefresh();
+}
 
-    @Override
-    protected String generateHtml(final String cssTheme, final boolean addTitleHeader) {
-        if (FileUtils.isMarkdown(mGistFile.filename())) {
-            String base64Data = StringUtils.toBase64(mGistFile.content());
-            return generateMarkdownHtml(base64Data, null, null, null, cssTheme, addTitleHeader);
-        } else {
-            return generateCodeHtml(mGistFile.content(), mFileName,
-                                    -1, -1, cssTheme, addTitleHeader);
-        }
-    }
+@Override
+protected String generateHtml(final String cssTheme, final boolean addTitleHeader) {
+	if (FileUtils.isMarkdown(mGistFile.filename())) {
+		String base64Data = StringUtils.toBase64(mGistFile.content());
+		return generateMarkdownHtml(base64Data, null, null, null, cssTheme, addTitleHeader);
+	} else {
+		return generateCodeHtml(mGistFile.content(), mFileName,
+		                        -1, -1, cssTheme, addTitleHeader);
+	}
+}
 
-    @Override
-    protected String getDocumentTitle() {
-        return getString(R.string.gist_print_document_title, mFileName, mGistId, mGistOwner);
-    }
+@Override
+protected String getDocumentTitle() {
+	return getString(R.string.gist_print_document_title, mFileName, mGistId, mGistOwner);
+}
 
-    @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.file_viewer_menu, menu);
+@Override
+public boolean onCreateOptionsMenu(final Menu menu) {
+	MenuInflater inflater = getMenuInflater();
+	inflater.inflate(R.menu.file_viewer_menu, menu);
 
-        menu.removeItem(R.id.share);
-        if (mGistFile == null || FileUtils.isMarkdown(mGistFile.filename())) {
-            menu.removeItem(R.id.wrap);
-        }
+	menu.removeItem(R.id.share);
+	if (mGistFile == null || FileUtils.isMarkdown(mGistFile.filename())) {
+		menu.removeItem(R.id.wrap);
+	}
 
-        return super.onCreateOptionsMenu(menu);
-    }
+	return super.onCreateOptionsMenu(menu);
+}
 
-    @Override
-    protected Intent navigateUp() {
-        return GistActivity.makeIntent(this, mGistId);
-    }
+@Override
+protected Intent navigateUp() {
+	return GistActivity.makeIntent(this, mGistId);
+}
 
-    @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
-        switch (item.getItemId()) {
-        case R.id.browser:
-            IntentUtils.launchBrowser(this, Uri.parse(mGistFile.rawUrl()));
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+@Override
+public boolean onOptionsItemSelected(final MenuItem item) {
+	switch (item.getItemId()) {
+	case R.id.browser:
+		IntentUtils.launchBrowser(this, Uri.parse(mGistFile.rawUrl()));
+		return true;
+	}
+	return super.onOptionsItemSelected(item);
+}
 
-    private void loadGist(final boolean force) {
-        GistService service = ServiceFactory.get(GistService.class, force);
-        service.getGist(mGistId)
-        .map(ApiHelpers::throwOnFailure)
-        .compose(makeLoaderSingle(ID_LOADER_GIST, force))
-        .subscribe(result -> {
-            mGistOwner = ApiHelpers.getUserLogin(GistViewerActivity.this, result.owner());
-            mGistFile = result.files().get(mFileName);
-            onDataReady();
-        }, this::handleLoadFailure);
+private void loadGist(final boolean force) {
+	GistService service = ServiceFactory.get(GistService.class, force);
+	service.getGist(mGistId)
+	.map(ApiHelpers::throwOnFailure)
+	.compose(makeLoaderSingle(ID_LOADER_GIST, force))
+	.subscribe(result->{
+			mGistOwner = ApiHelpers.getUserLogin(GistViewerActivity.this, result.owner());
+			mGistFile = result.files().get(mFileName);
+			onDataReady();
+		}, this::handleLoadFailure);
 
-    }
+}
 }

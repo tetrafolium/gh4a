@@ -31,70 +31,70 @@ import java.util.List;
 import io.reactivex.Single;
 
 public class TrendingFragment extends ListDataBaseFragment<Trend> implements
-    RootAdapter.OnItemClickListener<Trend> {
-    public static final String TYPE_DAILY = "daily";
-    public static final String TYPE_WEEKLY = "weekly";
-    public static final String TYPE_MONTHLY = "monthly";
+	RootAdapter.OnItemClickListener<Trend> {
+public static final String TYPE_DAILY = "daily";
+public static final String TYPE_WEEKLY = "weekly";
+public static final String TYPE_MONTHLY = "monthly";
 
-    private String mType;
-    private @StringRes int mStarsTemplate;
+private String mType;
+private @StringRes int mStarsTemplate;
 
-    public static TrendingFragment newInstance(final String type) {
-        if (type == null) {
-            return null;
-        }
+public static TrendingFragment newInstance(final String type) {
+	if (type == null) {
+		return null;
+	}
 
-        TrendingFragment f = new TrendingFragment();
-        Bundle args = new Bundle();
-        args.putString("type", type);
-        switch (type) {
-        case TYPE_DAILY:
-            args.putInt("stars_template", R.string.trend_stars_today);
-            break;
-        case TYPE_WEEKLY:
-            args.putInt("stars_template", R.string.trend_stars_week);
-            break;
-        case TYPE_MONTHLY:
-            args.putInt("stars_template", R.string.trend_stars_month);
-            break;
-        default:
-            throw new IllegalArgumentException();
-        }
-        f.setArguments(args);
+	TrendingFragment f = new TrendingFragment();
+	Bundle args = new Bundle();
+	args.putString("type", type);
+	switch (type) {
+	case TYPE_DAILY:
+		args.putInt("stars_template", R.string.trend_stars_today);
+		break;
+	case TYPE_WEEKLY:
+		args.putInt("stars_template", R.string.trend_stars_week);
+		break;
+	case TYPE_MONTHLY:
+		args.putInt("stars_template", R.string.trend_stars_month);
+		break;
+	default:
+		throw new IllegalArgumentException();
+	}
+	f.setArguments(args);
 
-        return f;
-    }
+	return f;
+}
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mType = getArguments().getString("type");
-        mStarsTemplate = getArguments().getInt("stars_template", 0);
-    }
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	mType = getArguments().getString("type");
+	mStarsTemplate = getArguments().getInt("stars_template", 0);
+}
 
-    @Override
-    protected RootAdapter<Trend, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
-        TrendAdapter adapter = new TrendAdapter(getActivity(), mStarsTemplate);
-        adapter.setOnItemClickListener(this);
-        return adapter;
-    }
+@Override
+protected RootAdapter<Trend, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
+	TrendAdapter adapter = new TrendAdapter(getActivity(), mStarsTemplate);
+	adapter.setOnItemClickListener(this);
+	return adapter;
+}
 
-    @Override
-    protected int getEmptyTextResId() {
-        return R.string.no_trends_found;
-    }
+@Override
+protected int getEmptyTextResId() {
+	return R.string.no_trends_found;
+}
 
-    @Override
-    public void onItemClick(final Trend trend) {
-        String owner = trend.getRepoOwner();
-        String name = trend.getRepoName();
-        if (owner != null && name != null) {
-            startActivity(RepositoryActivity.makeIntent(getActivity(), owner, name));
-        }
-    }
+@Override
+public void onItemClick(final Trend trend) {
+	String owner = trend.getRepoOwner();
+	String name = trend.getRepoName();
+	if (owner != null && name != null) {
+		startActivity(RepositoryActivity.makeIntent(getActivity(), owner, name));
+	}
+}
 
-    @Override
-    protected Single<List<Trend>> onCreateDataSingle(final boolean bypassCache) {
-        return SingleFactory.loadTrends(mType);
-    }
+@Override
+protected Single<List<Trend> > onCreateDataSingle(final boolean bypassCache) {
+	return SingleFactory.loadTrends(mType);
+}
 }

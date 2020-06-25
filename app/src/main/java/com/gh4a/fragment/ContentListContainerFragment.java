@@ -43,344 +43,344 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class ContentListContainerFragment extends Fragment implements
-    ContentListFragment.ParentCallback, PathBreadcrumbs.SelectionCallback,
-    BaseActivity.RefreshableChild, SwipeRefreshLayout.ChildScrollDelegate {
-    public interface CommitSelectionCallback {
-        void onCommitSelectedAsBase(Commit commit);
-    }
-    private static final int ID_LOADER_MODULEMAP = 100;
+	ContentListFragment.ParentCallback, PathBreadcrumbs.SelectionCallback,
+	                                          BaseActivity.RefreshableChild, SwipeRefreshLayout.ChildScrollDelegate {
+public interface CommitSelectionCallback {
+void onCommitSelectedAsBase(Commit commit);
+}
+private static final int ID_LOADER_MODULEMAP = 100;
 
-    private static final String STATE_KEY_DIR_STACK = "dir_stack";
-    private static final String STATE_KEY_INITIAL_PATH = "initial_path";
+private static final String STATE_KEY_DIR_STACK = "dir_stack";
+private static final String STATE_KEY_INITIAL_PATH = "initial_path";
 
-    private RxLoader mRxLoader;
-    private PathBreadcrumbs mBreadcrumbs;
-    private ContentListFragment mContentListFragment;
-    private Repository mRepository;
-    private String mSelectedRef;
-    private Map<String, String> mGitModuleMap;
-    private final Stack<String> mDirStack = new Stack<>();
-    private ArrayList<String> mInitialPathToLoad;
-    private boolean mStateSaved;
-    private CommitSelectionCallback mCommitCallback;
-    private ContentListCacheFragment mCacheFragment;
+private RxLoader mRxLoader;
+private PathBreadcrumbs mBreadcrumbs;
+private ContentListFragment mContentListFragment;
+private Repository mRepository;
+private String mSelectedRef;
+private Map<String, String> mGitModuleMap;
+private final Stack<String> mDirStack = new Stack<>();
+private ArrayList<String> mInitialPathToLoad;
+private boolean mStateSaved;
+private CommitSelectionCallback mCommitCallback;
+private ContentListCacheFragment mCacheFragment;
 
-    public static ContentListContainerFragment newInstance(final Repository repository,
-            final String ref, final String initialPath) {
-        ContentListContainerFragment f = new ContentListContainerFragment();
+public static ContentListContainerFragment newInstance(final Repository repository,
+                                                       final String ref, final String initialPath) {
+	ContentListContainerFragment f = new ContentListContainerFragment();
 
-        Bundle args = new Bundle();
-        args.putParcelable("repository", repository);
-        args.putString("ref", ref);
-        args.putString("initialpath", initialPath);
-        f.setArguments(args);
-        return f;
-    }
+	Bundle args = new Bundle();
+	args.putParcelable("repository", repository);
+	args.putString("ref", ref);
+	args.putString("initialpath", initialPath);
+	f.setArguments(args);
+	return f;
+}
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
 
-        mRxLoader = new RxLoader(getActivity(), getLoaderManager());
-        mRepository = getArguments().getParcelable("repository");
-        mSelectedRef = getArguments().getString("ref");
-        mStateSaved = false;
+	mRxLoader = new RxLoader(getActivity(), getLoaderManager());
+	mRepository = getArguments().getParcelable("repository");
+	mSelectedRef = getArguments().getString("ref");
+	mStateSaved = false;
 
-        mCacheFragment = (ContentListCacheFragment)
-                         getFragmentManager().findFragmentByTag("content_list_cache");
-        if (mCacheFragment == null) {
-            mCacheFragment = new ContentListCacheFragment();
-            getFragmentManager().beginTransaction()
-            .add(mCacheFragment, "content_list_cache")
-            .commitAllowingStateLoss();
-        }
+	mCacheFragment = (ContentListCacheFragment)
+	                 getFragmentManager().findFragmentByTag("content_list_cache");
+	if (mCacheFragment == null) {
+		mCacheFragment = new ContentListCacheFragment();
+		getFragmentManager().beginTransaction()
+		.add(mCacheFragment, "content_list_cache")
+		.commitAllowingStateLoss();
+	}
 
-        if (savedInstanceState != null) {
-            mDirStack.addAll(savedInstanceState.getStringArrayList(STATE_KEY_DIR_STACK));
-            mInitialPathToLoad = savedInstanceState.getStringArrayList(STATE_KEY_INITIAL_PATH);
-        } else {
-            mDirStack.push("");
+	if (savedInstanceState != null) {
+		mDirStack.addAll(savedInstanceState.getStringArrayList(STATE_KEY_DIR_STACK));
+		mInitialPathToLoad = savedInstanceState.getStringArrayList(STATE_KEY_INITIAL_PATH);
+	} else {
+		mDirStack.push("");
 
-            String initialPath = getArguments().getString("initialpath");
-            if (initialPath != null) {
-                mInitialPathToLoad = new ArrayList<>();
-                int pos = initialPath.indexOf("/");
-                while (pos > 0) {
-                    mInitialPathToLoad.add(initialPath.substring(0, pos));
-                    pos = initialPath.indexOf("/", pos + 1);
-                }
-                mInitialPathToLoad.add(initialPath);
-            }
-        }
-    }
+		String initialPath = getArguments().getString("initialpath");
+		if (initialPath != null) {
+			mInitialPathToLoad = new ArrayList<>();
+			int pos = initialPath.indexOf("/");
+			while (pos > 0) {
+				mInitialPathToLoad.add(initialPath.substring(0, pos));
+				pos = initialPath.indexOf("/", pos + 1);
+			}
+			mInitialPathToLoad.add(initialPath);
+		}
+	}
+}
 
-    @Override
-    public void onAttach(final Context context) {
-        super.onAttach(context);
-        if (context instanceof CommitSelectionCallback) {
-            mCommitCallback = (CommitSelectionCallback) context;
-        } else {
-            throw new ClassCastException("No callback provided");
-        }
-    }
+@Override
+public void onAttach(final Context context) {
+	super.onAttach(context);
+	if (context instanceof CommitSelectionCallback) {
+		mCommitCallback = (CommitSelectionCallback) context;
+	} else {
+		throw new ClassCastException("No callback provided");
+	}
+}
 
-    @Override
-    public boolean canChildScrollUp() {
-        if (mContentListFragment != null) {
-            return mContentListFragment.canChildScrollUp();
-        }
-        return false;
-    }
+@Override
+public boolean canChildScrollUp() {
+	if (mContentListFragment != null) {
+		return mContentListFragment.canChildScrollUp();
+	}
+	return false;
+}
 
-    @Override
-    public void onRefresh() {
-        setRef(mSelectedRef);
-    }
+@Override
+public void onRefresh() {
+	setRef(mSelectedRef);
+}
 
-    public void setRef(final String ref) {
-        getArguments().putString("ref", ref);
-        mSelectedRef = ref;
-        mGitModuleMap = null;
+public void setRef(final String ref) {
+	getArguments().putString("ref", ref);
+	mSelectedRef = ref;
+	mGitModuleMap = null;
 
-        mInitialPathToLoad = new ArrayList<>();
-        for (int i = 1; i < mDirStack.size(); i++) {
-            mInitialPathToLoad.add(mDirStack.get(i));
-        }
+	mInitialPathToLoad = new ArrayList<>();
+	for (int i = 1; i < mDirStack.size(); i++) {
+		mInitialPathToLoad.add(mDirStack.get(i));
+	}
 
-        mDirStack.clear();
-        mDirStack.push("");
-        mCacheFragment.clear();
-        mContentListFragment = null;
-        getChildFragmentManager().popBackStackImmediate(null,
-                FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        addFragmentForTopOfStack();
-        updateBreadcrumbs();
-    }
+	mDirStack.clear();
+	mDirStack.push("");
+	mCacheFragment.clear();
+	mContentListFragment = null;
+	getChildFragmentManager().popBackStackImmediate(null,
+	                                                FragmentManager.POP_BACK_STACK_INCLUSIVE);
+	addFragmentForTopOfStack();
+	updateBreadcrumbs();
+}
 
-    public boolean handleBackPress() {
-        if (mDirStack.size() > 1) {
-            mDirStack.pop();
-            getChildFragmentManager().popBackStackImmediate();
-            mContentListFragment = (ContentListFragment)
-                                   getChildFragmentManager().findFragmentById(R.id.content_list_container);
-            updateBreadcrumbs();
-            return true;
-        }
-        return false;
-    }
+public boolean handleBackPress() {
+	if (mDirStack.size() > 1) {
+		mDirStack.pop();
+		getChildFragmentManager().popBackStackImmediate();
+		mContentListFragment = (ContentListFragment)
+		                       getChildFragmentManager().findFragmentById(R.id.content_list_container);
+		updateBreadcrumbs();
+		return true;
+	}
+	return false;
+}
 
-    @Nullable
-    @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.content_list, container, false);
-    }
+@Nullable
+@Override
+public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+	return inflater.inflate(R.layout.content_list, container, false);
+}
 
-    @Override
-    public void onViewCreated(final View view, final @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        mBreadcrumbs = view.findViewById(R.id.breadcrumbs);
-        mBreadcrumbs.setCallback(this);
-        mStateSaved = false;
-        updateBreadcrumbs();
-        addFragmentForTopOfStack();
-    }
+@Override
+public void onViewCreated(final View view, final @Nullable Bundle savedInstanceState) {
+	super.onViewCreated(view, savedInstanceState);
+	mBreadcrumbs = view.findViewById(R.id.breadcrumbs);
+	mBreadcrumbs.setCallback(this);
+	mStateSaved = false;
+	updateBreadcrumbs();
+	addFragmentForTopOfStack();
+}
 
-    @Override
-    public void onSaveInstanceState(final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putStringArrayList(STATE_KEY_DIR_STACK, new ArrayList<>(mDirStack));
-        outState.putStringArrayList(STATE_KEY_INITIAL_PATH, mInitialPathToLoad);
-        mStateSaved = true;
-    }
+@Override
+public void onSaveInstanceState(final Bundle outState) {
+	super.onSaveInstanceState(outState);
+	outState.putStringArrayList(STATE_KEY_DIR_STACK, new ArrayList<>(mDirStack));
+	outState.putStringArrayList(STATE_KEY_INITIAL_PATH, mInitialPathToLoad);
+	mStateSaved = true;
+}
 
-    @Override
-    public void onContentsLoaded(final ContentListFragment fragment, final List<Content> contents) {
-        if (contents == null) {
-            return;
-        }
-        mCacheFragment.addToCache(fragment.getPath(), contents);
-        if (fragment.getPath() == null) {
-            for (Content content : contents) {
-                if (content.type() == ContentType.File && content.name().equals(".gitmodules")) {
-                    loadModuleMap();
-                    break;
-                }
-            }
-        }
-        if (mInitialPathToLoad != null && !mInitialPathToLoad.isEmpty() && !mStateSaved) {
-            String itemToLoad = mInitialPathToLoad.get(0);
-            boolean found = false;
-            for (Content content : contents) {
-                if (content.type() == ContentType.Directory) {
-                    if (content.path().equals(itemToLoad)) {
-                        onTreeSelected(content);
-                        found = true;
-                        break;
-                    }
-                }
-            }
-            if (found) {
-                mInitialPathToLoad.remove(0);
-            } else {
-                mInitialPathToLoad = null;
-            }
-        }
-    }
+@Override
+public void onContentsLoaded(final ContentListFragment fragment, final List<Content> contents) {
+	if (contents == null) {
+		return;
+	}
+	mCacheFragment.addToCache(fragment.getPath(), contents);
+	if (fragment.getPath() == null) {
+		for (Content content : contents) {
+			if (content.type() == ContentType.File && content.name().equals(".gitmodules")) {
+				loadModuleMap();
+				break;
+			}
+		}
+	}
+	if (mInitialPathToLoad != null && !mInitialPathToLoad.isEmpty() && !mStateSaved) {
+		String itemToLoad = mInitialPathToLoad.get(0);
+		boolean found = false;
+		for (Content content : contents) {
+			if (content.type() == ContentType.Directory) {
+				if (content.path().equals(itemToLoad)) {
+					onTreeSelected(content);
+					found = true;
+					break;
+				}
+			}
+		}
+		if (found) {
+			mInitialPathToLoad.remove(0);
+		} else {
+			mInitialPathToLoad = null;
+		}
+	}
+}
 
-    @Override
-    public void onCommitSelected(final Commit commit) {
-        mCommitCallback.onCommitSelectedAsBase(commit);
-    }
+@Override
+public void onCommitSelected(final Commit commit) {
+	mCommitCallback.onCommitSelectedAsBase(commit);
+}
 
-    @Override
-    public void onTreeSelected(final Content content) {
-        String path = content.path();
-        if (content.type() == ContentType.Directory) {
-            mDirStack.push(path);
-            updateBreadcrumbs();
-            addFragmentForTopOfStack();
-        } else if (mGitModuleMap != null && mGitModuleMap.get(path) != null) {
-            String[] userRepo = mGitModuleMap.get(path).split("/");
-            startActivity(RepositoryActivity.makeIntent(getActivity(), userRepo[0], userRepo[1]));
-        } else {
-            startActivity(FileViewerActivity.makeIntent(getActivity(),
-                          mRepository.owner().login(), mRepository.name(),
-                          getCurrentRef(), content.path()));
-        }
-    }
+@Override
+public void onTreeSelected(final Content content) {
+	String path = content.path();
+	if (content.type() == ContentType.Directory) {
+		mDirStack.push(path);
+		updateBreadcrumbs();
+		addFragmentForTopOfStack();
+	} else if (mGitModuleMap != null && mGitModuleMap.get(path) != null) {
+		String[] userRepo = mGitModuleMap.get(path).split("/");
+		startActivity(RepositoryActivity.makeIntent(getActivity(), userRepo[0], userRepo[1]));
+	} else {
+		startActivity(FileViewerActivity.makeIntent(getActivity(),
+		                                            mRepository.owner().login(), mRepository.name(),
+		                                            getCurrentRef(), content.path()));
+	}
+}
 
-    @Override
-    public Set<String> getSubModuleNames(final ContentListFragment fragment) {
-        if (mGitModuleMap == null) {
-            return null;
-        }
+@Override
+public Set<String> getSubModuleNames(final ContentListFragment fragment) {
+	if (mGitModuleMap == null) {
+		return null;
+	}
 
-        String prefix = fragment.getPath() == null ? null : (fragment.getPath() + "/");
-        Set<String> names = new HashSet<>();
-        for (String name : mGitModuleMap.keySet()) {
-            if (prefix == null && !name.contains("/")) {
-                names.add(name);
-            } else if (prefix != null && name.startsWith(prefix)) {
-                names.add(name.substring(prefix.length()));
-            }
-        }
-        return names;
-    }
+	String prefix = fragment.getPath() == null ? null : (fragment.getPath() + "/");
+	Set<String> names = new HashSet<>();
+	for (String name : mGitModuleMap.keySet()) {
+		if (prefix == null && !name.contains("/")) {
+			names.add(name);
+		} else if (prefix != null && name.startsWith(prefix)) {
+			names.add(name.substring(prefix.length()));
+		}
+	}
+	return names;
+}
 
-    @Override
-    public void onCrumbSelection(final String absolutePath, final int index, final int count) {
-        FragmentManager fm = getChildFragmentManager();
-        boolean poppedAny = false;
-        while (mDirStack.size() > 1 && !TextUtils.equals(absolutePath, mDirStack.peek())) {
-            mDirStack.pop();
-            fm.popBackStack();
-            poppedAny = true;
-        }
-        if (poppedAny) {
-            fm.executePendingTransactions();
-            updateBreadcrumbs();
-        }
-    }
+@Override
+public void onCrumbSelection(final String absolutePath, final int index, final int count) {
+	FragmentManager fm = getChildFragmentManager();
+	boolean poppedAny = false;
+	while (mDirStack.size() > 1 && !TextUtils.equals(absolutePath, mDirStack.peek())) {
+		mDirStack.pop();
+		fm.popBackStack();
+		poppedAny = true;
+	}
+	if (poppedAny) {
+		fm.executePendingTransactions();
+		updateBreadcrumbs();
+	}
+}
 
-    private void addFragmentForTopOfStack() {
-        String path = mDirStack.peek();
-        mContentListFragment = ContentListFragment.newInstance(mRepository,
-                               TextUtils.isEmpty(path) ? null : path,
-                               mCacheFragment.getFromCache(path), mSelectedRef);
+private void addFragmentForTopOfStack() {
+	String path = mDirStack.peek();
+	mContentListFragment = ContentListFragment.newInstance(mRepository,
+	                                                       TextUtils.isEmpty(path) ? null : path,
+	                                                       mCacheFragment.getFromCache(path), mSelectedRef);
 
-        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-        if (path != null) {
-            ft.addToBackStack(null);
-        }
-        ft.replace(R.id.content_list_container, mContentListFragment);
-        ft.commit();
-    }
+	FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+	if (path != null) {
+		ft.addToBackStack(null);
+	}
+	ft.replace(R.id.content_list_container, mContentListFragment);
+	ft.commit();
+}
 
-    private void updateBreadcrumbs() {
-        String path = mDirStack.peek();
-        mBreadcrumbs.setPath(path);
-    }
+private void updateBreadcrumbs() {
+	String path = mDirStack.peek();
+	mBreadcrumbs.setPath(path);
+}
 
-    private String getCurrentRef() {
-        if (!TextUtils.isEmpty(mSelectedRef)) {
-            return mSelectedRef;
-        }
-        return mRepository.defaultBranch();
-    }
+private String getCurrentRef() {
+	if (!TextUtils.isEmpty(mSelectedRef)) {
+		return mSelectedRef;
+	}
+	return mRepository.defaultBranch();
+}
 
-    private void loadModuleMap() {
-        RepositoryContentService service = ServiceFactory.get(RepositoryContentService.class, false);
-        String repoOwner = mRepository.owner().login();
-        String repoName = mRepository.name();
+private void loadModuleMap() {
+	RepositoryContentService service = ServiceFactory.get(RepositoryContentService.class, false);
+	String repoOwner = mRepository.owner().login();
+	String repoName = mRepository.name();
 
-        service.getContents(repoOwner, repoName, ".gitmodules", mSelectedRef)
-        .map(ApiHelpers::throwOnFailure)
-        .map(Optional::of)
-        .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, Optional.<Content>absent()))
-        .map(contentOpt -> contentOpt.map(content -> StringUtils.fromBase64(content.content())))
-        .map(this::parseModuleMap)
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .compose(mRxLoader.makeSingleTransformer(ID_LOADER_MODULEMAP, true))
-        .subscribe(resultOpt -> {
-            mGitModuleMap = resultOpt.orNull();
-            if (mContentListFragment != null) {
-                mContentListFragment.onSubModuleNamesChanged(getSubModuleNames(mContentListFragment));
-            }
-        }, ((BaseActivity) getActivity())::handleLoadFailure);
-    }
+	service.getContents(repoOwner, repoName, ".gitmodules", mSelectedRef)
+	.map(ApiHelpers::throwOnFailure)
+	.map(Optional::of)
+	.compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, Optional.<Content>absent()))
+	.map(contentOpt->contentOpt.map(content->StringUtils.fromBase64(content.content())))
+	.map(this::parseModuleMap)
+	.subscribeOn(Schedulers.io())
+	.observeOn(AndroidSchedulers.mainThread())
+	.compose(mRxLoader.makeSingleTransformer(ID_LOADER_MODULEMAP, true))
+	.subscribe(resultOpt->{
+			mGitModuleMap = resultOpt.orNull();
+			if (mContentListFragment != null) {
+			        mContentListFragment.onSubModuleNamesChanged(getSubModuleNames(mContentListFragment));
+			}
+		}, ((BaseActivity) getActivity())::handleLoadFailure);
+}
 
-    private Optional<Map<String, String>> parseModuleMap(final Optional<String> inputOpt) {
-        String input = inputOpt.orNull();
-        if (StringUtils.isBlank(input)) {
-            return Optional.absent();
-        }
-        Map<String, String> result = new HashMap<>();
-        String pendingPath = null;
-        String pendingTarget = null;
+private Optional<Map<String, String> > parseModuleMap(final Optional<String> inputOpt) {
+	String input = inputOpt.orNull();
+	if (StringUtils.isBlank(input)) {
+		return Optional.absent();
+	}
+	Map<String, String> result = new HashMap<>();
+	String pendingPath = null;
+	String pendingTarget = null;
 
-        for (String line : input.split("\n")) {
-            line = line.trim();
-            if (line.startsWith("[submodule")) {
-                if (pendingPath != null && pendingTarget != null) {
-                    result.put(pendingPath, pendingTarget);
-                }
-                pendingPath = null;
-                pendingTarget = null;
-            } else if (line.startsWith("path = ")) {
-                // chop off "path ="
-                pendingPath = line.substring(6).trim();
-            } else if (line.startsWith("url = ")) {
-                String url = line.substring(5).trim().replace("github.com:", "github.com/");
-                int pos = url.indexOf("git@");
-                if (pos == 0) {
-                    url = "ssh://" + url.substring(4);
-                }
+	for (String line : input.split("\n")) {
+		line = line.trim();
+		if (line.startsWith("[submodule")) {
+			if (pendingPath != null && pendingTarget != null) {
+				result.put(pendingPath, pendingTarget);
+			}
+			pendingPath = null;
+			pendingTarget = null;
+		} else if (line.startsWith("path = ")) {
+			// chop off "path ="
+			pendingPath = line.substring(6).trim();
+		} else if (line.startsWith("url = ")) {
+			String url = line.substring(5).trim().replace("github.com:", "github.com/");
+			int pos = url.indexOf("git@");
+			if (pos == 0) {
+				url = "ssh://" + url.substring(4);
+			}
 
-                Uri uri = Uri.parse(url);
-                if (!TextUtils.equals(uri.getHost(), "github.com")) {
-                    continue;
-                }
-                List<String> pathSegments = uri.getPathSegments();
-                if (pathSegments == null || pathSegments.size() < 2) {
-                    continue;
-                }
-                String user = pathSegments.get(pathSegments.size() - 2);
-                String repo = pathSegments.get(pathSegments.size() - 1);
+			Uri uri = Uri.parse(url);
+			if (!TextUtils.equals(uri.getHost(), "github.com")) {
+				continue;
+			}
+			List<String> pathSegments = uri.getPathSegments();
+			if (pathSegments == null || pathSegments.size() < 2) {
+				continue;
+			}
+			String user = pathSegments.get(pathSegments.size() - 2);
+			String repo = pathSegments.get(pathSegments.size() - 1);
 
-                pos = repo.lastIndexOf(".");
-                if (pos != -1) {
-                    repo = repo.substring(0, pos);
-                }
-                pendingTarget = user + "/" + repo;
-            }
-        }
+			pos = repo.lastIndexOf(".");
+			if (pos != -1) {
+				repo = repo.substring(0, pos);
+			}
+			pendingTarget = user + "/" + repo;
+		}
+	}
 
-        if (pendingPath != null && pendingTarget != null) {
-            result.put(pendingPath, pendingTarget);
-        }
+	if (pendingPath != null && pendingTarget != null) {
+		result.put(pendingPath, pendingTarget);
+	}
 
-        return Optional.of(result);
+	return Optional.of(result);
 
-    }
+}
 }

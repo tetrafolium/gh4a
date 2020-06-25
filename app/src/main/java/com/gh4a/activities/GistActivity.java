@@ -47,186 +47,186 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class GistActivity extends BaseActivity implements View.OnClickListener {
-    public static Intent makeIntent(final Context context, final String gistId) {
-        return new Intent(context, GistActivity.class)
-               .putExtra("id", gistId);
-    }
+public static Intent makeIntent(final Context context, final String gistId) {
+	return new Intent(context, GistActivity.class)
+	       .putExtra("id", gistId);
+}
 
-    private static final int ID_LOADER_GIST = 0;
-    private static final int ID_LOADER_STARRED = 1;
+private static final int ID_LOADER_GIST = 0;
+private static final int ID_LOADER_STARRED = 1;
 
-    private String mGistId;
-    private Gist mGist;
-    private Boolean mIsStarred;
+private String mGistId;
+private Gist mGist;
+private Boolean mIsStarred;
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.gist);
-        setContentShown(false);
+	setContentView(R.layout.gist);
+	setContentShown(false);
 
-        loadGist(false);
-        loadStarredState(false);
-    }
+	loadGist(false);
+	loadStarredState(false);
+}
 
-    @Nullable
-    @Override
-    protected String getActionBarTitle() {
-        return getString(R.string.gist_title, mGistId);
-    }
+@Nullable
+@Override
+protected String getActionBarTitle() {
+	return getString(R.string.gist_title, mGistId);
+}
 
-    @Override
-    protected void onInitExtras(final Bundle extras) {
-        super.onInitExtras(extras);
-        mGistId = extras.getString("id");
-    }
+@Override
+protected void onInitExtras(final Bundle extras) {
+	super.onInitExtras(extras);
+	mGistId = extras.getString("id");
+}
 
-    @Override
-    public void onRefresh() {
-        mGist = null;
-        mIsStarred = null;
-        setContentShown(false);
-        loadGist(true);
-        loadStarredState(true);
-        super.onRefresh();
-    }
+@Override
+public void onRefresh() {
+	mGist = null;
+	mIsStarred = null;
+	setContentShown(false);
+	loadGist(true);
+	loadStarredState(true);
+	super.onRefresh();
+}
 
-    private void fillData(final Gist gist) {
-        mGist = gist;
+private void fillData(final Gist gist) {
+	mGist = gist;
 
-        if (gist.owner() != null) {
-            getSupportActionBar().setSubtitle(gist.owner().login());
-        }
+	if (gist.owner() != null) {
+		getSupportActionBar().setSubtitle(gist.owner().login());
+	}
 
-        TextView tvDesc = findViewById(R.id.tv_desc);
-        tvDesc.setText(TextUtils.isEmpty(gist.description())
-                       ? getString(R.string.gist_no_description) : gist.description());
+	TextView tvDesc = findViewById(R.id.tv_desc);
+	tvDesc.setText(TextUtils.isEmpty(gist.description())
+	               ? getString(R.string.gist_no_description) : gist.description());
 
-        TextView tvCreatedAt = findViewById(R.id.tv_created_at);
-        tvCreatedAt.setText(StringUtils.formatRelativeTime(this, gist.createdAt(), true));
+	TextView tvCreatedAt = findViewById(R.id.tv_created_at);
+	tvCreatedAt.setText(StringUtils.formatRelativeTime(this, gist.createdAt(), true));
 
-        Map<String, GistFile> files = gist.files();
-        if (files != null && !files.isEmpty()) {
-            ViewGroup container = findViewById(R.id.file_container);
-            LayoutInflater inflater = getLayoutInflater();
+	Map<String, GistFile> files = gist.files();
+	if (files != null && !files.isEmpty()) {
+		ViewGroup container = findViewById(R.id.file_container);
+		LayoutInflater inflater = getLayoutInflater();
 
-            container.removeAllViews();
-            for (GistFile gistFile : files.values()) {
-                TextView rowView = (TextView) inflater.inflate(R.layout.selectable_label,
-                                   container, false);
+		container.removeAllViews();
+		for (GistFile gistFile : files.values()) {
+			TextView rowView = (TextView) inflater.inflate(R.layout.selectable_label,
+			                                               container, false);
 
-                rowView.setText(gistFile.filename());
-                rowView.setTextColor(UiUtils.resolveColor(this, android.R.attr.textColorPrimary));
-                rowView.setOnClickListener(this);
-                rowView.setTag(gistFile);
-                container.addView(rowView);
-            }
-        } else {
-            findViewById(R.id.file_card).setVisibility(View.GONE);
-        }
+			rowView.setText(gistFile.filename());
+			rowView.setTextColor(UiUtils.resolveColor(this, android.R.attr.textColorPrimary));
+			rowView.setOnClickListener(this);
+			rowView.setTag(gistFile);
+			container.addView(rowView);
+		}
+	} else {
+		findViewById(R.id.file_card).setVisibility(View.GONE);
+	}
 
-        findViewById(R.id.tv_private).setVisibility(gist.isPublic() ? View.GONE : View.VISIBLE);
-    }
+	findViewById(R.id.tv_private).setVisibility(gist.isPublic() ? View.GONE : View.VISIBLE);
+}
 
-    @Override
-    public void onClick(final View view) {
-        GistFile file = (GistFile) view.getTag();
-        startActivity(GistViewerActivity.makeIntent(this, mGistId, file.filename()));
-    }
+@Override
+public void onClick(final View view) {
+	GistFile file = (GistFile) view.getTag();
+	startActivity(GistViewerActivity.makeIntent(this, mGistId, file.filename()));
+}
 
-    @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
-        getMenuInflater().inflate(R.menu.gist_menu, menu);
+@Override
+public boolean onCreateOptionsMenu(final Menu menu) {
+	getMenuInflater().inflate(R.menu.gist_menu, menu);
 
-        return super.onCreateOptionsMenu(menu);
-    }
+	return super.onCreateOptionsMenu(menu);
+}
 
-    @Override
-    public boolean onPrepareOptionsMenu(final Menu menu) {
-        boolean authorized = Gh4Application.get().isAuthorized();
+@Override
+public boolean onPrepareOptionsMenu(final Menu menu) {
+	boolean authorized = Gh4Application.get().isAuthorized();
 
-        MenuItem starAction = menu.findItem(R.id.star);
-        starAction.setVisible(authorized);
-        if (authorized) {
-            if (mIsStarred == null) {
-                starAction.setActionView(R.layout.ab_loading);
-                starAction.expandActionView();
-            } else if (mIsStarred) {
-                starAction.setTitle(R.string.repo_unstar_action);
-                starAction.setIcon(R.drawable.unstar);
-            } else {
-                starAction.setTitle(R.string.repo_star_action);
-                starAction.setIcon(R.drawable.star);
-            }
-        }
+	MenuItem starAction = menu.findItem(R.id.star);
+	starAction.setVisible(authorized);
+	if (authorized) {
+		if (mIsStarred == null) {
+			starAction.setActionView(R.layout.ab_loading);
+			starAction.expandActionView();
+		} else if (mIsStarred) {
+			starAction.setTitle(R.string.repo_unstar_action);
+			starAction.setIcon(R.drawable.unstar);
+		} else {
+			starAction.setTitle(R.string.repo_star_action);
+			starAction.setIcon(R.drawable.star);
+		}
+	}
 
-        if (mGist == null) {
-            menu.removeItem(R.id.share);
-        }
+	if (mGist == null) {
+		menu.removeItem(R.id.share);
+	}
 
-        return super.onPrepareOptionsMenu(menu);
-    }
+	return super.onPrepareOptionsMenu(menu);
+}
 
-    @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
-        switch (item.getItemId()) {
-        case R.id.share:
-            String login = ApiHelpers.getUserLogin(this, mGist.owner());
-            IntentUtils.share(this, getString(R.string.share_gist_subject, mGistId, login),
-                              Uri.parse(mGist.htmlUrl()));
-            return true;
-        case R.id.star:
-            item.setActionView(R.layout.ab_loading);
-            item.expandActionView();
-            updateStarringState();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+@Override
+public boolean onOptionsItemSelected(final MenuItem item) {
+	switch (item.getItemId()) {
+	case R.id.share:
+		String login = ApiHelpers.getUserLogin(this, mGist.owner());
+		IntentUtils.share(this, getString(R.string.share_gist_subject, mGistId, login),
+		                  Uri.parse(mGist.htmlUrl()));
+		return true;
+	case R.id.star:
+		item.setActionView(R.layout.ab_loading);
+		item.expandActionView();
+		updateStarringState();
+		return true;
+	}
+	return super.onOptionsItemSelected(item);
+}
 
-    @Override
-    protected Intent navigateUp() {
-        String login = mGist != null && mGist.owner() != null
-                       ? mGist.owner().login() : null;
-        return login != null ? GistListActivity.makeIntent(this, login) : null;
-    }
+@Override
+protected Intent navigateUp() {
+	String login = mGist != null && mGist.owner() != null
+	               ? mGist.owner().login() : null;
+	return login != null ? GistListActivity.makeIntent(this, login) : null;
+}
 
-    private void updateStarringState() {
-        GistService service = ServiceFactory.get(GistService.class, false);
-        Single<Response<Void>> responseSingle = mIsStarred
-                                                ? service.unstarGist(mGistId) : service.starGist(mGistId);
-        responseSingle.map(ApiHelpers::mapToBooleanOrThrowOnFailure)
-        .compose(RxUtils::doInBackground)
-        .subscribe(result -> {
-            mIsStarred = !mIsStarred;
-            supportInvalidateOptionsMenu();
-        }, error -> {
-            handleActionFailure("Updating gist starring state failed", error);
-            supportInvalidateOptionsMenu();
-        });
-    }
+private void updateStarringState() {
+	GistService service = ServiceFactory.get(GistService.class, false);
+	Single<Response<Void> > responseSingle = mIsStarred
+	                                        ? service.unstarGist(mGistId) : service.starGist(mGistId);
+	responseSingle.map(ApiHelpers::mapToBooleanOrThrowOnFailure)
+	.compose(RxUtils::doInBackground)
+	.subscribe(result->{
+			mIsStarred = !mIsStarred;
+			supportInvalidateOptionsMenu();
+		}, error->{
+			handleActionFailure("Updating gist starring state failed", error);
+			supportInvalidateOptionsMenu();
+		});
+}
 
-    private void loadGist(final boolean force) {
-        GistService service = ServiceFactory.get(GistService.class, force);
-        service.getGist(mGistId)
-        .map(ApiHelpers::throwOnFailure)
-        .compose(makeLoaderSingle(ID_LOADER_GIST, force))
-        .subscribe(result -> {
-            fillData(result);
-            setContentShown(true);
-            supportInvalidateOptionsMenu();
-        }, this::handleLoadFailure);
-    }
+private void loadGist(final boolean force) {
+	GistService service = ServiceFactory.get(GistService.class, force);
+	service.getGist(mGistId)
+	.map(ApiHelpers::throwOnFailure)
+	.compose(makeLoaderSingle(ID_LOADER_GIST, force))
+	.subscribe(result->{
+			fillData(result);
+			setContentShown(true);
+			supportInvalidateOptionsMenu();
+		}, this::handleLoadFailure);
+}
 
-    private void loadStarredState(final boolean force) {
-        GistService service = ServiceFactory.get(GistService.class, force);
-        service.checkIfGistIsStarred(mGistId)
-        .map(ApiHelpers::mapToBooleanOrThrowOnFailure)
-        .compose(makeLoaderSingle(ID_LOADER_STARRED, force))
-        .subscribe(result -> {
-            mIsStarred = result;
-            supportInvalidateOptionsMenu();
-        }, this::handleLoadFailure);
-    }
+private void loadStarredState(final boolean force) {
+	GistService service = ServiceFactory.get(GistService.class, force);
+	service.checkIfGistIsStarred(mGistId)
+	.map(ApiHelpers::mapToBooleanOrThrowOnFailure)
+	.compose(makeLoaderSingle(ID_LOADER_STARRED, force))
+	.subscribe(result->{
+			mIsStarred = result;
+			supportInvalidateOptionsMenu();
+		}, this::handleLoadFailure);
+}
 }

@@ -32,48 +32,48 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class StargazerListFragment extends PagedDataBaseFragment<User> {
-    public static StargazerListFragment newInstance(final String repoOwner, final String repoName) {
-        StargazerListFragment f = new StargazerListFragment();
+public static StargazerListFragment newInstance(final String repoOwner, final String repoName) {
+	StargazerListFragment f = new StargazerListFragment();
 
-        Bundle args = new Bundle();
-        args.putString("owner", repoOwner);
-        args.putString("repo", repoName);
-        f.setArguments(args);
+	Bundle args = new Bundle();
+	args.putString("owner", repoOwner);
+	args.putString("repo", repoName);
+	f.setArguments(args);
 
-        return f;
-    }
+	return f;
+}
 
-    private String mRepoOwner;
-    private String mRepoName;
+private String mRepoOwner;
+private String mRepoName;
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mRepoOwner = getArguments().getString("owner");
-        mRepoName = getArguments().getString("repo");
-    }
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	mRepoOwner = getArguments().getString("owner");
+	mRepoName = getArguments().getString("repo");
+}
 
-    @Override
-    protected RootAdapter<User, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
-        return new UserAdapter(getActivity());
-    }
+@Override
+protected RootAdapter<User, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
+	return new UserAdapter(getActivity());
+}
 
-    @Override
-    protected int getEmptyTextResId() {
-        return R.string.no_stargazers_found;
-    }
+@Override
+protected int getEmptyTextResId() {
+	return R.string.no_stargazers_found;
+}
 
-    @Override
-    public void onItemClick(final User user) {
-        Intent intent = UserActivity.makeIntent(getActivity(), user);
-        if (intent != null) {
-            startActivity(intent);
-        }
-    }
+@Override
+public void onItemClick(final User user) {
+	Intent intent = UserActivity.makeIntent(getActivity(), user);
+	if (intent != null) {
+		startActivity(intent);
+	}
+}
 
-    @Override
-    protected Single<Response<Page<User>>> loadPage(final int page, final boolean bypassCache) {
-        final StarringService service = ServiceFactory.get(StarringService.class, bypassCache);
-        return service.getStargazers(mRepoOwner, mRepoName, page);
-    }
+@Override
+protected Single<Response<Page<User> > > loadPage(final int page, final boolean bypassCache) {
+	final StarringService service = ServiceFactory.get(StarringService.class, bypassCache);
+	return service.getStargazers(mRepoOwner, mRepoName, page);
+}
 }

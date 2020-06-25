@@ -13,46 +13,46 @@ import com.gh4a.utils.StringUtils;
 import com.meisolsson.githubsdk.model.ReleaseAsset;
 
 public class ReleaseAssetAdapter extends RootAdapter<ReleaseAsset, ReleaseAssetAdapter.ViewHolder> {
-    public ReleaseAssetAdapter(final Context context) {
-        super(context);
-    }
+public ReleaseAssetAdapter(final Context context) {
+	super(context);
+}
 
-    @Override
-    public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
-        View v = inflater.inflate(R.layout.row_download, parent, false);
-        return new ViewHolder(v);
-    }
+@Override
+public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
+	View v = inflater.inflate(R.layout.row_download, parent, false);
+	return new ViewHolder(v);
+}
 
-    @Override
-    public void onBindViewHolder(final ViewHolder holder, final ReleaseAsset asset) {
-        holder.tvTitle.setText(asset.name());
-        if (!StringUtils.isBlank(asset.label())) {
-            holder.tvDesc.setVisibility(View.VISIBLE);
-            holder.tvDesc.setText(asset.label());
-        } else {
-            holder.tvDesc.setVisibility(View.GONE);
-        }
+@Override
+public void onBindViewHolder(final ViewHolder holder, final ReleaseAsset asset) {
+	holder.tvTitle.setText(asset.name());
+	if (!StringUtils.isBlank(asset.label())) {
+		holder.tvDesc.setVisibility(View.VISIBLE);
+		holder.tvDesc.setText(asset.label());
+	} else {
+		holder.tvDesc.setVisibility(View.GONE);
+	}
 
-        holder.tvCreatedAt.setText(mContext.getString(R.string.download_created,
-                                   StringUtils.formatRelativeTime(mContext, asset.createdAt(), true)));
-        holder.tvSize.setText(Formatter.formatFileSize(mContext, asset.size()));
-        holder.tvDownloads.setText(String.valueOf(asset.downloadCount()));
-    }
+	holder.tvCreatedAt.setText(mContext.getString(R.string.download_created,
+	                                              StringUtils.formatRelativeTime(mContext, asset.createdAt(), true)));
+	holder.tvSize.setText(Formatter.formatFileSize(mContext, asset.size()));
+	holder.tvDownloads.setText(String.valueOf(asset.downloadCount()));
+}
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ViewHolder(final View view) {
-            super(view);
-            tvTitle = view.findViewById(R.id.tv_title);
-            tvDesc = view.findViewById(R.id.tv_desc);
-            tvCreatedAt = view.findViewById(R.id.tv_created_at);
-            tvSize = view.findViewById(R.id.tv_size);
-            tvDownloads = view.findViewById(R.id.tv_downloads);
-        }
+public static class ViewHolder extends RecyclerView.ViewHolder {
+private ViewHolder(final View view) {
+	super(view);
+	tvTitle = view.findViewById(R.id.tv_title);
+	tvDesc = view.findViewById(R.id.tv_desc);
+	tvCreatedAt = view.findViewById(R.id.tv_created_at);
+	tvSize = view.findViewById(R.id.tv_size);
+	tvDownloads = view.findViewById(R.id.tv_downloads);
+}
 
-        private final TextView tvTitle;
-        private final TextView tvDesc;
-        private final TextView tvSize;
-        private final TextView tvDownloads;
-        private final TextView tvCreatedAt;
-    }
+private final TextView tvTitle;
+private final TextView tvDesc;
+private final TextView tvSize;
+private final TextView tvDownloads;
+private final TextView tvCreatedAt;
+}
 }

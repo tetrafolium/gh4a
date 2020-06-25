@@ -14,30 +14,30 @@ import com.meisolsson.githubsdk.service.pull_request.PullRequestReviewService;
 import io.reactivex.Single;
 
 public class PullRequestReviewLoadTask extends UrlLoadTask {
-    @VisibleForTesting
-    protected final String mRepoOwner;
-    @VisibleForTesting
-    protected final String mRepoName;
-    @VisibleForTesting
-    protected final int mPullRequestNumber;
-    @VisibleForTesting
-    protected final IntentUtils.InitialCommentMarker mMarker;
+@VisibleForTesting
+protected final String mRepoOwner;
+@VisibleForTesting
+protected final String mRepoName;
+@VisibleForTesting
+protected final int mPullRequestNumber;
+@VisibleForTesting
+protected final IntentUtils.InitialCommentMarker mMarker;
 
-    public PullRequestReviewLoadTask(final FragmentActivity activity, final String repoOwner, final String repoName,
-                                     final int pullRequestNumber, final IntentUtils.InitialCommentMarker marker) {
-        super(activity);
-        mRepoOwner = repoOwner;
-        mRepoName = repoName;
-        mPullRequestNumber = pullRequestNumber;
-        mMarker = marker;
-    }
+public PullRequestReviewLoadTask(final FragmentActivity activity, final String repoOwner, final String repoName,
+                                 final int pullRequestNumber, final IntentUtils.InitialCommentMarker marker) {
+	super(activity);
+	mRepoOwner = repoOwner;
+	mRepoName = repoName;
+	mPullRequestNumber = pullRequestNumber;
+	mMarker = marker;
+}
 
-    @Override
-    protected Single<Optional<Intent>> getSingle() {
-        PullRequestReviewService service = ServiceFactory.get(PullRequestReviewService.class, false);
-        return service.getReview(mRepoOwner, mRepoName, mPullRequestNumber, mMarker.commentId)
-               .map(ApiHelpers::throwOnFailure)
-               .map(review -> Optional.of(ReviewActivity.makeIntent(mActivity,
-                                          mRepoOwner, mRepoName, mPullRequestNumber, review, mMarker)));
-    }
+@Override
+protected Single<Optional<Intent> > getSingle() {
+	PullRequestReviewService service = ServiceFactory.get(PullRequestReviewService.class, false);
+	return service.getReview(mRepoOwner, mRepoName, mPullRequestNumber, mMarker.commentId)
+	       .map(ApiHelpers::throwOnFailure)
+	       .map(review->Optional.of(ReviewActivity.makeIntent(mActivity,
+	                                                          mRepoOwner, mRepoName, mPullRequestNumber, review, mMarker)));
+}
 }

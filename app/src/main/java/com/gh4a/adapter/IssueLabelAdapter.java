@@ -23,188 +23,188 @@ import com.gh4a.widget.StyleableTextView;
 import com.meisolsson.githubsdk.model.Label;
 
 public class IssueLabelAdapter extends
-    RootAdapter<IssueLabelAdapter.EditableLabel, IssueLabelAdapter.ViewHolder> {
-    public static class EditableLabel implements Parcelable {
-        public String editedName;
-        public String editedColor;
-        public final boolean newlyAdded;
-        public boolean isEditing;
-        private final Label mLabel;
+	RootAdapter<IssueLabelAdapter.EditableLabel, IssueLabelAdapter.ViewHolder> {
+public static class EditableLabel implements Parcelable {
+public String editedName;
+public String editedColor;
+public final boolean newlyAdded;
+public boolean isEditing;
+private final Label mLabel;
 
-        public EditableLabel(final String color) {
-            super();
-            newlyAdded = true;
-            isEditing = true;
-            editedColor = color;
-            mLabel = null;
-        }
-        public EditableLabel(final Label label) {
-            newlyAdded = false;
-            isEditing = false;
-            mLabel = label;
-        }
-        private EditableLabel(final Parcel in) {
-            editedName = in.readString();
-            editedColor = in.readString();
-            newlyAdded = in.readInt() != 0;
-            isEditing = in.readInt() != 0;
-            mLabel = in.readParcelable(ClassLoader.getSystemClassLoader());
-        }
+public EditableLabel(final String color) {
+	super();
+	newlyAdded = true;
+	isEditing = true;
+	editedColor = color;
+	mLabel = null;
+}
+public EditableLabel(final Label label) {
+	newlyAdded = false;
+	isEditing = false;
+	mLabel = label;
+}
+private EditableLabel(final Parcel in) {
+	editedName = in.readString();
+	editedColor = in.readString();
+	newlyAdded = in.readInt() != 0;
+	isEditing = in.readInt() != 0;
+	mLabel = in.readParcelable(ClassLoader.getSystemClassLoader());
+}
 
-        @Nullable
-        public String name() {
-            return editedName != null ? editedName : mLabel != null ? mLabel.name() : null;
-        }
+@Nullable
+public String name() {
+	return editedName != null ? editedName : mLabel != null ? mLabel.name() : null;
+}
 
-        @Nullable
-        public String color() {
-            return editedColor != null ? editedColor : mLabel != null ? mLabel.color() : null;
-        }
+@Nullable
+public String color() {
+	return editedColor != null ? editedColor : mLabel != null ? mLabel.color() : null;
+}
 
-        public Label base() {
-            return mLabel;
-        }
+public Label base() {
+	return mLabel;
+}
 
-        public void restoreOriginalProperties() {
-            editedColor = null;
-            editedName = null;
-        }
+public void restoreOriginalProperties() {
+	editedColor = null;
+	editedName = null;
+}
 
-        @Override
-        public int describeContents() {
-            return 0;
-        }
+@Override
+public int describeContents() {
+	return 0;
+}
 
-        @Override
-        public void writeToParcel(final Parcel parcel, final int flags) {
-            parcel.writeString(editedName);
-            parcel.writeString(editedColor);
-            parcel.writeInt(newlyAdded ? 1 : 0);
-            parcel.writeInt(isEditing ? 1 : 0);
-            parcel.writeParcelable(mLabel, flags);
-        }
+@Override
+public void writeToParcel(final Parcel parcel, final int flags) {
+	parcel.writeString(editedName);
+	parcel.writeString(editedColor);
+	parcel.writeInt(newlyAdded ? 1 : 0);
+	parcel.writeInt(isEditing ? 1 : 0);
+	parcel.writeParcelable(mLabel, flags);
+}
 
-        public static Parcelable.Creator<EditableLabel> CREATOR = new Parcelable.Creator<EditableLabel>() {
-            @Override
-            public EditableLabel createFromParcel(final Parcel parcel) {
-                return new EditableLabel(parcel);
-            }
+public static Parcelable.Creator<EditableLabel> CREATOR = new Parcelable.Creator<EditableLabel>() {
+	@Override
+	public EditableLabel createFromParcel(final Parcel parcel) {
+		return new EditableLabel(parcel);
+	}
 
-            @Override
-            public EditableLabel[] newArray(final int size) {
-                return new EditableLabel[size];
-            }
-        };
-    }
+	@Override
+	public EditableLabel[] newArray(final int size) {
+		return new EditableLabel[size];
+	}
+};
+}
 
-    public IssueLabelAdapter(final Context context) {
-        super(context);
-    }
+public IssueLabelAdapter(final Context context) {
+	super(context);
+}
 
-    @Override
-    public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
-        View v = inflater.inflate(R.layout.row_issue_label, parent, false);
-        final ViewHolder holder = new ViewHolder(v);
+@Override
+public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
+	View v = inflater.inflate(R.layout.row_issue_label, parent, false);
+	final ViewHolder holder = new ViewHolder(v);
 
-        holder.editor.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
-            }
-            @Override
-            public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
-            }
-            @Override
-            public void afterTextChanged(final Editable s) {
-                if (holder.lastAssignedLabel != null) {
-                    holder.lastAssignedLabel.editedName = s.toString();
-                }
-            }
-        });
+	holder.editor.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
+			}
+			@Override
+			public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
+			}
+			@Override
+			public void afterTextChanged(final Editable s) {
+			        if (holder.lastAssignedLabel != null) {
+			                holder.lastAssignedLabel.editedName = s.toString();
+				}
+			}
+		});
 
-        Typeface labelTf = TypefaceCache.getTypeface(holder.label.getTypefaceValue());
-        holder.editor.setTypeface(labelTf);
+	Typeface labelTf = TypefaceCache.getTypeface(holder.label.getTypefaceValue());
+	holder.editor.setTypeface(labelTf);
 
-        ViewGroup colors = v.findViewById(R.id.colors);
-        int count = colors.getChildCount();
-        for (int i = 0; i < count; i++) {
-            View child = colors.getChildAt(i);
-            child.setOnClickListener(this);
-        }
-        colors.setTag(holder);
+	ViewGroup colors = v.findViewById(R.id.colors);
+	int count = colors.getChildCount();
+	for (int i = 0; i < count; i++) {
+		View child = colors.getChildAt(i);
+		child.setOnClickListener(this);
+	}
+	colors.setTag(holder);
 
-        return holder;
-    }
+	return holder;
+}
 
-    @Override
-    public void onBindViewHolder(final ViewHolder holder, final EditableLabel label) {
-        holder.lastAssignedLabel = label;
+@Override
+public void onBindViewHolder(final ViewHolder holder, final EditableLabel label) {
+	holder.lastAssignedLabel = label;
 
-        holder.collapsedContainer.setVisibility(label.isEditing ? View.GONE : View.VISIBLE);
-        holder.expandedContainer.setVisibility(label.isEditing ? View.VISIBLE : View.GONE);
-        if (label.isEditing) {
-            holder.editor.requestFocus();
-        }
+	holder.collapsedContainer.setVisibility(label.isEditing ? View.GONE : View.VISIBLE);
+	holder.expandedContainer.setVisibility(label.isEditing ? View.VISIBLE : View.GONE);
+	if (label.isEditing) {
+		holder.editor.requestFocus();
+	}
 
-        if (label.newlyAdded) {
-            holder.editor.setHint(R.string.issue_label_new);
-        } else {
-            holder.editor.setHint(null);
-        }
+	if (label.newlyAdded) {
+		holder.editor.setHint(R.string.issue_label_new);
+	} else {
+		holder.editor.setHint(null);
+	}
 
-        assignColor(holder, label.editedColor != null ? label.editedColor : label.color());
-        holder.label.setText(label.name());
-        holder.editor.setText(label.editedName != null ? label.editedName : label.name());
-    }
+	assignColor(holder, label.editedColor != null ? label.editedColor : label.color());
+	holder.label.setText(label.name());
+	holder.editor.setText(label.editedName != null ? label.editedName : label.name());
+}
 
-    private void assignColor(final ViewHolder holder, final String colorString) {
-        int color = Color.parseColor("#" + colorString);
-        int textColor = UiUtils.textColorForBackground(mContext, color);
+private void assignColor(final ViewHolder holder, final String colorString) {
+	int color = Color.parseColor("#" + colorString);
+	int textColor = UiUtils.textColorForBackground(mContext, color);
 
-        holder.color.setBackgroundColor(color);
-        holder.editor.setBackgroundColor(color);
-        holder.customColorButton.setBackgroundColor(color);
-        holder.customColorButton.setTextColor(textColor);
-        holder.editor.setTextColor(textColor);
+	holder.color.setBackgroundColor(color);
+	holder.editor.setBackgroundColor(color);
+	holder.customColorButton.setBackgroundColor(color);
+	holder.customColorButton.setTextColor(textColor);
+	holder.editor.setTextColor(textColor);
 
-        holder.lastAssignedLabel.editedColor = colorString;
-    }
+	holder.lastAssignedLabel.editedColor = colorString;
+}
 
-    @Override
-    public void onClick(final View v) {
-        View parent = (View) v.getParent();
-        if (parent.getId() == R.id.colors) {
-            final ViewHolder holder = (ViewHolder) parent.getTag();
-            if (v.getId() == R.id.custom) {
-                final String color = holder.lastAssignedLabel.editedColor;
-                ColorPickerDialog dialog =
-                    new ColorPickerDialog(mContext, color, c -> assignColor(holder, c));
-                dialog.show();
-            } else {
-                assignColor(holder, (String) v.getTag());
-            }
-        } else {
-            super.onClick(v);
-        }
-    }
+@Override
+public void onClick(final View v) {
+	View parent = (View) v.getParent();
+	if (parent.getId() == R.id.colors) {
+		final ViewHolder holder = (ViewHolder) parent.getTag();
+		if (v.getId() == R.id.custom) {
+			final String color = holder.lastAssignedLabel.editedColor;
+			ColorPickerDialog dialog =
+				new ColorPickerDialog(mContext, color, c->assignColor(holder, c));
+			dialog.show();
+		} else {
+			assignColor(holder, (String) v.getTag());
+		}
+	} else {
+		super.onClick(v);
+	}
+}
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ViewHolder(final View view) {
-            super(view);
-            color = view.findViewById(R.id.view_color);
-            label = view.findViewById(R.id.tv_title);
-            editor = view.findViewById(R.id.et_label);
-            collapsedContainer = view.findViewById(R.id.collapsed);
-            expandedContainer = view.findViewById(R.id.expanded);
-            customColorButton = view.findViewById(R.id.custom);
-        }
+public static class ViewHolder extends RecyclerView.ViewHolder {
+private ViewHolder(final View view) {
+	super(view);
+	color = view.findViewById(R.id.view_color);
+	label = view.findViewById(R.id.tv_title);
+	editor = view.findViewById(R.id.et_label);
+	collapsedContainer = view.findViewById(R.id.collapsed);
+	expandedContainer = view.findViewById(R.id.expanded);
+	customColorButton = view.findViewById(R.id.custom);
+}
 
-        private EditableLabel lastAssignedLabel;
+private EditableLabel lastAssignedLabel;
 
-        private final View color;
-        private final StyleableTextView label;
-        private final EditText editor;
-        private final TextView customColorButton;
-        private final View collapsedContainer;
-        private final View expandedContainer;
-    }
+private final View color;
+private final StyleableTextView label;
+private final EditText editor;
+private final TextView customColorButton;
+private final View collapsedContainer;
+private final View expandedContainer;
+}
 }

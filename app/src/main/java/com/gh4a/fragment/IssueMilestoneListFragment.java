@@ -36,78 +36,78 @@ import java.util.List;
 import io.reactivex.Single;
 
 public class IssueMilestoneListFragment extends ListDataBaseFragment<Milestone> implements
-    RootAdapter.OnItemClickListener<Milestone> {
-    private String mRepoOwner;
-    private String mRepoName;
-    private boolean mShowClosed;
-    private boolean mFromPullRequest;
+	RootAdapter.OnItemClickListener<Milestone> {
+private String mRepoOwner;
+private String mRepoName;
+private boolean mShowClosed;
+private boolean mFromPullRequest;
 
-    public static IssueMilestoneListFragment newInstance(final String repoOwner, final String repoName,
-            final boolean showClosed, final boolean fromPullRequest) {
-        IssueMilestoneListFragment f = new IssueMilestoneListFragment();
+public static IssueMilestoneListFragment newInstance(final String repoOwner, final String repoName,
+                                                     final boolean showClosed, final boolean fromPullRequest) {
+	IssueMilestoneListFragment f = new IssueMilestoneListFragment();
 
-        Bundle args = new Bundle();
-        args.putString("owner", repoOwner);
-        args.putString("repo", repoName);
-        args.putBoolean("closed", showClosed);
-        args.putBoolean("from_pr", fromPullRequest);
-        f.setArguments(args);
+	Bundle args = new Bundle();
+	args.putString("owner", repoOwner);
+	args.putString("repo", repoName);
+	args.putBoolean("closed", showClosed);
+	args.putBoolean("from_pr", fromPullRequest);
+	f.setArguments(args);
 
-        return f;
-    }
+	return f;
+}
 
-    private static final int REQUEST_EDIT_MILESTONE = 2000;
+private static final int REQUEST_EDIT_MILESTONE = 2000;
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Bundle args = getArguments();
-        mRepoOwner = args.getString("owner");
-        mRepoName = args.getString("repo");
-        mShowClosed = args.getBoolean("closed");
-        mFromPullRequest = args.getBoolean("from_pr", false);
-    }
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	Bundle args = getArguments();
+	mRepoOwner = args.getString("owner");
+	mRepoName = args.getString("repo");
+	mShowClosed = args.getBoolean("closed");
+	mFromPullRequest = args.getBoolean("from_pr", false);
+}
 
-    @Override
-    protected RootAdapter<Milestone, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
-        MilestoneAdapter adapter = new MilestoneAdapter(getActivity());
-        adapter.setOnItemClickListener(this);
-        return adapter;
-    }
+@Override
+protected RootAdapter<Milestone, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
+	MilestoneAdapter adapter = new MilestoneAdapter(getActivity());
+	adapter.setOnItemClickListener(this);
+	return adapter;
+}
 
-    @Override
-    protected int getEmptyTextResId() {
-        return mShowClosed
-               ? R.string.no_closed_milestones_found
-               : R.string.no_open_milestones_found;
-    }
+@Override
+protected int getEmptyTextResId() {
+	return mShowClosed
+	       ? R.string.no_closed_milestones_found
+	       : R.string.no_open_milestones_found;
+}
 
-    @Override
-    public void onItemClick(final Milestone milestone) {
-        startActivityForResult(IssueMilestoneEditActivity.makeEditIntent(
-                                   getActivity(), mRepoOwner, mRepoName, milestone, mFromPullRequest),
-                               REQUEST_EDIT_MILESTONE);
-    }
+@Override
+public void onItemClick(final Milestone milestone) {
+	startActivityForResult(IssueMilestoneEditActivity.makeEditIntent(
+				       getActivity(), mRepoOwner, mRepoName, milestone, mFromPullRequest),
+	                       REQUEST_EDIT_MILESTONE);
+}
 
-    @Override
-    protected Single<List<Milestone>> onCreateDataSingle(final boolean bypassCache) {
-        final IssueMilestoneService service =
-            ServiceFactory.get(IssueMilestoneService.class, bypassCache);
-        String targetState = mShowClosed ? "closed" : "open";
+@Override
+protected Single<List<Milestone> > onCreateDataSingle(final boolean bypassCache) {
+	final IssueMilestoneService service =
+		ServiceFactory.get(IssueMilestoneService.class, bypassCache);
+	String targetState = mShowClosed ? "closed" : "open";
 
-        return ApiHelpers.PageIterator
-               .toSingle(page -> service.getRepositoryMilestones(mRepoOwner, mRepoName, targetState, page));
-    }
+	return ApiHelpers.PageIterator
+	       .toSingle(page->service.getRepositoryMilestones(mRepoOwner, mRepoName, targetState, page));
+}
 
-    @Override
-    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        if (requestCode == REQUEST_EDIT_MILESTONE) {
-            if (resultCode == Activity.RESULT_OK) {
-                onRefresh();
-                getActivity().setResult(Activity.RESULT_OK);
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
+@Override
+public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+	if (requestCode == REQUEST_EDIT_MILESTONE) {
+		if (resultCode == Activity.RESULT_OK) {
+			onRefresh();
+			getActivity().setResult(Activity.RESULT_OK);
+		}
+	} else {
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+}
 }

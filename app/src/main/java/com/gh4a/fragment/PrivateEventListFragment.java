@@ -11,30 +11,30 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class PrivateEventListFragment extends EventListFragment {
-    private String mLogin;
-    private String mOrganization;
+private String mLogin;
+private String mOrganization;
 
-    public static PrivateEventListFragment newInstance(final String login, final String organization) {
-        PrivateEventListFragment f = new PrivateEventListFragment();
-        Bundle args = new Bundle();
-        args.putString("login", login);
-        args.putString("org", organization);
-        f.setArguments(args);
-        return f;
-    }
+public static PrivateEventListFragment newInstance(final String login, final String organization) {
+	PrivateEventListFragment f = new PrivateEventListFragment();
+	Bundle args = new Bundle();
+	args.putString("login", login);
+	args.putString("org", organization);
+	f.setArguments(args);
+	return f;
+}
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mLogin = getArguments().getString("login");
-        mOrganization = getArguments().getString("org");
-    }
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	mLogin = getArguments().getString("login");
+	mOrganization = getArguments().getString("org");
+}
 
-    @Override
-    protected Single<Response<Page<GitHubEvent>>> loadPage(final int page, final boolean bypassCache) {
-        final EventService service = ServiceFactory.get(EventService.class, bypassCache);
-        return mOrganization != null
-               ? service.getOrganizationEvents(mLogin, mOrganization, page)
-               : service.getUserReceivedEvents(mLogin, page);
-    }
+@Override
+protected Single<Response<Page<GitHubEvent> > > loadPage(final int page, final boolean bypassCache) {
+	final EventService service = ServiceFactory.get(EventService.class, bypassCache);
+	return mOrganization != null
+	       ? service.getOrganizationEvents(mLogin, mOrganization, page)
+	       : service.getUserReceivedEvents(mLogin, page);
+}
 }

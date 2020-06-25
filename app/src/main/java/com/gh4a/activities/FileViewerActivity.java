@@ -52,316 +52,316 @@ import java.util.Locale;
 import io.reactivex.Single;
 
 public class FileViewerActivity extends WebViewerActivity
-    implements PopupMenu.OnMenuItemClickListener {
-    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
-                                    final String ref, final String fullPath) {
-        return makeIntent(context, repoOwner, repoName, ref, fullPath, -1, -1, null);
-    }
+	implements PopupMenu.OnMenuItemClickListener {
+public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
+                                final String ref, final String fullPath) {
+	return makeIntent(context, repoOwner, repoName, ref, fullPath, -1, -1, null);
+}
 
-    public static Intent makeIntentWithHighlight(final Context context, final String repoOwner, final String repoName,
-            final String ref, final String fullPath, final int highlightStart, final int highlightEnd) {
-        return makeIntent(context, repoOwner, repoName, ref, fullPath, highlightStart, highlightEnd,
-                          null);
-    }
+public static Intent makeIntentWithHighlight(final Context context, final String repoOwner, final String repoName,
+                                             final String ref, final String fullPath, final int highlightStart, final int highlightEnd) {
+	return makeIntent(context, repoOwner, repoName, ref, fullPath, highlightStart, highlightEnd,
+	                  null);
+}
 
-    public static Intent makeIntentWithSearchMatch(final Context context, final String repoOwner,
-            final String repoName, final String ref, final String fullPath, final TextMatch textMatch) {
-        return makeIntent(context, repoOwner, repoName, ref, fullPath, -1, -1, textMatch);
-    }
+public static Intent makeIntentWithSearchMatch(final Context context, final String repoOwner,
+                                               final String repoName, final String ref, final String fullPath, final TextMatch textMatch) {
+	return makeIntent(context, repoOwner, repoName, ref, fullPath, -1, -1, textMatch);
+}
 
-    private static Intent makeIntent(final Context context, final String repoOwner, final String repoName, final String ref,
-                                     final String fullPath, final int highlightStart, final int highlightEnd, final TextMatch textMatch) {
-        return new Intent(context, FileViewerActivity.class)
-               .putExtra("owner", repoOwner)
-               .putExtra("repo", repoName)
-               .putExtra("path", fullPath)
-               .putExtra("ref", ref)
-               .putExtra("highlight_start", highlightStart)
-               .putExtra("highlight_end", highlightEnd)
-               .putExtra("text_match", textMatch);
-    }
+private static Intent makeIntent(final Context context, final String repoOwner, final String repoName, final String ref,
+                                 final String fullPath, final int highlightStart, final int highlightEnd, final TextMatch textMatch) {
+	return new Intent(context, FileViewerActivity.class)
+	       .putExtra("owner", repoOwner)
+	       .putExtra("repo", repoName)
+	       .putExtra("path", fullPath)
+	       .putExtra("ref", ref)
+	       .putExtra("highlight_start", highlightStart)
+	       .putExtra("highlight_end", highlightEnd)
+	       .putExtra("text_match", textMatch);
+}
 
-    private String mRepoName;
-    private String mRepoOwner;
-    private String mPath;
-    private String mRef;
-    private int mHighlightStart;
-    private int mHighlightEnd;
-    private TextMatch mTextMatch;
-    private Content mContent;
-    private int mLastTouchedLine = 0;
-    private boolean mViewRawText;
+private String mRepoName;
+private String mRepoOwner;
+private String mPath;
+private String mRef;
+private int mHighlightStart;
+private int mHighlightEnd;
+private TextMatch mTextMatch;
+private Content mContent;
+private int mLastTouchedLine = 0;
+private boolean mViewRawText;
 
-    private static final int ID_LOADER_FILE = 0;
-    private static final int MENU_ITEM_HISTORY = 10;
-    private static final String RAW_URL_FORMAT = "https://raw.githubusercontent.com/%s/%s/%s/%s";
+private static final int ID_LOADER_FILE = 0;
+private static final int MENU_ITEM_HISTORY = 10;
+private static final String RAW_URL_FORMAT = "https://raw.githubusercontent.com/%s/%s/%s/%s";
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
 
-        String filename = FileUtils.getFileName(mPath);
-        if (FileUtils.isBinaryFormat(filename) && !FileUtils.isImage(filename)) {
-            openUnsuitableFileAndFinish();
-        } else {
-            loadFile(false);
-        }
-    }
+	String filename = FileUtils.getFileName(mPath);
+	if (FileUtils.isBinaryFormat(filename) && !FileUtils.isImage(filename)) {
+		openUnsuitableFileAndFinish();
+	} else {
+		loadFile(false);
+	}
+}
 
-    @Nullable
-    @Override
-    protected String getActionBarTitle() {
-        return FileUtils.getFileName(mPath);
-    }
+@Nullable
+@Override
+protected String getActionBarTitle() {
+	return FileUtils.getFileName(mPath);
+}
 
-    @Nullable
-    @Override
-    protected String getActionBarSubtitle() {
-        return mRepoOwner + "/" + mRepoName;
-    }
+@Nullable
+@Override
+protected String getActionBarSubtitle() {
+	return mRepoOwner + "/" + mRepoName;
+}
 
-    @Override
-    protected void onInitExtras(final Bundle extras) {
-        super.onInitExtras(extras);
-        mRepoOwner = extras.getString("owner");
-        mRepoName = extras.getString("repo");
-        mPath = extras.getString("path");
-        mRef = extras.getString("ref");
-        mHighlightStart = extras.getInt("highlight_start", -1);
-        mHighlightEnd = extras.getInt("highlight_end", -1);
-        mTextMatch = extras.getParcelable("text_match");
-    }
+@Override
+protected void onInitExtras(final Bundle extras) {
+	super.onInitExtras(extras);
+	mRepoOwner = extras.getString("owner");
+	mRepoName = extras.getString("repo");
+	mPath = extras.getString("path");
+	mRef = extras.getString("ref");
+	mHighlightStart = extras.getInt("highlight_start", -1);
+	mHighlightEnd = extras.getInt("highlight_end", -1);
+	mTextMatch = extras.getParcelable("text_match");
+}
 
-    @Override
-    protected boolean canSwipeToRefresh() {
-        return true;
-    }
+@Override
+protected boolean canSwipeToRefresh() {
+	return true;
+}
 
-    @Override
-    public void onRefresh() {
-        setContentShown(false);
-        loadFile(true);
-        super.onRefresh();
-    }
+@Override
+public void onRefresh() {
+	setContentShown(false);
+	loadFile(true);
+	super.onRefresh();
+}
 
-    @Override
-    protected String generateHtml(final String cssTheme, final boolean addTitleHeader) {
-        String base64Data = mContent.content();
-        if (base64Data != null && FileUtils.isImage(mPath)) {
-            String title = addTitleHeader ? getDocumentTitle() : null;
-            String imageUrl = "data:" + FileUtils.getMimeTypeFor(mPath)
-                              + ";base64," + base64Data;
-            return highlightImage(imageUrl, cssTheme, title);
-        } else if (base64Data != null && FileUtils.isMarkdown(mPath) && !mViewRawText) {
-            return generateMarkdownHtml(base64Data,
-                                        mRepoOwner, mRepoName, mRef, cssTheme, addTitleHeader);
-        } else {
-            String data = base64Data != null ? StringUtils.fromBase64(base64Data) : "";
-            findMatchingLines(data);
-            return generateCodeHtml(data, mPath,
-                                    mHighlightStart, mHighlightEnd, cssTheme, addTitleHeader);
-        }
-    }
+@Override
+protected String generateHtml(final String cssTheme, final boolean addTitleHeader) {
+	String base64Data = mContent.content();
+	if (base64Data != null && FileUtils.isImage(mPath)) {
+		String title = addTitleHeader ? getDocumentTitle() : null;
+		String imageUrl = "data:" + FileUtils.getMimeTypeFor(mPath)
+		                  + ";base64," + base64Data;
+		return highlightImage(imageUrl, cssTheme, title);
+	} else if (base64Data != null && FileUtils.isMarkdown(mPath) && !mViewRawText) {
+		return generateMarkdownHtml(base64Data,
+		                            mRepoOwner, mRepoName, mRef, cssTheme, addTitleHeader);
+	} else {
+		String data = base64Data != null ? StringUtils.fromBase64(base64Data) : "";
+		findMatchingLines(data);
+		return generateCodeHtml(data, mPath,
+		                        mHighlightStart, mHighlightEnd, cssTheme, addTitleHeader);
+	}
+}
 
-    private void findMatchingLines(final String data) {
-        if (mTextMatch == null) {
-            return;
-        }
+private void findMatchingLines(final String data) {
+	if (mTextMatch == null) {
+		return;
+	}
 
-        int[] matchingLines = StringUtils.findMatchingLines(data, mTextMatch.fragment());
-        if (matchingLines != null) {
-            mHighlightStart = matchingLines[0];
-            mHighlightEnd = matchingLines[1];
-        }
-    }
+	int[] matchingLines = StringUtils.findMatchingLines(data, mTextMatch.fragment());
+	if (matchingLines != null) {
+		mHighlightStart = matchingLines[0];
+		mHighlightEnd = matchingLines[1];
+	}
+}
 
-    @Override
-    protected String getDocumentTitle() {
-        @StringRes int titleResId = TextUtils.isEmpty(mRef)
-                                    ? R.string.file_print_document_title : R.string.file_print_document_at_ref_title;
-        return getString(titleResId, FileUtils.getFileName(mPath), mRepoOwner, mRepoName, mRef);
-    }
+@Override
+protected String getDocumentTitle() {
+	@StringRes int titleResId = TextUtils.isEmpty(mRef)
+	                            ? R.string.file_print_document_title : R.string.file_print_document_at_ref_title;
+	return getString(titleResId, FileUtils.getFileName(mPath), mRepoOwner, mRepoName, mRef);
+}
 
-    @Override
-    protected boolean handlePrintRequest() {
-        if (!FileUtils.isImage(mPath)) {
-            return false;
-        }
-        String base64Data = mContent != null ? mContent.content() : null;
-        if (base64Data == null) {
-            return false;
-        }
-        byte[] decodedData = Base64.decode(base64Data, Base64.DEFAULT);
-        Bitmap bitmap = BitmapFactory.decodeByteArray(decodedData, 0, decodedData.length);
+@Override
+protected boolean handlePrintRequest() {
+	if (!FileUtils.isImage(mPath)) {
+		return false;
+	}
+	String base64Data = mContent != null ? mContent.content() : null;
+	if (base64Data == null) {
+		return false;
+	}
+	byte[] decodedData = Base64.decode(base64Data, Base64.DEFAULT);
+	Bitmap bitmap = BitmapFactory.decodeByteArray(decodedData, 0, decodedData.length);
 
-        PrintHelper printHelper = new PrintHelper(this);
-        printHelper.setScaleMode(PrintHelper.SCALE_MODE_FIT);
-        printHelper.printBitmap(getDocumentTitle(), bitmap);
-        return true;
-    }
+	PrintHelper printHelper = new PrintHelper(this);
+	printHelper.setScaleMode(PrintHelper.SCALE_MODE_FIT);
+	printHelper.printBitmap(getDocumentTitle(), bitmap);
+	return true;
+}
 
-    @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.file_viewer_menu, menu);
+@Override
+public boolean onCreateOptionsMenu(final Menu menu) {
+	MenuInflater inflater = getMenuInflater();
+	inflater.inflate(R.menu.file_viewer_menu, menu);
 
-        boolean isMarkdown = FileUtils.isMarkdown(mPath);
-        if (FileUtils.isImage(mPath) || (isMarkdown && !mViewRawText)) {
-            menu.removeItem(R.id.wrap);
-        }
-        if (isMarkdown) {
-            MenuItem viewRawItem = menu.findItem(R.id.view_raw);
-            viewRawItem.setChecked(mViewRawText);
-            viewRawItem.setVisible(true);
-        }
+	boolean isMarkdown = FileUtils.isMarkdown(mPath);
+	if (FileUtils.isImage(mPath) || (isMarkdown && !mViewRawText)) {
+		menu.removeItem(R.id.wrap);
+	}
+	if (isMarkdown) {
+		MenuItem viewRawItem = menu.findItem(R.id.view_raw);
+		viewRawItem.setChecked(mViewRawText);
+		viewRawItem.setVisible(true);
+	}
 
-        menu.add(0, MENU_ITEM_HISTORY, Menu.NONE, R.string.history)
-        .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER);
+	menu.add(0, MENU_ITEM_HISTORY, Menu.NONE, R.string.history)
+	.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER);
 
-        return super.onCreateOptionsMenu(menu);
-    }
+	return super.onCreateOptionsMenu(menu);
+}
 
-    @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
-        Uri.Builder urlBuilder = IntentUtils.createBaseUriForRepo(mRepoOwner, mRepoName)
-                                 .appendPath("blob")
-                                 .appendPath(mRef);
-        for (String element: mPath.split("\\/")) {
-            urlBuilder.appendPath(element);
-        }
-        Uri url = urlBuilder.build();
+@Override
+public boolean onOptionsItemSelected(final MenuItem item) {
+	Uri.Builder urlBuilder = IntentUtils.createBaseUriForRepo(mRepoOwner, mRepoName)
+	                         .appendPath("blob")
+	                         .appendPath(mRef);
+	for (String element: mPath.split("\\/")) {
+		urlBuilder.appendPath(element);
+	}
+	Uri url = urlBuilder.build();
 
-        switch (item.getItemId()) {
-        case R.id.browser:
-            IntentUtils.launchBrowser(this, url);
-            return true;
-        case R.id.share:
-            IntentUtils.share(this, getString(R.string.share_file_subject,
-                                              FileUtils.getFileName(mPath), mRepoOwner + "/" + mRepoName), url);
-            return true;
-        case MENU_ITEM_HISTORY:
-            startActivity(CommitHistoryActivity.makeIntent(this,
-                          mRepoOwner, mRepoName, mRef, mPath, false));
-            return true;
-        case R.id.view_raw:
-            mViewRawText = !mViewRawText;
-            item.setChecked(mViewRawText);
-            onRefresh();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+	switch (item.getItemId()) {
+	case R.id.browser:
+		IntentUtils.launchBrowser(this, url);
+		return true;
+	case R.id.share:
+		IntentUtils.share(this, getString(R.string.share_file_subject,
+		                                  FileUtils.getFileName(mPath), mRepoOwner + "/" + mRepoName), url);
+		return true;
+	case MENU_ITEM_HISTORY:
+		startActivity(CommitHistoryActivity.makeIntent(this,
+		                                               mRepoOwner, mRepoName, mRef, mPath, false));
+		return true;
+	case R.id.view_raw:
+		mViewRawText = !mViewRawText;
+		item.setChecked(mViewRawText);
+		onRefresh();
+		return true;
+	}
+	return super.onOptionsItemSelected(item);
+}
 
-    @Override
-    protected Intent navigateUp() {
-        return RepositoryActivity.makeIntent(this, mRepoOwner, mRepoName);
-    }
+@Override
+protected Intent navigateUp() {
+	return RepositoryActivity.makeIntent(this, mRepoOwner, mRepoName);
+}
 
-    @Override
-    public boolean onMenuItemClick(final MenuItem item) {
-        switch (item.getItemId()) {
-        case R.id.share:
-            if (mLastTouchedLine > 0) {
-                String subject = getString(R.string.share_line_subject, mLastTouchedLine, mPath,
-                                           mRepoOwner + "/" + mRepoName);
-                IntentUtils.share(this, subject, createUrl());
-            }
-            return true;
-        }
-        return false;
-    }
+@Override
+public boolean onMenuItemClick(final MenuItem item) {
+	switch (item.getItemId()) {
+	case R.id.share:
+		if (mLastTouchedLine > 0) {
+			String subject = getString(R.string.share_line_subject, mLastTouchedLine, mPath,
+			                           mRepoOwner + "/" + mRepoName);
+			IntentUtils.share(this, subject, createUrl());
+		}
+		return true;
+	}
+	return false;
+}
 
-    @Override
-    protected void onLineTouched(final int line, final int x, final int y) {
-        super.onLineTouched(line, x, y);
+@Override
+protected void onLineTouched(final int line, final int x, final int y) {
+	super.onLineTouched(line, x, y);
 
-        mLastTouchedLine = line;
+	mLastTouchedLine = line;
 
-        View anchor = findViewById(R.id.popup_helper);
-        anchor.layout(x, y, x + 1, y + 1);
-        if (!isFinishing()) {
-            PopupMenu popupMenu = new PopupMenu(this, anchor);
-            popupMenu.getMenuInflater().inflate(R.menu.file_line_menu, popupMenu.getMenu());
-            popupMenu.show();
-            popupMenu.setOnMenuItemClickListener(this);
-        }
-    }
+	View anchor = findViewById(R.id.popup_helper);
+	anchor.layout(x, y, x + 1, y + 1);
+	if (!isFinishing()) {
+		PopupMenu popupMenu = new PopupMenu(this, anchor);
+		popupMenu.getMenuInflater().inflate(R.menu.file_line_menu, popupMenu.getMenu());
+		popupMenu.show();
+		popupMenu.setOnMenuItemClickListener(this);
+	}
+}
 
-    @Override
-    protected boolean shouldWrapLines() {
-        boolean displayingMarkdown = FileUtils.isMarkdown(mPath) && !mViewRawText;
-        return !displayingMarkdown && super.shouldWrapLines();
-    }
+@Override
+protected boolean shouldWrapLines() {
+	boolean displayingMarkdown = FileUtils.isMarkdown(mPath) && !mViewRawText;
+	return !displayingMarkdown && super.shouldWrapLines();
+}
 
-    private Uri createUrl() {
-        Uri.Builder builder = IntentUtils.createBaseUriForRepo(mRepoOwner, mRepoName)
-                              .appendPath("blob")
-                              .appendPath(mRef);
-        for (String element: mPath.split("\\/")) {
-            builder.appendPath(element);
-        }
-        builder.fragment("L" + mLastTouchedLine);
-        return builder.build();
-    }
+private Uri createUrl() {
+	Uri.Builder builder = IntentUtils.createBaseUriForRepo(mRepoOwner, mRepoName)
+	                      .appendPath("blob")
+	                      .appendPath(mRef);
+	for (String element: mPath.split("\\/")) {
+		builder.appendPath(element);
+	}
+	builder.fragment("L" + mLastTouchedLine);
+	return builder.build();
+}
 
-    private void openUnsuitableFileAndFinish() {
-        String url = String.format(Locale.US, RAW_URL_FORMAT, mRepoOwner, mRepoName, mRef, mPath);
-        String mime = FileUtils.getMimeTypeFor(FileUtils.getFileName(mPath));
-        Intent intent = IntentUtils.createViewerOrBrowserIntent(this, Uri.parse(url), mime);
-        if (intent == null) {
-            handleLoadFailure(new ActivityNotFoundException());
-            findViewById(R.id.retry_button).setVisibility(View.GONE);
-        } else {
-            startActivity(intent);
-            finish();
-        }
-    }
+private void openUnsuitableFileAndFinish() {
+	String url = String.format(Locale.US, RAW_URL_FORMAT, mRepoOwner, mRepoName, mRef, mPath);
+	String mime = FileUtils.getMimeTypeFor(FileUtils.getFileName(mPath));
+	Intent intent = IntentUtils.createViewerOrBrowserIntent(this, Uri.parse(url), mime);
+	if (intent == null) {
+		handleLoadFailure(new ActivityNotFoundException());
+		findViewById(R.id.retry_button).setVisibility(View.GONE);
+	} else {
+		startActivity(intent);
+		finish();
+	}
+}
 
-    private static String highlightImage(final String imageUrl, final String cssTheme, final String title) {
-        StringBuilder content = new StringBuilder();
-        content.append("<html><head>");
-        writeCssInclude(content, "text", cssTheme);
-        content.append("</head><body>");
-        if (title != null) {
-            content.append("<h2>").append(title).append("</h2>");
-        }
-        content.append("<div class='image'>");
-        content.append("<img src='").append(imageUrl).append("' />");
-        content.append("</div></body></html>");
-        return content.toString();
-    }
+private static String highlightImage(final String imageUrl, final String cssTheme, final String title) {
+	StringBuilder content = new StringBuilder();
+	content.append("<html><head>");
+	writeCssInclude(content, "text", cssTheme);
+	content.append("</head><body>");
+	if (title != null) {
+		content.append("<h2>").append(title).append("</h2>");
+	}
+	content.append("<div class='image'>");
+	content.append("<img src='").append(imageUrl).append("' />");
+	content.append("</div></body></html>");
+	return content.toString();
+}
 
-    private void loadFile(final boolean force) {
-        RepositoryContentService service = ServiceFactory.get(RepositoryContentService.class, force);
-        service.getContents(mRepoOwner, mRepoName, mPath, mRef)
-        .map(ApiHelpers::throwOnFailure)
-        .map(Optional::of)
-        .onErrorResumeNext(error -> {
-            if (error instanceof ApiRequestException) {
-                ClientErrorResponse response = ((ApiRequestException) error).getResponse();
-                List<ClientErrorResponse.FieldError> errors =
-                response != null ? response.errors() : null;
-                if (errors != null) {
-                    for (ClientErrorResponse.FieldError fe : errors) {
-                        if (fe.reason() == ClientErrorResponse.FieldError.Reason.TooLarge) {
-                            openUnsuitableFileAndFinish();
-                            return Single.just(Optional.absent());
-                        }
-                    }
-                }
-            }
-            return Single.error(error);
-        })
-        .compose(makeLoaderSingle(ID_LOADER_FILE, force))
-        .subscribe(result -> {
-            if (result.isPresent()) {
-                mContent = result.get();
-                onDataReady();
-                setContentEmpty(false);
-            } else {
-                setContentEmpty(true);
-                setContentShown(true);
-            }
-        }, this::handleLoadFailure);
-    }
+private void loadFile(final boolean force) {
+	RepositoryContentService service = ServiceFactory.get(RepositoryContentService.class, force);
+	service.getContents(mRepoOwner, mRepoName, mPath, mRef)
+	.map(ApiHelpers::throwOnFailure)
+	.map(Optional::of)
+	.onErrorResumeNext(error->{
+			if (error instanceof ApiRequestException) {
+			        ClientErrorResponse response = ((ApiRequestException) error).getResponse();
+			        List<ClientErrorResponse.FieldError> errors =
+					response != null ? response.errors() : null;
+			        if (errors != null) {
+			                for (ClientErrorResponse.FieldError fe : errors) {
+			                        if (fe.reason() == ClientErrorResponse.FieldError.Reason.TooLarge) {
+			                                openUnsuitableFileAndFinish();
+			                                return Single.just(Optional.absent());
+						}
+					}
+				}
+			}
+			return Single.error(error);
+		})
+	.compose(makeLoaderSingle(ID_LOADER_FILE, force))
+	.subscribe(result->{
+			if (result.isPresent()) {
+			        mContent = result.get();
+			        onDataReady();
+			        setContentEmpty(false);
+			} else {
+			        setContentEmpty(true);
+			        setContentShown(true);
+			}
+		}, this::handleLoadFailure);
+}
 }

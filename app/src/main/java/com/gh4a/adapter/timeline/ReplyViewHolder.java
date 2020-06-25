@@ -7,39 +7,39 @@ import com.gh4a.R;
 import com.gh4a.model.TimelineItem;
 
 class ReplyViewHolder extends TimelineItemAdapter.TimelineItemViewHolder<TimelineItem.Reply>
-    implements View.OnClickListener {
+	implements View.OnClickListener {
 
-    public interface Callback {
-        long getSelectedCommentId();
-        void reply(long replyToId);
-    }
+public interface Callback {
+long getSelectedCommentId();
+void reply(long replyToId);
+}
 
-    private final Callback mCallback;
+private final Callback mCallback;
 
-    private final Button mReplyButton;
+private final Button mReplyButton;
 
-    public ReplyViewHolder(final View itemView, final Callback callback) {
-        super(itemView);
+public ReplyViewHolder(final View itemView, final Callback callback) {
+	super(itemView);
 
-        mCallback = callback;
+	mCallback = callback;
 
-        mReplyButton = itemView.findViewById(R.id.btn_reply);
-        mReplyButton.setOnClickListener(this);
-    }
+	mReplyButton = itemView.findViewById(R.id.btn_reply);
+	mReplyButton.setOnClickListener(this);
+}
 
-    @Override
-    public void bind(final TimelineItem.Reply item) {
-        boolean selected = item.timelineComment.comment().id() == mCallback.getSelectedCommentId();
-        mReplyButton.setTag(item.timelineComment);
-        mReplyButton.setText(selected ? R.string.reply_selected : R.string.reply);
-    }
+@Override
+public void bind(final TimelineItem.Reply item) {
+	boolean selected = item.timelineComment.comment().id() == mCallback.getSelectedCommentId();
+	mReplyButton.setTag(item.timelineComment);
+	mReplyButton.setText(selected ? R.string.reply_selected : R.string.reply);
+}
 
-    @Override
-    public void onClick(final View v) {
-        if (v.getId() == R.id.btn_reply) {
-            TimelineItem.TimelineComment timelineComment =
-                (TimelineItem.TimelineComment) v.getTag();
-            mCallback.reply(timelineComment.comment().id());
-        }
-    }
+@Override
+public void onClick(final View v) {
+	if (v.getId() == R.id.btn_reply) {
+		TimelineItem.TimelineComment timelineComment =
+			(TimelineItem.TimelineComment) v.getTag();
+		mCallback.reply(timelineComment.comment().id());
+	}
+}
 }

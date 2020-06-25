@@ -25,47 +25,47 @@ import com.gh4a.R;
 import com.gh4a.fragment.CommitCompareFragment;
 
 public class CompareActivity extends FragmentContainerActivity {
-    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
-                                    final String baseRef, final String headRef) {
-        return new Intent(context, CompareActivity.class)
-               .putExtra("owner", repoOwner)
-               .putExtra("repo", repoName)
-               .putExtra("base", baseRef)
-               .putExtra("head", headRef);
-    }
+public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
+                                final String baseRef, final String headRef) {
+	return new Intent(context, CompareActivity.class)
+	       .putExtra("owner", repoOwner)
+	       .putExtra("repo", repoName)
+	       .putExtra("base", baseRef)
+	       .putExtra("head", headRef);
+}
 
-    private String mRepoOwner;
-    private String mRepoName;
+private String mRepoOwner;
+private String mRepoName;
 
-    @Nullable
-    @Override
-    protected String getActionBarTitle() {
-        return getString(R.string.commit_compare);
-    }
+@Nullable
+@Override
+protected String getActionBarTitle() {
+	return getString(R.string.commit_compare);
+}
 
-    @Nullable
-    @Override
-    protected String getActionBarSubtitle() {
-        return mRepoOwner + "/" + mRepoName;
-    }
+@Nullable
+@Override
+protected String getActionBarSubtitle() {
+	return mRepoOwner + "/" + mRepoName;
+}
 
-    @Override
-    protected void onInitExtras(final Bundle extras) {
-        super.onInitExtras(extras);
-        mRepoOwner = extras.getString("owner");
-        mRepoName = extras.getString("repo");
-    }
+@Override
+protected void onInitExtras(final Bundle extras) {
+	super.onInitExtras(extras);
+	mRepoOwner = extras.getString("owner");
+	mRepoName = extras.getString("repo");
+}
 
-    @Override
-    protected Fragment onCreateFragment() {
-        String base = getIntent().getStringExtra("base");
-        String head = getIntent().getStringExtra("head");
+@Override
+protected Fragment onCreateFragment() {
+	String base = getIntent().getStringExtra("base");
+	String head = getIntent().getStringExtra("head");
 
-        return CommitCompareFragment.newInstance(mRepoOwner, mRepoName, base, head);
-    }
+	return CommitCompareFragment.newInstance(mRepoOwner, mRepoName, base, head);
+}
 
-    @Override
-    protected Intent navigateUp() {
-        return RepositoryActivity.makeIntent(this, mRepoOwner, mRepoName);
-    }
+@Override
+protected Intent navigateUp() {
+	return RepositoryActivity.makeIntent(this, mRepoOwner, mRepoName);
+}
 }

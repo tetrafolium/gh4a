@@ -32,57 +32,57 @@ import com.gh4a.model.Trend;
 import com.vdurmont.emoji.EmojiParser;
 
 public class TrendAdapter extends RootAdapter<Trend, TrendAdapter.ViewHolder> {
-    private final @StringRes int mStarsTemplate;
+private final @StringRes int mStarsTemplate;
 
-    public TrendAdapter(final Context context, final @StringRes int starsTemplate) {
-        super(context);
-        mStarsTemplate = starsTemplate;
-    }
+public TrendAdapter(final Context context, final @StringRes int starsTemplate) {
+	super(context);
+	mStarsTemplate = starsTemplate;
+}
 
-    @Override
-    public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
-        View v = inflater.inflate(R.layout.row_trend, parent, false);
-        return new ViewHolder(v);
-    }
+@Override
+public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
+	View v = inflater.inflate(R.layout.row_trend, parent, false);
+	return new ViewHolder(v);
+}
 
-    @Override
-    public void onBindViewHolder(final ViewHolder holder, final Trend trend) {
-        String owner = trend.getRepoOwner();
-        String name = trend.getRepoName();
+@Override
+public void onBindViewHolder(final ViewHolder holder, final Trend trend) {
+	String owner = trend.getRepoOwner();
+	String name = trend.getRepoName();
 
-        SpannableStringBuilder title = new SpannableStringBuilder();
-        title.append(owner).append("/").append(name);
-        title.setSpan(new StyleSpan(Typeface.BOLD), 0, owner.length(), 0);
-        holder.tvTitle.setText(title);
+	SpannableStringBuilder title = new SpannableStringBuilder();
+	title.append(owner).append("/").append(name);
+	title.setSpan(new StyleSpan(Typeface.BOLD), 0, owner.length(), 0);
+	holder.tvTitle.setText(title);
 
-        String desc = trend.getDescription();
-        holder.tvDesc.setText(desc != null ? EmojiParser.parseToUnicode(desc) : null);
+	String desc = trend.getDescription();
+	holder.tvDesc.setText(desc != null ? EmojiParser.parseToUnicode(desc) : null);
 
-        String lang = trend.getLanguage();
-        if (TextUtils.isEmpty(lang)) {
-            holder.tvLang.setText(R.string.unknown);
-        } else {
-            holder.tvLang.setText(lang);
-        }
-        holder.tvStars.setText(mContext.getString(mStarsTemplate,
-                               trend.getNewStars(), trend.getStars()));
-        holder.tvForks.setText(String.valueOf(trend.getForks()));
-    }
+	String lang = trend.getLanguage();
+	if (TextUtils.isEmpty(lang)) {
+		holder.tvLang.setText(R.string.unknown);
+	} else {
+		holder.tvLang.setText(lang);
+	}
+	holder.tvStars.setText(mContext.getString(mStarsTemplate,
+	                                          trend.getNewStars(), trend.getStars()));
+	holder.tvForks.setText(String.valueOf(trend.getForks()));
+}
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ViewHolder(final View view) {
-            super(view);
-            tvTitle = view.findViewById(R.id.tv_title);
-            tvDesc = view.findViewById(R.id.tv_desc);
-            tvLang = view.findViewById(R.id.tv_lang);
-            tvStars = view.findViewById(R.id.tv_stars);
-            tvForks = view.findViewById(R.id.tv_forks);
-        }
+public static class ViewHolder extends RecyclerView.ViewHolder {
+private ViewHolder(final View view) {
+	super(view);
+	tvTitle = view.findViewById(R.id.tv_title);
+	tvDesc = view.findViewById(R.id.tv_desc);
+	tvLang = view.findViewById(R.id.tv_lang);
+	tvStars = view.findViewById(R.id.tv_stars);
+	tvForks = view.findViewById(R.id.tv_forks);
+}
 
-        private final TextView tvTitle;
-        private final TextView tvDesc;
-        private final TextView tvLang;
-        private final TextView tvStars;
-        private final TextView tvForks;
-    }
+private final TextView tvTitle;
+private final TextView tvDesc;
+private final TextView tvLang;
+private final TextView tvStars;
+private final TextView tvForks;
+}
 }

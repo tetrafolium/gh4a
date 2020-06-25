@@ -39,108 +39,108 @@ import com.meisolsson.githubsdk.service.repositories.RepositoryCommitService;
 import io.reactivex.Single;
 
 public class CommitCompareFragment extends ListDataBaseFragment<Commit> implements
-    RootAdapter.OnItemClickListener<Commit> {
-    public static CommitCompareFragment newInstance(final String repoOwner, final String repoName,
-            final String baseRef, final String headRef) {
-        return newInstance(repoOwner, repoName, -1, null, baseRef, null, headRef);
-    }
+	RootAdapter.OnItemClickListener<Commit> {
+public static CommitCompareFragment newInstance(final String repoOwner, final String repoName,
+                                                final String baseRef, final String headRef) {
+	return newInstance(repoOwner, repoName, -1, null, baseRef, null, headRef);
+}
 
-    public static CommitCompareFragment newInstance(final String repoOwner, final String repoName,
-            final int pullRequestNumber, final String baseRefLabel, final String baseRef,
-            final String headRefLabel, final String headRef) {
-        Bundle args = new Bundle();
-        args.putString("owner", repoOwner);
-        args.putString("repo", repoName);
-        args.putString("base", baseRef);
-        args.putString("base_label", baseRefLabel);
-        args.putString("head", headRef);
-        args.putString("head_label", headRefLabel);
-        args.putInt("pr", pullRequestNumber);
+public static CommitCompareFragment newInstance(final String repoOwner, final String repoName,
+                                                final int pullRequestNumber, final String baseRefLabel, final String baseRef,
+                                                final String headRefLabel, final String headRef) {
+	Bundle args = new Bundle();
+	args.putString("owner", repoOwner);
+	args.putString("repo", repoName);
+	args.putString("base", baseRef);
+	args.putString("base_label", baseRefLabel);
+	args.putString("head", headRef);
+	args.putString("head_label", headRefLabel);
+	args.putInt("pr", pullRequestNumber);
 
-        CommitCompareFragment f = new CommitCompareFragment();
-        f.setArguments(args);
-        return f;
-    }
+	CommitCompareFragment f = new CommitCompareFragment();
+	f.setArguments(args);
+	return f;
+}
 
-    private static final int REQUEST_COMMIT = 2000;
+private static final int REQUEST_COMMIT = 2000;
 
-    private String mRepoOwner;
-    private String mRepoName;
-    private String mBase;
-    private String mBaseLabel;
-    private String mHead;
-    private String mHeadLabel;
-    private int mPullRequestNumber;
+private String mRepoOwner;
+private String mRepoName;
+private String mBase;
+private String mBaseLabel;
+private String mHead;
+private String mHeadLabel;
+private int mPullRequestNumber;
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
 
-        Bundle args = getArguments();
-        mRepoOwner = args.getString("owner");
-        mRepoName = args.getString("repo");
-        mBase = args.getString("base");
-        mBaseLabel = args.getString("base_label");
-        mHead = args.getString("head");
-        mHeadLabel = args.getString("head_label");
-        mPullRequestNumber = args.getInt("pr", -1);
-    }
+	Bundle args = getArguments();
+	mRepoOwner = args.getString("owner");
+	mRepoName = args.getString("repo");
+	mBase = args.getString("base");
+	mBaseLabel = args.getString("base_label");
+	mHead = args.getString("head");
+	mHeadLabel = args.getString("head_label");
+	mPullRequestNumber = args.getInt("pr", -1);
+}
 
-    @Override
-    protected int getEmptyTextResId() {
-        return R.string.no_commits_found;
-    }
+@Override
+protected int getEmptyTextResId() {
+	return R.string.no_commits_found;
+}
 
-    @Override
-    protected RootAdapter<Commit, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
-        CommitAdapter adapter = new CommitAdapter(getActivity());
-        adapter.setOnItemClickListener(this);
-        return adapter;
-    }
+@Override
+protected RootAdapter<Commit, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
+	CommitAdapter adapter = new CommitAdapter(getActivity());
+	adapter.setOnItemClickListener(this);
+	return adapter;
+}
 
-    @Override
-    public void onItemClick(final Commit commit) {
-        Intent intent = CommitActivity.makeIntent(getActivity(),
-                        mRepoOwner, mRepoName, mPullRequestNumber, commit.sha());
-        startActivityForResult(intent, REQUEST_COMMIT);
-    }
+@Override
+public void onItemClick(final Commit commit) {
+	Intent intent = CommitActivity.makeIntent(getActivity(),
+	                                          mRepoOwner, mRepoName, mPullRequestNumber, commit.sha());
+	startActivityForResult(intent, REQUEST_COMMIT);
+}
 
-    @Override
-    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        if (requestCode == REQUEST_COMMIT) {
-            if (resultCode == Activity.RESULT_OK) {
-                // comments were updated
-                onRefresh();
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
+@Override
+public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+	if (requestCode == REQUEST_COMMIT) {
+		if (resultCode == Activity.RESULT_OK) {
+			// comments were updated
+			onRefresh();
+		}
+	} else {
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+}
 
-    @Override
-    protected Single<List<Commit>> onCreateDataSingle(final boolean bypassCache) {
-        RepositoryCommitService service = ServiceFactory.get(RepositoryCommitService.class, bypassCache);
+@Override
+protected Single<List<Commit> > onCreateDataSingle(final boolean bypassCache) {
+	RepositoryCommitService service = ServiceFactory.get(RepositoryCommitService.class, bypassCache);
 
-        Single<CommitCompare> compareSingle = service.compareCommits(mRepoOwner, mRepoName, mBase, mHead)
-                                              .map(ApiHelpers::throwOnFailure)
-        .onErrorResumeNext(error -> {
-            if (error instanceof ApiRequestException) {
-                ApiRequestException are = (ApiRequestException) error;
-                if (are.getStatus() == HttpURLConnection.HTTP_NOT_FOUND
-                        && mBaseLabel != null
-                        && mHeadLabel != null) {
-                    // We got a 404; likely the history of the base branch was rewritten. Try the labels.
-                    return service.compareCommits(mRepoOwner, mRepoName, mBaseLabel, mHeadLabel)
-                    .map(ApiHelpers::throwOnFailure);
-                }
-            }
-            return Single.error(error);
-        });
+	Single<CommitCompare> compareSingle = service.compareCommits(mRepoOwner, mRepoName, mBase, mHead)
+	                                      .map(ApiHelpers::throwOnFailure)
+	                                      .onErrorResumeNext(error->{
+			if (error instanceof ApiRequestException) {
+			        ApiRequestException are = (ApiRequestException) error;
+			        if (are.getStatus() == HttpURLConnection.HTTP_NOT_FOUND
+			            && mBaseLabel != null
+			            && mHeadLabel != null) {
+			                // We got a 404; likely the history of the base branch was rewritten. Try the labels.
+			                return service.compareCommits(mRepoOwner, mRepoName, mBaseLabel, mHeadLabel)
+			                .map(ApiHelpers::throwOnFailure);
+				}
+			}
+			return Single.error(error);
+		});
 
-        return compareSingle
-               .map(CommitCompare::commits)
-               // Bummer, at least one branch was deleted.
-               // Can't do anything here, so return an empty list.
-               .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, new ArrayList<>()));
-    }
+	return compareSingle
+	       .map(CommitCompare::commits)
+	       // Bummer, at least one branch was deleted.
+	       // Can't do anything here, so return an empty list.
+	       .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, new ArrayList<>()));
+}
 }

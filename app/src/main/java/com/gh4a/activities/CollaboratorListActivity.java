@@ -25,40 +25,40 @@ import com.gh4a.R;
 import com.gh4a.fragment.CollaboratorListFragment;
 
 public class CollaboratorListActivity extends FragmentContainerActivity {
-    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName) {
-        return new Intent(context, CollaboratorListActivity.class)
-               .putExtra("owner", repoOwner)
-               .putExtra("repo", repoName);
-    }
+public static Intent makeIntent(final Context context, final String repoOwner, final String repoName) {
+	return new Intent(context, CollaboratorListActivity.class)
+	       .putExtra("owner", repoOwner)
+	       .putExtra("repo", repoName);
+}
 
-    private String mUserLogin;
-    private String mRepoName;
+private String mUserLogin;
+private String mRepoName;
 
-    @Nullable
-    @Override
-    protected String getActionBarTitle() {
-        return getString(R.string.repo_collaborators);
-    }
+@Nullable
+@Override
+protected String getActionBarTitle() {
+	return getString(R.string.repo_collaborators);
+}
 
-    @Nullable
-    @Override
-    protected String getActionBarSubtitle() {
-        return mUserLogin + "/" + mRepoName;
-    }
+@Nullable
+@Override
+protected String getActionBarSubtitle() {
+	return mUserLogin + "/" + mRepoName;
+}
 
-    @Override
-    protected void onInitExtras(final Bundle extras) {
-        mUserLogin = extras.getString("owner");
-        mRepoName = extras.getString("repo");
-    }
+@Override
+protected void onInitExtras(final Bundle extras) {
+	mUserLogin = extras.getString("owner");
+	mRepoName = extras.getString("repo");
+}
 
-    @Override
-    protected Fragment onCreateFragment() {
-        return CollaboratorListFragment.newInstance(mUserLogin, mRepoName);
-    }
+@Override
+protected Fragment onCreateFragment() {
+	return CollaboratorListFragment.newInstance(mUserLogin, mRepoName);
+}
 
-    @Override
-    protected Intent navigateUp() {
-        return RepositoryActivity.makeIntent(this, mUserLogin, mRepoName);
-    }
+@Override
+protected Intent navigateUp() {
+	return RepositoryActivity.makeIntent(this, mUserLogin, mRepoName);
+}
 }

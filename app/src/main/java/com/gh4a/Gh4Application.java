@@ -41,216 +41,216 @@ import java.util.Set;
  * The Class Gh4Application.
  */
 public class Gh4Application extends Application implements OnSharedPreferenceChangeListener {
-    public static final String LOG_TAG = "Gh4a";
-    public static int THEME = R.style.LightTheme;
+public static final String LOG_TAG = "Gh4a";
+public static int THEME = R.style.LightTheme;
 
-    private static Gh4Application sInstance;
-    private PrettyTime mPt;
+private static Gh4Application sInstance;
+private PrettyTime mPt;
 
-    private static final int THEME_DARK = 0;
-    private static final int THEME_LIGHT = 1;
+private static final int THEME_DARK = 0;
+private static final int THEME_LIGHT = 1;
 
-    private static final String KEY_VERSION = "version";
-    private static final String KEY_ACTIVE_LOGIN = "active_login";
-    private static final String KEY_ALL_LOGINS = "logins";
-    private static final String KEY_PREFIX_TOKEN = "token_";
-    private static final String KEY_PREFIX_USER_ID = "user_id_";
+private static final String KEY_VERSION = "version";
+private static final String KEY_ACTIVE_LOGIN = "active_login";
+private static final String KEY_ALL_LOGINS = "logins";
+private static final String KEY_PREFIX_TOKEN = "token_";
+private static final String KEY_PREFIX_USER_ID = "user_id_";
 
-    /*
-     * (non-Javadoc)
-     * @see android.app.Application#onCreate()
-     */
-    @Override
-    public void onCreate() {
-        super.onCreate();
+/*
+ * (non-Javadoc)
+ * @see android.app.Application#onCreate()
+ */
+@Override
+public void onCreate() {
+	super.onCreate();
 
-        sInstance = this;
+	sInstance = this;
 
-        SharedPreferences prefs = getPrefs();
-        selectTheme(prefs.getInt(SettingsFragment.KEY_THEME, THEME_LIGHT));
+	SharedPreferences prefs = getPrefs();
+	selectTheme(prefs.getInt(SettingsFragment.KEY_THEME, THEME_LIGHT));
 
-        int prefsVersion = prefs.getInt(KEY_VERSION, 0);
-        if (prefsVersion < 3) {
-            SharedPreferences.Editor editor = prefs.edit()
-                                              .putInt(KEY_VERSION, 3);
+	int prefsVersion = prefs.getInt(KEY_VERSION, 0);
+	if (prefsVersion < 3) {
+		SharedPreferences.Editor editor = prefs.edit()
+		                                  .putInt(KEY_VERSION, 3);
 
-            if (prefsVersion < 2) {
-                // convert old-style login/token pref to new-style login list
-                String login = prefs.getString("USER_LOGIN", null);
-                String token = prefs.getString("Token", null);
-                HashSet<String> loginSet = new HashSet<>();
-                if (login != null && token != null) {
-                    loginSet.add(login);
-                }
-                editor.putString(KEY_ACTIVE_LOGIN, login)
-                .putStringSet(KEY_ALL_LOGINS, loginSet)
-                .remove("USER_LOGIN")
-                .remove("Token");
-                if (login != null && token != null) {
-                    editor.putString(KEY_PREFIX_TOKEN + login, token);
-                }
-            }
-            if (prefsVersion < 3 && prefs.contains(KEY_ALL_LOGINS)) {
-                // Convert user IDs stored with old bindings (int) to format of new
-                // bindings (long) ... unfortunately we didn't update the version when
-                // doing that change :-/
-                for (String login : prefs.getStringSet(KEY_ALL_LOGINS, null)) {
-                    try {
-                        final String key = KEY_PREFIX_USER_ID + login;
-                        int userId = prefs.getInt(key, -1);
-                        editor.putLong(key, userId);
-                    } catch (ClassCastException e) {
-                        // already using the new format, ignore
-                    }
-                }
-            }
-            editor.apply();
-        }
+		if (prefsVersion < 2) {
+			// convert old-style login/token pref to new-style login list
+			String login = prefs.getString("USER_LOGIN", null);
+			String token = prefs.getString("Token", null);
+			HashSet<String> loginSet = new HashSet<>();
+			if (login != null && token != null) {
+				loginSet.add(login);
+			}
+			editor.putString(KEY_ACTIVE_LOGIN, login)
+			.putStringSet(KEY_ALL_LOGINS, loginSet)
+			.remove("USER_LOGIN")
+			.remove("Token");
+			if (login != null && token != null) {
+				editor.putString(KEY_PREFIX_TOKEN + login, token);
+			}
+		}
+		if (prefsVersion < 3 && prefs.contains(KEY_ALL_LOGINS)) {
+			// Convert user IDs stored with old bindings (int) to format of new
+			// bindings (long) ... unfortunately we didn't update the version when
+			// doing that change :-/
+			for (String login : prefs.getStringSet(KEY_ALL_LOGINS, null)) {
+				try {
+					final String key = KEY_PREFIX_USER_ID + login;
+					int userId = prefs.getInt(key, -1);
+					editor.putLong(key, userId);
+				} catch (ClassCastException e) {
+					// already using the new format, ignore
+				}
+			}
+		}
+		editor.apply();
+	}
 
-        prefs.registerOnSharedPreferenceChangeListener(this);
+	prefs.registerOnSharedPreferenceChangeListener(this);
 
-        DebuggingHelper.onCreate(this);
+	DebuggingHelper.onCreate(this);
 
-        mPt = new PrettyTime();
-        JodaTimeAndroid.init(this);
-        ServiceFactory.initClient(this);
+	mPt = new PrettyTime();
+	JodaTimeAndroid.init(this);
+	ServiceFactory.initClient(this);
 
-        JobManager.create(this).addJobCreator(new Gh4JobCreator());
-        updateNotificationJob(prefs);
-    }
+	JobManager.create(this).addJobCreator(new Gh4JobCreator());
+	updateNotificationJob(prefs);
+}
 
-    private void updateNotificationJob(final SharedPreferences prefs) {
-        if (isAuthorized() && prefs.getBoolean(SettingsFragment.KEY_NOTIFICATIONS, false)) {
-            int intervalMinutes = prefs.getInt(SettingsFragment.KEY_NOTIFICATION_INTERVAL, 15);
-            NotificationsJob.scheduleJob(intervalMinutes);
-        } else {
-            NotificationsJob.cancelJob();
-        }
-    }
+private void updateNotificationJob(final SharedPreferences prefs) {
+	if (isAuthorized() && prefs.getBoolean(SettingsFragment.KEY_NOTIFICATIONS, false)) {
+		int intervalMinutes = prefs.getInt(SettingsFragment.KEY_NOTIFICATION_INTERVAL, 15);
+		NotificationsJob.scheduleJob(intervalMinutes);
+	} else {
+		NotificationsJob.cancelJob();
+	}
+}
 
-    private void selectTheme(final int theme) {
-        switch (theme) {
-        case THEME_DARK:
-            THEME = R.style.DarkTheme;
-            break;
-        case THEME_LIGHT:
-        case 2: /* for backwards compat with old settings, was light-dark theme */
-            THEME = R.style.LightTheme;
-            break;
-        }
-    }
+private void selectTheme(final int theme) {
+	switch (theme) {
+	case THEME_DARK:
+		THEME = R.style.DarkTheme;
+		break;
+	case THEME_LIGHT:
+	case 2: /* for backwards compat with old settings, was light-dark theme */
+		THEME = R.style.LightTheme;
+		break;
+	}
+}
 
-    @Override
-    @SuppressWarnings("deprecation")
-    public void onConfigurationChanged(final Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            mPt = new PrettyTime(newConfig.getLocales().get(0));
-        } else {
-            mPt = new PrettyTime(newConfig.locale);
-        }
-    }
+@Override
+@SuppressWarnings("deprecation")
+public void onConfigurationChanged(final Configuration newConfig) {
+	super.onConfigurationChanged(newConfig);
+	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+		mPt = new PrettyTime(newConfig.getLocales().get(0));
+	} else {
+		mPt = new PrettyTime(newConfig.locale);
+	}
+}
 
-    public PrettyTime getPrettyTimeInstance() {
-        return mPt;
-    }
+public PrettyTime getPrettyTimeInstance() {
+	return mPt;
+}
 
-    public void setActiveLogin(final String login) {
-        if (getPrefs().getStringSet(KEY_ALL_LOGINS, null).contains(login)) {
-            getPrefs().edit()
-            .putString(KEY_ACTIVE_LOGIN, login)
-            .apply();
-        }
-    }
+public void setActiveLogin(final String login) {
+	if (getPrefs().getStringSet(KEY_ALL_LOGINS, null).contains(login)) {
+		getPrefs().edit()
+		.putString(KEY_ACTIVE_LOGIN, login)
+		.apply();
+	}
+}
 
-    public String getAuthLogin() {
-        return getPrefs().getString(KEY_ACTIVE_LOGIN, null);
-    }
+public String getAuthLogin() {
+	return getPrefs().getString(KEY_ACTIVE_LOGIN, null);
+}
 
-    public LongSparseArray<String> getAccounts() {
-        LongSparseArray<String> accounts = new LongSparseArray<>();
-        for (String login : getPrefs().getStringSet(KEY_ALL_LOGINS, null)) {
-            long id = getPrefs().getLong(KEY_PREFIX_USER_ID + login, -1);
-            if (id > 0) {
-                accounts.put(id, login);
-            }
-        }
-        return accounts;
-    }
+public LongSparseArray<String> getAccounts() {
+	LongSparseArray<String> accounts = new LongSparseArray<>();
+	for (String login : getPrefs().getStringSet(KEY_ALL_LOGINS, null)) {
+		long id = getPrefs().getLong(KEY_PREFIX_USER_ID + login, -1);
+		if (id > 0) {
+			accounts.put(id, login);
+		}
+	}
+	return accounts;
+}
 
-    public String getAuthToken() {
-        String login = getAuthLogin();
-        return login != null ? getPrefs().getString(KEY_PREFIX_TOKEN + login, null) : null;
-    }
+public String getAuthToken() {
+	String login = getAuthLogin();
+	return login != null ? getPrefs().getString(KEY_PREFIX_TOKEN + login, null) : null;
+}
 
-    public void addAccount(final User user, final String token) {
-        SharedPreferences prefs = getPrefs();
-        String login = user.login();
-        Set<String> logins = prefs.getStringSet(KEY_ALL_LOGINS, null);
-        logins.add(login);
+public void addAccount(final User user, final String token) {
+	SharedPreferences prefs = getPrefs();
+	String login = user.login();
+	Set<String> logins = prefs.getStringSet(KEY_ALL_LOGINS, null);
+	logins.add(login);
 
-        prefs.edit()
-        .putString(KEY_ACTIVE_LOGIN, login)
-        .putStringSet(KEY_ALL_LOGINS, logins)
-        .putString(KEY_PREFIX_TOKEN + login, token)
-        .putLong(KEY_PREFIX_USER_ID + login, user.id())
-        .apply();
+	prefs.edit()
+	.putString(KEY_ACTIVE_LOGIN, login)
+	.putStringSet(KEY_ALL_LOGINS, logins)
+	.putString(KEY_PREFIX_TOKEN + login, token)
+	.putLong(KEY_PREFIX_USER_ID + login, user.id())
+	.apply();
 
-        updateNotificationJob(prefs);
-    }
+	updateNotificationJob(prefs);
+}
 
-    public User getCurrentAccountInfoForAvatar() {
-        String login = getAuthLogin();
-        if (login != null) {
-            long userId = getPrefs().getLong(KEY_PREFIX_USER_ID + login, -1);
-            if (userId >= 0) {
-                return User.builder().login(login).id(userId).build();
-            }
-        }
-        return null;
-    }
+public User getCurrentAccountInfoForAvatar() {
+	String login = getAuthLogin();
+	if (login != null) {
+		long userId = getPrefs().getLong(KEY_PREFIX_USER_ID + login, -1);
+		if (userId >= 0) {
+			return User.builder().login(login).id(userId).build();
+		}
+	}
+	return null;
+}
 
-    public void setCurrentAccountInfo(final User user) {
-        getPrefs().edit()
-        .putLong(KEY_PREFIX_USER_ID + user.login(), user.id())
-        .apply();
-    }
+public void setCurrentAccountInfo(final User user) {
+	getPrefs().edit()
+	.putLong(KEY_PREFIX_USER_ID + user.login(), user.id())
+	.apply();
+}
 
-    public void logout() {
-        String login = getAuthLogin();
-        if (login == null) {
-            return;
-        }
+public void logout() {
+	String login = getAuthLogin();
+	if (login == null) {
+		return;
+	}
 
-        Set<String> logins = getPrefs().getStringSet(KEY_ALL_LOGINS, null);
-        logins.remove(login);
+	Set<String> logins = getPrefs().getStringSet(KEY_ALL_LOGINS, null);
+	logins.remove(login);
 
-        getPrefs().edit()
-        .putString(KEY_ACTIVE_LOGIN, logins.size() > 0 ? logins.iterator().next() : null)
-        .putStringSet(KEY_ALL_LOGINS, logins)
-        .remove(KEY_PREFIX_TOKEN + login)
-        .remove(KEY_PREFIX_USER_ID + login)
-        .apply();
+	getPrefs().edit()
+	.putString(KEY_ACTIVE_LOGIN, logins.size() > 0 ? logins.iterator().next() : null)
+	.putStringSet(KEY_ALL_LOGINS, logins)
+	.remove(KEY_PREFIX_TOKEN + login)
+	.remove(KEY_PREFIX_USER_ID + login)
+	.apply();
 
-        NotificationsJob.cancelJob();
-    }
+	NotificationsJob.cancelJob();
+}
 
-    private SharedPreferences getPrefs() {
-        return getSharedPreferences(SettingsFragment.PREF_NAME, MODE_PRIVATE);
-    }
+private SharedPreferences getPrefs() {
+	return getSharedPreferences(SettingsFragment.PREF_NAME, MODE_PRIVATE);
+}
 
-    public static Gh4Application get() {
-        return sInstance;
-    }
+public static Gh4Application get() {
+	return sInstance;
+}
 
-    public boolean isAuthorized() {
-        return getAuthLogin() != null && getAuthToken() != null;
-    }
+public boolean isAuthorized() {
+	return getAuthLogin() != null && getAuthToken() != null;
+}
 
-    @Override
-    public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
-        if (key.equals(SettingsFragment.KEY_THEME)) {
-            selectTheme(sharedPreferences.getInt(key, THEME_LIGHT));
-        }
-    }
+@Override
+public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
+	if (key.equals(SettingsFragment.KEY_THEME)) {
+		selectTheme(sharedPreferences.getInt(key, THEME_LIGHT));
+	}
+}
 }

@@ -21,186 +21,186 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommitStatusBox extends LinearLayoutCompat implements View.OnClickListener {
-    private final ImageView mStatusIcon;
-    private final TextView mStatusLabel;
-    private final ViewGroup mStatusContainer;
-    private final LayoutInflater mInflater;
-    private final TextView mSummaryTextView;
-    private final ImageView mDropDownIcon;
-    private final View mHeader;
+private final ImageView mStatusIcon;
+private final TextView mStatusLabel;
+private final ViewGroup mStatusContainer;
+private final LayoutInflater mInflater;
+private final TextView mSummaryTextView;
+private final ImageView mDropDownIcon;
+private final View mHeader;
 
-    public CommitStatusBox(final Context context) {
-        this(context, null);
-    }
+public CommitStatusBox(final Context context) {
+	this(context, null);
+}
 
-    public CommitStatusBox(final Context context, final AttributeSet attrs) {
-        this(context, attrs, 0);
-    }
+public CommitStatusBox(final Context context, final AttributeSet attrs) {
+	this(context, attrs, 0);
+}
 
-    public CommitStatusBox(final Context context, final AttributeSet attrs, final int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+public CommitStatusBox(final Context context, final AttributeSet attrs, final int defStyleAttr) {
+	super(context, attrs, defStyleAttr);
 
-        setOrientation(VERTICAL);
+	setOrientation(VERTICAL);
 
-        mInflater = LayoutInflater.from(getContext());
-        mInflater.inflate(R.layout.commit_status_box, this, true);
+	mInflater = LayoutInflater.from(getContext());
+	mInflater.inflate(R.layout.commit_status_box, this, true);
 
-        mStatusIcon = findViewById(R.id.iv_merge_status_icon);
-        mStatusLabel = findViewById(R.id.merge_status_label);
-        mStatusContainer = findViewById(R.id.merge_commit_status_container);
-        mSummaryTextView = findViewById(R.id.merge_commit_summary);
-        mDropDownIcon = findViewById(R.id.drop_down_icon);
+	mStatusIcon = findViewById(R.id.iv_merge_status_icon);
+	mStatusLabel = findViewById(R.id.merge_status_label);
+	mStatusContainer = findViewById(R.id.merge_commit_status_container);
+	mSummaryTextView = findViewById(R.id.merge_commit_summary);
+	mDropDownIcon = findViewById(R.id.drop_down_icon);
 
-        mHeader = findViewById(R.id.commit_status_header);
-        mHeader.setOnClickListener(this);
-    }
+	mHeader = findViewById(R.id.commit_status_header);
+	mHeader.setOnClickListener(this);
+}
 
-    public void fillStatus(final List<Status> statuses, final PullRequest.MergeableState mergableState) {
-        final int statusIconDrawableAttrId;
-        final int statusLabelResId;
-        switch (mergableState) {
-        case Behind:
-            statusIconDrawableAttrId = R.attr.pullRequestMergeDirtyIcon;
-            statusLabelResId = R.string.pull_merge_status_behind;
-            break;
-        case Blocked:
-            statusIconDrawableAttrId = R.attr.pullRequestMergeDirtyIcon;
-            statusLabelResId = R.string.pull_merge_status_blocked;
-            break;
-        case Clean:
-            statusIconDrawableAttrId = R.attr.pullRequestMergeOkIcon;
-            statusLabelResId = statuses.isEmpty()
-                               ? R.string.pull_merge_status_mergable
-                               : R.string.pull_merge_status_clean;
-            break;
-        case Unstable:
-            statusIconDrawableAttrId = R.attr.pullRequestMergeDirtyIcon;
-            statusLabelResId = R.string.pull_merge_status_unstable;
-            break;
-        case Dirty:
-            statusIconDrawableAttrId = R.attr.pullRequestMergeDirtyIcon;
-            statusLabelResId = R.string.pull_merge_status_dirty;
-            break;
-        case Draft:
-            statusIconDrawableAttrId = R.attr.pullRequestMergeDirtyIcon;
-            statusLabelResId = R.string.pull_merge_status_dirty;
-            break;
-        default:
-            if (statuses.isEmpty()) {
-                // Unknown status, no commit statuses -> nothing to display
-                setVisibility(View.GONE);
-                return;
-            }
-            statusIconDrawableAttrId = R.attr.pullRequestMergeUnknownIcon;
-            statusLabelResId = R.string.pull_merge_status_unknown;
-            break;
-        }
+public void fillStatus(final List<Status> statuses, final PullRequest.MergeableState mergableState) {
+	final int statusIconDrawableAttrId;
+	final int statusLabelResId;
+	switch (mergableState) {
+	case Behind:
+		statusIconDrawableAttrId = R.attr.pullRequestMergeDirtyIcon;
+		statusLabelResId = R.string.pull_merge_status_behind;
+		break;
+	case Blocked:
+		statusIconDrawableAttrId = R.attr.pullRequestMergeDirtyIcon;
+		statusLabelResId = R.string.pull_merge_status_blocked;
+		break;
+	case Clean:
+		statusIconDrawableAttrId = R.attr.pullRequestMergeOkIcon;
+		statusLabelResId = statuses.isEmpty()
+		               ? R.string.pull_merge_status_mergable
+		               : R.string.pull_merge_status_clean;
+		break;
+	case Unstable:
+		statusIconDrawableAttrId = R.attr.pullRequestMergeDirtyIcon;
+		statusLabelResId = R.string.pull_merge_status_unstable;
+		break;
+	case Dirty:
+		statusIconDrawableAttrId = R.attr.pullRequestMergeDirtyIcon;
+		statusLabelResId = R.string.pull_merge_status_dirty;
+		break;
+	case Draft:
+		statusIconDrawableAttrId = R.attr.pullRequestMergeDirtyIcon;
+		statusLabelResId = R.string.pull_merge_status_dirty;
+		break;
+	default:
+		if (statuses.isEmpty()) {
+			// Unknown status, no commit statuses -> nothing to display
+			setVisibility(View.GONE);
+			return;
+		}
+		statusIconDrawableAttrId = R.attr.pullRequestMergeUnknownIcon;
+		statusLabelResId = R.string.pull_merge_status_unknown;
+		break;
+	}
 
-        setVisibility(View.VISIBLE);
+	setVisibility(View.VISIBLE);
 
-        int statusIconResId = UiUtils.resolveDrawable(getContext(), statusIconDrawableAttrId);
-        mStatusIcon.setImageResource(statusIconResId);
-        mStatusLabel.setText(statusLabelResId);
+	int statusIconResId = UiUtils.resolveDrawable(getContext(), statusIconDrawableAttrId);
+	mStatusIcon.setImageResource(statusIconResId);
+	mStatusLabel.setText(statusLabelResId);
 
-        mStatusContainer.removeAllViews();
+	mStatusContainer.removeAllViews();
 
-        if (statuses.isEmpty()) {
-            mStatusContainer.setVisibility(View.GONE);
-            mDropDownIcon.setVisibility(View.GONE);
-            mHeader.setClickable(false);
-            mSummaryTextView.setText(R.string.pull_no_commit_status);
-            return;
-        }
+	if (statuses.isEmpty()) {
+		mStatusContainer.setVisibility(View.GONE);
+		mDropDownIcon.setVisibility(View.GONE);
+		mHeader.setClickable(false);
+		mSummaryTextView.setText(R.string.pull_no_commit_status);
+		return;
+	}
 
-        mHeader.setClickable(true);
-        mDropDownIcon.setVisibility(View.VISIBLE);
-        mStatusContainer.setVisibility(View.VISIBLE);
+	mHeader.setClickable(true);
+	mDropDownIcon.setVisibility(View.VISIBLE);
+	mStatusContainer.setVisibility(View.VISIBLE);
 
-        int failingCount = 0;
-        int pendingCount = 0;
-        int successCount = 0;
+	int failingCount = 0;
+	int pendingCount = 0;
+	int successCount = 0;
 
-        for (Status status : statuses) {
-            View statusRow = mInflater.inflate(R.layout.row_commit_status, mStatusContainer, false);
-            if (status.targetUrl() != null) {
-                statusRow.setTag(status);
-                statusRow.setOnClickListener(this);
-            }
+	for (Status status : statuses) {
+		View statusRow = mInflater.inflate(R.layout.row_commit_status, mStatusContainer, false);
+		if (status.targetUrl() != null) {
+			statusRow.setTag(status);
+			statusRow.setOnClickListener(this);
+		}
 
-            final int iconDrawableAttrId;
-            switch (status.state()) {
-            case Error:
-            case Failure:
-                iconDrawableAttrId = R.attr.commitStatusFailIcon;
-                failingCount += 1;
-                break;
-            case Success:
-                iconDrawableAttrId = R.attr.commitStatusOkIcon;
-                successCount += 1;
-                break;
-            default:
-                iconDrawableAttrId = R.attr.commitStatusUnknownIcon;
-                pendingCount += 1;
-                break;
-            }
-            ImageView icon = statusRow.findViewById(R.id.iv_status_icon);
-            icon.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            icon.setImageResource(UiUtils.resolveDrawable(getContext(), iconDrawableAttrId));
+		final int iconDrawableAttrId;
+		switch (status.state()) {
+		case Error:
+		case Failure:
+			iconDrawableAttrId = R.attr.commitStatusFailIcon;
+			failingCount += 1;
+			break;
+		case Success:
+			iconDrawableAttrId = R.attr.commitStatusOkIcon;
+			successCount += 1;
+			break;
+		default:
+			iconDrawableAttrId = R.attr.commitStatusUnknownIcon;
+			pendingCount += 1;
+			break;
+		}
+		ImageView icon = statusRow.findViewById(R.id.iv_status_icon);
+		icon.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+		icon.setImageResource(UiUtils.resolveDrawable(getContext(), iconDrawableAttrId));
 
-            TextView context = statusRow.findViewById(R.id.tv_context);
-            context.setText(status.context());
+		TextView context = statusRow.findViewById(R.id.tv_context);
+		context.setText(status.context());
 
-            TextView description = statusRow.findViewById(R.id.tv_desc);
-            description.setText(status.description());
+		TextView description = statusRow.findViewById(R.id.tv_desc);
+		description.setText(status.description());
 
-            mStatusContainer.addView(statusRow);
-        }
+		mStatusContainer.addView(statusRow);
+	}
 
-        if (mergableState == PullRequest.MergeableState.Unstable && pendingCount > 0) {
-            int resId = UiUtils.resolveDrawable(getContext(), R.attr.pullRequestMergeUnknownIcon);
-            mStatusIcon.setImageResource(resId);
-            mStatusLabel.setText(R.string.pull_merge_status_pending);
-        }
+	if (mergableState == PullRequest.MergeableState.Unstable && pendingCount > 0) {
+		int resId = UiUtils.resolveDrawable(getContext(), R.attr.pullRequestMergeUnknownIcon);
+		mStatusIcon.setImageResource(resId);
+		mStatusLabel.setText(R.string.pull_merge_status_pending);
+	}
 
-        setSummaryText(failingCount, pendingCount, successCount);
-        setStatusesExpanded(failingCount + pendingCount > 0);
-    }
+	setSummaryText(failingCount, pendingCount, successCount);
+	setStatusesExpanded(failingCount + pendingCount > 0);
+}
 
-    @Override
-    public void onClick(final View v) {
-        switch (v.getId()) {
-        case R.id.row_commit_status:
-            Status status = (Status) v.getTag();
-            IntentUtils.launchBrowser(getContext(), Uri.parse(status.targetUrl()));
-            break;
-        case R.id.commit_status_header:
-            setStatusesExpanded(mStatusContainer.getVisibility() != View.VISIBLE);
-            break;
-        }
-    }
+@Override
+public void onClick(final View v) {
+	switch (v.getId()) {
+	case R.id.row_commit_status:
+		Status status = (Status) v.getTag();
+		IntentUtils.launchBrowser(getContext(), Uri.parse(status.targetUrl()));
+		break;
+	case R.id.commit_status_header:
+		setStatusesExpanded(mStatusContainer.getVisibility() != View.VISIBLE);
+		break;
+	}
+}
 
-    private void setSummaryText(final int failingCount, final int pendingCount, final int successCount) {
-        ArrayList<String> summaryList = new ArrayList<>();
-        if (failingCount > 0) {
-            summaryList.add(getContext().getString(R.string.check_failing, failingCount));
-        }
-        if (pendingCount > 0) {
-            summaryList.add(getContext().getString(R.string.check_pending, pendingCount));
-        }
-        if (successCount > 0) {
-            summaryList.add(getContext().getString(R.string.check_successful, successCount));
-        }
-        String summary = TextUtils.join(", ", summaryList);
+private void setSummaryText(final int failingCount, final int pendingCount, final int successCount) {
+	ArrayList<String> summaryList = new ArrayList<>();
+	if (failingCount > 0) {
+		summaryList.add(getContext().getString(R.string.check_failing, failingCount));
+	}
+	if (pendingCount > 0) {
+		summaryList.add(getContext().getString(R.string.check_pending, pendingCount));
+	}
+	if (successCount > 0) {
+		summaryList.add(getContext().getString(R.string.check_successful, successCount));
+	}
+	String summary = TextUtils.join(", ", summaryList);
 
-        int sumCount = pendingCount + failingCount + successCount;
-        mSummaryTextView.setText(getResources().getQuantityString(R.plurals.checks_summary,
-                                 sumCount, summary));
-    }
+	int sumCount = pendingCount + failingCount + successCount;
+	mSummaryTextView.setText(getResources().getQuantityString(R.plurals.checks_summary,
+	                                                          sumCount, summary));
+}
 
-    private void setStatusesExpanded(final boolean expanded) {
-        mStatusContainer.setVisibility(expanded ? View.VISIBLE : View.GONE);
-        int drawableAttr = expanded ? R.attr.dropUpArrowIcon : R.attr.dropDownArrowIcon;
-        int drawableRes = UiUtils.resolveDrawable(getContext(), drawableAttr);
-        mDropDownIcon.setImageResource(drawableRes);
-    }
+private void setStatusesExpanded(final boolean expanded) {
+	mStatusContainer.setVisibility(expanded ? View.VISIBLE : View.GONE);
+	int drawableAttr = expanded ? R.attr.dropUpArrowIcon : R.attr.dropDownArrowIcon;
+	int drawableRes = UiUtils.resolveDrawable(getContext(), drawableAttr);
+	mDropDownIcon.setImageResource(drawableRes);
+}
 }

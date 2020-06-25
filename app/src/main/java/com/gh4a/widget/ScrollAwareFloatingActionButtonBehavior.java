@@ -12,41 +12,41 @@ import com.gh4a.R;
 
 @SuppressWarnings("unused")
 public class ScrollAwareFloatingActionButtonBehavior extends FloatingActionButton.Behavior {
-    private final FloatingActionButton.OnVisibilityChangedListener mVisibilityChangedListener =
-    new FloatingActionButton.OnVisibilityChangedListener() {
-        @Override
-        public void onHidden(final FloatingActionButton fab) {
-            super.onHidden(fab);
-            fab.setVisibility(View.INVISIBLE);
-        }
-    };
+private final FloatingActionButton.OnVisibilityChangedListener mVisibilityChangedListener =
+	new FloatingActionButton.OnVisibilityChangedListener() {
+	@Override
+	public void onHidden(final FloatingActionButton fab) {
+		super.onHidden(fab);
+		fab.setVisibility(View.INVISIBLE);
+	}
+};
 
-    public ScrollAwareFloatingActionButtonBehavior(final Context context, final AttributeSet attrs) {
-        super(context, attrs);
-    }
+public ScrollAwareFloatingActionButtonBehavior(final Context context, final AttributeSet attrs) {
+	super(context, attrs);
+}
 
-    @Override
-    public boolean onStartNestedScroll(final @NonNull CoordinatorLayout coordinatorLayout,
-                                       final @NonNull FloatingActionButton child, final @NonNull View directTargetChild,
-                                       final @NonNull View target, final int axes, final int type) {
-        if (target.getTag(R.id.FloatingActionButtonScrollEnabled) == null) {
-            return super.onStartNestedScroll(coordinatorLayout, child, directTargetChild, target,
-                                             axes, type);
-        }
-        return axes == ViewCompat.SCROLL_AXIS_VERTICAL;
-    }
+@Override
+public boolean onStartNestedScroll(final @NonNull CoordinatorLayout coordinatorLayout,
+                                   final @NonNull FloatingActionButton child, final @NonNull View directTargetChild,
+                                   final @NonNull View target, final int axes, final int type) {
+	if (target.getTag(R.id.FloatingActionButtonScrollEnabled) == null) {
+		return super.onStartNestedScroll(coordinatorLayout, child, directTargetChild, target,
+		                                 axes, type);
+	}
+	return axes == ViewCompat.SCROLL_AXIS_VERTICAL;
+}
 
-    @Override
-    public void onNestedScroll(final @NonNull CoordinatorLayout coordinatorLayout,
-                               final @NonNull FloatingActionButton child, final @NonNull View target, final int dxConsumed,
-                               final int dyConsumed, final int dxUnconsumed, final int dyUnconsumed, final int type) {
-        super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed,
-                             dyUnconsumed, type);
+@Override
+public void onNestedScroll(final @NonNull CoordinatorLayout coordinatorLayout,
+                           final @NonNull FloatingActionButton child, final @NonNull View target, final int dxConsumed,
+                           final int dyConsumed, final int dxUnconsumed, final int dyUnconsumed, final int type) {
+	super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed,
+	                     dyUnconsumed, type);
 
-        if (dyConsumed > 0 && child.getVisibility() == View.VISIBLE) {
-            child.hide(mVisibilityChangedListener);
-        } else if (dyConsumed < 0 && child.getVisibility() != View.VISIBLE) {
-            child.show();
-        }
-    }
+	if (dyConsumed > 0 && child.getVisibility() == View.VISIBLE) {
+		child.hide(mVisibilityChangedListener);
+	} else if (dyConsumed < 0 && child.getVisibility() != View.VISIBLE) {
+		child.show();
+	}
+}
 }

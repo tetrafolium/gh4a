@@ -36,52 +36,52 @@ import com.gh4a.utils.SingleFactory;
 import io.reactivex.Single;
 
 public class BlogListFragment extends ListDataBaseFragment<Feed> implements
-    RootAdapter.OnItemClickListener<Feed> {
-    public static BlogListFragment newInstance() {
-        return new BlogListFragment();
-    }
+	RootAdapter.OnItemClickListener<Feed> {
+public static BlogListFragment newInstance() {
+	return new BlogListFragment();
+}
 
-    @Override
-    public void onCreate(final @Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
+@Override
+public void onCreate(final @Nullable Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	setHasOptionsMenu(true);
+}
 
-    @Override
-    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
-        inflater.inflate(R.menu.blog_list_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
+@Override
+public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+	inflater.inflate(R.menu.blog_list_menu, menu);
+	super.onCreateOptionsMenu(menu, inflater);
+}
 
-    @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
-        switch (item.getItemId()) {
-        case R.id.browser:
-            IntentUtils.launchBrowser(getActivity(), Uri.parse("https://blog.github.com"));
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+@Override
+public boolean onOptionsItemSelected(final MenuItem item) {
+	switch (item.getItemId()) {
+	case R.id.browser:
+		IntentUtils.launchBrowser(getActivity(), Uri.parse("https://blog.github.com"));
+		return true;
+	}
+	return super.onOptionsItemSelected(item);
+}
 
-    @Override
-    protected RootAdapter<Feed, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
-        CommonFeedAdapter adapter = new CommonFeedAdapter(getActivity(), true);
-        adapter.setOnItemClickListener(this);
-        return adapter;
-    }
+@Override
+protected RootAdapter<Feed, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
+	CommonFeedAdapter adapter = new CommonFeedAdapter(getActivity(), true);
+	adapter.setOnItemClickListener(this);
+	return adapter;
+}
 
-    @Override
-    protected int getEmptyTextResId() {
-        return R.string.no_blogs_found;
-    }
+@Override
+protected int getEmptyTextResId() {
+	return R.string.no_blogs_found;
+}
 
-    @Override
-    public void onItemClick(final Feed blog) {
-        startActivity(BlogActivity.makeIntent(getActivity(), blog));
-    }
+@Override
+public void onItemClick(final Feed blog) {
+	startActivity(BlogActivity.makeIntent(getActivity(), blog));
+}
 
-    @Override
-    protected Single<List<Feed>> onCreateDataSingle(final boolean bypassCache) {
-        return SingleFactory.loadBlogFeed();
-    }
+@Override
+protected Single<List<Feed> > onCreateDataSingle(final boolean bypassCache) {
+	return SingleFactory.loadBlogFeed();
+}
 }

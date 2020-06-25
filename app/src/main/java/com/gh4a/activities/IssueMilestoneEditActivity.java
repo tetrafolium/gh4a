@@ -66,419 +66,419 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class IssueMilestoneEditActivity extends BasePagerActivity implements
-    View.OnClickListener, View.OnFocusChangeListener, AppBarLayout.OnOffsetChangedListener {
-    public static Intent makeEditIntent(final Context context, final String repoOwner, final String repoName,
-                                        final Milestone milestone, final boolean fromPullRequest) {
-        return makeCreateIntent(context, repoOwner, repoName, fromPullRequest)
-               .putExtra("milestone", milestone);
-    }
+	View.OnClickListener, View.OnFocusChangeListener, AppBarLayout.OnOffsetChangedListener {
+public static Intent makeEditIntent(final Context context, final String repoOwner, final String repoName,
+                                    final Milestone milestone, final boolean fromPullRequest) {
+	return makeCreateIntent(context, repoOwner, repoName, fromPullRequest)
+	       .putExtra("milestone", milestone);
+}
 
-    public static Intent makeCreateIntent(final Context context, final String repoOwner, final String repoName,
-                                          final boolean fromPullRequest) {
-        return new Intent(context, IssueMilestoneEditActivity.class)
-               .putExtra("owner", repoOwner)
-               .putExtra("repo", repoName)
-               .putExtra("from_pr", fromPullRequest);
-    }
+public static Intent makeCreateIntent(final Context context, final String repoOwner, final String repoName,
+                                      final boolean fromPullRequest) {
+	return new Intent(context, IssueMilestoneEditActivity.class)
+	       .putExtra("owner", repoOwner)
+	       .putExtra("repo", repoName)
+	       .putExtra("from_pr", fromPullRequest);
+}
 
-    private static final int[] TITLES = {
-        R.string.issue_body, R.string.preview, R.string.settings
-    };
+private static final int[] TITLES = {
+	R.string.issue_body, R.string.preview, R.string.settings
+};
 
-    private String mRepoOwner;
-    private String mRepoName;
-    private boolean mFromPullRequest;
+private String mRepoOwner;
+private String mRepoName;
+private boolean mFromPullRequest;
 
-    private Milestone mMilestone;
+private Milestone mMilestone;
 
-    private View mRootView;
-    private IssueStateTrackingFloatingActionButton mSaveFab;
-    private TextInputLayout mTitleWrapper;
-    private EditText mTitleView;
-    private MarkdownButtonsBar mMarkdownButtons;
-    private EditText mDescriptionView;
-    private TextView mDueView;
+private View mRootView;
+private IssueStateTrackingFloatingActionButton mSaveFab;
+private TextInputLayout mTitleWrapper;
+private EditText mTitleView;
+private MarkdownButtonsBar mMarkdownButtons;
+private EditText mDescriptionView;
+private TextView mDueView;
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
 
-        if (!Gh4Application.get().isAuthorized()) {
-            Intent intent = new Intent(this, Github4AndroidActivity.class);
-            startActivity(intent);
-            finish();
-            return;
-        }
+	if (!Gh4Application.get().isAuthorized()) {
+		Intent intent = new Intent(this, Github4AndroidActivity.class);
+		startActivity(intent);
+		finish();
+		return;
+	}
 
-        LayoutInflater headerInflater = LayoutInflater.from(UiUtils.makeHeaderThemedContext(this));
-        View header = headerInflater.inflate(R.layout.issue_create_header, null);
-        addHeaderView(header, false);
+	LayoutInflater headerInflater = LayoutInflater.from(UiUtils.makeHeaderThemedContext(this));
+	View header = headerInflater.inflate(R.layout.issue_create_header, null);
+	addHeaderView(header, false);
 
-        mTitleWrapper = header.findViewById(R.id.title_wrapper);
-        mTitleView = header.findViewById(R.id.et_title);
-        mTitleView.setOnFocusChangeListener(this);
+	mTitleWrapper = header.findViewById(R.id.title_wrapper);
+	mTitleView = header.findViewById(R.id.et_title);
+	mTitleView.setOnFocusChangeListener(this);
 
-        mDescriptionView = findViewById(R.id.editor);
-        mDueView = findViewById(R.id.tv_due);
+	mDescriptionView = findViewById(R.id.editor);
+	mDueView = findViewById(R.id.tv_due);
 
-        mMarkdownButtons = findViewById(R.id.markdown_buttons);
-        mMarkdownButtons.setEditText(mDescriptionView);
+	mMarkdownButtons = findViewById(R.id.markdown_buttons);
+	mMarkdownButtons.setEditText(mDescriptionView);
 
-        MarkdownPreviewWebView preview = findViewById(R.id.preview);
-        preview.setEditText(mDescriptionView);
+	MarkdownPreviewWebView preview = findViewById(R.id.preview);
+	preview.setEditText(mDescriptionView);
 
-        CoordinatorLayout rootLayout = getRootLayout();
-        mSaveFab = (IssueStateTrackingFloatingActionButton)
-                   getLayoutInflater().inflate(R.layout.accept_fab, rootLayout, false);
-        mSaveFab.setOnClickListener(this);
-        rootLayout.addView(mSaveFab);
+	CoordinatorLayout rootLayout = getRootLayout();
+	mSaveFab = (IssueStateTrackingFloatingActionButton)
+	           getLayoutInflater().inflate(R.layout.accept_fab, rootLayout, false);
+	mSaveFab.setOnClickListener(this);
+	rootLayout.addView(mSaveFab);
 
-        findViewById(R.id.due_container).setOnClickListener(this);
+	findViewById(R.id.due_container).setOnClickListener(this);
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(true);
+	ActionBar actionBar = getSupportActionBar();
+	actionBar.setDisplayShowTitleEnabled(true);
 
-        if (mMilestone == null) {
-            mMilestone = Milestone.builder().state(IssueState.Open).build();
-        }
+	if (mMilestone == null) {
+		mMilestone = Milestone.builder().state(IssueState.Open).build();
+	}
 
-        mTitleView.addTextChangedListener(new UiUtils.ButtonEnableTextWatcher(mTitleView, mSaveFab));
-        mTitleView.addTextChangedListener(new UiUtils.EmptinessWatchingTextWatcher(mTitleView) {
-            @Override
-            public void onIsEmpty(final boolean isEmpty) {
-                if (isEmpty) {
-                    mTitleWrapper.setError(getString(R.string.issue_error_milestone_title));
-                } else {
-                    mTitleWrapper.setErrorEnabled(false);
-                }
-            }
-        });
+	mTitleView.addTextChangedListener(new UiUtils.ButtonEnableTextWatcher(mTitleView, mSaveFab));
+	mTitleView.addTextChangedListener(new UiUtils.EmptinessWatchingTextWatcher(mTitleView) {
+			@Override
+			public void onIsEmpty(final boolean isEmpty) {
+			        if (isEmpty) {
+			                mTitleWrapper.setError(getString(R.string.issue_error_milestone_title));
+				} else {
+			                mTitleWrapper.setErrorEnabled(false);
+				}
+			}
+		});
 
-        mTitleView.setText(mMilestone.title());
-        mDescriptionView.setText(mMilestone.description());
-        updateHighlightColor();
-        updateLabels();
-        setToolbarScrollable(false);
-        adjustTabsForHeaderAlignedFab(true);
-    }
+	mTitleView.setText(mMilestone.title());
+	mDescriptionView.setText(mMilestone.description());
+	updateHighlightColor();
+	updateLabels();
+	setToolbarScrollable(false);
+	adjustTabsForHeaderAlignedFab(true);
+}
 
-    @Nullable
-    @Override
-    protected String getActionBarTitle() {
-        return getString(isInEditMode()
-                         ? R.string.issue_milestone_edit
-                         : R.string.issue_milestone_new);
-    }
+@Nullable
+@Override
+protected String getActionBarTitle() {
+	return getString(isInEditMode()
+	                 ? R.string.issue_milestone_edit
+	                 : R.string.issue_milestone_new);
+}
 
-    @Nullable
-    @Override
-    protected String getActionBarSubtitle() {
-        return mRepoOwner + "/" + mRepoName;
-    }
+@Nullable
+@Override
+protected String getActionBarSubtitle() {
+	return mRepoOwner + "/" + mRepoName;
+}
 
-    @Override
-    protected PagerAdapter createAdapter(final ViewGroup root) {
-        mRootView = root;
-        getLayoutInflater().inflate(R.layout.issue_create_milestone, root);
-        return new MilestonePagerAdapter();
-    }
+@Override
+protected PagerAdapter createAdapter(final ViewGroup root) {
+	mRootView = root;
+	getLayoutInflater().inflate(R.layout.issue_create_milestone, root);
+	return new MilestonePagerAdapter();
+}
 
-    @Override
-    protected void onInitExtras(final Bundle extras) {
-        super.onInitExtras(extras);
-        mRepoOwner = extras.getString("owner");
-        mRepoName = extras.getString("repo");
-        mFromPullRequest = extras.getBoolean("from_pr", false);
-        mMilestone = extras.getParcelable("milestone");
-    }
+@Override
+protected void onInitExtras(final Bundle extras) {
+	super.onInitExtras(extras);
+	mRepoOwner = extras.getString("owner");
+	mRepoName = extras.getString("repo");
+	mFromPullRequest = extras.getBoolean("from_pr", false);
+	mMilestone = extras.getParcelable("milestone");
+}
 
-    private boolean isInEditMode() {
-        return getIntent().hasExtra("milestone");
-    }
+private boolean isInEditMode() {
+	return getIntent().hasExtra("milestone");
+}
 
-    @Override
-    protected boolean canSwipeToRefresh() {
-        // swipe-to-refresh doesn't make much sense in the
-        // interaction model of this activity
-        return false;
-    }
+@Override
+protected boolean canSwipeToRefresh() {
+	// swipe-to-refresh doesn't make much sense in the
+	// interaction model of this activity
+	return false;
+}
 
-    @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
-        if (isInEditMode()) {
-            MenuInflater inflater = getMenuInflater();
-            inflater.inflate(R.menu.edit_milestone_menu, menu);
+@Override
+public boolean onCreateOptionsMenu(final Menu menu) {
+	if (isInEditMode()) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.edit_milestone_menu, menu);
 
-            if (mMilestone.state() == IssueState.Open) {
-                menu.removeItem(R.id.milestone_reopen);
-            } else {
-                menu.removeItem(R.id.milestone_close);
-            }
-        }
-        return super.onCreateOptionsMenu(menu);
-    }
+		if (mMilestone.state() == IssueState.Open) {
+			menu.removeItem(R.id.milestone_reopen);
+		} else {
+			menu.removeItem(R.id.milestone_close);
+		}
+	}
+	return super.onCreateOptionsMenu(menu);
+}
 
-    @Override
-    protected Intent navigateUp() {
-        return IssueMilestoneListActivity.makeIntent(this, mRepoOwner, mRepoName, mFromPullRequest);
-    }
+@Override
+protected Intent navigateUp() {
+	return IssueMilestoneListActivity.makeIntent(this, mRepoOwner, mRepoName, mFromPullRequest);
+}
 
-    @Override
-    public void onClick(final View view) {
-        if (view.getId() == R.id.due_container) {
-            DialogFragment newFragment = new DatePickerFragment();
-            newFragment.show(getSupportFragmentManager(), "datePicker");
-        } else if (view == mSaveFab) {
-            String title = mTitleView.getText().toString();
-            String desc = mDescriptionView.getText() != null
-                          ? mDescriptionView.getText().toString() : null;
+@Override
+public void onClick(final View view) {
+	if (view.getId() == R.id.due_container) {
+		DialogFragment newFragment = new DatePickerFragment();
+		newFragment.show(getSupportFragmentManager(), "datePicker");
+	} else if (view == mSaveFab) {
+		String title = mTitleView.getText().toString();
+		String desc = mDescriptionView.getText() != null
+		          ? mDescriptionView.getText().toString() : null;
 
-            saveMilestone(title, desc);
-        }
-    }
+		saveMilestone(title, desc);
+	}
+}
 
-    @Override
-    public void onFocusChange(final View view, final boolean hasFocus) {
-        if (view == mTitleView) {
-            mMarkdownButtons.setVisibility(hasFocus ? View.GONE : View.VISIBLE);
-        }
-    }
+@Override
+public void onFocusChange(final View view, final boolean hasFocus) {
+	if (view == mTitleView) {
+		mMarkdownButtons.setVisibility(hasFocus ? View.GONE : View.VISIBLE);
+	}
+}
 
-    @Override
-    public void onOffsetChanged(final AppBarLayout appBarLayout, final int verticalOffset) {
-        // Set the bottom padding to make the bottom appear as not moving while the
-        // AppBarLayout pushes it down or up.
-        mRootView.setPadding(mRootView.getPaddingLeft(), mRootView.getPaddingTop(),
-                             mRootView.getPaddingRight(), appBarLayout.getTotalScrollRange() + verticalOffset);
-    }
+@Override
+public void onOffsetChanged(final AppBarLayout appBarLayout, final int verticalOffset) {
+	// Set the bottom padding to make the bottom appear as not moving while the
+	// AppBarLayout pushes it down or up.
+	mRootView.setPadding(mRootView.getPaddingLeft(), mRootView.getPaddingTop(),
+	                     mRootView.getPaddingRight(), appBarLayout.getTotalScrollRange() + verticalOffset);
+}
 
-    @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
-        switch (item.getItemId()) {
-        case R.id.milestone_close:
-        case R.id.milestone_reopen:
-            showOpenCloseConfirmDialog(item.getItemId() == R.id.milestone_reopen);
-            return true;
-        case R.id.delete:
-            new AlertDialog.Builder(this)
-            .setMessage(getString(R.string.issue_dialog_delete_message,
-                                  mMilestone.title()))
-            .setPositiveButton(R.string.delete, (dialog, which) -> deleteMilestone())
-            .setNegativeButton(R.string.cancel, null)
-            .show();
-            return true;
-        }
+@Override
+public boolean onOptionsItemSelected(final MenuItem item) {
+	switch (item.getItemId()) {
+	case R.id.milestone_close:
+	case R.id.milestone_reopen:
+		showOpenCloseConfirmDialog(item.getItemId() == R.id.milestone_reopen);
+		return true;
+	case R.id.delete:
+		new AlertDialog.Builder(this)
+		.setMessage(getString(R.string.issue_dialog_delete_message,
+		                      mMilestone.title()))
+		.setPositiveButton(R.string.delete, (dialog, which)->deleteMilestone())
+		.setNegativeButton(R.string.cancel, null)
+		.show();
+		return true;
+	}
 
-        return super.onOptionsItemSelected(item);
-    }
+	return super.onOptionsItemSelected(item);
+}
 
-    private void showOpenCloseConfirmDialog(final boolean reopen) {
-        @StringRes int messageResId = reopen
-                                      ? R.string.issue_milestone_reopen_message : R.string.issue_milestone_close_message;
-        @StringRes int buttonResId = reopen
-                                     ? R.string.pull_request_reopen : R.string.pull_request_close;
-        new AlertDialog.Builder(this)
-        .setMessage(messageResId)
-        .setPositiveButton(buttonResId, (dialog, which) -> setMilestoneState(reopen))
-        .setNegativeButton(R.string.cancel, null)
-        .show();
-    }
+private void showOpenCloseConfirmDialog(final boolean reopen) {
+	@StringRes int messageResId = reopen
+	                              ? R.string.issue_milestone_reopen_message : R.string.issue_milestone_close_message;
+	@StringRes int buttonResId = reopen
+	                             ? R.string.pull_request_reopen : R.string.pull_request_close;
+	new AlertDialog.Builder(this)
+	.setMessage(messageResId)
+	.setPositiveButton(buttonResId, (dialog, which)->setMilestoneState(reopen))
+	.setNegativeButton(R.string.cancel, null)
+	.show();
+}
 
-    private void updateHighlightColor() {
-        boolean closed = mMilestone.state() == IssueState.Closed;
-        transitionHeaderToColor(closed ? R.attr.colorIssueClosed : R.attr.colorIssueOpen,
-                                closed ? R.attr.colorIssueClosedDark : R.attr.colorIssueOpenDark);
-        mSaveFab.setState(mMilestone.state());
-    }
+private void updateHighlightColor() {
+	boolean closed = mMilestone.state() == IssueState.Closed;
+	transitionHeaderToColor(closed ? R.attr.colorIssueClosed : R.attr.colorIssueOpen,
+	                        closed ? R.attr.colorIssueClosedDark : R.attr.colorIssueOpenDark);
+	mSaveFab.setState(mMilestone.state());
+}
 
-    private void setDueOn(final int year, final int month, final int day) {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.DAY_OF_MONTH, day);
-        cal.set(Calendar.MONTH, month);
-        cal.set(Calendar.YEAR, year);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
+private void setDueOn(final int year, final int month, final int day) {
+	Calendar cal = Calendar.getInstance();
+	cal.set(Calendar.DAY_OF_MONTH, day);
+	cal.set(Calendar.MONTH, month);
+	cal.set(Calendar.YEAR, year);
+	cal.set(Calendar.HOUR_OF_DAY, 0);
+	cal.set(Calendar.MINUTE, 0);
+	cal.set(Calendar.SECOND, 0);
 
-        mMilestone = mMilestone.toBuilder()
-                     .dueOn(cal.getTime())
-                     .build();
-        updateLabels();
-    }
+	mMilestone = mMilestone.toBuilder()
+	             .dueOn(cal.getTime())
+	             .build();
+	updateLabels();
+}
 
-    private void resetDueOn() {
-        mMilestone = mMilestone.toBuilder()
-                     .dueOn(null)
-                     .build();
-        updateLabels();
-    }
+private void resetDueOn() {
+	mMilestone = mMilestone.toBuilder()
+	             .dueOn(null)
+	             .build();
+	updateLabels();
+}
 
-    private void updateLabels() {
-        Date dueOn = mMilestone.dueOn();
+private void updateLabels() {
+	Date dueOn = mMilestone.dueOn();
 
-        if (dueOn != null) {
-            mDueView.setText(DateFormat.getMediumDateFormat(this).format(dueOn));
-        } else {
-            mDueView.setText(R.string.issue_milestone_due_unset);
-        }
-    }
+	if (dueOn != null) {
+		mDueView.setText(DateFormat.getMediumDateFormat(this).format(dueOn));
+	} else {
+		mDueView.setText(R.string.issue_milestone_due_unset);
+	}
+}
 
-    private Single<Response<Milestone>> createMilestone(final String title, final String desc,
-            final IssueMilestoneService service) {
-        CreateMilestone request = CreateMilestone.builder()
-                                  .title(title)
-                                  .description(desc)
-                                  .state(mMilestone.state())
-                                  .dueOn(mMilestone.dueOn())
-                                  .build();
+private Single<Response<Milestone> > createMilestone(final String title, final String desc,
+                                                     final IssueMilestoneService service) {
+	CreateMilestone request = CreateMilestone.builder()
+	                          .title(title)
+	                          .description(desc)
+	                          .state(mMilestone.state())
+	                          .dueOn(mMilestone.dueOn())
+	                          .build();
 
-        return service.createMilestone(mRepoOwner, mRepoName, request);
-    }
+	return service.createMilestone(mRepoOwner, mRepoName, request);
+}
 
-    private Single<Response<Milestone>> editMilestone(final String title, final String desc,
-            final IssueMilestoneService service) {
-        EditMilestone request = EditMilestone.builder()
-                                .title(title)
-                                .description(desc)
-                                .state(mMilestone.state())
-                                .dueOn(mMilestone.dueOn())
-                                .build();
+private Single<Response<Milestone> > editMilestone(final String title, final String desc,
+                                                   final IssueMilestoneService service) {
+	EditMilestone request = EditMilestone.builder()
+	                        .title(title)
+	                        .description(desc)
+	                        .state(mMilestone.state())
+	                        .dueOn(mMilestone.dueOn())
+	                        .build();
 
-        return service.editMilestone(mRepoOwner, mRepoName, mMilestone.number(), request);
-    }
+	return service.editMilestone(mRepoOwner, mRepoName, mMilestone.number(), request);
+}
 
-    private void saveMilestone(final String title, final String desc) {
-        @StringRes int errorMessageResId = isInEditMode()
-                                           ? R.string.issue_error_edit_milestone : R.string.issue_error_create_milestone;
-        String errorMessage = getString(errorMessageResId, title);
-        IssueMilestoneService service = ServiceFactory.get(IssueMilestoneService.class, false);
-        Single<Response<Milestone>> responseSingle = isInEditMode()
-                ? editMilestone(title, desc, service) : createMilestone(title, desc, service);
+private void saveMilestone(final String title, final String desc) {
+	@StringRes int errorMessageResId = isInEditMode()
+	                                   ? R.string.issue_error_edit_milestone : R.string.issue_error_create_milestone;
+	String errorMessage = getString(errorMessageResId, title);
+	IssueMilestoneService service = ServiceFactory.get(IssueMilestoneService.class, false);
+	Single<Response<Milestone> > responseSingle = isInEditMode()
+	        ? editMilestone(title, desc, service) : createMilestone(title, desc, service);
 
-        responseSingle
-        .map(ApiHelpers::throwOnFailure)
-        .compose(RxUtils.wrapForBackgroundTask(this, R.string.saving_msg, errorMessage))
-        .subscribe(result -> {
-            mMilestone = result;
-            setResult(RESULT_OK);
-            finish();
-        }, error -> handleActionFailure("Saving milestone failed", error));
-    }
+	responseSingle
+	.map(ApiHelpers::throwOnFailure)
+	.compose(RxUtils.wrapForBackgroundTask(this, R.string.saving_msg, errorMessage))
+	.subscribe(result->{
+			mMilestone = result;
+			setResult(RESULT_OK);
+			finish();
+		}, error->handleActionFailure("Saving milestone failed", error));
+}
 
-    private void deleteMilestone() {
-        IssueMilestoneService service = ServiceFactory.get(IssueMilestoneService.class, false);
-        service.deleteMilestone(mRepoOwner, mRepoName, mMilestone.number())
-        .map(ApiHelpers::throwOnFailure)
-        .compose(RxUtils.wrapForBackgroundTask(this, R.string.deleting_msg, R.string.issue_error_delete_milestone))
-        .subscribe(result -> {
-            setResult(RESULT_OK);
-            finish();
-        }, error -> handleActionFailure("Deleting milestone failed", error));
-    }
+private void deleteMilestone() {
+	IssueMilestoneService service = ServiceFactory.get(IssueMilestoneService.class, false);
+	service.deleteMilestone(mRepoOwner, mRepoName, mMilestone.number())
+	.map(ApiHelpers::throwOnFailure)
+	.compose(RxUtils.wrapForBackgroundTask(this, R.string.deleting_msg, R.string.issue_error_delete_milestone))
+	.subscribe(result->{
+			setResult(RESULT_OK);
+			finish();
+		}, error->handleActionFailure("Deleting milestone failed", error));
+}
 
-    private void setMilestoneState(final boolean open) {
-        @StringRes int dialogMessageResId = open ? R.string.opening_msg : R.string.closing_msg;
-        String errorMessage = getString(
-                                  open ? R.string.issue_milestone_reopen_error : R.string.issue_milestone_close_error,
-                                  mMilestone.title());
-        IssueMilestoneService service = ServiceFactory.get(IssueMilestoneService.class, false);
-        EditMilestone request = EditMilestone.builder()
-                                .state(open ? IssueState.Open : IssueState.Closed)
-                                .build();
+private void setMilestoneState(final boolean open) {
+	@StringRes int dialogMessageResId = open ? R.string.opening_msg : R.string.closing_msg;
+	String errorMessage = getString(
+		open ? R.string.issue_milestone_reopen_error : R.string.issue_milestone_close_error,
+		mMilestone.title());
+	IssueMilestoneService service = ServiceFactory.get(IssueMilestoneService.class, false);
+	EditMilestone request = EditMilestone.builder()
+	                        .state(open ? IssueState.Open : IssueState.Closed)
+	                        .build();
 
-        service.editMilestone(mRepoOwner, mRepoName, mMilestone.number(), request)
-        .map(ApiHelpers::throwOnFailure)
-        .compose(RxUtils.wrapForBackgroundTask(this, dialogMessageResId, errorMessage))
-        .subscribe(result -> {
-            mMilestone = result;
-            updateHighlightColor();
-            supportInvalidateOptionsMenu();
-            setResult(RESULT_OK);
-        }, error -> handleActionFailure("Updating milestone failed", error));
-    }
+	service.editMilestone(mRepoOwner, mRepoName, mMilestone.number(), request)
+	.map(ApiHelpers::throwOnFailure)
+	.compose(RxUtils.wrapForBackgroundTask(this, dialogMessageResId, errorMessage))
+	.subscribe(result->{
+			mMilestone = result;
+			updateHighlightColor();
+			supportInvalidateOptionsMenu();
+			setResult(RESULT_OK);
+		}, error->handleActionFailure("Updating milestone failed", error));
+}
 
-    public static class DatePickerFragment extends DialogFragment
-        implements DatePickerDialog.OnDateSetListener, DialogInterface.OnClickListener {
-        private boolean mStopping;
+public static class DatePickerFragment extends DialogFragment
+	implements DatePickerDialog.OnDateSetListener, DialogInterface.OnClickListener {
+private boolean mStopping;
 
-        @Override
-        public @NonNull Dialog onCreateDialog(final @NonNull Bundle savedInstanceState) {
-            final IssueMilestoneEditActivity activity = (IssueMilestoneEditActivity) getActivity();
-            final Calendar c = Calendar.getInstance();
+@Override
+public @NonNull Dialog onCreateDialog(final @NonNull Bundle savedInstanceState) {
+	final IssueMilestoneEditActivity activity = (IssueMilestoneEditActivity) getActivity();
+	final Calendar c = Calendar.getInstance();
 
-            int year = c.get(Calendar.YEAR);
-            int month = c.get(Calendar.MONTH);
-            int day = c.get(Calendar.DAY_OF_MONTH);
+	int year = c.get(Calendar.YEAR);
+	int month = c.get(Calendar.MONTH);
+	int day = c.get(Calendar.DAY_OF_MONTH);
 
-            Date dueOn = activity.mMilestone.dueOn();
-            if (dueOn != null) {
-                c.setTime(dueOn);
-                year = c.get(Calendar.YEAR);
-                month = c.get(Calendar.MONTH);
-                day = c.get(Calendar.DAY_OF_MONTH);
-            }
-            DatePickerDialog dialog = new DatePickerDialog(activity, this, year, month, day) {
-                @Override
-                protected void onStop() {
-                    mStopping = true;
-                    super.onStop();
-                    mStopping = false;
-                }
-            };
-            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.unset), this);
-            return dialog;
-        }
+	Date dueOn = activity.mMilestone.dueOn();
+	if (dueOn != null) {
+		c.setTime(dueOn);
+		year = c.get(Calendar.YEAR);
+		month = c.get(Calendar.MONTH);
+		day = c.get(Calendar.DAY_OF_MONTH);
+	}
+	DatePickerDialog dialog = new DatePickerDialog(activity, this, year, month, day) {
+		@Override
+		protected void onStop() {
+			mStopping = true;
+			super.onStop();
+			mStopping = false;
+		}
+	};
+	dialog.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.unset), this);
+	return dialog;
+}
 
-        @Override
-        public void onClick(final DialogInterface dialog, final int which) {
-            if (which == DialogInterface.BUTTON_NEUTRAL) {
-                getEditActivity().resetDueOn();
-            }
-        }
+@Override
+public void onClick(final DialogInterface dialog, final int which) {
+	if (which == DialogInterface.BUTTON_NEUTRAL) {
+		getEditActivity().resetDueOn();
+	}
+}
 
-        @Override
-        public void onDateSet(final DatePicker view, final int year, final int month, final int day) {
-            if (!mStopping) {
-                getEditActivity().setDueOn(year, month, day);
-            }
-        }
+@Override
+public void onDateSet(final DatePicker view, final int year, final int month, final int day) {
+	if (!mStopping) {
+		getEditActivity().setDueOn(year, month, day);
+	}
+}
 
-        private IssueMilestoneEditActivity getEditActivity() {
-            return (IssueMilestoneEditActivity) getActivity();
-        }
-    }
+private IssueMilestoneEditActivity getEditActivity() {
+	return (IssueMilestoneEditActivity) getActivity();
+}
+}
 
-    private class MilestonePagerAdapter extends PagerAdapter {
-        @Override
-        public Object instantiateItem(final ViewGroup container, final int position) {
-            @IdRes int resId = 0;
-            switch (position) {
-            case 0:
-                resId = R.id.editor_container;
-                break;
-            case 1:
-                resId = R.id.preview;
-                break;
-            case 2:
-                resId = R.id.options;
-                break;
-            }
-            return container.findViewById(resId);
-        }
+private class MilestonePagerAdapter extends PagerAdapter {
+@Override
+public Object instantiateItem(final ViewGroup container, final int position) {
+	@IdRes int resId = 0;
+	switch (position) {
+	case 0:
+		resId = R.id.editor_container;
+		break;
+	case 1:
+		resId = R.id.preview;
+		break;
+	case 2:
+		resId = R.id.options;
+		break;
+	}
+	return container.findViewById(resId);
+}
 
-        @Override
-        public boolean isViewFromObject(final View view, final Object object) {
-            return view == object;
-        }
+@Override
+public boolean isViewFromObject(final View view, final Object object) {
+	return view == object;
+}
 
-        @Override
-        public CharSequence getPageTitle(final int position) {
-            return getString(TITLES[position]);
-        }
+@Override
+public CharSequence getPageTitle(final int position) {
+	return getString(TITLES[position]);
+}
 
-        @Override
-        public int getCount() {
-            return TITLES.length;
-        }
-    }
+@Override
+public int getCount() {
+	return TITLES.length;
+}
+}
 }

@@ -26,21 +26,21 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class PublicTimelineFragment extends EventListFragment {
-    public static PublicTimelineFragment newInstance() {
-        PublicTimelineFragment f = new PublicTimelineFragment();
-        f.setArguments(new Bundle());
-        return f;
-    }
+public static PublicTimelineFragment newInstance() {
+	PublicTimelineFragment f = new PublicTimelineFragment();
+	f.setArguments(new Bundle());
+	return f;
+}
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	setHasOptionsMenu(true);
+}
 
-    @Override
-    protected Single<Response<Page<GitHubEvent>>> loadPage(final int page, final boolean bypassCache) {
-        final EventService service = ServiceFactory.get(EventService.class, bypassCache);
-        return service.getPublicEvents(page);
-    }
+@Override
+protected Single<Response<Page<GitHubEvent> > > loadPage(final int page, final boolean bypassCache) {
+	final EventService service = ServiceFactory.get(EventService.class, bypassCache);
+	return service.getPublicEvents(page);
+}
 }

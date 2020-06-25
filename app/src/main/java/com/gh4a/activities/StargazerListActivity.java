@@ -27,34 +27,34 @@ import com.gh4a.fragment.StargazerListFragment;
 import com.gh4a.fragment.WatcherListFragment;
 
 public class StargazerListActivity extends FragmentContainerActivity {
-    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName) {
-        return new Intent(context, StargazerListActivity.class)
-               .putExtra("owner", repoOwner)
-               .putExtra("repo", repoName);
-    }
+public static Intent makeIntent(final Context context, final String repoOwner, final String repoName) {
+	return new Intent(context, StargazerListActivity.class)
+	       .putExtra("owner", repoOwner)
+	       .putExtra("repo", repoName);
+}
 
-    private String mRepoOwner;
-    private String mRepoName;
+private String mRepoOwner;
+private String mRepoName;
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle(R.string.repo_stargazers);
-        actionBar.setSubtitle(mRepoOwner + "/" + mRepoName);
-        actionBar.setDisplayHomeAsUpEnabled(true);
-    }
+	ActionBar actionBar = getSupportActionBar();
+	actionBar.setTitle(R.string.repo_stargazers);
+	actionBar.setSubtitle(mRepoOwner + "/" + mRepoName);
+	actionBar.setDisplayHomeAsUpEnabled(true);
+}
 
-    @Override
-    protected void onInitExtras(final Bundle extras) {
-        super.onInitExtras(extras);
-        mRepoOwner = extras.getString("owner");
-        mRepoName = extras.getString("repo");
-    }
+@Override
+protected void onInitExtras(final Bundle extras) {
+	super.onInitExtras(extras);
+	mRepoOwner = extras.getString("owner");
+	mRepoName = extras.getString("repo");
+}
 
-    @Override
-    protected Fragment onCreateFragment() {
-        return StargazerListFragment.newInstance(mRepoOwner, mRepoName);
-    }
+@Override
+protected Fragment onCreateFragment() {
+	return StargazerListFragment.newInstance(mRepoOwner, mRepoName);
+}
 }

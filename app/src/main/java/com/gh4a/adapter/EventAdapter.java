@@ -73,477 +73,477 @@ import com.vdurmont.emoji.EmojiParser;
 import java.util.List;
 
 public class EventAdapter extends RootAdapter<GitHubEvent, EventAdapter.EventViewHolder> {
-    public EventAdapter(final Context context) {
-        super(context);
-    }
+public EventAdapter(final Context context) {
+	super(context);
+}
 
-    @Override
-    public EventViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent,
-            final int viewType) {
-        View v = inflater.inflate(R.layout.row_event, parent, false);
-        EventViewHolder holder = new EventViewHolder(v);
-        holder.ivGravatar.setOnClickListener(this);
-        return holder;
-    }
+@Override
+public EventViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent,
+                                          final int viewType) {
+	View v = inflater.inflate(R.layout.row_event, parent, false);
+	EventViewHolder holder = new EventViewHolder(v);
+	holder.ivGravatar.setOnClickListener(this);
+	return holder;
+}
 
-    @Override
-    public void onBindViewHolder(final EventViewHolder holder, final GitHubEvent event) {
-        User actor = event.actor();
+@Override
+public void onBindViewHolder(final EventViewHolder holder, final GitHubEvent event) {
+	User actor = event.actor();
 
-        AvatarHandler.assignAvatar(holder.ivGravatar, actor);
-        holder.ivGravatar.setTag(actor);
+	AvatarHandler.assignAvatar(holder.ivGravatar, actor);
+	holder.ivGravatar.setTag(actor);
 
-        holder.tvActor.setText(ApiHelpers.getUserLogin(mContext, actor));
+	holder.tvActor.setText(ApiHelpers.getUserLogin(mContext, actor));
 
-        StringUtils.applyBoldTagsAndSetText(holder.tvTitle, formatTitle(event));
-        holder.tvCreatedAt.setText(StringUtils.formatRelativeTime(
-                                       mContext, event.createdAt(), false));
+	StringUtils.applyBoldTagsAndSetText(holder.tvTitle, formatTitle(event));
+	holder.tvCreatedAt.setText(StringUtils.formatRelativeTime(
+					   mContext, event.createdAt(), false));
 
-        CharSequence content = formatDescription(event, holder.tvDesc.getTypefaceValue());
-        holder.tvDesc.setText(content);
-        holder.tvDesc.setVisibility(content != null ? View.VISIBLE : View.GONE);
-    }
+	CharSequence content = formatDescription(event, holder.tvDesc.getTypefaceValue());
+	holder.tvDesc.setText(content);
+	holder.tvDesc.setVisibility(content != null ? View.VISIBLE : View.GONE);
+}
 
-    @Override
-    public void onClick(final View v) {
-        if (v.getId() == R.id.iv_gravatar) {
-            User actor = (User) v.getTag();
-            Intent intent = UserActivity.makeIntent(mContext, actor);
-            if (intent != null) {
-                mContext.startActivity(intent);
-            }
-        } else {
-            super.onClick(v);
-        }
-    }
+@Override
+public void onClick(final View v) {
+	if (v.getId() == R.id.iv_gravatar) {
+		User actor = (User) v.getTag();
+		Intent intent = UserActivity.makeIntent(mContext, actor);
+		if (intent != null) {
+			mContext.startActivity(intent);
+		}
+	} else {
+		super.onClick(v);
+	}
+}
 
-    @Override
-    public boolean isCardStyle() {
-        return true;
-    }
+@Override
+public boolean isCardStyle() {
+	return true;
+}
 
-    private CharSequence formatDescription(final GitHubEvent event, final int typefaceValue) {
-        GitHubEventType eventType = event.type();
-        GitHubEvent.RepoIdentifier eventRepo = event.repo();
+private CharSequence formatDescription(final GitHubEvent event, final int typefaceValue) {
+	GitHubEventType eventType = event.type();
+	GitHubEvent.RepoIdentifier eventRepo = event.repo();
 
-        if (hasInvalidPayload(event)) {
-            return eventType.toString();
-        }
+	if (hasInvalidPayload(event)) {
+		return eventType.toString();
+	}
 
-        Resources res = mContext.getResources();
+	Resources res = mContext.getResources();
 
-        switch (eventType) {
-        case CommitCommentEvent: {
-            CommitCommentPayload payload = (CommitCommentPayload) event.payload();
-            GitComment comment = payload.comment();
-            if (comment != null) {
-                return EmojiParser.parseToUnicode(comment.body());
-            }
-            break;
-        }
+	switch (eventType) {
+	case CommitCommentEvent: {
+		CommitCommentPayload payload = (CommitCommentPayload) event.payload();
+		GitComment comment = payload.comment();
+		if (comment != null) {
+			return EmojiParser.parseToUnicode(comment.body());
+		}
+		break;
+	}
 
-        case CreateEvent: {
-            CreatePayload payload = (CreatePayload) event.payload();
-            if (payload.refType() == ReferenceType.Repository) {
-                return res.getString(R.string.event_create_repo_desc, eventRepo.repoWithUserName());
-            }
-            break;
-        }
+	case CreateEvent: {
+		CreatePayload payload = (CreatePayload) event.payload();
+		if (payload.refType() == ReferenceType.Repository) {
+			return res.getString(R.string.event_create_repo_desc, eventRepo.repoWithUserName());
+		}
+		break;
+	}
 
-        case DownloadEvent: {
-            DownloadPayload payload = (DownloadPayload) event.payload();
-            if (payload.download() != null) {
-                return payload.download().name();
-            }
-            break;
-        }
+	case DownloadEvent: {
+		DownloadPayload payload = (DownloadPayload) event.payload();
+		if (payload.download() != null) {
+			return payload.download().name();
+		}
+		break;
+	}
 
-        case FollowEvent: {
-            FollowPayload payload = (FollowPayload) event.payload();
-            User target = payload.target();
-            if (target != null) {
-                return res.getString(R.string.event_follow_desc,
-                                     target.login(), target.publicRepos(), target.followers());
-            }
-            break;
-        }
+	case FollowEvent: {
+		FollowPayload payload = (FollowPayload) event.payload();
+		User target = payload.target();
+		if (target != null) {
+			return res.getString(R.string.event_follow_desc,
+			                     target.login(), target.publicRepos(), target.followers());
+		}
+		break;
+	}
 
-        case ForkEvent: {
-            ForkPayload payload = (ForkPayload) event.payload();
-            return res.getString(R.string.event_fork_desc, formatToRepoName(payload.forkee()));
-        }
+	case ForkEvent: {
+		ForkPayload payload = (ForkPayload) event.payload();
+		return res.getString(R.string.event_fork_desc, formatToRepoName(payload.forkee()));
+	}
 
-        case GollumEvent: {
-            GollumPayload payload = (GollumPayload) event.payload();
-            List<GitHubWikiPage> pages = payload.pages();
-            if (pages != null && !pages.isEmpty()) {
-                return res.getString(R.string.event_gollum_desc, pages.get(0).pageName());
-            }
-            break;
-        }
+	case GollumEvent: {
+		GollumPayload payload = (GollumPayload) event.payload();
+		List<GitHubWikiPage> pages = payload.pages();
+		if (pages != null && !pages.isEmpty()) {
+			return res.getString(R.string.event_gollum_desc, pages.get(0).pageName());
+		}
+		break;
+	}
 
-        case IssueCommentEvent: {
-            IssueCommentPayload payload = (IssueCommentPayload) event.payload();
-            if (payload != null && payload.comment() != null) {
-                return EmojiParser.parseToUnicode(payload.comment().body());
-            }
-            break;
-        }
+	case IssueCommentEvent: {
+		IssueCommentPayload payload = (IssueCommentPayload) event.payload();
+		if (payload != null && payload.comment() != null) {
+			return EmojiParser.parseToUnicode(payload.comment().body());
+		}
+		break;
+	}
 
-        case IssuesEvent: {
-            IssuesPayload payload = (IssuesPayload) event.payload();
-            return payload.issue().title();
-        }
+	case IssuesEvent: {
+		IssuesPayload payload = (IssuesPayload) event.payload();
+		return payload.issue().title();
+	}
 
-        case PublicEvent:
-            return null;
+	case PublicEvent:
+		return null;
 
-        case PullRequestEvent: {
-            PullRequestPayload payload = (PullRequestPayload) event.payload();
-            PullRequest pullRequest = payload.pullRequest();
+	case PullRequestEvent: {
+		PullRequestPayload payload = (PullRequestPayload) event.payload();
+		PullRequest pullRequest = payload.pullRequest();
 
-            if (!StringUtils.isBlank(pullRequest.title())) {
-                return res.getString(R.string.event_pull_request_desc,
-                                     pullRequest.title(), pullRequest.commits(),
-                                     pullRequest.additions(), pullRequest.deletions());
-            }
-            break;
-        }
+		if (!StringUtils.isBlank(pullRequest.title())) {
+			return res.getString(R.string.event_pull_request_desc,
+			                     pullRequest.title(), pullRequest.commits(),
+			                     pullRequest.additions(), pullRequest.deletions());
+		}
+		break;
+	}
 
-        case PullRequestReviewCommentEvent: {
-            PullRequestReviewCommentPayload payload =
-                (PullRequestReviewCommentPayload) event.payload();
-            ReviewComment comment = payload.comment();
-            if (comment != null) {
-                return EmojiParser.parseToUnicode(comment.body());
-            }
-            break;
-        }
+	case PullRequestReviewCommentEvent: {
+		PullRequestReviewCommentPayload payload =
+			(PullRequestReviewCommentPayload) event.payload();
+		ReviewComment comment = payload.comment();
+		if (comment != null) {
+			return EmojiParser.parseToUnicode(comment.body());
+		}
+		break;
+	}
 
-        case PushEvent: {
-            PushPayload payload = (PushPayload) event.payload();
-            List<GitCommit> commits = payload.commits();
+	case PushEvent: {
+		PushPayload payload = (PushPayload) event.payload();
+		List<GitCommit> commits = payload.commits();
 
-            if (commits != null && !commits.isEmpty()) {
-                SpannableStringBuilder ssb = new SpannableStringBuilder();
-                float density = mContext.getResources().getDisplayMetrics().density;
-                int bottomMargin = Math.round(2 /* dp */ * density);
-                int count = payload.size();
-                int maxLines =
-                    mContext.getResources()
-                    .getInteger(R.integer.event_description_max_lines);
-                int max = Math.min(count > maxLines ? maxLines - 1 : count, commits.size());
+		if (commits != null && !commits.isEmpty()) {
+			SpannableStringBuilder ssb = new SpannableStringBuilder();
+			float density = mContext.getResources().getDisplayMetrics().density;
+			int bottomMargin = Math.round(2 /* dp */ * density);
+			int count = payload.size();
+			int maxLines =
+				mContext.getResources()
+				.getInteger(R.integer.event_description_max_lines);
+			int max = Math.min(count > maxLines ? maxLines - 1 : count, commits.size());
 
-                for (int i = 0; i < max; i++) {
-                    GitCommit commit = commits.get(i);
-                    if (i != 0) {
-                        ssb.append("\n");
-                    }
+			for (int i = 0; i < max; i++) {
+				GitCommit commit = commits.get(i);
+				if (i != 0) {
+					ssb.append("\n");
+				}
 
-                    int lastLength = ssb.length();
-                    String sha = commit.sha().substring(0, 7);
+				int lastLength = ssb.length();
+				String sha = commit.sha().substring(0, 7);
 
-                    ssb.append(sha);
-                    ssb.setSpan(new TextAppearanceSpan(mContext, R.style.small_highlighted_sha),
-                                ssb.length() - sha.length(), ssb.length(), 0);
+				ssb.append(sha);
+				ssb.setSpan(new TextAppearanceSpan(mContext, R.style.small_highlighted_sha),
+				            ssb.length() - sha.length(), ssb.length(), 0);
 
-                    ssb.append(" ");
-                    ssb.append(getFirstLine(EmojiParser.parseToUnicode(commit.message())));
-                    ssb.setSpan(new EllipsizeLineSpan(i == (count - 1) ? 0 : bottomMargin),
-                                lastLength, ssb.length(), 0);
-                }
-                if (count > maxLines) {
-                    String text = res.getString(R.string.event_push_desc, count - max);
-                    ssb.append("\n");
-                    ssb.append(text);
-                    ssb.setSpan(new CustomTypefaceSpan(typefaceValue, Typeface.ITALIC),
-                                ssb.length() - text.length(), ssb.length(), 0);
-                }
-                return ssb;
-            } else if (eventRepo == null) {
-                return mContext.getString(R.string.deleted);
-            }
-            break;
-        }
+				ssb.append(" ");
+				ssb.append(getFirstLine(EmojiParser.parseToUnicode(commit.message())));
+				ssb.setSpan(new EllipsizeLineSpan(i == (count - 1) ? 0 : bottomMargin),
+				            lastLength, ssb.length(), 0);
+			}
+			if (count > maxLines) {
+				String text = res.getString(R.string.event_push_desc, count - max);
+				ssb.append("\n");
+				ssb.append(text);
+				ssb.setSpan(new CustomTypefaceSpan(typefaceValue, Typeface.ITALIC),
+				            ssb.length() - text.length(), ssb.length(), 0);
+			}
+			return ssb;
+		} else if (eventRepo == null) {
+			return mContext.getString(R.string.deleted);
+		}
+		break;
+	}
 
-        case ReleaseEvent: {
-            ReleasePayload payload = (ReleasePayload) event.payload();
-            Release release = payload.release();
-            if (release != null) {
-                if (!TextUtils.isEmpty(release.name())) {
-                    return release.name();
-                }
-                return release.tagName();
-            }
-            break;
-        }
+	case ReleaseEvent: {
+		ReleasePayload payload = (ReleasePayload) event.payload();
+		Release release = payload.release();
+		if (release != null) {
+			if (!TextUtils.isEmpty(release.name())) {
+				return release.name();
+			}
+			return release.tagName();
+		}
+		break;
+	}
 
-        case TeamAddEvent: {
-            TeamAddPayload payload = (TeamAddPayload) event.payload();
-            Team team = payload.team();
-            if (team != null) {
-                return res.getString(R.string.event_team_add_desc, team.name(),
-                                     team.membersCount(), team.reposCount());
-            }
-            break;
-        }
-        }
+	case TeamAddEvent: {
+		TeamAddPayload payload = (TeamAddPayload) event.payload();
+		Team team = payload.team();
+		if (team != null) {
+			return res.getString(R.string.event_team_add_desc, team.name(),
+			                     team.membersCount(), team.reposCount());
+		}
+		break;
+	}
+	}
 
-        return null;
-    }
+	return null;
+}
 
-    private String getFirstLine(final String input) {
-        if (input == null) {
-            return null;
-        }
-        int pos = input.indexOf('\n');
-        if (pos < 0) {
-            return input;
-        }
-        return input.substring(0, pos);
-    }
+private String getFirstLine(final String input) {
+	if (input == null) {
+		return null;
+	}
+	int pos = input.indexOf('\n');
+	if (pos < 0) {
+		return input;
+	}
+	return input.substring(0, pos);
+}
 
-    private String formatTitle(final GitHubEvent event) {
-        GitHubEvent.RepoIdentifier eventRepo = event.repo();
-        Resources res = mContext.getResources();
+private String formatTitle(final GitHubEvent event) {
+	GitHubEvent.RepoIdentifier eventRepo = event.repo();
+	Resources res = mContext.getResources();
 
-        if (hasInvalidPayload(event)) {
-            return event.type().toString();
-        }
+	if (hasInvalidPayload(event)) {
+		return event.type().toString();
+	}
 
-        switch (event.type()) {
-        case CommitCommentEvent: {
-            CommitCommentPayload payload = (CommitCommentPayload) event.payload();
-            return res.getString(R.string.event_commit_comment_title,
-                                 payload.comment().commitId().substring(0, 7),
-                                 formatFromRepoIdentifier(eventRepo));
-        }
+	switch (event.type()) {
+	case CommitCommentEvent: {
+		CommitCommentPayload payload = (CommitCommentPayload) event.payload();
+		return res.getString(R.string.event_commit_comment_title,
+		                     payload.comment().commitId().substring(0, 7),
+		                     formatFromRepoIdentifier(eventRepo));
+	}
 
-        case CreateEvent: {
-            CreatePayload payload = (CreatePayload) event.payload();
-            switch (payload.refType()) {
-            case Repository:
-                return res.getString(R.string.event_create_repo_title);
-            case Branch:
-                return res.getString(R.string.event_create_branch_title, payload.ref(),
-                                     formatFromRepoIdentifier(eventRepo));
-            case Tag:
-                return res.getString(R.string.event_create_tag_title, payload.ref(),
-                                     formatFromRepoIdentifier(eventRepo));
-            }
-            break;
-        }
+	case CreateEvent: {
+		CreatePayload payload = (CreatePayload) event.payload();
+		switch (payload.refType()) {
+		case Repository:
+			return res.getString(R.string.event_create_repo_title);
+		case Branch:
+			return res.getString(R.string.event_create_branch_title, payload.ref(),
+			                     formatFromRepoIdentifier(eventRepo));
+		case Tag:
+			return res.getString(R.string.event_create_tag_title, payload.ref(),
+			                     formatFromRepoIdentifier(eventRepo));
+		}
+		break;
+	}
 
-        case DeleteEvent: {
-            DeletePayload payload = (DeletePayload) event.payload();
-            switch (payload.refType()) {
-            case Branch:
-                return res.getString(R.string.event_delete_branch_title, payload.ref(),
-                                     formatFromRepoIdentifier(eventRepo));
-            case Tag:
-                return res.getString(R.string.event_delete_tag_title, payload.ref(),
-                                     formatFromRepoIdentifier(eventRepo));
-            }
-            break;
-        }
+	case DeleteEvent: {
+		DeletePayload payload = (DeletePayload) event.payload();
+		switch (payload.refType()) {
+		case Branch:
+			return res.getString(R.string.event_delete_branch_title, payload.ref(),
+			                     formatFromRepoIdentifier(eventRepo));
+		case Tag:
+			return res.getString(R.string.event_delete_tag_title, payload.ref(),
+			                     formatFromRepoIdentifier(eventRepo));
+		}
+		break;
+	}
 
-        case DownloadEvent:
-            return res.getString(R.string.event_download_title,
-                                 formatFromRepoIdentifier(eventRepo));
+	case DownloadEvent:
+		return res.getString(R.string.event_download_title,
+		                     formatFromRepoIdentifier(eventRepo));
 
-        case FollowEvent: {
-            FollowPayload payload = (FollowPayload) event.payload();
-            return res.getString(R.string.event_follow_title,
-                                 ApiHelpers.getUserLogin(mContext, payload.target()));
-        }
+	case FollowEvent: {
+		FollowPayload payload = (FollowPayload) event.payload();
+		return res.getString(R.string.event_follow_title,
+		                     ApiHelpers.getUserLogin(mContext, payload.target()));
+	}
 
-        case ForkEvent:
-            return res.getString(R.string.event_fork_title,
-                                 formatFromRepoIdentifier(eventRepo));
+	case ForkEvent:
+		return res.getString(R.string.event_fork_title,
+		                     formatFromRepoIdentifier(eventRepo));
 
-        case ForkApplyEvent:
-            return res.getString(R.string.event_fork_apply_title,
-                                 formatFromRepoIdentifier(eventRepo));
+	case ForkApplyEvent:
+		return res.getString(R.string.event_fork_apply_title,
+		                     formatFromRepoIdentifier(eventRepo));
 
-        case GistEvent: {
-            GistPayload payload = (GistPayload) event.payload();
-            Gist gist = payload.gist();
+	case GistEvent: {
+		GistPayload payload = (GistPayload) event.payload();
+		Gist gist = payload.gist();
 
-            String id = gist != null ? gist.id() : mContext.getString(R.string.deleted);
-            int resId = payload.action() == GistPayload.Action.Updated
-                        ? R.string.event_update_gist_title : R.string.event_create_gist_title;
-            return res.getString(resId, id);
-        }
+		String id = gist != null ? gist.id() : mContext.getString(R.string.deleted);
+		int resId = payload.action() == GistPayload.Action.Updated
+		        ? R.string.event_update_gist_title : R.string.event_create_gist_title;
+		return res.getString(resId, id);
+	}
 
-        case GollumEvent: {
-            GollumPayload payload = (GollumPayload) event.payload();
-            List<GitHubWikiPage> pages = payload.pages();
-            int count = pages == null ? 0 : pages.size();
-            return res.getString(R.string.event_gollum_title,
-                                 res.getQuantityString(R.plurals.page, count, count),
-                                 formatFromRepoIdentifier(eventRepo));
-        }
+	case GollumEvent: {
+		GollumPayload payload = (GollumPayload) event.payload();
+		List<GitHubWikiPage> pages = payload.pages();
+		int count = pages == null ? 0 : pages.size();
+		return res.getString(R.string.event_gollum_title,
+		                     res.getQuantityString(R.plurals.page, count, count),
+		                     formatFromRepoIdentifier(eventRepo));
+	}
 
-        case IssueCommentEvent: {
-            IssueCommentPayload payload = (IssueCommentPayload) event.payload();
-            Issue issue = payload.issue();
-            if (issue != null) {
-                int formatResId = issue.pullRequest() != null
-                                  ? R.string.event_pull_request_comment : R.string.event_issue_comment;
-                return res.getString(formatResId, issue.number(),
-                                     formatFromRepoIdentifier(eventRepo));
-            }
-            break;
-        }
+	case IssueCommentEvent: {
+		IssueCommentPayload payload = (IssueCommentPayload) event.payload();
+		Issue issue = payload.issue();
+		if (issue != null) {
+			int formatResId = issue.pullRequest() != null
+			          ? R.string.event_pull_request_comment : R.string.event_issue_comment;
+			return res.getString(formatResId, issue.number(),
+			                     formatFromRepoIdentifier(eventRepo));
+		}
+		break;
+	}
 
-        case IssuesEvent: {
-            IssuesPayload payload = (IssuesPayload) event.payload();
-            final int resId;
-            switch (payload.action()) {
-            case Opened:
-                resId = R.string.event_issues_open_title;
-                break;
-            case Closed:
-                resId = R.string.event_issues_close_title;
-                break;
-            case Reopened:
-                resId = R.string.event_issues_reopen_title;
-                break;
-            default:
-                return "";
-            }
-            return res.getString(resId, payload.issue().number(),
-                                 formatFromRepoIdentifier(eventRepo));
-        }
+	case IssuesEvent: {
+		IssuesPayload payload = (IssuesPayload) event.payload();
+		final int resId;
+		switch (payload.action()) {
+		case Opened:
+			resId = R.string.event_issues_open_title;
+			break;
+		case Closed:
+			resId = R.string.event_issues_close_title;
+			break;
+		case Reopened:
+			resId = R.string.event_issues_reopen_title;
+			break;
+		default:
+			return "";
+		}
+		return res.getString(resId, payload.issue().number(),
+		                     formatFromRepoIdentifier(eventRepo));
+	}
 
-        case MemberEvent: {
-            MemberPayload payload = (MemberPayload) event.payload();
-            return res.getString(R.string.event_member_title,
-                                 ApiHelpers.getUserLogin(mContext, payload.member()),
-                                 formatFromRepoIdentifier(eventRepo));
-        }
+	case MemberEvent: {
+		MemberPayload payload = (MemberPayload) event.payload();
+		return res.getString(R.string.event_member_title,
+		                     ApiHelpers.getUserLogin(mContext, payload.member()),
+		                     formatFromRepoIdentifier(eventRepo));
+	}
 
-        case PublicEvent:
-            return res.getString(R.string.event_public_title,
-                                 formatFromRepoIdentifier(eventRepo));
+	case PublicEvent:
+		return res.getString(R.string.event_public_title,
+		                     formatFromRepoIdentifier(eventRepo));
 
-        case PullRequestEvent: {
-            PullRequestPayload payload = (PullRequestPayload) event.payload();
-            PullRequest pr = payload.pullRequest();
-            final int resId;
-            switch (payload.action()) {
-            case Opened:
-                resId = R.string.event_pr_open_title;
-                break;
-            case Closed:
-                resId = pr.merged()
-                        ? R.string.event_pr_merge_title
-                        : R.string.event_pr_close_title;
-                break;
-            case Reopened:
-                resId = R.string.event_pr_reopen_title;
-                break;
-            case Synchronized:
-                resId = R.string.event_pr_update_title;
-                break;
-            default:
-                return "";
-            }
-            return res.getString(resId, payload.number(), formatFromRepoIdentifier(eventRepo));
-        }
+	case PullRequestEvent: {
+		PullRequestPayload payload = (PullRequestPayload) event.payload();
+		PullRequest pr = payload.pullRequest();
+		final int resId;
+		switch (payload.action()) {
+		case Opened:
+			resId = R.string.event_pr_open_title;
+			break;
+		case Closed:
+			resId = pr.merged()
+			? R.string.event_pr_merge_title
+			: R.string.event_pr_close_title;
+			break;
+		case Reopened:
+			resId = R.string.event_pr_reopen_title;
+			break;
+		case Synchronized:
+			resId = R.string.event_pr_update_title;
+			break;
+		default:
+			return "";
+		}
+		return res.getString(resId, payload.number(), formatFromRepoIdentifier(eventRepo));
+	}
 
-        case PullRequestReviewCommentEvent: {
-            PullRequestReviewCommentPayload payload =
-                (PullRequestReviewCommentPayload) event.payload();
-            PullRequest pr = payload.pullRequest();
-            ReviewComment comment = payload.comment();
-            if (pr != null) {
-                return res.getString(R.string.event_pull_request_review_comment_title,
-                                     pr.number(), formatFromRepoIdentifier(eventRepo));
-            } else if (comment != null) {
-                return res.getString(R.string.event_commit_comment_title,
-                                     comment.commitId().substring(0, 7),
-                                     formatFromRepoIdentifier(eventRepo));
-            }
-            break;
-        }
+	case PullRequestReviewCommentEvent: {
+		PullRequestReviewCommentPayload payload =
+			(PullRequestReviewCommentPayload) event.payload();
+		PullRequest pr = payload.pullRequest();
+		ReviewComment comment = payload.comment();
+		if (pr != null) {
+			return res.getString(R.string.event_pull_request_review_comment_title,
+			                     pr.number(), formatFromRepoIdentifier(eventRepo));
+		} else if (comment != null) {
+			return res.getString(R.string.event_commit_comment_title,
+			                     comment.commitId().substring(0, 7),
+			                     formatFromRepoIdentifier(eventRepo));
+		}
+		break;
+	}
 
-        case PushEvent: {
-            PushPayload payload = (PushPayload) event.payload();
-            String ref = payload.ref();
-            if (ref.startsWith("refs/heads/")) {
-                ref = ref.substring(11);
-            }
-            return res.getString(R.string.event_push_title, ref,
-                                 formatFromRepoIdentifier(eventRepo));
-        }
+	case PushEvent: {
+		PushPayload payload = (PushPayload) event.payload();
+		String ref = payload.ref();
+		if (ref.startsWith("refs/heads/")) {
+			ref = ref.substring(11);
+		}
+		return res.getString(R.string.event_push_title, ref,
+		                     formatFromRepoIdentifier(eventRepo));
+	}
 
-        case ReleaseEvent:
-            return res.getString(R.string.event_release_title,
-                                 formatFromRepoIdentifier(eventRepo));
+	case ReleaseEvent:
+		return res.getString(R.string.event_release_title,
+		                     formatFromRepoIdentifier(eventRepo));
 
-        case TeamAddEvent: {
-            TeamAddPayload payload = (TeamAddPayload) event.payload();
-            Team team = payload.team();
-            if (team != null) {
-                Repository repo = payload.repository();
-                if (repo != null) {
-                    return res.getString(R.string.event_team_repo_add,
-                                         formatToRepoName(repo), team.name());
-                }
-            }
-            break;
-        }
+	case TeamAddEvent: {
+		TeamAddPayload payload = (TeamAddPayload) event.payload();
+		Team team = payload.team();
+		if (team != null) {
+			Repository repo = payload.repository();
+			if (repo != null) {
+				return res.getString(R.string.event_team_repo_add,
+				                     formatToRepoName(repo), team.name());
+			}
+		}
+		break;
+	}
 
-        case WatchEvent:
-            return res.getString(R.string.event_watch_title,
-                                 formatFromRepoIdentifier(eventRepo));
-        }
+	case WatchEvent:
+		return res.getString(R.string.event_watch_title,
+		                     formatFromRepoIdentifier(eventRepo));
+	}
 
-        return "";
-    }
+	return "";
+}
 
-    public static boolean hasInvalidPayload(final GitHubEvent event) {
-        GitHubPayload payload = event.payload();
-        if (payload == null) {
-            return true;
-        }
-        // we only accept and work with derived classes; if the base class
-        // is returned, something went wrong during deserialization
-        return GitHubPayload.class.equals(payload.getClass());
-    }
+public static boolean hasInvalidPayload(final GitHubEvent event) {
+	GitHubPayload payload = event.payload();
+	if (payload == null) {
+		return true;
+	}
+	// we only accept and work with derived classes; if the base class
+	// is returned, something went wrong during deserialization
+	return GitHubPayload.class.equals(payload.getClass());
+}
 
-    private String formatFromRepoIdentifier(final GitHubEvent.RepoIdentifier repository) {
-        if (repository != null) {
-            return repository.repoWithUserName();
-        }
-        return mContext.getString(R.string.deleted);
-    }
+private String formatFromRepoIdentifier(final GitHubEvent.RepoIdentifier repository) {
+	if (repository != null) {
+		return repository.repoWithUserName();
+	}
+	return mContext.getString(R.string.deleted);
+}
 
-    private String formatToRepoName(final Repository repository) {
-        if (repository != null && repository.owner() != null) {
-            return repository.owner().login() + "/" + repository.name();
-        }
-        return mContext.getString(R.string.deleted);
-    }
+private String formatToRepoName(final Repository repository) {
+	if (repository != null && repository.owner() != null) {
+		return repository.owner().login() + "/" + repository.name();
+	}
+	return mContext.getString(R.string.deleted);
+}
 
-    /**
-     * The Class ViewHolder.
-     */
-    public static class EventViewHolder extends RecyclerView.ViewHolder {
-        private EventViewHolder(final View view) {
-            super(view);
-            ivGravatar = view.findViewById(R.id.iv_gravatar);
-            tvActor = view.findViewById(R.id.tv_actor);
-            tvTitle = view.findViewById(R.id.tv_title);
-            tvDesc = view.findViewById(R.id.tv_desc);
-            tvCreatedAt = view.findViewById(R.id.tv_created_at);
-        }
+/**
+ * The Class ViewHolder.
+ */
+public static class EventViewHolder extends RecyclerView.ViewHolder {
+private EventViewHolder(final View view) {
+	super(view);
+	ivGravatar = view.findViewById(R.id.iv_gravatar);
+	tvActor = view.findViewById(R.id.tv_actor);
+	tvTitle = view.findViewById(R.id.tv_title);
+	tvDesc = view.findViewById(R.id.tv_desc);
+	tvCreatedAt = view.findViewById(R.id.tv_created_at);
+}
 
-        private final ImageView ivGravatar;
-        private final TextView tvActor;
-        private final StyleableTextView tvTitle;
-        private final StyleableTextView tvDesc;
-        private final TextView tvCreatedAt;
-    }
+private final ImageView ivGravatar;
+private final TextView tvActor;
+private final StyleableTextView tvTitle;
+private final StyleableTextView tvDesc;
+private final TextView tvCreatedAt;
+}
 }

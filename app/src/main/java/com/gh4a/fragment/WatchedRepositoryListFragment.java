@@ -31,42 +31,42 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class WatchedRepositoryListFragment extends PagedDataBaseFragment<Repository> {
-    public static WatchedRepositoryListFragment newInstance(final String login) {
-        WatchedRepositoryListFragment f = new WatchedRepositoryListFragment();
+public static WatchedRepositoryListFragment newInstance(final String login) {
+	WatchedRepositoryListFragment f = new WatchedRepositoryListFragment();
 
-        Bundle args = new Bundle();
-        args.putString("user", login);
-        f.setArguments(args);
+	Bundle args = new Bundle();
+	args.putString("user", login);
+	f.setArguments(args);
 
-        return f;
-    }
+	return f;
+}
 
-    private String mLogin;
+private String mLogin;
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mLogin = getArguments().getString("user");
-    }
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	mLogin = getArguments().getString("user");
+}
 
-    @Override
-    protected RootAdapter<Repository, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
-        return new RepositoryAdapter(getActivity());
-    }
+@Override
+protected RootAdapter<Repository, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
+	return new RepositoryAdapter(getActivity());
+}
 
-    @Override
-    protected int getEmptyTextResId() {
-        return R.string.no_watched_repos_found;
-    }
+@Override
+protected int getEmptyTextResId() {
+	return R.string.no_watched_repos_found;
+}
 
-    @Override
-    public void onItemClick(final Repository repository) {
-        startActivity(RepositoryActivity.makeIntent(getActivity(), repository));
-    }
+@Override
+public void onItemClick(final Repository repository) {
+	startActivity(RepositoryActivity.makeIntent(getActivity(), repository));
+}
 
-    @Override
-    protected Single<Response<Page<Repository>>> loadPage(final int page, final boolean bypassCache) {
-        final WatchingService service = ServiceFactory.get(WatchingService.class, bypassCache);
-        return service.getWatchedRepositories(mLogin, page);
-    }
+@Override
+protected Single<Response<Page<Repository> > > loadPage(final int page, final boolean bypassCache) {
+	final WatchingService service = ServiceFactory.get(WatchingService.class, bypassCache);
+	return service.getWatchedRepositories(mLogin, page);
+}
 }

@@ -36,87 +36,87 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class StarredRepositoryListFragment extends PagedDataBaseFragment<Repository> {
-    private static final String STATE_KEY_SORT_ORDER = "sort_order";
-    private static final String STATE_KEY_SORT_DIRECTION = "sort_direction";
+private static final String STATE_KEY_SORT_ORDER = "sort_order";
+private static final String STATE_KEY_SORT_DIRECTION = "sort_direction";
 
-    public static StarredRepositoryListFragment newInstance(final String login) {
-        StarredRepositoryListFragment f = new StarredRepositoryListFragment();
+public static StarredRepositoryListFragment newInstance(final String login) {
+	StarredRepositoryListFragment f = new StarredRepositoryListFragment();
 
-        Bundle args = new Bundle();
-        args.putString("user", login);
-        f.setArguments(args);
+	Bundle args = new Bundle();
+	args.putString("user", login);
+	f.setArguments(args);
 
-        return f;
-    }
+	return f;
+}
 
-    private String mLogin;
-    private String mSortOrder = "created";
-    private String mSortDirection = "desc";
-    private RepositoryListContainerFragment.SortDrawerHelper mSortHelper;
+private String mLogin;
+private String mSortOrder = "created";
+private String mSortDirection = "desc";
+private RepositoryListContainerFragment.SortDrawerHelper mSortHelper;
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mLogin = getArguments().getString("user");
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	mLogin = getArguments().getString("user");
 
-        mSortHelper = new RepositoryListContainerFragment.SortDrawerHelper();
+	mSortHelper = new RepositoryListContainerFragment.SortDrawerHelper();
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(STATE_KEY_SORT_ORDER)) {
-            mSortOrder = savedInstanceState.getString(STATE_KEY_SORT_ORDER);
-            mSortDirection = savedInstanceState.getString(STATE_KEY_SORT_DIRECTION);
-        }
-        setHasOptionsMenu(true);
-    }
+	if (savedInstanceState != null && savedInstanceState.containsKey(STATE_KEY_SORT_ORDER)) {
+		mSortOrder = savedInstanceState.getString(STATE_KEY_SORT_ORDER);
+		mSortDirection = savedInstanceState.getString(STATE_KEY_SORT_DIRECTION);
+	}
+	setHasOptionsMenu(true);
+}
 
-    @Override
-    public void onSaveInstanceState(final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(STATE_KEY_SORT_ORDER, mSortOrder);
-        outState.putString(STATE_KEY_SORT_DIRECTION, mSortDirection);
-    }
+@Override
+public void onSaveInstanceState(final Bundle outState) {
+	super.onSaveInstanceState(outState);
+	outState.putString(STATE_KEY_SORT_ORDER, mSortOrder);
+	outState.putString(STATE_KEY_SORT_DIRECTION, mSortDirection);
+}
 
-    @Override
-    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.repo_starred_list_menu, menu);
-        mSortHelper.selectSortType(menu, mSortOrder, mSortDirection, true);
-    }
+@Override
+public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+	super.onCreateOptionsMenu(menu, inflater);
+	inflater.inflate(R.menu.repo_starred_list_menu, menu);
+	mSortHelper.selectSortType(menu, mSortOrder, mSortDirection, true);
+}
 
-    @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
-        String[] sortOrderAndDirection = mSortHelper.handleSelectionAndGetSortOrder(item);
-        if (sortOrderAndDirection == null) {
-            return false;
-        }
-        mSortOrder = sortOrderAndDirection[0];
-        mSortDirection = sortOrderAndDirection[1];
-        item.setChecked(true);
-        onRefresh();
-        return true;
-    }
+@Override
+public boolean onOptionsItemSelected(final MenuItem item) {
+	String[] sortOrderAndDirection = mSortHelper.handleSelectionAndGetSortOrder(item);
+	if (sortOrderAndDirection == null) {
+		return false;
+	}
+	mSortOrder = sortOrderAndDirection[0];
+	mSortDirection = sortOrderAndDirection[1];
+	item.setChecked(true);
+	onRefresh();
+	return true;
+}
 
-    @Override
-    protected RootAdapter<Repository, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
-        return new RepositoryAdapter(getActivity());
-    }
+@Override
+protected RootAdapter<Repository, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
+	return new RepositoryAdapter(getActivity());
+}
 
-    @Override
-    protected int getEmptyTextResId() {
-        return R.string.no_starred_repos_found;
-    }
+@Override
+protected int getEmptyTextResId() {
+	return R.string.no_starred_repos_found;
+}
 
-    @Override
-    public void onItemClick(final Repository repository) {
-        startActivity(RepositoryActivity.makeIntent(getActivity(), repository));
-    }
+@Override
+public void onItemClick(final Repository repository) {
+	startActivity(RepositoryActivity.makeIntent(getActivity(), repository));
+}
 
-    @Override
-    protected Single<Response<Page<Repository>>> loadPage(final int page, final boolean bypassCache) {
-        final StarringService service = ServiceFactory.get(StarringService.class, bypassCache);
-        final HashMap<String, String> filterData = new HashMap<>();
-        filterData.put("sort", mSortOrder);
-        filterData.put("direction", mSortDirection);
+@Override
+protected Single<Response<Page<Repository> > > loadPage(final int page, final boolean bypassCache) {
+	final StarringService service = ServiceFactory.get(StarringService.class, bypassCache);
+	final HashMap<String, String> filterData = new HashMap<>();
+	filterData.put("sort", mSortOrder);
+	filterData.put("direction", mSortDirection);
 
-        return service.getStarredRepositories(mLogin, filterData, page);
-    }
+	return service.getStarredRepositories(mLogin, filterData, page);
+}
 }

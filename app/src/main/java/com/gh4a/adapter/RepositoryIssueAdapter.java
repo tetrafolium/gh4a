@@ -21,17 +21,17 @@ import com.gh4a.R;
 import com.meisolsson.githubsdk.model.Issue;
 
 public class RepositoryIssueAdapter extends IssueAdapter {
-    public RepositoryIssueAdapter(final Context context) {
-        super(context);
-    }
+public RepositoryIssueAdapter(final Context context) {
+	super(context);
+}
 
-    @Override
-    public void onBindViewHolder(final ViewHolder holder, final Issue issue) {
-        super.onBindViewHolder(holder, issue);
+@Override
+public void onBindViewHolder(final ViewHolder holder, final Issue issue) {
+	super.onBindViewHolder(holder, issue);
 
-        // https://api.github.com/repos/batterseapower/pinyin-toolkit/issues/132
-        String[] urlPart = issue.url().split("/");
-        holder.tvNumber.setText(mContext.getString(R.string.repo_issue_on,
-                                issue.number(), urlPart[4], urlPart[5]));
-    }
+	// https://api.github.com/repos/batterseapower/pinyin-toolkit/issues/132
+	String[] urlPart = issue.url().split("/");
+	holder.tvNumber.setText(mContext.getString(R.string.repo_issue_on,
+	                                           issue.number(), urlPart[4], urlPart[5]));
+}
 }

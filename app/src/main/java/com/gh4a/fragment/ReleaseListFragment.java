@@ -17,47 +17,47 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class ReleaseListFragment extends PagedDataBaseFragment<Release> implements
-    RootAdapter.OnItemClickListener<Release> {
-    private String mUserLogin;
-    private String mRepoName;
+	RootAdapter.OnItemClickListener<Release> {
+private String mUserLogin;
+private String mRepoName;
 
-    public static ReleaseListFragment newInstance(final String owner, final String repo) {
-        ReleaseListFragment f = new ReleaseListFragment();
-        Bundle args = new Bundle();
-        args.putString("owner", owner);
-        args.putString("repo", repo);
-        f.setArguments(args);
-        return f;
-    }
+public static ReleaseListFragment newInstance(final String owner, final String repo) {
+	ReleaseListFragment f = new ReleaseListFragment();
+	Bundle args = new Bundle();
+	args.putString("owner", owner);
+	args.putString("repo", repo);
+	f.setArguments(args);
+	return f;
+}
 
-    @Override
-    public void onCreate(final @Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mUserLogin = getArguments().getString("owner");
-        mRepoName = getArguments().getString("repo");
-    }
+@Override
+public void onCreate(final @Nullable Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	mUserLogin = getArguments().getString("owner");
+	mRepoName = getArguments().getString("repo");
+}
 
-    @Override
-    protected Single<Response<Page<Release>>> loadPage(final int page, final boolean bypassCache) {
-        final RepositoryReleaseService service =
-            ServiceFactory.get(RepositoryReleaseService.class, bypassCache);
-        return service.getReleases(mUserLogin, mRepoName, page);
-    }
+@Override
+protected Single<Response<Page<Release> > > loadPage(final int page, final boolean bypassCache) {
+	final RepositoryReleaseService service =
+		ServiceFactory.get(RepositoryReleaseService.class, bypassCache);
+	return service.getReleases(mUserLogin, mRepoName, page);
+}
 
-    @Override
-    protected RootAdapter<Release, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
-        ReleaseAdapter adapter = new ReleaseAdapter(getActivity());
-        adapter.setOnItemClickListener(this);
-        return adapter;
-    }
+@Override
+protected RootAdapter<Release, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
+	ReleaseAdapter adapter = new ReleaseAdapter(getActivity());
+	adapter.setOnItemClickListener(this);
+	return adapter;
+}
 
-    @Override
-    protected int getEmptyTextResId() {
-        return R.string.no_releases_found;
-    }
+@Override
+protected int getEmptyTextResId() {
+	return R.string.no_releases_found;
+}
 
-    @Override
-    public void onItemClick(final Release release) {
-        startActivity(ReleaseInfoActivity.makeIntent(getActivity(), mUserLogin, mRepoName, release));
-    }
+@Override
+public void onItemClick(final Release release) {
+	startActivity(ReleaseInfoActivity.makeIntent(getActivity(), mUserLogin, mRepoName, release));
+}
 }

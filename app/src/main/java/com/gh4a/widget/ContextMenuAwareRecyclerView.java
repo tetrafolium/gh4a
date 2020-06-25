@@ -8,46 +8,46 @@ import android.view.ContextMenu;
 import android.view.View;
 
 public class ContextMenuAwareRecyclerView extends RecyclerView {
-    private RecyclerContextMenuInfo mContextMenuInfo;
+private RecyclerContextMenuInfo mContextMenuInfo;
 
-    public ContextMenuAwareRecyclerView(final Context context) {
-        super(context);
-    }
+public ContextMenuAwareRecyclerView(final Context context) {
+	super(context);
+}
 
-    public ContextMenuAwareRecyclerView(final Context context, final @Nullable AttributeSet attrs) {
-        super(context, attrs);
-    }
+public ContextMenuAwareRecyclerView(final Context context, final @Nullable AttributeSet attrs) {
+	super(context, attrs);
+}
 
-    public ContextMenuAwareRecyclerView(final Context context, final @Nullable AttributeSet attrs, final int defStyle) {
-        super(context, attrs, defStyle);
-    }
+public ContextMenuAwareRecyclerView(final Context context, final @Nullable AttributeSet attrs, final int defStyle) {
+	super(context, attrs, defStyle);
+}
 
-    @Override
-    protected ContextMenu.ContextMenuInfo getContextMenuInfo() {
-        return mContextMenuInfo;
-    }
+@Override
+protected ContextMenu.ContextMenuInfo getContextMenuInfo() {
+	return mContextMenuInfo;
+}
 
-    @Override
-    public boolean showContextMenuForChild(final View view) {
-        if (view.getLayoutParams() instanceof RecyclerView.LayoutParams) {
-            RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) view.getLayoutParams();
-            final int position = params.getViewAdapterPosition();
-            if (position == NO_POSITION) {
-                return false;
-            }
-            final long id = getAdapter().getItemId(position);
-            mContextMenuInfo = new RecyclerContextMenuInfo(position, id);
-        }
-        return super.showContextMenuForChild(view);
-    }
+@Override
+public boolean showContextMenuForChild(final View view) {
+	if (view.getLayoutParams() instanceof RecyclerView.LayoutParams) {
+		RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) view.getLayoutParams();
+		final int position = params.getViewAdapterPosition();
+		if (position == NO_POSITION) {
+			return false;
+		}
+		final long id = getAdapter().getItemId(position);
+		mContextMenuInfo = new RecyclerContextMenuInfo(position, id);
+	}
+	return super.showContextMenuForChild(view);
+}
 
-    public static class RecyclerContextMenuInfo implements ContextMenu.ContextMenuInfo {
-        public final int position;
-        public final long id;
+public static class RecyclerContextMenuInfo implements ContextMenu.ContextMenuInfo {
+public final int position;
+public final long id;
 
-        private RecyclerContextMenuInfo(final int position, final long id) {
-            this.position = position;
-            this.id = id;
-        }
-    }
+private RecyclerContextMenuInfo(final int position, final long id) {
+	this.position = position;
+	this.id = id;
+}
+}
 }

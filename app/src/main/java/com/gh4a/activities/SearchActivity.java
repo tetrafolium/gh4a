@@ -24,35 +24,35 @@ import com.gh4a.R;
 import com.gh4a.fragment.SearchFragment;
 
 public class SearchActivity extends FragmentContainerActivity {
-    public static final int SEARCH_TYPE_REPO = SearchFragment.SEARCH_TYPE_REPO;
-    public static final int SEARCH_TYPE_USER = SearchFragment.SEARCH_TYPE_USER;
-    public static final int SEARCH_TYPE_CODE = SearchFragment.SEARCH_TYPE_CODE;
+public static final int SEARCH_TYPE_REPO = SearchFragment.SEARCH_TYPE_REPO;
+public static final int SEARCH_TYPE_USER = SearchFragment.SEARCH_TYPE_USER;
+public static final int SEARCH_TYPE_CODE = SearchFragment.SEARCH_TYPE_CODE;
 
-    public static Intent makeIntent(final Context context, final String initialSearch,
-                                    final int searchType, final boolean startSearchImmediately) {
-        return makeIntent(context)
-               .putExtra("initial_search", initialSearch)
-               .putExtra("search_type", searchType)
-               .putExtra("search_immediately", startSearchImmediately);
-    }
+public static Intent makeIntent(final Context context, final String initialSearch,
+                                final int searchType, final boolean startSearchImmediately) {
+	return makeIntent(context)
+	       .putExtra("initial_search", initialSearch)
+	       .putExtra("search_type", searchType)
+	       .putExtra("search_immediately", startSearchImmediately);
+}
 
-    public static Intent makeIntent(final Context context) {
-        return new Intent(context, SearchActivity.class);
-    }
+public static Intent makeIntent(final Context context) {
+	return new Intent(context, SearchActivity.class);
+}
 
-    @Nullable
-    @Override
-    protected String getActionBarTitle() {
-        return getString(R.string.search);
-    }
+@Nullable
+@Override
+protected String getActionBarTitle() {
+	return getString(R.string.search);
+}
 
-    @Override
-    protected Fragment onCreateFragment() {
-        Intent intent = getIntent();
-        int searchType = intent.getIntExtra("search_type", SEARCH_TYPE_REPO);
-        String initialQuery = intent.getStringExtra("initial_search");
-        boolean startSearchImmediately = intent.getBooleanExtra("search_immediately", true);
+@Override
+protected Fragment onCreateFragment() {
+	Intent intent = getIntent();
+	int searchType = intent.getIntExtra("search_type", SEARCH_TYPE_REPO);
+	String initialQuery = intent.getStringExtra("initial_search");
+	boolean startSearchImmediately = intent.getBooleanExtra("search_immediately", true);
 
-        return SearchFragment.newInstance(searchType, initialQuery, startSearchImmediately);
-    }
+	return SearchFragment.newInstance(searchType, initialQuery, startSearchImmediately);
+}
 }

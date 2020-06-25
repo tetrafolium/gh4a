@@ -37,89 +37,89 @@ import com.meisolsson.githubsdk.model.git.GitUser;
 import com.vdurmont.emoji.EmojiParser;
 
 public class CommitAdapter extends RootAdapter<Commit, CommitAdapter.ViewHolder> {
-    public CommitAdapter(final Context context) {
-        super(context);
-    }
+public CommitAdapter(final Context context) {
+	super(context);
+}
 
-    @Override
-    public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
-        View v = inflater.inflate(R.layout.row_commit, parent, false);
-        ViewHolder holder = new ViewHolder(v);
-        holder.ivGravatar.setOnClickListener(this);
-        return holder;
-    }
+@Override
+public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
+	View v = inflater.inflate(R.layout.row_commit, parent, false);
+	ViewHolder holder = new ViewHolder(v);
+	holder.ivGravatar.setOnClickListener(this);
+	return holder;
+}
 
-    @Override
-    public void onBindViewHolder(final ViewHolder holder, final Commit commit) {
-        User author = commit.author();
-        if (author != null && !TextUtils.isEmpty(author.login())) {
-            AvatarHandler.assignAvatar(holder.ivGravatar, author);
-        } else {
-            GitUser commitAuthor = commit.commit().author();
-            String userName = commitAuthor != null ? commitAuthor.name() : null;
-            String email = commitAuthor != null ? commitAuthor.email() : null;
-            holder.ivGravatar.setImageDrawable(new AvatarHandler.DefaultAvatarDrawable(userName, email));
-        }
-        holder.ivGravatar.setTag(commit);
+@Override
+public void onBindViewHolder(final ViewHolder holder, final Commit commit) {
+	User author = commit.author();
+	if (author != null && !TextUtils.isEmpty(author.login())) {
+		AvatarHandler.assignAvatar(holder.ivGravatar, author);
+	} else {
+		GitUser commitAuthor = commit.commit().author();
+		String userName = commitAuthor != null ? commitAuthor.name() : null;
+		String email = commitAuthor != null ? commitAuthor.email() : null;
+		holder.ivGravatar.setImageDrawable(new AvatarHandler.DefaultAvatarDrawable(userName, email));
+	}
+	holder.ivGravatar.setTag(commit);
 
-        String message = commit.commit().message();
-        int pos = message.indexOf('\n');
-        if (pos > 0) {
-            message = message.substring(0, pos);
-        }
-        message = EmojiParser.parseToUnicode(message);
+	String message = commit.commit().message();
+	int pos = message.indexOf('\n');
+	if (pos > 0) {
+		message = message.substring(0, pos);
+	}
+	message = EmojiParser.parseToUnicode(message);
 
-        holder.tvDesc.setText(message);
-        holder.tvSha.setText(commit.sha().substring(0, 10));
-        holder.ivDescriptionIndicator.setVisibility(pos > 0 ? View.VISIBLE : View.GONE);
+	holder.tvDesc.setText(message);
+	holder.tvSha.setText(commit.sha().substring(0, 10));
+	holder.ivDescriptionIndicator.setVisibility(pos > 0 ? View.VISIBLE : View.GONE);
 
-        int comments = commit.commit().commentCount();
-        if (comments > 0) {
-            holder.tvComments.setText(String.valueOf(comments));
-            holder.tvComments.setVisibility(View.VISIBLE);
-        } else {
-            holder.tvComments.setVisibility(View.GONE);
-        }
+	int comments = commit.commit().commentCount();
+	if (comments > 0) {
+		holder.tvComments.setText(String.valueOf(comments));
+		holder.tvComments.setVisibility(View.VISIBLE);
+	} else {
+		holder.tvComments.setVisibility(View.GONE);
+	}
 
-        holder.tvExtra.setText(ApiHelpers.getAuthorName(mContext, commit));
-        holder.tvTimestamp.setText(
-            StringUtils.formatRelativeTime(mContext, commit.commit().author().date(), false));
-    }
+	holder.tvExtra.setText(ApiHelpers.getAuthorName(mContext, commit));
+	holder.tvTimestamp.setText(
+		StringUtils.formatRelativeTime(mContext, commit.commit().author().date(), false));
+}
 
-    @Override
-    public void onClick(final View v) {
-        if (v.getId() == R.id.iv_gravatar) {
-            Commit commit = (Commit) v.getTag();
-            Intent intent = UserActivity.makeIntent(mContext, ApiHelpers.getAuthorLogin(commit));
-            if (intent != null) {
-                mContext.startActivity(intent);
-            }
-        } else {
-            super.onClick(v);
-        }
-    }
+@Override
+public void onClick(final View v) {
+	if (v.getId() == R.id.iv_gravatar) {
+		Commit commit = (Commit) v.getTag();
+		Intent intent = UserActivity.makeIntent(mContext, ApiHelpers.getAuthorLogin(commit));
+		if (intent != null) {
+			mContext.startActivity(intent);
+		}
+	} else {
+		super.onClick(v);
+	}
+}
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ViewHolder(final View view) {
-            super(view);
-            tvSha = view.findViewById(R.id.tv_sha);
-            tvSha.setTypeface(Typeface.MONOSPACE);
+public static class ViewHolder extends RecyclerView.ViewHolder {
+private ViewHolder(final View view) {
+	super(view);
+	tvSha = view.findViewById(R.id.tv_sha);
+	tvSha.setTypeface(Typeface.MONOSPACE);
 
-            tvDesc = view.findViewById(R.id.tv_desc);
-            tvExtra = view.findViewById(R.id.tv_extra);
-            tvTimestamp = view.findViewById(R.id.tv_timestamp);
-            tvComments = view.findViewById(R.id.tv_comments);
+	tvDesc = view.findViewById(R.id.tv_desc);
+	tvExtra = view.findViewById(R.id.tv_extra);
+	tvTimestamp = view.findViewById(R.id.tv_timestamp);
+	tvComments = view.findViewById(R.id.tv_comments);
 
-            ivGravatar = view.findViewById(R.id.iv_gravatar);
-            ivDescriptionIndicator = view.findViewById(R.id.iv_description_indicator);
-        }
+	ivGravatar = view.findViewById(R.id.iv_gravatar);
+	ivDescriptionIndicator = view.findViewById(R.id.iv_description_indicator);
+}
 
-        private final ImageView ivGravatar;
-        private final TextView tvDesc;
-        private final TextView tvExtra;
-        private final TextView tvTimestamp;
-        private final TextView tvSha;
-        private final TextView tvComments;
-        private final ImageView ivDescriptionIndicator;
-    }
+private final ImageView ivGravatar;
+private final TextView tvDesc;
+private final TextView tvExtra;
+private final TextView tvTimestamp;
+private final TextView tvSha;
+private final TextView tvComments;
+private final ImageView ivDescriptionIndicator;
+}
 }

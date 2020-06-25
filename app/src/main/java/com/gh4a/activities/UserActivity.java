@@ -23,160 +23,160 @@ import com.meisolsson.githubsdk.model.User;
 import com.meisolsson.githubsdk.service.users.UserService;
 
 public class UserActivity extends BaseFragmentPagerActivity {
-    public static Intent makeIntent(final Context context, final User user) {
-        // User responses from other endpoints are likely to not be complete, so
-        // we only use the login from it and reload all other info
-        return makeIntent(context, user != null ? user.login() : null);
-    }
+public static Intent makeIntent(final Context context, final User user) {
+	// User responses from other endpoints are likely to not be complete, so
+	// we only use the login from it and reload all other info
+	return makeIntent(context, user != null ? user.login() : null);
+}
 
-    public static Intent makeIntent(final Context context, final String login) {
-        if (login == null) {
-            return null;
-        }
-        return new Intent(context, UserActivity.class)
-               .putExtra("login", login);
-    }
+public static Intent makeIntent(final Context context, final String login) {
+	if (login == null) {
+		return null;
+	}
+	return new Intent(context, UserActivity.class)
+	       .putExtra("login", login);
+}
 
-    private String mUserLogin;
-    private User mUser;
-    private UserFragment mUserFragment;
+private String mUserLogin;
+private User mUser;
+private UserFragment mUserFragment;
 
-    private static final int ID_LOADER_USER = 0;
+private static final int ID_LOADER_USER = 0;
 
-    private static final int[] TAB_TITLES = new int[] {
-        R.string.about, R.string.user_public_activity
-    };
+private static final int[] TAB_TITLES = new int[] {
+	R.string.about, R.string.user_public_activity
+};
 
-    @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+@Override
+protected void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
 
-        setContentShown(false);
-        loadUser(false);
-    }
+	setContentShown(false);
+	loadUser(false);
+}
 
-    @Nullable
-    @Override
-    protected String getActionBarTitle() {
-        return mUserLogin;
-    }
+@Nullable
+@Override
+protected String getActionBarTitle() {
+	return mUserLogin;
+}
 
-    @Override
-    protected void onInitExtras(final Bundle extras) {
-        super.onInitExtras(extras);
-        mUserLogin = extras.getString("login");
-    }
+@Override
+protected void onInitExtras(final Bundle extras) {
+	super.onInitExtras(extras);
+	mUserLogin = extras.getString("login");
+}
 
-    @Override
-    protected int[] getTabTitleResIds() {
-        return TAB_TITLES;
-    }
+@Override
+protected int[] getTabTitleResIds() {
+	return TAB_TITLES;
+}
 
-    @Override
-    public void onRefresh() {
-        mUser = null;
-        setContentShown(false);
-        invalidateTabs();
-        invalidateOptionsMenu();
-        loadUser(true);
-        super.onRefresh();
-    }
+@Override
+public void onRefresh() {
+	mUser = null;
+	setContentShown(false);
+	invalidateTabs();
+	invalidateOptionsMenu();
+	loadUser(true);
+	super.onRefresh();
+}
 
-    @Override
-    protected Fragment makeFragment(final int position) {
-        switch (position) {
-        case 0:
-            return UserFragment.newInstance(mUser);
-        case 1:
-            return PublicEventListFragment.newInstance(mUser);
-        }
-        return null;
-    }
+@Override
+protected Fragment makeFragment(final int position) {
+	switch (position) {
+	case 0:
+		return UserFragment.newInstance(mUser);
+	case 1:
+		return PublicEventListFragment.newInstance(mUser);
+	}
+	return null;
+}
 
-    @Override
-    protected void onFragmentInstantiated(final Fragment f, final int position) {
-        if (position == 0) {
-            mUserFragment = (UserFragment) f;
-        }
-    }
+@Override
+protected void onFragmentInstantiated(final Fragment f, final int position) {
+	if (position == 0) {
+		mUserFragment = (UserFragment) f;
+	}
+}
 
-    @Override
-    protected void onFragmentDestroyed(final Fragment f) {
-        if (f == mUserFragment) {
-            mUserFragment = null;
-        }
-    }
+@Override
+protected void onFragmentDestroyed(final Fragment f) {
+	if (f == mUserFragment) {
+		mUserFragment = null;
+	}
+}
 
-    @Override
-    public boolean displayDetachAction() {
-        return true;
-    }
+@Override
+public boolean displayDetachAction() {
+	return true;
+}
 
-    @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.user_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
+@Override
+public boolean onCreateOptionsMenu(final Menu menu) {
+	MenuInflater inflater = getMenuInflater();
+	inflater.inflate(R.menu.user_menu, menu);
+	return super.onCreateOptionsMenu(menu);
+}
 
-    @Override
-    public boolean onPrepareOptionsMenu(final Menu menu) {
-        MenuItem bookmarkAction = menu.findItem(R.id.bookmark);
-        if (bookmarkAction != null) {
-            String url = "https://github.com/" + mUserLogin;
-            bookmarkAction.setTitle(BookmarksProvider.hasBookmarked(this, url)
-                                    ? R.string.remove_bookmark
-                                    : R.string.bookmark);
-            bookmarkAction.setVisible(mUser != null);
-        }
+@Override
+public boolean onPrepareOptionsMenu(final Menu menu) {
+	MenuItem bookmarkAction = menu.findItem(R.id.bookmark);
+	if (bookmarkAction != null) {
+		String url = "https://github.com/" + mUserLogin;
+		bookmarkAction.setTitle(BookmarksProvider.hasBookmarked(this, url)
+		                    ? R.string.remove_bookmark
+		                    : R.string.bookmark);
+		bookmarkAction.setVisible(mUser != null);
+	}
 
-        return super.onPrepareOptionsMenu(menu);
-    }
+	return super.onPrepareOptionsMenu(menu);
+}
 
-    @Override
-    protected Intent navigateUp() {
-        return getToplevelActivityIntent();
-    }
+@Override
+protected Intent navigateUp() {
+	return getToplevelActivityIntent();
+}
 
-    @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
-        Uri url = IntentUtils.createBaseUriForUser(mUserLogin).build();
-        switch (item.getItemId()) {
-        case R.id.share: {
-            String userName = mUser != null ? mUser.name() : null;
-            int subjectId = StringUtils.isBlank(userName)
-                            ? R.string.share_user_subject_loginonly : R.string.share_user_subject;
-            IntentUtils.share(this, getString(subjectId, mUserLogin, userName), url);
-            return true;
-        }
-        case R.id.browser:
-            IntentUtils.launchBrowser(this, url);
-            return true;
-        case R.id.bookmark: {
-            String urlString = url.toString();
-            if (BookmarksProvider.hasBookmarked(this, urlString)) {
-                BookmarksProvider.removeBookmark(this, urlString);
-            } else {
-                BookmarksProvider.saveBookmark(this, mUserLogin,
-                                               BookmarksProvider.Columns.TYPE_USER,
-                                               urlString, mUser.name(), true);
-            }
-            return true;
-        }
-        }
-        return super.onOptionsItemSelected(item);
-    }
+@Override
+public boolean onOptionsItemSelected(final MenuItem item) {
+	Uri url = IntentUtils.createBaseUriForUser(mUserLogin).build();
+	switch (item.getItemId()) {
+	case R.id.share: {
+		String userName = mUser != null ? mUser.name() : null;
+		int subjectId = StringUtils.isBlank(userName)
+		            ? R.string.share_user_subject_loginonly : R.string.share_user_subject;
+		IntentUtils.share(this, getString(subjectId, mUserLogin, userName), url);
+		return true;
+	}
+	case R.id.browser:
+		IntentUtils.launchBrowser(this, url);
+		return true;
+	case R.id.bookmark: {
+		String urlString = url.toString();
+		if (BookmarksProvider.hasBookmarked(this, urlString)) {
+			BookmarksProvider.removeBookmark(this, urlString);
+		} else {
+			BookmarksProvider.saveBookmark(this, mUserLogin,
+			                               BookmarksProvider.Columns.TYPE_USER,
+			                               urlString, mUser.name(), true);
+		}
+		return true;
+	}
+	}
+	return super.onOptionsItemSelected(item);
+}
 
-    private void loadUser(final boolean force) {
-        UserService service = ServiceFactory.get(UserService.class, force);
-        service.getUser(mUserLogin)
-        .map(ApiHelpers::throwOnFailure)
-        .compose(makeLoaderSingle(ID_LOADER_USER, force))
-        .subscribe(result -> {
-            mUser = result;
-            invalidateTabs();
-            setContentShown(true);
-            invalidateOptionsMenu();
-        }, this::handleLoadFailure);
-    }
+private void loadUser(final boolean force) {
+	UserService service = ServiceFactory.get(UserService.class, force);
+	service.getUser(mUserLogin)
+	.map(ApiHelpers::throwOnFailure)
+	.compose(makeLoaderSingle(ID_LOADER_USER, force))
+	.subscribe(result->{
+			mUser = result;
+			invalidateTabs();
+			setContentShown(true);
+			invalidateOptionsMenu();
+		}, this::handleLoadFailure);
+}
 }

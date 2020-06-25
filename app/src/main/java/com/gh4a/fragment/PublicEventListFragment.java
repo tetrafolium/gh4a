@@ -13,30 +13,30 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class PublicEventListFragment extends EventListFragment {
-    private String mLogin;
-    private boolean mIsOrganization;
+private String mLogin;
+private boolean mIsOrganization;
 
-    public static PublicEventListFragment newInstance(final User user) {
-        PublicEventListFragment f = new PublicEventListFragment();
-        Bundle args = new Bundle();
-        args.putString("login", user.login());
-        args.putBoolean("org", user.type() == UserType.Organization);
-        f.setArguments(args);
-        return f;
-    }
+public static PublicEventListFragment newInstance(final User user) {
+	PublicEventListFragment f = new PublicEventListFragment();
+	Bundle args = new Bundle();
+	args.putString("login", user.login());
+	args.putBoolean("org", user.type() == UserType.Organization);
+	f.setArguments(args);
+	return f;
+}
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mLogin = getArguments().getString("login");
-        mIsOrganization = getArguments().getBoolean("org");
-    }
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	mLogin = getArguments().getString("login");
+	mIsOrganization = getArguments().getBoolean("org");
+}
 
-    @Override
-    protected Single<Response<Page<GitHubEvent>>> loadPage(final int page, final boolean bypassCache) {
-        final EventService service = ServiceFactory.get(EventService.class, bypassCache);
-        return mIsOrganization
-               ? service.getPublicOrganizationEvents(mLogin, page)
-               : service.getPublicUserPerformedEvents(mLogin, page);
-    }
+@Override
+protected Single<Response<Page<GitHubEvent> > > loadPage(final int page, final boolean bypassCache) {
+	final EventService service = ServiceFactory.get(EventService.class, bypassCache);
+	return mIsOrganization
+	       ? service.getPublicOrganizationEvents(mLogin, page)
+	       : service.getPublicUserPerformedEvents(mLogin, page);
+}
 }

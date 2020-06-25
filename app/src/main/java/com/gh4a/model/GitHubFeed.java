@@ -7,6 +7,6 @@ import java.util.List;
 
 @Root(name = "feed", strict = false)
 public class GitHubFeed {
-    @ElementList(name = "entry", inline = true)
-    public List<Feed> feed;
+@ElementList(name = "entry", inline = true)
+public List<Feed> feed;
 }

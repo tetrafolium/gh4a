@@ -70,486 +70,486 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class RepositoryFragment extends LoadingFragmentBase implements
-    OverviewRow.OnIconClickListener, View.OnClickListener {
-    public static RepositoryFragment newInstance(final Repository repository, final String ref) {
-        RepositoryFragment f = new RepositoryFragment();
-
-        Bundle args = new Bundle();
-        args.putParcelable("repo", repository);
-        args.putString("ref", ref);
-        f.setArguments(args);
-
-        return f;
-    }
-
-    private static final int ID_LOADER_README = 0;
-    private static final int ID_LOADER_PULL_REQUEST_COUNT = 1;
-    private static final int ID_LOADER_WATCHING = 2;
-    private static final int ID_LOADER_STARRING = 3;
-
-    private static final String STATE_KEY_IS_README_EXPANDED = "is_readme_expanded";
-    private static final String STATE_KEY_IS_README_LOADED = "is_readme_loaded";
-
-    private Repository mRepository;
-    private View mContentView;
-    private OverviewRow mWatcherRow;
-    private OverviewRow mStarsRow;
-    private String mRef;
-    private HttpImageGetter mImageGetter;
-    private TextView mReadmeView;
-    private View mLoadingView;
-    private TextView mReadmeTitleView;
-    private Boolean mIsWatching = null;
-    private Boolean mIsStarring = null;
-    private boolean mIsReadmeLoaded = false;
-    private boolean mIsReadmeExpanded = false;
-
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mRepository = getArguments().getParcelable("repo");
-        mRef = getArguments().getString("ref");
-    }
-
-    @Override
-    protected View onCreateContentView(final LayoutInflater inflater, final ViewGroup parent) {
-        mContentView = inflater.inflate(R.layout.repository, parent, false);
-        mReadmeView = mContentView.findViewById(R.id.readme);
-        mLoadingView = mContentView.findViewById(R.id.pb_readme);
-        mReadmeTitleView = mContentView.findViewById(R.id.readme_title);
-        return mContentView;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mImageGetter.destroy();
-        mImageGetter = null;
-    }
-
-    @Override
-    public void onRefresh() {
-        if (mReadmeView != null) {
-            mReadmeView.setVisibility(View.GONE);
-        }
-        if (mLoadingView != null && mIsReadmeExpanded) {
-            mLoadingView.setVisibility(View.VISIBLE);
-        }
-        if (mContentView != null) {
-            OverviewRow issuesRow = mContentView.findViewById(R.id.issues_row);
-            issuesRow.setText(null);
-            OverviewRow pullsRow = mContentView.findViewById(R.id.pulls_row);
-            pullsRow.setText(null);
-        }
-        if (mIsWatching != null && mWatcherRow != null) {
-            mWatcherRow.setText(null);
-        }
-        mIsWatching = null;
-        if (mIsStarring != null && mStarsRow != null) {
-            mStarsRow.setText(null);
-        }
-        mIsStarring = null;
-        if (mImageGetter != null) {
-            mImageGetter.clearHtmlCache();
-        }
-        if (mIsReadmeLoaded) {
-            loadReadme(true);
-        }
-        loadPullRequestCount(true);
-        loadStarringState(true);
-        loadWatchingState(true);
-    }
-
-    @Override
-    public void onActivityCreated(final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        mImageGetter = new HttpImageGetter(getActivity());
-        fillData();
-        setContentShown(true);
-
-        if (savedInstanceState != null) {
-            mIsReadmeExpanded = savedInstanceState.getBoolean(STATE_KEY_IS_README_EXPANDED, false);
-            mIsReadmeLoaded = savedInstanceState.getBoolean(STATE_KEY_IS_README_LOADED, false);
-        }
-
-        LoaderManager lm = getLoaderManager();
-        if (mIsReadmeExpanded || mIsReadmeLoaded) {
-            loadReadme(false);
-        }
-        loadPullRequestCount(false);
-        loadWatchingState(false);
-        loadStarringState(false);
-
-        updateReadmeVisibility();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mImageGetter.resume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mImageGetter.pause();
-    }
-
-    @Override
-    public void onSaveInstanceState(final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(STATE_KEY_IS_README_EXPANDED, mIsReadmeExpanded);
-        outState.putBoolean(STATE_KEY_IS_README_LOADED, mIsReadmeLoaded);
-    }
-
-    public void setRef(final String ref) {
-        mRef = ref;
-        getArguments().putString("ref", ref);
-
-        // Reload readme
-        if (mIsReadmeLoaded) {
-            loadReadme(true);
-        }
-        if (mReadmeView != null) {
-            mReadmeView.setVisibility(View.GONE);
-        }
-        if (mLoadingView != null && mIsReadmeExpanded) {
-            mLoadingView.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private void fillData() {
-        TextView tvRepoName = mContentView.findViewById(R.id.tv_repo_name);
-        IntentSpan repoSpan = new IntentSpan(tvRepoName.getContext(),
-                                             context -> UserActivity.makeIntent(context, mRepository.owner()));
-        SpannableStringBuilder repoName = new SpannableStringBuilder();
-        repoName.append(mRepository.owner().login());
-        repoName.append("/");
-        repoName.append(mRepository.name());
-        repoName.setSpan(repoSpan, 0, mRepository.owner().login().length(), 0);
-        tvRepoName.setText(repoName);
-        tvRepoName.setMovementMethod(UiUtils.CHECKING_LINK_METHOD);
-
-        fillTextView(R.id.tv_desc, 0, mRepository.description());
-        fillTextView(R.id.tv_url, 0, mRepository.homepage());
-
-        final String owner = mRepository.owner().login();
-        final String name = mRepository.name();
-
-        OverviewRow forkParentRow = mContentView.findViewById(R.id.fork_parent_row);
-        if (mRepository.isFork() && mRepository.parent() != null) {
-            Repository parent = mRepository.parent();
-            forkParentRow.setVisibility(View.VISIBLE);
-            forkParentRow.setText(getForkedFromTextWithHighlight(parent));
-            forkParentRow.setClickIntent(RepositoryActivity.makeIntent(getActivity(), parent));
-        } else {
-            forkParentRow.setVisibility(View.GONE);
-        }
-
-        OverviewRow privateRow = mContentView.findViewById(R.id.private_row);
-        privateRow.setVisibility(mRepository.isPrivate() ? View.VISIBLE : View.GONE);
-
-        OverviewRow languageRow = mContentView.findViewById(R.id.language_row);
-        languageRow.setVisibility(StringUtils.isBlank(mRepository.language())
-                                  ? View.GONE : View.VISIBLE);
-        languageRow.setText(getString(R.string.repo_language, mRepository.language()));
-
-        boolean showOverviewRowDivider = forkParentRow.getVisibility() == View.VISIBLE
-                                         || privateRow.getVisibility() == View.VISIBLE
-                                         || languageRow.getVisibility() == View.VISIBLE;
-        mContentView.findViewById(R.id.repository_overview_row_divider)
-        .setVisibility(showOverviewRowDivider ? View.VISIBLE : View.GONE);
-
-        OverviewRow issuesRow = mContentView.findViewById(R.id.issues_row);
-        issuesRow.setVisibility(mRepository.hasIssues() ? View.VISIBLE : View.GONE);
-        issuesRow.setClickIntent(IssueListActivity.makeIntent(getActivity(), owner, name));
-
-        OverviewRow pullsRow = mContentView.findViewById(R.id.pulls_row);
-        pullsRow.setClickIntent(IssueListActivity.makeIntent(getActivity(), owner, name, true));
-
-        OverviewRow forksRow = mContentView.findViewById(R.id.forks_row);
-        forksRow.setText(getResources().getQuantityString(R.plurals.fork,
-                         mRepository.forksCount(), mRepository.forksCount()));
-        forksRow.setClickIntent(ForkListActivity.makeIntent(getActivity(), owner, name));
-
-        mStarsRow = mContentView.findViewById(R.id.stars_row);
-        mStarsRow.setIconClickListener(this);
-        mStarsRow.setClickIntent(StargazerListActivity.makeIntent(getActivity(), owner, name));
-
-        mWatcherRow = mContentView.findViewById(R.id.watchers_row);
-        mWatcherRow.setIconClickListener(this);
-        mWatcherRow.setClickIntent(WatcherListActivity.makeIntent(getActivity(), owner, name));
-
-        if (!Gh4Application.get().isAuthorized()) {
-            updateWatcherUi();
-            updateStargazerUi();
-        }
-
-        mContentView.findViewById(R.id.tv_contributors_label).setOnClickListener(this);
-        mContentView.findViewById(R.id.other_info).setOnClickListener(this);
-        mContentView.findViewById(R.id.tv_releases_label).setOnClickListener(this);
-        mReadmeTitleView.setOnClickListener(this);
-
-        Permissions permissions = mRepository.permissions();
-        updateClickableLabel(R.id.tv_collaborators_label,
-                             permissions != null && permissions.push());
-        updateClickableLabel(R.id.tv_wiki_label, mRepository.hasWiki());
-    }
-
-    @NonNull
-    private SpannableString getForkedFromTextWithHighlight(final Repository parent) {
-        String forkedFromText = getString(R.string.forked_from, parent.fullName());
-        SpannableString spannableString = new SpannableString(forkedFromText);
-        ForegroundColorSpan colorSpan = new ForegroundColorSpan(UiUtils.resolveColor(getContext(), android.R.attr.textColorLink));
-        spannableString.setSpan(colorSpan, forkedFromText.indexOf(parent.fullName()), forkedFromText.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-        return spannableString;
-    }
-
-    private void updateClickableLabel(final int id, final boolean enable) {
-        View view = mContentView.findViewById(id);
-        if (enable) {
-            view.setOnClickListener(this);
-            view.setVisibility(View.VISIBLE);
-        } else {
-            view.setVisibility(View.GONE);
-        }
-    }
-
-    private void fillTextView(final int id, final int stringId, final String text) {
-        TextView view = mContentView.findViewById(id);
-
-        if (!StringUtils.isBlank(text)) {
-            if (stringId != 0) {
-                view.setText(getString(stringId, text));
-            } else {
-                view.setText(EmojiParser.parseToUnicode(text));
-            }
-            view.setVisibility(View.VISIBLE);
-        } else {
-            view.setVisibility(View.GONE);
-        }
-    }
-
-    private void updateStargazerUi() {
-        mStarsRow.setText(getResources().getQuantityString(R.plurals.star,
-                          mRepository.stargazersCount(), mRepository.stargazersCount()));
-        mStarsRow.setToggleState(mIsStarring != null && mIsStarring);
-    }
-
-    private void updateWatcherUi() {
-        mWatcherRow.setText(getResources().getQuantityString(R.plurals.watcher,
-                            mRepository.subscribersCount(), mRepository.subscribersCount()));
-        mWatcherRow.setToggleState(mIsWatching != null && mIsWatching);
-    }
-
-    @Override
-    public void onClick(final View view) {
-        int id = view.getId();
-
-        if (id == R.id.readme_title) {
-            toggleReadmeExpanded();
-            return;
-        }
-
-        String owner = mRepository.owner().login();
-        String name = mRepository.name();
-        Intent intent = null;
-
-        if (id == R.id.tv_contributors_label) {
-            intent = ContributorListActivity.makeIntent(getActivity(), owner, name);
-        } else if (id == R.id.tv_collaborators_label) {
-            intent = CollaboratorListActivity.makeIntent(getActivity(), owner, name);
-        } else if (id == R.id.tv_wiki_label) {
-            intent = WikiListActivity.makeIntent(getActivity(), owner, name, null);
-        } else if (id == R.id.tv_releases_label) {
-            intent = ReleaseListActivity.makeIntent(getActivity(), owner, name);
-        } else if (view.getTag() instanceof Repository) {
-            intent = RepositoryActivity.makeIntent(getActivity(), (Repository) view.getTag());
-        }
-
-        if (intent != null) {
-            startActivity(intent);
-        }
-    }
-
-    @Override
-    public void onIconClick(final OverviewRow row) {
-        if (row == mWatcherRow && mIsWatching != null) {
-            mWatcherRow.setText(null);
-            toggleWatchingState();
-        } else if (row == mStarsRow && mIsStarring != null) {
-            mStarsRow.setText(null);
-            toggleStarringState();
-        }
-    }
-
-    private void toggleReadmeExpanded() {
-        mIsReadmeExpanded = !mIsReadmeExpanded;
-
-        if (mIsReadmeExpanded && !mIsReadmeLoaded) {
-            loadReadme(false);
-        }
-
-        updateReadmeVisibility();
-    }
-
-    private void updateReadmeVisibility() {
-        mReadmeView.setVisibility(mIsReadmeExpanded && mIsReadmeLoaded ? View.VISIBLE : View.GONE);
-        mLoadingView.setVisibility(
-            mIsReadmeExpanded && !mIsReadmeLoaded ? View.VISIBLE : View.GONE);
-
-        int drawableAttr = mIsReadmeExpanded ? R.attr.dropUpArrowIcon : R.attr.dropDownArrowIcon;
-        int drawableRes = UiUtils.resolveDrawable(getContext(), drawableAttr);
-        mReadmeTitleView.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawableRes, 0);
-    }
-
-
-    private void loadReadme(final boolean force) {
-        Context context = getActivity();
-        Long id = mRepository.id();
-        String repoOwner = mRepository.owner().login();
-        String repoName = mRepository.name();
-        RepositoryContentService service = ServiceFactory.get(RepositoryContentService.class, force);
-
-        service.getReadmeHtml(repoOwner, repoName, mRef)
-        .map(ApiHelpers::throwOnFailure)
-        .map(Optional::of)
-        .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, Optional.<String>absent()))
-        .map(htmlOpt -> {
-            if (htmlOpt.isPresent()) {
-                String html = HtmlUtils.rewriteRelativeUrls(htmlOpt.get(),
-                        repoOwner, repoName, mRef != null ? mRef : mRepository.defaultBranch());
-                mImageGetter.encode(context, id, html);
-                return Optional.of(html);
-            }
-            return Optional.<String>absent();
-        })
-        .compose(makeLoaderSingle(ID_LOADER_README, force))
-        .doOnSubscribe(disposable -> {
-            mIsReadmeLoaded = false;
-            updateReadmeVisibility();
-        })
-        .subscribe(readmeOpt -> {
-            if (readmeOpt.isPresent()) {
-                mReadmeView.setMovementMethod(UiUtils.CHECKING_LINK_METHOD);
-                mImageGetter.bind(mReadmeView, readmeOpt.get(), id);
-            } else {
-                mReadmeView.setText(R.string.repo_no_readme);
-                mReadmeView.setTypeface(Typeface.DEFAULT, Typeface.ITALIC);
-            }
-            mIsReadmeLoaded = true;
-            updateReadmeVisibility();
-        }, this::handleLoadFailure);
-    }
-
-    private void loadPullRequestCount(final boolean force) {
-        SearchService service = ServiceFactory.get(SearchService.class, force, null, null, 1);
-        String query = String.format(Locale.US, "type:pr repo:%s/%s state:open",
-                                     mRepository.owner().login(), mRepository.name());
-
-        service.searchIssues(query, null, null, 0)
-        .map(ApiHelpers::throwOnFailure)
-        .map(SearchPage::totalCount)
-        .compose(makeLoaderSingle(ID_LOADER_PULL_REQUEST_COUNT, force))
-        .subscribe(count -> {
-            int issueCount = mRepository.openIssuesCount() - count;
-
-            OverviewRow issuesRow = mContentView.findViewById(R.id.issues_row);
-            issuesRow.setText(getResources().getQuantityString(R.plurals.issue, issueCount, issueCount));
-
-            OverviewRow pullsRow = mContentView.findViewById(R.id.pulls_row);
-            pullsRow.setText(getResources().getQuantityString(R.plurals.pull_request, count, count));
-        }, this::handleLoadFailure);
-    }
-
-    private void toggleStarringState() {
-        StarringService service = ServiceFactory.get(StarringService.class, false);
-        Single<Response<Void>> responseSingle = mIsStarring
-                                                ? service.unstarRepository(mRepository.owner().login(), mRepository.name())
-                                                : service.starRepository(mRepository.owner().login(), mRepository.name());
-        responseSingle.map(ApiHelpers::mapToBooleanOrThrowOnFailure)
-        .compose(RxUtils::doInBackground)
-        .subscribe(result -> {
-            if (mIsStarring != null) {
-                mIsStarring = !mIsStarring;
-                mRepository = mRepository.toBuilder()
-                .stargazersCount(mRepository.stargazersCount() + (mIsStarring ? 1 : -1))
-                .build();
-                updateStargazerUi();
-            }
-        }, error -> {
-            handleActionFailure("Updating repo starring state failed", error);
-            updateStargazerUi();
-        });
-
-    }
-
-    private void toggleWatchingState() {
-        WatchingService service = ServiceFactory.get(WatchingService.class, false);
-        final String repoOwner = mRepository.owner().login(), repoName = mRepository.name();
-        final Single<?> responseSingle;
-
-        if (mIsWatching) {
-            responseSingle = service.deleteRepositorySubscription(repoOwner, repoName)
-                             .map(ApiHelpers::throwOnFailure);
-        } else {
-            SubscriptionRequest request = SubscriptionRequest.builder()
-                                          .subscribed(true)
-                                          .build();
-            responseSingle = service.setRepositorySubscription(repoOwner, repoName, request)
-                             .map(ApiHelpers::throwOnFailure);
-        }
-
-        responseSingle.compose(RxUtils::doInBackground)
-        .subscribe(result -> {
-            if (mIsWatching != null) {
-                mIsWatching = !mIsWatching;
-                mRepository = mRepository.toBuilder()
-                .subscribersCount(mRepository.subscribersCount() + (mIsWatching ? 1 : -1))
-                .build();
-                updateWatcherUi();
-            }
-        }, error -> {
-            handleActionFailure("Updating repo watching state failed", error);
-            updateWatcherUi();
-        });
-    }
-
-
-    private void loadStarringState(final boolean force) {
-        if (!Gh4Application.get().isAuthorized()) {
-            return;
-        }
-        StarringService service = ServiceFactory.get(StarringService.class, force);
-        service.checkIfRepositoryIsStarred(mRepository.owner().login(), mRepository.name())
-        // success response means 'starred'
-        .map(ApiHelpers::mapToTrueOnSuccess)
-        // 404 means 'not starred'
-        .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, false))
-        .compose(makeLoaderSingle(ID_LOADER_STARRING, force))
-        .subscribe(result -> {
-            mIsStarring = result;
-            updateStargazerUi();
-        }, this::handleLoadFailure);
-    }
-
-    private void loadWatchingState(final boolean force) {
-        if (!Gh4Application.get().isAuthorized()) {
-            return;
-        }
-        WatchingService service = ServiceFactory.get(WatchingService.class, force);
-        service.getRepositorySubscription(mRepository.owner().login(), mRepository.name())
-        .map(ApiHelpers::throwOnFailure)
-        .map(Subscription::subscribed)
-        // 404 means 'not subscribed'
-        .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, false))
-        .compose(makeLoaderSingle(ID_LOADER_WATCHING, force))
-        .subscribe(result -> {
-            mIsWatching = result;
-            updateWatcherUi();
-        }, this::handleLoadFailure);
-    }
+	OverviewRow.OnIconClickListener, View.OnClickListener {
+public static RepositoryFragment newInstance(final Repository repository, final String ref) {
+	RepositoryFragment f = new RepositoryFragment();
+
+	Bundle args = new Bundle();
+	args.putParcelable("repo", repository);
+	args.putString("ref", ref);
+	f.setArguments(args);
+
+	return f;
+}
+
+private static final int ID_LOADER_README = 0;
+private static final int ID_LOADER_PULL_REQUEST_COUNT = 1;
+private static final int ID_LOADER_WATCHING = 2;
+private static final int ID_LOADER_STARRING = 3;
+
+private static final String STATE_KEY_IS_README_EXPANDED = "is_readme_expanded";
+private static final String STATE_KEY_IS_README_LOADED = "is_readme_loaded";
+
+private Repository mRepository;
+private View mContentView;
+private OverviewRow mWatcherRow;
+private OverviewRow mStarsRow;
+private String mRef;
+private HttpImageGetter mImageGetter;
+private TextView mReadmeView;
+private View mLoadingView;
+private TextView mReadmeTitleView;
+private Boolean mIsWatching = null;
+private Boolean mIsStarring = null;
+private boolean mIsReadmeLoaded = false;
+private boolean mIsReadmeExpanded = false;
+
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	mRepository = getArguments().getParcelable("repo");
+	mRef = getArguments().getString("ref");
+}
+
+@Override
+protected View onCreateContentView(final LayoutInflater inflater, final ViewGroup parent) {
+	mContentView = inflater.inflate(R.layout.repository, parent, false);
+	mReadmeView = mContentView.findViewById(R.id.readme);
+	mLoadingView = mContentView.findViewById(R.id.pb_readme);
+	mReadmeTitleView = mContentView.findViewById(R.id.readme_title);
+	return mContentView;
+}
+
+@Override
+public void onDestroyView() {
+	super.onDestroyView();
+	mImageGetter.destroy();
+	mImageGetter = null;
+}
+
+@Override
+public void onRefresh() {
+	if (mReadmeView != null) {
+		mReadmeView.setVisibility(View.GONE);
+	}
+	if (mLoadingView != null && mIsReadmeExpanded) {
+		mLoadingView.setVisibility(View.VISIBLE);
+	}
+	if (mContentView != null) {
+		OverviewRow issuesRow = mContentView.findViewById(R.id.issues_row);
+		issuesRow.setText(null);
+		OverviewRow pullsRow = mContentView.findViewById(R.id.pulls_row);
+		pullsRow.setText(null);
+	}
+	if (mIsWatching != null && mWatcherRow != null) {
+		mWatcherRow.setText(null);
+	}
+	mIsWatching = null;
+	if (mIsStarring != null && mStarsRow != null) {
+		mStarsRow.setText(null);
+	}
+	mIsStarring = null;
+	if (mImageGetter != null) {
+		mImageGetter.clearHtmlCache();
+	}
+	if (mIsReadmeLoaded) {
+		loadReadme(true);
+	}
+	loadPullRequestCount(true);
+	loadStarringState(true);
+	loadWatchingState(true);
+}
+
+@Override
+public void onActivityCreated(final Bundle savedInstanceState) {
+	super.onActivityCreated(savedInstanceState);
+
+	mImageGetter = new HttpImageGetter(getActivity());
+	fillData();
+	setContentShown(true);
+
+	if (savedInstanceState != null) {
+		mIsReadmeExpanded = savedInstanceState.getBoolean(STATE_KEY_IS_README_EXPANDED, false);
+		mIsReadmeLoaded = savedInstanceState.getBoolean(STATE_KEY_IS_README_LOADED, false);
+	}
+
+	LoaderManager lm = getLoaderManager();
+	if (mIsReadmeExpanded || mIsReadmeLoaded) {
+		loadReadme(false);
+	}
+	loadPullRequestCount(false);
+	loadWatchingState(false);
+	loadStarringState(false);
+
+	updateReadmeVisibility();
+}
+
+@Override
+public void onResume() {
+	super.onResume();
+	mImageGetter.resume();
+}
+
+@Override
+public void onPause() {
+	super.onPause();
+	mImageGetter.pause();
+}
+
+@Override
+public void onSaveInstanceState(final Bundle outState) {
+	super.onSaveInstanceState(outState);
+	outState.putBoolean(STATE_KEY_IS_README_EXPANDED, mIsReadmeExpanded);
+	outState.putBoolean(STATE_KEY_IS_README_LOADED, mIsReadmeLoaded);
+}
+
+public void setRef(final String ref) {
+	mRef = ref;
+	getArguments().putString("ref", ref);
+
+	// Reload readme
+	if (mIsReadmeLoaded) {
+		loadReadme(true);
+	}
+	if (mReadmeView != null) {
+		mReadmeView.setVisibility(View.GONE);
+	}
+	if (mLoadingView != null && mIsReadmeExpanded) {
+		mLoadingView.setVisibility(View.VISIBLE);
+	}
+}
+
+private void fillData() {
+	TextView tvRepoName = mContentView.findViewById(R.id.tv_repo_name);
+	IntentSpan repoSpan = new IntentSpan(tvRepoName.getContext(),
+	                                     context->UserActivity.makeIntent(context, mRepository.owner()));
+	SpannableStringBuilder repoName = new SpannableStringBuilder();
+	repoName.append(mRepository.owner().login());
+	repoName.append("/");
+	repoName.append(mRepository.name());
+	repoName.setSpan(repoSpan, 0, mRepository.owner().login().length(), 0);
+	tvRepoName.setText(repoName);
+	tvRepoName.setMovementMethod(UiUtils.CHECKING_LINK_METHOD);
+
+	fillTextView(R.id.tv_desc, 0, mRepository.description());
+	fillTextView(R.id.tv_url, 0, mRepository.homepage());
+
+	final String owner = mRepository.owner().login();
+	final String name = mRepository.name();
+
+	OverviewRow forkParentRow = mContentView.findViewById(R.id.fork_parent_row);
+	if (mRepository.isFork() && mRepository.parent() != null) {
+		Repository parent = mRepository.parent();
+		forkParentRow.setVisibility(View.VISIBLE);
+		forkParentRow.setText(getForkedFromTextWithHighlight(parent));
+		forkParentRow.setClickIntent(RepositoryActivity.makeIntent(getActivity(), parent));
+	} else {
+		forkParentRow.setVisibility(View.GONE);
+	}
+
+	OverviewRow privateRow = mContentView.findViewById(R.id.private_row);
+	privateRow.setVisibility(mRepository.isPrivate() ? View.VISIBLE : View.GONE);
+
+	OverviewRow languageRow = mContentView.findViewById(R.id.language_row);
+	languageRow.setVisibility(StringUtils.isBlank(mRepository.language())
+	                          ? View.GONE : View.VISIBLE);
+	languageRow.setText(getString(R.string.repo_language, mRepository.language()));
+
+	boolean showOverviewRowDivider = forkParentRow.getVisibility() == View.VISIBLE
+	                                 || privateRow.getVisibility() == View.VISIBLE
+	                                 || languageRow.getVisibility() == View.VISIBLE;
+	mContentView.findViewById(R.id.repository_overview_row_divider)
+	.setVisibility(showOverviewRowDivider ? View.VISIBLE : View.GONE);
+
+	OverviewRow issuesRow = mContentView.findViewById(R.id.issues_row);
+	issuesRow.setVisibility(mRepository.hasIssues() ? View.VISIBLE : View.GONE);
+	issuesRow.setClickIntent(IssueListActivity.makeIntent(getActivity(), owner, name));
+
+	OverviewRow pullsRow = mContentView.findViewById(R.id.pulls_row);
+	pullsRow.setClickIntent(IssueListActivity.makeIntent(getActivity(), owner, name, true));
+
+	OverviewRow forksRow = mContentView.findViewById(R.id.forks_row);
+	forksRow.setText(getResources().getQuantityString(R.plurals.fork,
+	                                                  mRepository.forksCount(), mRepository.forksCount()));
+	forksRow.setClickIntent(ForkListActivity.makeIntent(getActivity(), owner, name));
+
+	mStarsRow = mContentView.findViewById(R.id.stars_row);
+	mStarsRow.setIconClickListener(this);
+	mStarsRow.setClickIntent(StargazerListActivity.makeIntent(getActivity(), owner, name));
+
+	mWatcherRow = mContentView.findViewById(R.id.watchers_row);
+	mWatcherRow.setIconClickListener(this);
+	mWatcherRow.setClickIntent(WatcherListActivity.makeIntent(getActivity(), owner, name));
+
+	if (!Gh4Application.get().isAuthorized()) {
+		updateWatcherUi();
+		updateStargazerUi();
+	}
+
+	mContentView.findViewById(R.id.tv_contributors_label).setOnClickListener(this);
+	mContentView.findViewById(R.id.other_info).setOnClickListener(this);
+	mContentView.findViewById(R.id.tv_releases_label).setOnClickListener(this);
+	mReadmeTitleView.setOnClickListener(this);
+
+	Permissions permissions = mRepository.permissions();
+	updateClickableLabel(R.id.tv_collaborators_label,
+	                     permissions != null && permissions.push());
+	updateClickableLabel(R.id.tv_wiki_label, mRepository.hasWiki());
+}
+
+@NonNull
+private SpannableString getForkedFromTextWithHighlight(final Repository parent) {
+	String forkedFromText = getString(R.string.forked_from, parent.fullName());
+	SpannableString spannableString = new SpannableString(forkedFromText);
+	ForegroundColorSpan colorSpan = new ForegroundColorSpan(UiUtils.resolveColor(getContext(), android.R.attr.textColorLink));
+	spannableString.setSpan(colorSpan, forkedFromText.indexOf(parent.fullName()), forkedFromText.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+	return spannableString;
+}
+
+private void updateClickableLabel(final int id, final boolean enable) {
+	View view = mContentView.findViewById(id);
+	if (enable) {
+		view.setOnClickListener(this);
+		view.setVisibility(View.VISIBLE);
+	} else {
+		view.setVisibility(View.GONE);
+	}
+}
+
+private void fillTextView(final int id, final int stringId, final String text) {
+	TextView view = mContentView.findViewById(id);
+
+	if (!StringUtils.isBlank(text)) {
+		if (stringId != 0) {
+			view.setText(getString(stringId, text));
+		} else {
+			view.setText(EmojiParser.parseToUnicode(text));
+		}
+		view.setVisibility(View.VISIBLE);
+	} else {
+		view.setVisibility(View.GONE);
+	}
+}
+
+private void updateStargazerUi() {
+	mStarsRow.setText(getResources().getQuantityString(R.plurals.star,
+	                                                   mRepository.stargazersCount(), mRepository.stargazersCount()));
+	mStarsRow.setToggleState(mIsStarring != null && mIsStarring);
+}
+
+private void updateWatcherUi() {
+	mWatcherRow.setText(getResources().getQuantityString(R.plurals.watcher,
+	                                                     mRepository.subscribersCount(), mRepository.subscribersCount()));
+	mWatcherRow.setToggleState(mIsWatching != null && mIsWatching);
+}
+
+@Override
+public void onClick(final View view) {
+	int id = view.getId();
+
+	if (id == R.id.readme_title) {
+		toggleReadmeExpanded();
+		return;
+	}
+
+	String owner = mRepository.owner().login();
+	String name = mRepository.name();
+	Intent intent = null;
+
+	if (id == R.id.tv_contributors_label) {
+		intent = ContributorListActivity.makeIntent(getActivity(), owner, name);
+	} else if (id == R.id.tv_collaborators_label) {
+		intent = CollaboratorListActivity.makeIntent(getActivity(), owner, name);
+	} else if (id == R.id.tv_wiki_label) {
+		intent = WikiListActivity.makeIntent(getActivity(), owner, name, null);
+	} else if (id == R.id.tv_releases_label) {
+		intent = ReleaseListActivity.makeIntent(getActivity(), owner, name);
+	} else if (view.getTag() instanceof Repository) {
+		intent = RepositoryActivity.makeIntent(getActivity(), (Repository) view.getTag());
+	}
+
+	if (intent != null) {
+		startActivity(intent);
+	}
+}
+
+@Override
+public void onIconClick(final OverviewRow row) {
+	if (row == mWatcherRow && mIsWatching != null) {
+		mWatcherRow.setText(null);
+		toggleWatchingState();
+	} else if (row == mStarsRow && mIsStarring != null) {
+		mStarsRow.setText(null);
+		toggleStarringState();
+	}
+}
+
+private void toggleReadmeExpanded() {
+	mIsReadmeExpanded = !mIsReadmeExpanded;
+
+	if (mIsReadmeExpanded && !mIsReadmeLoaded) {
+		loadReadme(false);
+	}
+
+	updateReadmeVisibility();
+}
+
+private void updateReadmeVisibility() {
+	mReadmeView.setVisibility(mIsReadmeExpanded && mIsReadmeLoaded ? View.VISIBLE : View.GONE);
+	mLoadingView.setVisibility(
+		mIsReadmeExpanded && !mIsReadmeLoaded ? View.VISIBLE : View.GONE);
+
+	int drawableAttr = mIsReadmeExpanded ? R.attr.dropUpArrowIcon : R.attr.dropDownArrowIcon;
+	int drawableRes = UiUtils.resolveDrawable(getContext(), drawableAttr);
+	mReadmeTitleView.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawableRes, 0);
+}
+
+
+private void loadReadme(final boolean force) {
+	Context context = getActivity();
+	Long id = mRepository.id();
+	String repoOwner = mRepository.owner().login();
+	String repoName = mRepository.name();
+	RepositoryContentService service = ServiceFactory.get(RepositoryContentService.class, force);
+
+	service.getReadmeHtml(repoOwner, repoName, mRef)
+	.map(ApiHelpers::throwOnFailure)
+	.map(Optional::of)
+	.compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, Optional.<String>absent()))
+	.map(htmlOpt->{
+			if (htmlOpt.isPresent()) {
+			        String html = HtmlUtils.rewriteRelativeUrls(htmlOpt.get(),
+			                                                    repoOwner, repoName, mRef != null ? mRef : mRepository.defaultBranch());
+			        mImageGetter.encode(context, id, html);
+			        return Optional.of(html);
+			}
+			return Optional.<String>absent();
+		})
+	.compose(makeLoaderSingle(ID_LOADER_README, force))
+	.doOnSubscribe(disposable->{
+			mIsReadmeLoaded = false;
+			updateReadmeVisibility();
+		})
+	.subscribe(readmeOpt->{
+			if (readmeOpt.isPresent()) {
+			        mReadmeView.setMovementMethod(UiUtils.CHECKING_LINK_METHOD);
+			        mImageGetter.bind(mReadmeView, readmeOpt.get(), id);
+			} else {
+			        mReadmeView.setText(R.string.repo_no_readme);
+			        mReadmeView.setTypeface(Typeface.DEFAULT, Typeface.ITALIC);
+			}
+			mIsReadmeLoaded = true;
+			updateReadmeVisibility();
+		}, this::handleLoadFailure);
+}
+
+private void loadPullRequestCount(final boolean force) {
+	SearchService service = ServiceFactory.get(SearchService.class, force, null, null, 1);
+	String query = String.format(Locale.US, "type:pr repo:%s/%s state:open",
+	                             mRepository.owner().login(), mRepository.name());
+
+	service.searchIssues(query, null, null, 0)
+	.map(ApiHelpers::throwOnFailure)
+	.map(SearchPage::totalCount)
+	.compose(makeLoaderSingle(ID_LOADER_PULL_REQUEST_COUNT, force))
+	.subscribe(count->{
+			int issueCount = mRepository.openIssuesCount() - count;
+
+			OverviewRow issuesRow = mContentView.findViewById(R.id.issues_row);
+			issuesRow.setText(getResources().getQuantityString(R.plurals.issue, issueCount, issueCount));
+
+			OverviewRow pullsRow = mContentView.findViewById(R.id.pulls_row);
+			pullsRow.setText(getResources().getQuantityString(R.plurals.pull_request, count, count));
+		}, this::handleLoadFailure);
+}
+
+private void toggleStarringState() {
+	StarringService service = ServiceFactory.get(StarringService.class, false);
+	Single<Response<Void> > responseSingle = mIsStarring
+	                                        ? service.unstarRepository(mRepository.owner().login(), mRepository.name())
+	                                        : service.starRepository(mRepository.owner().login(), mRepository.name());
+	responseSingle.map(ApiHelpers::mapToBooleanOrThrowOnFailure)
+	.compose(RxUtils::doInBackground)
+	.subscribe(result->{
+			if (mIsStarring != null) {
+			        mIsStarring = !mIsStarring;
+			        mRepository = mRepository.toBuilder()
+			                      .stargazersCount(mRepository.stargazersCount() + (mIsStarring ? 1 : -1))
+			                      .build();
+			        updateStargazerUi();
+			}
+		}, error->{
+			handleActionFailure("Updating repo starring state failed", error);
+			updateStargazerUi();
+		});
+
+}
+
+private void toggleWatchingState() {
+	WatchingService service = ServiceFactory.get(WatchingService.class, false);
+	final String repoOwner = mRepository.owner().login(), repoName = mRepository.name();
+	final Single<?> responseSingle;
+
+	if (mIsWatching) {
+		responseSingle = service.deleteRepositorySubscription(repoOwner, repoName)
+		                 .map(ApiHelpers::throwOnFailure);
+	} else {
+		SubscriptionRequest request = SubscriptionRequest.builder()
+		                              .subscribed(true)
+		                              .build();
+		responseSingle = service.setRepositorySubscription(repoOwner, repoName, request)
+		                 .map(ApiHelpers::throwOnFailure);
+	}
+
+	responseSingle.compose(RxUtils::doInBackground)
+	.subscribe(result->{
+			if (mIsWatching != null) {
+			        mIsWatching = !mIsWatching;
+			        mRepository = mRepository.toBuilder()
+			                      .subscribersCount(mRepository.subscribersCount() + (mIsWatching ? 1 : -1))
+			                      .build();
+			        updateWatcherUi();
+			}
+		}, error->{
+			handleActionFailure("Updating repo watching state failed", error);
+			updateWatcherUi();
+		});
+}
+
+
+private void loadStarringState(final boolean force) {
+	if (!Gh4Application.get().isAuthorized()) {
+		return;
+	}
+	StarringService service = ServiceFactory.get(StarringService.class, force);
+	service.checkIfRepositoryIsStarred(mRepository.owner().login(), mRepository.name())
+	// success response means 'starred'
+	.map(ApiHelpers::mapToTrueOnSuccess)
+	// 404 means 'not starred'
+	.compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, false))
+	.compose(makeLoaderSingle(ID_LOADER_STARRING, force))
+	.subscribe(result->{
+			mIsStarring = result;
+			updateStargazerUi();
+		}, this::handleLoadFailure);
+}
+
+private void loadWatchingState(final boolean force) {
+	if (!Gh4Application.get().isAuthorized()) {
+		return;
+	}
+	WatchingService service = ServiceFactory.get(WatchingService.class, force);
+	service.getRepositorySubscription(mRepository.owner().login(), mRepository.name())
+	.map(ApiHelpers::throwOnFailure)
+	.map(Subscription::subscribed)
+	// 404 means 'not subscribed'
+	.compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_NOT_FOUND, false))
+	.compose(makeLoaderSingle(ID_LOADER_WATCHING, force))
+	.subscribe(result->{
+			mIsWatching = result;
+			updateWatcherUi();
+		}, this::handleLoadFailure);
+}
 
 
 }

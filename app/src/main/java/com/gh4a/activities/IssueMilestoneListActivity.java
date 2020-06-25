@@ -32,138 +32,138 @@ import com.gh4a.fragment.IssueMilestoneListFragment;
 import com.gh4a.fragment.LoadingListFragmentBase;
 
 public class IssueMilestoneListActivity extends BaseFragmentPagerActivity implements
-    View.OnClickListener, LoadingListFragmentBase.OnRecyclerViewCreatedListener {
-    public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
-                                    final boolean fromPullRequest) {
-        return new Intent(context, IssueMilestoneListActivity.class)
-               .putExtra("owner", repoOwner)
-               .putExtra("repo", repoName)
-               .putExtra("from_pr", fromPullRequest);
-    }
+	View.OnClickListener, LoadingListFragmentBase.OnRecyclerViewCreatedListener {
+public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
+                                final boolean fromPullRequest) {
+	return new Intent(context, IssueMilestoneListActivity.class)
+	       .putExtra("owner", repoOwner)
+	       .putExtra("repo", repoName)
+	       .putExtra("from_pr", fromPullRequest);
+}
 
-    private static final int REQUEST_CREATE_MILESTONE = 1000;
+private static final int REQUEST_CREATE_MILESTONE = 1000;
 
-    private static final int[] TITLES = new int[] {
-        R.string.open, R.string.closed
-    };
-    private static final int[][] HEADER_COLOR_ATTRS = new int[][] {
-        {R.attr.colorIssueOpen, R.attr.colorIssueOpenDark },
-        {R.attr.colorIssueClosed, R.attr.colorIssueClosedDark }
-    };
+private static final int[] TITLES = new int[] {
+	R.string.open, R.string.closed
+};
+private static final int[][] HEADER_COLOR_ATTRS = new int[][] {
+	{R.attr.colorIssueOpen, R.attr.colorIssueOpenDark },
+	{R.attr.colorIssueClosed, R.attr.colorIssueClosedDark }
+};
 
-    private String mRepoOwner;
-    private String mRepoName;
-    private boolean mParentIsPullRequest;
+private String mRepoOwner;
+private String mRepoName;
+private boolean mParentIsPullRequest;
 
-    private FloatingActionButton mCreateFab;
-    private IssueMilestoneListFragment mOpenFragment;
+private FloatingActionButton mCreateFab;
+private IssueMilestoneListFragment mOpenFragment;
 
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+public void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
 
-        if (Gh4Application.get().isAuthorized()) {
-            CoordinatorLayout rootLayout = getRootLayout();
-            mCreateFab = (FloatingActionButton)
-                         getLayoutInflater().inflate(R.layout.add_fab, rootLayout, false);
-            mCreateFab.setOnClickListener(this);
-            rootLayout.addView(mCreateFab);
-        }
-    }
+	if (Gh4Application.get().isAuthorized()) {
+		CoordinatorLayout rootLayout = getRootLayout();
+		mCreateFab = (FloatingActionButton)
+		             getLayoutInflater().inflate(R.layout.add_fab, rootLayout, false);
+		mCreateFab.setOnClickListener(this);
+		rootLayout.addView(mCreateFab);
+	}
+}
 
-    @Nullable
-    @Override
-    protected String getActionBarTitle() {
-        return getString(R.string.issue_milestones);
-    }
+@Nullable
+@Override
+protected String getActionBarTitle() {
+	return getString(R.string.issue_milestones);
+}
 
-    @Nullable
-    @Override
-    protected String getActionBarSubtitle() {
-        return mRepoOwner + "/" + mRepoName;
-    }
+@Nullable
+@Override
+protected String getActionBarSubtitle() {
+	return mRepoOwner + "/" + mRepoName;
+}
 
-    @Override
-    protected int[] getTabTitleResIds() {
-        return TITLES;
-    }
+@Override
+protected int[] getTabTitleResIds() {
+	return TITLES;
+}
 
-    @Override
-    protected Fragment makeFragment(final int position) {
-        return IssueMilestoneListFragment.newInstance(mRepoOwner, mRepoName,
-                position == 1, mParentIsPullRequest);
-    }
+@Override
+protected Fragment makeFragment(final int position) {
+	return IssueMilestoneListFragment.newInstance(mRepoOwner, mRepoName,
+	                                              position == 1, mParentIsPullRequest);
+}
 
-    @Override
-    protected void onFragmentInstantiated(final Fragment f, final int position) {
-        if (position == 0) {
-            mOpenFragment = (IssueMilestoneListFragment) f;
-        }
-    }
+@Override
+protected void onFragmentInstantiated(final Fragment f, final int position) {
+	if (position == 0) {
+		mOpenFragment = (IssueMilestoneListFragment) f;
+	}
+}
 
-    @Override
-    protected void onFragmentDestroyed(final Fragment f) {
-        if (f == mOpenFragment) {
-            mOpenFragment = null;
-        }
-    }
+@Override
+protected void onFragmentDestroyed(final Fragment f) {
+	if (f == mOpenFragment) {
+		mOpenFragment = null;
+	}
+}
 
-    @Override
-    protected void onInitExtras(final Bundle extras) {
-        super.onInitExtras(extras);
-        mRepoOwner = extras.getString("owner");
-        mRepoName = extras.getString("repo");
-        mParentIsPullRequest = extras.getBoolean("from_pr", false);
-    }
+@Override
+protected void onInitExtras(final Bundle extras) {
+	super.onInitExtras(extras);
+	mRepoOwner = extras.getString("owner");
+	mRepoName = extras.getString("repo");
+	mParentIsPullRequest = extras.getBoolean("from_pr", false);
+}
 
-    @Override
-    public void onRecyclerViewCreated(final Fragment fragment, final RecyclerView recyclerView) {
-        if (fragment == mOpenFragment) {
-            recyclerView.setTag(R.id.FloatingActionButtonScrollEnabled, new Object());
-        }
-    }
+@Override
+public void onRecyclerViewCreated(final Fragment fragment, final RecyclerView recyclerView) {
+	if (fragment == mOpenFragment) {
+		recyclerView.setTag(R.id.FloatingActionButtonScrollEnabled, new Object());
+	}
+}
 
-    @Override
-    protected void onPageMoved(final int position, final float fraction) {
-        super.onPageMoved(position, fraction);
-        if (mCreateFab != null) {
-            float openFraction = 1 - position - fraction;
-            mCreateFab.setScaleX(openFraction);
-            mCreateFab.setScaleY(openFraction);
-            mCreateFab.setVisibility(openFraction == 0 ? View.INVISIBLE : View.VISIBLE);
-        }
-    }
+@Override
+protected void onPageMoved(final int position, final float fraction) {
+	super.onPageMoved(position, fraction);
+	if (mCreateFab != null) {
+		float openFraction = 1 - position - fraction;
+		mCreateFab.setScaleX(openFraction);
+		mCreateFab.setScaleY(openFraction);
+		mCreateFab.setVisibility(openFraction == 0 ? View.INVISIBLE : View.VISIBLE);
+	}
+}
 
-    @Override
-    protected int[][] getTabHeaderColorAttrs() {
-        return HEADER_COLOR_ATTRS;
-    }
+@Override
+protected int[][] getTabHeaderColorAttrs() {
+	return HEADER_COLOR_ATTRS;
+}
 
-    @Override
-    protected Intent navigateUp() {
-        return IssueListActivity.makeIntent(this, mRepoOwner, mRepoName, mParentIsPullRequest);
-    }
+@Override
+protected Intent navigateUp() {
+	return IssueListActivity.makeIntent(this, mRepoOwner, mRepoName, mParentIsPullRequest);
+}
 
-    @Override
-    public void onClick(final View view) {
-        startActivityForResult(IssueMilestoneEditActivity.makeCreateIntent(this,
-                               mRepoOwner, mRepoName, mParentIsPullRequest), REQUEST_CREATE_MILESTONE);
-    }
+@Override
+public void onClick(final View view) {
+	startActivityForResult(IssueMilestoneEditActivity.makeCreateIntent(this,
+	                                                                   mRepoOwner, mRepoName, mParentIsPullRequest), REQUEST_CREATE_MILESTONE);
+}
 
-    @Override
-    protected void invalidateFragments() {
-        mOpenFragment = null;
-        super.invalidateFragments();
-    }
+@Override
+protected void invalidateFragments() {
+	mOpenFragment = null;
+	super.invalidateFragments();
+}
 
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        if (requestCode == REQUEST_CREATE_MILESTONE) {
-            if (resultCode == RESULT_OK) {
-                onRefresh();
-                setResult(RESULT_OK);
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
+@Override
+protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+	if (requestCode == REQUEST_CREATE_MILESTONE) {
+		if (resultCode == RESULT_OK) {
+			onRefresh();
+			setResult(RESULT_OK);
+		}
+	} else {
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+}
 }

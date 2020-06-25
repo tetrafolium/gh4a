@@ -8,33 +8,33 @@ import com.gh4a.fragment.BookmarkListFragment;
 import com.gh4a.fragment.StarredRepositoryListFragment;
 
 public class BookmarkFactory extends FragmentFactory {
-    private static final int[] TAB_TITLES = new int[] {
-        R.string.bookmarks, R.string.starred
-    };
+private static final int[] TAB_TITLES = new int[] {
+	R.string.bookmarks, R.string.starred
+};
 
-    private final String mUserLogin;
+private final String mUserLogin;
 
-    public BookmarkFactory(final HomeActivity activity, final String userLogin) {
-        super(activity);
-        mUserLogin = userLogin;
-    }
+public BookmarkFactory(final HomeActivity activity, final String userLogin) {
+	super(activity);
+	mUserLogin = userLogin;
+}
 
-    @Override
-    @StringRes
-    protected int getTitleResId() {
-        return R.string.bookmarks_and_stars;
-    }
+@Override
+@StringRes
+protected int getTitleResId() {
+	return R.string.bookmarks_and_stars;
+}
 
-    @Override
-    protected int[] getTabTitleResIds() {
-        return TAB_TITLES;
-    }
+@Override
+protected int[] getTabTitleResIds() {
+	return TAB_TITLES;
+}
 
-    @Override
-    protected Fragment makeFragment(final int position) {
-        if (position == 1) {
-            return StarredRepositoryListFragment.newInstance(mUserLogin);
-        }
-        return BookmarkListFragment.newInstance();
-    }
+@Override
+protected Fragment makeFragment(final int position) {
+	if (position == 1) {
+		return StarredRepositoryListFragment.newInstance(mUserLogin);
+	}
+	return BookmarkListFragment.newInstance();
+}
 }

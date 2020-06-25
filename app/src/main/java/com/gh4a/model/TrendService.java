@@ -8,6 +8,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 
 public interface TrendService {
-    @GET("trends/trending_{type}-all.json")
-    Single<Response<List<Trend>>> getTrends(@Path("type") String type);
+@GET("trends/trending_{type}-all.json")
+Single<Response<List<Trend> > > getTrends(@Path("type") String type);
 }

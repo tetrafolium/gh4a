@@ -27,163 +27,163 @@ import java.util.Set;
 
 public class DropDownUserAdapter extends BaseAdapter implements Filterable {
 
-    private final Object mLock = new Object();
+private final Object mLock = new Object();
 
-    private final Context mContext;
-    private List<User> mUsers;
-    private final ArrayList<User> mOriginalUsers;
-    private final LayoutInflater mInflater;
-    private ArrayFilter mFilter;
+private final Context mContext;
+private List<User> mUsers;
+private final ArrayList<User> mOriginalUsers;
+private final LayoutInflater mInflater;
+private ArrayFilter mFilter;
 
-    public DropDownUserAdapter(final Context context) {
-        mContext = context;
-        mUsers = new ArrayList<>();
-        mOriginalUsers = new ArrayList<>();
-        mInflater = LayoutInflater.from(context);
-    }
+public DropDownUserAdapter(final Context context) {
+	mContext = context;
+	mUsers = new ArrayList<>();
+	mOriginalUsers = new ArrayList<>();
+	mInflater = LayoutInflater.from(context);
+}
 
-    public void replace(final Set<User> newUsers) {
-        synchronized (mLock) {
-            String ourLogin = Gh4Application.get().getAuthLogin();
-            mOriginalUsers.clear();
-            for (User user : newUsers) {
-                if (!TextUtils.equals(ourLogin, user.login())) {
-                    mOriginalUsers.add(user);
-                }
-            }
+public void replace(final Set<User> newUsers) {
+	synchronized (mLock) {
+		String ourLogin = Gh4Application.get().getAuthLogin();
+		mOriginalUsers.clear();
+		for (User user : newUsers) {
+			if (!TextUtils.equals(ourLogin, user.login())) {
+				mOriginalUsers.add(user);
+			}
+		}
 
-            Collections.sort(mOriginalUsers, (first, second) -> {
-                final String firstUsername = ApiHelpers.getUserLogin(mContext, first);
-                final String secondUsername = ApiHelpers.getUserLogin(mContext, second);
+		Collections.sort(mOriginalUsers, (first, second)->{
+				final String firstUsername = ApiHelpers.getUserLogin(mContext, first);
+				final String secondUsername = ApiHelpers.getUserLogin(mContext, second);
 
-                return firstUsername.compareToIgnoreCase(secondUsername);
-            });
-        }
+				return firstUsername.compareToIgnoreCase(secondUsername);
+			});
+	}
 
-        notifyDataSetChanged();
-    }
+	notifyDataSetChanged();
+}
 
-    public Set<User> getUnfilteredUsers() {
-        return new HashSet<>(mOriginalUsers);
-    }
+public Set<User> getUnfilteredUsers() {
+	return new HashSet<>(mOriginalUsers);
+}
 
-    @Override
-    public int getCount() {
-        return mUsers.size();
-    }
+@Override
+public int getCount() {
+	return mUsers.size();
+}
 
-    @Override
-    public User getItem(final int position) {
-        return mUsers.get(position);
-    }
+@Override
+public User getItem(final int position) {
+	return mUsers.get(position);
+}
 
-    @Override
-    public long getItemId(final int position) {
-        return position;
-    }
+@Override
+public long getItemId(final int position) {
+	return position;
+}
 
-    @Override
-    public View getView(final int position, final View convertView, final ViewGroup parent) {
-        final View view;
+@Override
+public View getView(final int position, final View convertView, final ViewGroup parent) {
+	final View view;
 
-        if (convertView == null) {
-            view = mInflater.inflate(R.layout.row_dropdown_user, parent, false);
-            view.setTag(new ViewHolder(view));
-        } else {
-            view = convertView;
-        }
+	if (convertView == null) {
+		view = mInflater.inflate(R.layout.row_dropdown_user, parent, false);
+		view.setTag(new ViewHolder(view));
+	} else {
+		view = convertView;
+	}
 
-        final User user = getItem(position);
-        final ViewHolder holder = (ViewHolder) view.getTag();
+	final User user = getItem(position);
+	final ViewHolder holder = (ViewHolder) view.getTag();
 
-        holder.tvUser.setText(ApiHelpers.getUserLogin(mContext, user));
-        AvatarHandler.assignAvatar(holder.ivUser, user);
+	holder.tvUser.setText(ApiHelpers.getUserLogin(mContext, user));
+	AvatarHandler.assignAvatar(holder.ivUser, user);
 
-        return view;
-    }
+	return view;
+}
 
-    @NonNull
-    @Override
-    public Filter getFilter() {
-        if (mFilter == null) {
-            mFilter = new ArrayFilter();
-        }
-        return mFilter;
-    }
+@NonNull
+@Override
+public Filter getFilter() {
+	if (mFilter == null) {
+		mFilter = new ArrayFilter();
+	}
+	return mFilter;
+}
 
-    private class ArrayFilter extends Filter {
-        @Override
-        protected FilterResults performFiltering(final CharSequence constraint) {
-            FilterResults results = new FilterResults();
+private class ArrayFilter extends Filter {
+@Override
+protected FilterResults performFiltering(final CharSequence constraint) {
+	FilterResults results = new FilterResults();
 
-            if (TextUtils.isEmpty(constraint)) {
-                final ArrayList<User> list;
-                synchronized (mLock) {
-                    list = new ArrayList<>(mOriginalUsers);
-                }
-                results.values = list;
-                results.count = list.size();
-            } else if (!constraint.toString().startsWith("@")) {
-                results.values = new ArrayList<>();
-                results.count = 0;
-            } else {
-                final String constraintString =
-                    constraint.toString().substring(1).toLowerCase();
+	if (TextUtils.isEmpty(constraint)) {
+		final ArrayList<User> list;
+		synchronized (mLock) {
+			list = new ArrayList<>(mOriginalUsers);
+		}
+		results.values = list;
+		results.count = list.size();
+	} else if (!constraint.toString().startsWith("@")) {
+		results.values = new ArrayList<>();
+		results.count = 0;
+	} else {
+		final String constraintString =
+			constraint.toString().substring(1).toLowerCase();
 
-                final ArrayList<User> values;
-                synchronized (mLock) {
-                    values = new ArrayList<>(mOriginalUsers);
-                }
+		final ArrayList<User> values;
+		synchronized (mLock) {
+			values = new ArrayList<>(mOriginalUsers);
+		}
 
-                final int count = values.size();
-                final ArrayList<User> newValues = new ArrayList<>();
+		final int count = values.size();
+		final ArrayList<User> newValues = new ArrayList<>();
 
-                for (int i = 0; i < count; i++) {
-                    final User user = values.get(i);
-                    final String value = ApiHelpers.getUserLogin(mContext, user);
-                    final String valueText = value.toLowerCase();
+		for (int i = 0; i < count; i++) {
+			final User user = values.get(i);
+			final String value = ApiHelpers.getUserLogin(mContext, user);
+			final String valueText = value.toLowerCase();
 
-                    if (valueText.startsWith(constraintString)) {
-                        newValues.add(user);
-                    }
-                }
+			if (valueText.startsWith(constraintString)) {
+				newValues.add(user);
+			}
+		}
 
-                results.values = newValues;
-                results.count = newValues.size();
-            }
+		results.values = newValues;
+		results.count = newValues.size();
+	}
 
-            return results;
-        }
+	return results;
+}
 
-        @SuppressWarnings("unchecked")
-        @Override
-        protected void publishResults(final CharSequence constraint, final FilterResults results) {
-            if (results.values != null) {
-                mUsers = (ArrayList<User>) results.values;
-            } else {
-                mUsers = new ArrayList<>();
-            }
-            if (results.count > 0) {
-                notifyDataSetChanged();
-            } else {
-                notifyDataSetInvalidated();
-            }
-        }
+@SuppressWarnings("unchecked")
+@Override
+protected void publishResults(final CharSequence constraint, final FilterResults results) {
+	if (results.values != null) {
+		mUsers = (ArrayList<User>) results.values;
+	} else {
+		mUsers = new ArrayList<>();
+	}
+	if (results.count > 0) {
+		notifyDataSetChanged();
+	} else {
+		notifyDataSetInvalidated();
+	}
+}
 
-        @Override
-        public CharSequence convertResultToString(final Object resultValue) {
-            final User user = (User) resultValue;
-            return StringUtils.formatMention(mContext, user);
-        }
-    }
+@Override
+public CharSequence convertResultToString(final Object resultValue) {
+	final User user = (User) resultValue;
+	return StringUtils.formatMention(mContext, user);
+}
+}
 
-    private static class ViewHolder {
-        private ViewHolder(final View view) {
-            ivUser = view.findViewById(R.id.iv_user);
-            tvUser = view.findViewById(R.id.tv_user);
-        }
+private static class ViewHolder {
+private ViewHolder(final View view) {
+	ivUser = view.findViewById(R.id.iv_user);
+	tvUser = view.findViewById(R.id.tv_user);
+}
 
-        private final ImageView ivUser;
-        private final TextView tvUser;
-    }
+private final ImageView ivUser;
+private final TextView tvUser;
+}
 }

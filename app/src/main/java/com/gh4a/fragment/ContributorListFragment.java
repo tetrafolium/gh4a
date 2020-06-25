@@ -17,43 +17,43 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class ContributorListFragment extends PagedDataBaseFragment<User> implements
-    RootAdapter.OnItemClickListener<User> {
-    public static ContributorListFragment newInstance(final String repoOwner, final String repoName) {
-        ContributorListFragment f = new ContributorListFragment();
+	RootAdapter.OnItemClickListener<User> {
+public static ContributorListFragment newInstance(final String repoOwner, final String repoName) {
+	ContributorListFragment f = new ContributorListFragment();
 
-        Bundle args = new Bundle();
-        args.putString("owner", repoOwner);
-        args.putString("repo", repoName);
-        f.setArguments(args);
+	Bundle args = new Bundle();
+	args.putString("owner", repoOwner);
+	args.putString("repo", repoName);
+	f.setArguments(args);
 
-        return f;
-    }
+	return f;
+}
 
-    @Override
-    protected Single<Response<Page<User>>> loadPage(final int page, final boolean bypassCache) {
-        String repoOwner = getArguments().getString("owner");
-        String repoName = getArguments().getString("repo");
-        RepositoryService service = ServiceFactory.get(RepositoryService.class, bypassCache);
-        return service.getContributors(repoOwner, repoName, page);
-    }
+@Override
+protected Single<Response<Page<User> > > loadPage(final int page, final boolean bypassCache) {
+	String repoOwner = getArguments().getString("owner");
+	String repoName = getArguments().getString("repo");
+	RepositoryService service = ServiceFactory.get(RepositoryService.class, bypassCache);
+	return service.getContributors(repoOwner, repoName, page);
+}
 
-    @Override
-    protected int getEmptyTextResId() {
-        return R.string.no_contributors_found;
-    }
+@Override
+protected int getEmptyTextResId() {
+	return R.string.no_contributors_found;
+}
 
-    @Override
-    protected RootAdapter<User, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
-        ContributorAdapter adapter = new ContributorAdapter(getActivity());
-        adapter.setOnItemClickListener(this);
-        return adapter;
-    }
+@Override
+protected RootAdapter<User, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
+	ContributorAdapter adapter = new ContributorAdapter(getActivity());
+	adapter.setOnItemClickListener(this);
+	return adapter;
+}
 
-    @Override
-    public void onItemClick(final User item) {
-        Intent intent = UserActivity.makeIntent(getActivity(), item);
-        if (intent != null) {
-            startActivity(intent);
-        }
-    }
+@Override
+public void onItemClick(final User item) {
+	Intent intent = UserActivity.makeIntent(getActivity(), item);
+	if (intent != null) {
+		startActivity(intent);
+	}
+}
 }

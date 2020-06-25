@@ -38,100 +38,100 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 public class RepositoryListFragment extends PagedDataBaseFragment<Repository> {
-    private String mLogin;
-    private String mRepoType;
-    private final Map<String, String> mFilterData = new HashMap<>();
+private String mLogin;
+private String mRepoType;
+private final Map<String, String> mFilterData = new HashMap<>();
 
-    public static RepositoryListFragment newInstance(final String login, final boolean isOrg,
-            final String repoType, final String sortOrder, final String sortDirection) {
-        RepositoryListFragment f = new RepositoryListFragment();
+public static RepositoryListFragment newInstance(final String login, final boolean isOrg,
+                                                 final String repoType, final String sortOrder, final String sortDirection) {
+	RepositoryListFragment f = new RepositoryListFragment();
 
-        Bundle args = new Bundle();
-        args.putString("user", login);
-        args.putBoolean("is_org", isOrg);
-        args.putString("repo_type", repoType);
-        args.putString("sort_order", sortOrder);
-        args.putString("sort_direction", sortDirection);
-        f.setArguments(args);
+	Bundle args = new Bundle();
+	args.putString("user", login);
+	args.putBoolean("is_org", isOrg);
+	args.putString("repo_type", repoType);
+	args.putString("sort_order", sortOrder);
+	args.putString("sort_direction", sortDirection);
+	f.setArguments(args);
 
-        return f;
-    }
+	return f;
+}
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
 
-        final Bundle args = getArguments();
+	final Bundle args = getArguments();
 
-        mLogin = args.getString("user");
-        mRepoType = args.getString("repo_type");
+	mLogin = args.getString("user");
+	mRepoType = args.getString("repo_type");
 
-        final boolean isSelf = ApiHelpers.loginEquals(mLogin, Gh4Application.get().getAuthLogin());
+	final boolean isSelf = ApiHelpers.loginEquals(mLogin, Gh4Application.get().getAuthLogin());
 
-        // We're operating on the limit of what Github's repo API supports. Specifically,
-        // it doesn't support sorting for the organization repo list endpoint, so we're using
-        // the user repo list endpoint for organizations as well. Doing so has a few quirks though:
-        // - the 'all' filter returns an empty list when querying organization repos, so we
-        //   need to omit the filter in that case
-        // - 'sources' and 'forks' filter types are only supported for the org repo list endpoint,
-        //   but not for the user repo list endpoint, hence we emulate it by querying for 'all'
-        //   and filtering the result
-        // Additionally, using affiliation together with type is not supported, so omit
-        // type when adding affiliation.
+	// We're operating on the limit of what Github's repo API supports. Specifically,
+	// it doesn't support sorting for the organization repo list endpoint, so we're using
+	// the user repo list endpoint for organizations as well. Doing so has a few quirks though:
+	// - the 'all' filter returns an empty list when querying organization repos, so we
+	//   need to omit the filter in that case
+	// - 'sources' and 'forks' filter types are only supported for the org repo list endpoint,
+	//   but not for the user repo list endpoint, hence we emulate it by querying for 'all'
+	//   and filtering the result
+	// Additionally, using affiliation together with type is not supported, so omit
+	// type when adding affiliation.
 
-        String actualFilterType = "sources".equals(mRepoType) || "forks".equals(mRepoType)
-                                  ? "all" : mRepoType;
+	String actualFilterType = "sources".equals(mRepoType) || "forks".equals(mRepoType)
+	                          ? "all" : mRepoType;
 
-        if (isSelf && TextUtils.equals(actualFilterType, "all")) {
-            mFilterData.put("affiliation", "owner,collaborator");
-        } else if (!TextUtils.equals(actualFilterType, "all") || !args.getBoolean("is_org")) {
-            mFilterData.put("type", actualFilterType);
-        }
+	if (isSelf && TextUtils.equals(actualFilterType, "all")) {
+		mFilterData.put("affiliation", "owner,collaborator");
+	} else if (!TextUtils.equals(actualFilterType, "all") || !args.getBoolean("is_org")) {
+		mFilterData.put("type", actualFilterType);
+	}
 
-        final String sortOrder = args.getString("sort_order");
-        if (sortOrder != null) {
-            mFilterData.put("sort", sortOrder);
-            mFilterData.put("direction", args.getString("sort_direction"));
-        }
-    }
+	final String sortOrder = args.getString("sort_order");
+	if (sortOrder != null) {
+		mFilterData.put("sort", sortOrder);
+		mFilterData.put("direction", args.getString("sort_direction"));
+	}
+}
 
-    @Override
-    protected RootAdapter<Repository, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
-        return new RepositoryAdapter(getActivity());
-    }
+@Override
+protected RootAdapter<Repository, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
+	return new RepositoryAdapter(getActivity());
+}
 
-    @Override
-    protected int getEmptyTextResId() {
-        return R.string.no_repos_found;
-    }
+@Override
+protected int getEmptyTextResId() {
+	return R.string.no_repos_found;
+}
 
-    @Override
-    protected void onAddData(final RootAdapter<Repository, ? extends RecyclerView.ViewHolder> adapter,
-                             final Collection<Repository> repositories) {
-        if ("sources".equals(mRepoType) || "forks".equals(mRepoType)) {
-            for (Repository repository : repositories) {
-                if ("sources".equals(mRepoType) && !repository.isFork()) {
-                    adapter.add(repository);
-                } else if ("forks".equals(mRepoType) && repository.isFork()) {
-                    adapter.add(repository);
-                }
-            }
-            adapter.notifyDataSetChanged();
-        } else {
-            adapter.addAll(repositories);
-        }
-    }
+@Override
+protected void onAddData(final RootAdapter<Repository, ? extends RecyclerView.ViewHolder> adapter,
+                         final Collection<Repository> repositories) {
+	if ("sources".equals(mRepoType) || "forks".equals(mRepoType)) {
+		for (Repository repository : repositories) {
+			if ("sources".equals(mRepoType) && !repository.isFork()) {
+				adapter.add(repository);
+			} else if ("forks".equals(mRepoType) && repository.isFork()) {
+				adapter.add(repository);
+			}
+		}
+		adapter.notifyDataSetChanged();
+	} else {
+		adapter.addAll(repositories);
+	}
+}
 
-    @Override
-    public void onItemClick(final Repository repository) {
-        startActivity(RepositoryActivity.makeIntent(getActivity(), repository));
-    }
+@Override
+public void onItemClick(final Repository repository) {
+	startActivity(RepositoryActivity.makeIntent(getActivity(), repository));
+}
 
-    @Override
-    protected Single<Response<Page<Repository>>> loadPage(final int page, final boolean bypassCache) {
-        final RepositoryService service = ServiceFactory.get(RepositoryService.class, bypassCache);
-        return ApiHelpers.loginEquals(mLogin, Gh4Application.get().getAuthLogin())
-               ? service.getUserRepositories(mFilterData, page)
-               : service.getUserRepositories(mLogin, mFilterData, page);
-    }
+@Override
+protected Single<Response<Page<Repository> > > loadPage(final int page, final boolean bypassCache) {
+	final RepositoryService service = ServiceFactory.get(RepositoryService.class, bypassCache);
+	return ApiHelpers.loginEquals(mLogin, Gh4Application.get().getAuthLogin())
+	       ? service.getUserRepositories(mFilterData, page)
+	       : service.getUserRepositories(mLogin, mFilterData, page);
+}
 }

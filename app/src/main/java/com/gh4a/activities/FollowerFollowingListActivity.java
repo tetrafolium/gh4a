@@ -25,41 +25,41 @@ import com.gh4a.R;
 import com.gh4a.fragment.FollowersFollowingListFragment;
 
 public class FollowerFollowingListActivity extends FragmentContainerActivity {
-    public static Intent makeIntent(final Context context, final String user, final boolean showFollowers) {
-        return new Intent(context, FollowerFollowingListActivity.class)
-               .putExtra("user", user)
-               .putExtra("show_followers", showFollowers);
-    }
+public static Intent makeIntent(final Context context, final String user, final boolean showFollowers) {
+	return new Intent(context, FollowerFollowingListActivity.class)
+	       .putExtra("user", user)
+	       .putExtra("show_followers", showFollowers);
+}
 
-    private String mUserLogin;
-    private boolean mShowFollowers;
+private String mUserLogin;
+private boolean mShowFollowers;
 
-    @Nullable
-    @Override
-    protected String getActionBarTitle() {
-        return getString(mShowFollowers ? R.string.user_followers : R.string.user_following);
-    }
+@Nullable
+@Override
+protected String getActionBarTitle() {
+	return getString(mShowFollowers ? R.string.user_followers : R.string.user_following);
+}
 
-    @Nullable
-    @Override
-    protected String getActionBarSubtitle() {
-        return mUserLogin;
-    }
+@Nullable
+@Override
+protected String getActionBarSubtitle() {
+	return mUserLogin;
+}
 
-    @Override
-    protected void onInitExtras(final Bundle extras) {
-        super.onInitExtras(extras);
-        mShowFollowers = extras.getBoolean("show_followers");
-        mUserLogin = extras.getString("user");
-    }
+@Override
+protected void onInitExtras(final Bundle extras) {
+	super.onInitExtras(extras);
+	mShowFollowers = extras.getBoolean("show_followers");
+	mUserLogin = extras.getString("user");
+}
 
-    @Override
-    protected Fragment onCreateFragment() {
-        return FollowersFollowingListFragment.newInstance(mUserLogin, mShowFollowers);
-    }
+@Override
+protected Fragment onCreateFragment() {
+	return FollowersFollowingListFragment.newInstance(mUserLogin, mShowFollowers);
+}
 
-    @Override
-    protected Intent navigateUp() {
-        return UserActivity.makeIntent(this, mUserLogin);
-    }
+@Override
+protected Intent navigateUp() {
+	return UserActivity.makeIntent(this, mUserLogin);
+}
 }

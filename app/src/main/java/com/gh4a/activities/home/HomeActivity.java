@@ -51,589 +51,589 @@ import com.meisolsson.githubsdk.service.users.UserService;
 import java.util.HashMap;
 
 public class HomeActivity extends BaseFragmentPagerActivity implements
-    View.OnClickListener, RepositoryListContainerFragment.Callback,
-    NotificationListFragment.ParentCallback, UserPasswordLoginDialogFragment.ParentCallback {
-    public static Intent makeIntent(final Context context, final @IdRes int initialPageId) {
-        String initialPage = START_PAGE_MAPPING.get(initialPageId);
-        Intent intent = new Intent(context, HomeActivity.class);
-        if (initialPage != null) {
-            intent.putExtra("initial_page", initialPage);
-        }
-        return intent;
-    }
-
-    public static Intent makeNotificationsIntent(final Context context, final String repoOwner,
-            final String repoName) {
-        return makeIntent(context, R.id.notifications)
-               .putExtra(NotificationListFragment.EXTRA_INITIAL_REPO_OWNER, repoOwner)
-               .putExtra(NotificationListFragment.EXTRA_INITIAL_REPO_NAME, repoName);
-    }
-
-    private static final int REQUEST_SETTINGS = 10000;
-
-    private FragmentFactory mFactory;
-    private ImageView mAvatarView;
-    private TextView mUserExtraView;
-    private ImageView mDrawerSwitcher;
-    private String mUserLogin;
-    private User mUserInfo;
-    private int mSelectedFactoryId;
-    private boolean mDrawerInAccountMode;
-    private Menu mLeftDrawerMenu;
-    private ImageView mNotificationsIndicator;
-    private MenuItem mNotificationsMenuItem;
-    private Drawable mNotificationsIndicatorIcon;
-
-    private static final String STATE_KEY_FACTORY_ITEM = "factoryItem";
-
-    private static final int ID_LOADER_USER = 0;
-    private static final int ID_LOADER_NOTIFICATIONS_INDICATOR = 1;
-
-    private static final int OTHER_ACCOUNTS_GROUP_BASE_ID = 1000;
-
-    private static final SparseArray<String> START_PAGE_MAPPING = new SparseArray<>();
-    static {
-        START_PAGE_MAPPING.put(R.id.news_feed, "newsfeed");
-        START_PAGE_MAPPING.put(R.id.notifications, "notifications");
-        START_PAGE_MAPPING.put(R.id.my_repos, "repos");
-        START_PAGE_MAPPING.put(R.id.my_issues, "issues");
-        START_PAGE_MAPPING.put(R.id.my_prs, "prs");
-        START_PAGE_MAPPING.put(R.id.my_gists, "gists");
-        START_PAGE_MAPPING.put(R.id.pub_timeline, "timeline");
-        START_PAGE_MAPPING.put(R.id.trend, "trends");
-        START_PAGE_MAPPING.put(R.id.blog, "blog");
-        START_PAGE_MAPPING.put(R.id.bookmarks, "bookmarks");
-        START_PAGE_MAPPING.put(R.id.search, "search");
-    }
-
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        mUserLogin = Gh4Application.get().getAuthLogin();
-        if (savedInstanceState != null) {
-            mSelectedFactoryId = savedInstanceState.getInt(STATE_KEY_FACTORY_ITEM);
-        } else {
-            mSelectedFactoryId = determineInitialPage();
-        }
-        mFactory = getFactoryForItem(mSelectedFactoryId);
-
-        mNotificationsIndicatorIcon =
-            DrawableCompat.wrap(ContextCompat.getDrawable(this, R.drawable.circle).mutate());
-
-        super.onCreate(savedInstanceState);
-
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowHomeEnabled(true);
-        actionBar.setHomeButtonEnabled(true);
-
-        loadUserInfo(false);
-        loadNotificationIndicator(false);
-        mFactory.onStartLoadingData();
-    }
-
-    @Nullable
-    @Override
-    protected String getActionBarTitle() {
-        return getString(mFactory.getTitleResId());
-    }
-
-    private void updateNotificationIndicator(final int checkedItemId) {
-        if (mNotificationsIndicator == null) {
-            return;
-        }
-
-        @AttrRes int colorResId = checkedItemId == R.id.notifications
-                                  ? R.attr.colorAccent : android.R.attr.textColorPrimary;
-        @ColorInt int tint = UiUtils.resolveColor(this, colorResId);
-        DrawableCompat.setTint(mNotificationsIndicatorIcon, tint);
-        mNotificationsIndicator.setImageDrawable(mNotificationsIndicatorIcon);
-    }
-
-    public void setNotificationsIndicatorVisible(final boolean visible) {
-        if (mNotificationsIndicator != null) {
-            mNotificationsIndicator.setVisibility(visible ? View.VISIBLE : View.GONE);
-            mNotificationsMenuItem.setIcon(visible
-                                           ? R.drawable.icon_notifications_unread
-                                           : R.drawable.icon_notifications);
-        }
-    }
-
-    @Override
-    protected void onSaveInstanceState(final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(STATE_KEY_FACTORY_ITEM, mSelectedFactoryId);
-        mFactory.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(final Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        if (savedInstanceState != null) {
-            mFactory.onRestoreInstanceState(savedInstanceState);
-        }
-    }
-
-    @Override
-    public void onClick(final View view) {
-        updateDrawerMode(!mDrawerInAccountMode);
-    }
-
-    @Override
-    protected int getLeftNavigationDrawerMenuResource() {
-        return R.menu.home_nav_drawer;
-    }
-
-    @Override
-    protected int getInitialLeftDrawerSelection(final Menu menu) {
-        mLeftDrawerMenu = menu;
-
-        mNotificationsMenuItem = menu.findItem(R.id.notifications);
-        if (mNotificationsMenuItem != null) {
-            View actionView = mNotificationsMenuItem.getActionView();
-            mNotificationsIndicator = actionView.findViewById(R.id.notifications_indicator);
-            updateNotificationIndicator(mSelectedFactoryId);
-        }
-
-        return mSelectedFactoryId;
-    }
-
-    @Override
-    protected int[] getRightNavigationDrawerMenuResources() {
-        return mFactory.getToolDrawerMenuResIds();
-    }
-
-    @Override
-    protected int getInitialRightDrawerSelection() {
-        return mFactory.getInitialToolDrawerSelection();
-    }
-
-    @Override
-    protected void onPrepareRightNavigationDrawerMenu(final Menu menu) {
-        super.onPrepareRightNavigationDrawerMenu(menu);
-        mFactory.prepareToolDrawerMenu(menu);
-    }
-
-    @Override
-    protected void configureLeftDrawerHeader(final View header) {
-        super.configureLeftDrawerHeader(header);
-
-        mAvatarView = header.findViewById(R.id.avatar);
-        mUserExtraView = header.findViewById(R.id.user_extra);
-
-        TextView userNameView = header.findViewById(R.id.user_name);
-        userNameView.setText(mUserLogin);
-
-        updateUserInfo();
-
-        mDrawerSwitcher = header.findViewById(R.id.switcher);
-        mDrawerSwitcher.setVisibility(View.VISIBLE);
-
-        mDrawerSwitcher.setOnClickListener(this);
-
-        View clickableBackground = header.findViewById(R.id.drawer_header);
-        clickableBackground.setOnClickListener(this);
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(final @NonNull MenuItem item) {
-        super.onNavigationItemSelected(item);
-
-        updateNotificationIndicator(item.getItemId());
-
-        if (mFactory != null && mFactory.onDrawerItemSelected(item)) {
-            return true;
-        }
-
-        int id = item.getItemId();
-        FragmentFactory factory = getFactoryForItem(id);
-
-        if (factory != null) {
-            switchTo(id, factory);
-            return true;
-        }
-
-        switch (id) {
-        case R.id.profile:
-            startActivity(UserActivity.makeIntent(this, mUserLogin));
-            updateDrawerMode(false);
-            return true;
-        case R.id.logout:
-            Gh4Application.get().logout();
-            goToToplevelActivity();
-            finish();
-            return true;
-        case R.id.add_account:
-            new LoginModeChooserFragment().show(getSupportFragmentManager(), "loginmode");
-            return true;
-        case R.id.settings:
-            startActivityForResult(new Intent(this, SettingsActivity.class), REQUEST_SETTINGS);
-            return true;
-        }
-
-        int accountCount = Gh4Application.get().getAccounts().size();
-        if (id >= OTHER_ACCOUNTS_GROUP_BASE_ID && id < OTHER_ACCOUNTS_GROUP_BASE_ID + accountCount) {
-            switchActiveUser(item.getTitle().toString());
-            return true;
-        }
-
-        return false;
-    }
-
-    @Override
-    protected void onDrawerClosed(final boolean right) {
-        super.onDrawerClosed(right);
-        if (!right) {
-            updateDrawerMode(false);
-        }
-    }
-
-    private void switchActiveUser(final String login) {
-        Gh4Application.get().setActiveLogin(login);
-        mUserLogin = login;
-        onRefresh();
-        closeDrawers();
-        switchTo(mSelectedFactoryId, getFactoryForItem(mSelectedFactoryId));
-        recreate();
-    }
-
-    private FragmentFactory getFactoryForItem(final int id) {
-        switch (id) {
-        case R.id.news_feed:
-            return new NewsFeedFactory(this, mUserLogin);
-        case R.id.notifications:
-            return new NotificationListFactory(this);
-        case R.id.my_repos:
-            return new RepositoryFactory(this, mUserLogin, getPrefs());
-        case R.id.my_issues:
-            return new IssueListFactory(this, mUserLogin, false);
-        case R.id.my_prs:
-            return new IssueListFactory(this, mUserLogin, true);
-        case R.id.my_gists:
-            return new GistFactory(this, mUserLogin);
-        case R.id.search:
-            return new SearchFactory(this);
-        case R.id.bookmarks:
-            return new BookmarkFactory(this, mUserLogin);
-        case R.id.pub_timeline:
-            return new TimelineFactory(this);
-        case R.id.blog:
-            return new BlogFactory(this);
-        case R.id.trend:
-            return new TrendingFactory(this);
-        }
-        return null;
-    }
-
-    @Override
-    protected int[] getTabTitleResIds() {
-        return mFactory.getTabTitleResIds();
-    }
-
-    @Override
-    protected int[] getHeaderColorAttrs() {
-        return mFactory.getHeaderColorAttrs();
-    }
-
-    @Override
-    protected Fragment makeFragment(final int position) {
-        return mFactory.makeFragment(position);
-    }
-
-    @Override
-    protected void onFragmentInstantiated(final Fragment f, final int position) {
-        mFactory.onFragmentInstantiated(f, position);
-    }
-
-    @Override
-    protected void onFragmentDestroyed(final Fragment f) {
-        mFactory.onFragmentDestroyed(f);
-    }
-
-    @Override
-    public void onLoginFinished(final String token, final User user) {
-        Gh4Application.get().addAccount(user, token);
-        switchActiveUser(user.login());
-    }
-
-    @Override
-    public void onLoginFailed(final Throwable error) {
-        // TODO
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
-        if (mFactory.onCreateOptionsMenu(menu)) {
-            return true;
-        }
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
-        if (mFactory.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        if (requestCode == REQUEST_SETTINGS) {
-            if (data.getBooleanExtra(SettingsActivity.RESULT_EXTRA_THEME_CHANGED, false)) {
-                goToToplevelActivity();
-                finish();
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
-    @Override
-    protected Intent navigateUp() {
-        return getToplevelActivityIntent();
-    }
-
-    @Override
-    public void onRefresh() {
-        loadUserInfo(true);
-        loadNotificationIndicator(true);
-        mFactory.onRefresh();
-        super.onRefresh();
-    }
-
-    @Override
-    public void supportInvalidateOptionsMenu() {
-        //noinspection StatementWithEmptyBody
-        if (mFactory instanceof RepositoryFactory) {
-            // happens when load is done; we ignore it as we don't want to close the IME in that case
-        } else {
-            super.supportInvalidateOptionsMenu();
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        FragmentManager fm = getSupportFragmentManager();
-        if (!closeDrawers() && fm.getBackStackEntryCount() > 0) {
-            fm.popBackStack();
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
-    public void initiateFilter() {
-        toggleRightSideDrawer();
-    }
-
-    @Override
-    protected boolean fragmentNeedsRefresh(final Fragment object) {
-        return true;
-    }
-
-    public void doInvalidateOptionsMenuAndToolDrawer() {
-        super.supportInvalidateOptionsMenu();
-        updateRightNavigationDrawer();
-    }
-
-    @Override
-    public void invalidateTabs() {
-        super.invalidateTabs();
-    }
-
-    @Override
-    public void invalidateFragments() {
-        super.invalidateFragments();
-    }
-
-    public void toggleToolDrawer() {
-        toggleRightSideDrawer();
-    }
-
-    public void invalidateTitle() {
-        getSupportActionBar().setTitle(mFactory.getTitleResId());
-    }
-
-    private int determineInitialPage() {
-        String initialPage = getIntent().hasExtra("initial_page")
-                             ? getIntent().getStringExtra("initial_page")
-                             : getPrefs().getString(SettingsFragment.KEY_START_PAGE, "newsfeed");
-        if (TextUtils.equals(initialPage, "last")) {
-            initialPage = getPrefs().getString("last_selected_home_page", "newsfeed");
-        }
-        for (int i = 0; i < START_PAGE_MAPPING.size(); i++) {
-            if (TextUtils.equals(initialPage, START_PAGE_MAPPING.valueAt(i))) {
-                return START_PAGE_MAPPING.keyAt(i);
-            }
-        }
-        return R.id.news_feed;
-    }
-
-    private void updateUserInfo() {
-        if (mUserInfo == null) {
-            mAvatarView.setImageDrawable(new AvatarHandler.DefaultAvatarDrawable(mUserLogin, null));
-            return;
-        }
-        if (mAvatarView != null) {
-            AvatarHandler.assignAvatar(mAvatarView, mUserInfo);
-        }
-        if (mUserExtraView != null) {
-            if (TextUtils.isEmpty(mUserInfo.name())) {
-                mUserExtraView.setVisibility(View.GONE);
-            } else {
-                mUserExtraView.setText(mUserInfo.name());
-                mUserExtraView.setVisibility(View.VISIBLE);
-            }
-        }
-        mFactory.setUserInfo(mUserInfo);
-    }
-
-    private void updateDrawerMode(final boolean accountMode) {
-        mLeftDrawerMenu.setGroupVisible(R.id.my_items, !accountMode);
-        mLeftDrawerMenu.setGroupVisible(R.id.navigation, !accountMode);
-        mLeftDrawerMenu.setGroupVisible(R.id.explore, !accountMode);
-        mLeftDrawerMenu.setGroupVisible(R.id.settings, !accountMode);
-        mLeftDrawerMenu.setGroupVisible(R.id.account, accountMode);
-        mLeftDrawerMenu.setGroupVisible(R.id.other_accounts, accountMode);
-
-        if (accountMode) {
-            // repopulate other account list
-            for (int i = 0; ; i++) {
-                MenuItem item = mLeftDrawerMenu.findItem(OTHER_ACCOUNTS_GROUP_BASE_ID + i);
-                if (item == null) {
-                    break;
-                }
-                mLeftDrawerMenu.removeItem(item.getItemId());
-            }
-
-            int id = OTHER_ACCOUNTS_GROUP_BASE_ID;
-            LongSparseArray<String> accounts = Gh4Application.get().getAccounts();
-            for (int i = 0; i < accounts.size(); i++) {
-                String login = accounts.valueAt(i);
-                if (ApiHelpers.loginEquals(mUserLogin, login)) {
-                    continue;
-                }
-
-                MenuItem item = mLeftDrawerMenu.add(R.id.other_accounts, id++, Menu.NONE, login);
-                AvatarHandler.assignAvatar(this, item, login, accounts.keyAt(i));
-            }
-        }
-
-        mDrawerSwitcher.setImageResource(accountMode
-                                         ? R.drawable.drop_up_arrow_white : R.drawable.drop_down_arrow_white);
-        mDrawerInAccountMode = accountMode;
-    }
-
-    private void switchTo(final int itemId, final FragmentFactory factory) {
-        if (mFactory != null) {
-            mFactory.onDestroy();
-        }
-        mFactory = factory;
-        mSelectedFactoryId = itemId;
-        mFactory.setUserInfo(mUserInfo);
-        mFactory.onStartLoadingData();
-
-        getPrefs().edit()
-        .putString("last_selected_home_page", START_PAGE_MAPPING.get(mSelectedFactoryId))
-        .apply();
-
-        updateRightNavigationDrawer();
-        super.supportInvalidateOptionsMenu();
-        getSupportFragmentManager().popBackStackImmediate(null,
-                FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        invalidateTitle();
-        invalidateTabs();
-    }
-
-    private void loadUserInfo(final boolean force) {
-        UserService service = ServiceFactory.get(UserService.class, force);
-        service.getUser(mUserLogin)
-        .map(ApiHelpers::throwOnFailure)
-        .compose(makeLoaderSingle(ID_LOADER_USER, force))
-        .subscribe(result -> {
-            Gh4Application.get().setCurrentAccountInfo(result);
-            mUserInfo = result;
-            updateUserInfo();
-        }, this::handleLoadFailure);
-    }
-
-    private void loadNotificationIndicator(final boolean force) {
-        NotificationService service = ServiceFactory.get(
-                                          NotificationService.class, force, null, null, 1);
-        HashMap<String, Object> options = new HashMap<>();
-        options.put("all", false);
-        options.put("participating", false);
-
-        service.getNotifications(options, 1)
-        .map(ApiHelpers::throwOnFailure)
-        .map(result -> !result.items().isEmpty())
-        .compose(makeLoaderSingle(ID_LOADER_NOTIFICATIONS_INDICATOR, force))
-        .subscribe(this::setNotificationsIndicatorVisible, this::handleLoadFailure);
-    }
-
-    public static class LoginModeChooserFragment extends DialogFragment implements
-        DialogInterface.OnClickListener {
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(final Bundle savedInstanceState) {
-            return new AlertDialog.Builder(getActivity())
-                   .setMessage(R.string.login_mode_dialog_text)
-                   .setPositiveButton(R.string.login_mode_button_oauth, this)
-                   .setNegativeButton(R.string.login_mode_button_user_pw, this)
-                   .setNeutralButton(R.string.cancel, null)
-                   .create();
-        }
-
-        @Override
-        public void onClick(final DialogInterface dialog, final int which) {
-            if (which == DialogInterface.BUTTON_POSITIVE) {
-                new BrowserLogoutDialogFragment().show(getFragmentManager(), "browserlogout");
-            } else {
-                UserPasswordLoginDialogFragment.newInstance(Github4AndroidActivity.SCOPES)
-                .show(getFragmentManager(), "login");
-            }
-        }
-    }
-
-    public static class BrowserLogoutDialogFragment extends DialogFragment implements
-        DialogInterface.OnClickListener {
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(final Bundle savedInstanceState) {
-            return new AlertDialog.Builder(getActivity())
-                   .setTitle(R.string.browser_logout_dialog_title)
-                   .setMessage(R.string.browser_logout_dialog_text)
-                   .setPositiveButton(R.string.go_to_logout_page, this)
-                   .setNeutralButton(R.string.continue_login, this)
-                   .create();
-        }
-
-        @Override
-        public void onClick(final DialogInterface dialog, final int which) {
-            if (which == DialogInterface.BUTTON_NEUTRAL) {
-                Github4AndroidActivity.launchOauthLogin(getActivity());
-            } else if (which == DialogInterface.BUTTON_POSITIVE) {
-                Uri uri = Uri.parse("https://github.com/logout");
-                FragmentManager fm = getActivity().getSupportFragmentManager();
-                IntentUtils.openInCustomTabOrBrowser(getActivity(), uri);
-                new BrowserLogoutCompletedDialogFragment().show(fm, "browserlogoutcomplete");
-            }
-        }
-    }
-
-    public static class BrowserLogoutCompletedDialogFragment extends DialogFragment implements
-        DialogInterface.OnClickListener {
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(final Bundle savedInstanceState) {
-            return new AlertDialog.Builder(getActivity())
-                   .setMessage(R.string.browser_logout_completed_dialog_text)
-                   .setPositiveButton(R.string.continue_login, this)
-                   .create();
-        }
-
-        @Override
-        public void onClick(final DialogInterface dialog, final int which) {
-            Github4AndroidActivity.launchOauthLogin(getActivity());
-        }
-    }
+	View.OnClickListener, RepositoryListContainerFragment.Callback,
+	                          NotificationListFragment.ParentCallback, UserPasswordLoginDialogFragment.ParentCallback {
+public static Intent makeIntent(final Context context, final @IdRes int initialPageId) {
+	String initialPage = START_PAGE_MAPPING.get(initialPageId);
+	Intent intent = new Intent(context, HomeActivity.class);
+	if (initialPage != null) {
+		intent.putExtra("initial_page", initialPage);
+	}
+	return intent;
+}
+
+public static Intent makeNotificationsIntent(final Context context, final String repoOwner,
+                                             final String repoName) {
+	return makeIntent(context, R.id.notifications)
+	       .putExtra(NotificationListFragment.EXTRA_INITIAL_REPO_OWNER, repoOwner)
+	       .putExtra(NotificationListFragment.EXTRA_INITIAL_REPO_NAME, repoName);
+}
+
+private static final int REQUEST_SETTINGS = 10000;
+
+private FragmentFactory mFactory;
+private ImageView mAvatarView;
+private TextView mUserExtraView;
+private ImageView mDrawerSwitcher;
+private String mUserLogin;
+private User mUserInfo;
+private int mSelectedFactoryId;
+private boolean mDrawerInAccountMode;
+private Menu mLeftDrawerMenu;
+private ImageView mNotificationsIndicator;
+private MenuItem mNotificationsMenuItem;
+private Drawable mNotificationsIndicatorIcon;
+
+private static final String STATE_KEY_FACTORY_ITEM = "factoryItem";
+
+private static final int ID_LOADER_USER = 0;
+private static final int ID_LOADER_NOTIFICATIONS_INDICATOR = 1;
+
+private static final int OTHER_ACCOUNTS_GROUP_BASE_ID = 1000;
+
+private static final SparseArray<String> START_PAGE_MAPPING = new SparseArray<>();
+static {
+	START_PAGE_MAPPING.put(R.id.news_feed, "newsfeed");
+	START_PAGE_MAPPING.put(R.id.notifications, "notifications");
+	START_PAGE_MAPPING.put(R.id.my_repos, "repos");
+	START_PAGE_MAPPING.put(R.id.my_issues, "issues");
+	START_PAGE_MAPPING.put(R.id.my_prs, "prs");
+	START_PAGE_MAPPING.put(R.id.my_gists, "gists");
+	START_PAGE_MAPPING.put(R.id.pub_timeline, "timeline");
+	START_PAGE_MAPPING.put(R.id.trend, "trends");
+	START_PAGE_MAPPING.put(R.id.blog, "blog");
+	START_PAGE_MAPPING.put(R.id.bookmarks, "bookmarks");
+	START_PAGE_MAPPING.put(R.id.search, "search");
+}
+
+@Override
+public void onCreate(final Bundle savedInstanceState) {
+	mUserLogin = Gh4Application.get().getAuthLogin();
+	if (savedInstanceState != null) {
+		mSelectedFactoryId = savedInstanceState.getInt(STATE_KEY_FACTORY_ITEM);
+	} else {
+		mSelectedFactoryId = determineInitialPage();
+	}
+	mFactory = getFactoryForItem(mSelectedFactoryId);
+
+	mNotificationsIndicatorIcon =
+		DrawableCompat.wrap(ContextCompat.getDrawable(this, R.drawable.circle).mutate());
+
+	super.onCreate(savedInstanceState);
+
+	ActionBar actionBar = getSupportActionBar();
+	actionBar.setDisplayShowHomeEnabled(true);
+	actionBar.setHomeButtonEnabled(true);
+
+	loadUserInfo(false);
+	loadNotificationIndicator(false);
+	mFactory.onStartLoadingData();
+}
+
+@Nullable
+@Override
+protected String getActionBarTitle() {
+	return getString(mFactory.getTitleResId());
+}
+
+private void updateNotificationIndicator(final int checkedItemId) {
+	if (mNotificationsIndicator == null) {
+		return;
+	}
+
+	@AttrRes int colorResId = checkedItemId == R.id.notifications
+	                          ? R.attr.colorAccent : android.R.attr.textColorPrimary;
+	@ColorInt int tint = UiUtils.resolveColor(this, colorResId);
+	DrawableCompat.setTint(mNotificationsIndicatorIcon, tint);
+	mNotificationsIndicator.setImageDrawable(mNotificationsIndicatorIcon);
+}
+
+public void setNotificationsIndicatorVisible(final boolean visible) {
+	if (mNotificationsIndicator != null) {
+		mNotificationsIndicator.setVisibility(visible ? View.VISIBLE : View.GONE);
+		mNotificationsMenuItem.setIcon(visible
+		                           ? R.drawable.icon_notifications_unread
+		                           : R.drawable.icon_notifications);
+	}
+}
+
+@Override
+protected void onSaveInstanceState(final Bundle outState) {
+	super.onSaveInstanceState(outState);
+	outState.putInt(STATE_KEY_FACTORY_ITEM, mSelectedFactoryId);
+	mFactory.onSaveInstanceState(outState);
+}
+
+@Override
+protected void onRestoreInstanceState(final Bundle savedInstanceState) {
+	super.onRestoreInstanceState(savedInstanceState);
+	if (savedInstanceState != null) {
+		mFactory.onRestoreInstanceState(savedInstanceState);
+	}
+}
+
+@Override
+public void onClick(final View view) {
+	updateDrawerMode(!mDrawerInAccountMode);
+}
+
+@Override
+protected int getLeftNavigationDrawerMenuResource() {
+	return R.menu.home_nav_drawer;
+}
+
+@Override
+protected int getInitialLeftDrawerSelection(final Menu menu) {
+	mLeftDrawerMenu = menu;
+
+	mNotificationsMenuItem = menu.findItem(R.id.notifications);
+	if (mNotificationsMenuItem != null) {
+		View actionView = mNotificationsMenuItem.getActionView();
+		mNotificationsIndicator = actionView.findViewById(R.id.notifications_indicator);
+		updateNotificationIndicator(mSelectedFactoryId);
+	}
+
+	return mSelectedFactoryId;
+}
+
+@Override
+protected int[] getRightNavigationDrawerMenuResources() {
+	return mFactory.getToolDrawerMenuResIds();
+}
+
+@Override
+protected int getInitialRightDrawerSelection() {
+	return mFactory.getInitialToolDrawerSelection();
+}
+
+@Override
+protected void onPrepareRightNavigationDrawerMenu(final Menu menu) {
+	super.onPrepareRightNavigationDrawerMenu(menu);
+	mFactory.prepareToolDrawerMenu(menu);
+}
+
+@Override
+protected void configureLeftDrawerHeader(final View header) {
+	super.configureLeftDrawerHeader(header);
+
+	mAvatarView = header.findViewById(R.id.avatar);
+	mUserExtraView = header.findViewById(R.id.user_extra);
+
+	TextView userNameView = header.findViewById(R.id.user_name);
+	userNameView.setText(mUserLogin);
+
+	updateUserInfo();
+
+	mDrawerSwitcher = header.findViewById(R.id.switcher);
+	mDrawerSwitcher.setVisibility(View.VISIBLE);
+
+	mDrawerSwitcher.setOnClickListener(this);
+
+	View clickableBackground = header.findViewById(R.id.drawer_header);
+	clickableBackground.setOnClickListener(this);
+}
+
+@Override
+public boolean onNavigationItemSelected(final @NonNull MenuItem item) {
+	super.onNavigationItemSelected(item);
+
+	updateNotificationIndicator(item.getItemId());
+
+	if (mFactory != null && mFactory.onDrawerItemSelected(item)) {
+		return true;
+	}
+
+	int id = item.getItemId();
+	FragmentFactory factory = getFactoryForItem(id);
+
+	if (factory != null) {
+		switchTo(id, factory);
+		return true;
+	}
+
+	switch (id) {
+	case R.id.profile:
+		startActivity(UserActivity.makeIntent(this, mUserLogin));
+		updateDrawerMode(false);
+		return true;
+	case R.id.logout:
+		Gh4Application.get().logout();
+		goToToplevelActivity();
+		finish();
+		return true;
+	case R.id.add_account:
+		new LoginModeChooserFragment().show(getSupportFragmentManager(), "loginmode");
+		return true;
+	case R.id.settings:
+		startActivityForResult(new Intent(this, SettingsActivity.class), REQUEST_SETTINGS);
+		return true;
+	}
+
+	int accountCount = Gh4Application.get().getAccounts().size();
+	if (id >= OTHER_ACCOUNTS_GROUP_BASE_ID && id < OTHER_ACCOUNTS_GROUP_BASE_ID + accountCount) {
+		switchActiveUser(item.getTitle().toString());
+		return true;
+	}
+
+	return false;
+}
+
+@Override
+protected void onDrawerClosed(final boolean right) {
+	super.onDrawerClosed(right);
+	if (!right) {
+		updateDrawerMode(false);
+	}
+}
+
+private void switchActiveUser(final String login) {
+	Gh4Application.get().setActiveLogin(login);
+	mUserLogin = login;
+	onRefresh();
+	closeDrawers();
+	switchTo(mSelectedFactoryId, getFactoryForItem(mSelectedFactoryId));
+	recreate();
+}
+
+private FragmentFactory getFactoryForItem(final int id) {
+	switch (id) {
+	case R.id.news_feed:
+		return new NewsFeedFactory(this, mUserLogin);
+	case R.id.notifications:
+		return new NotificationListFactory(this);
+	case R.id.my_repos:
+		return new RepositoryFactory(this, mUserLogin, getPrefs());
+	case R.id.my_issues:
+		return new IssueListFactory(this, mUserLogin, false);
+	case R.id.my_prs:
+		return new IssueListFactory(this, mUserLogin, true);
+	case R.id.my_gists:
+		return new GistFactory(this, mUserLogin);
+	case R.id.search:
+		return new SearchFactory(this);
+	case R.id.bookmarks:
+		return new BookmarkFactory(this, mUserLogin);
+	case R.id.pub_timeline:
+		return new TimelineFactory(this);
+	case R.id.blog:
+		return new BlogFactory(this);
+	case R.id.trend:
+		return new TrendingFactory(this);
+	}
+	return null;
+}
+
+@Override
+protected int[] getTabTitleResIds() {
+	return mFactory.getTabTitleResIds();
+}
+
+@Override
+protected int[] getHeaderColorAttrs() {
+	return mFactory.getHeaderColorAttrs();
+}
+
+@Override
+protected Fragment makeFragment(final int position) {
+	return mFactory.makeFragment(position);
+}
+
+@Override
+protected void onFragmentInstantiated(final Fragment f, final int position) {
+	mFactory.onFragmentInstantiated(f, position);
+}
+
+@Override
+protected void onFragmentDestroyed(final Fragment f) {
+	mFactory.onFragmentDestroyed(f);
+}
+
+@Override
+public void onLoginFinished(final String token, final User user) {
+	Gh4Application.get().addAccount(user, token);
+	switchActiveUser(user.login());
+}
+
+@Override
+public void onLoginFailed(final Throwable error) {
+	// TODO
+}
+
+@Override
+public boolean onCreateOptionsMenu(final Menu menu) {
+	if (mFactory.onCreateOptionsMenu(menu)) {
+		return true;
+	}
+	return super.onCreateOptionsMenu(menu);
+}
+
+@Override
+public boolean onOptionsItemSelected(final MenuItem item) {
+	if (mFactory.onOptionsItemSelected(item)) {
+		return true;
+	}
+	return super.onOptionsItemSelected(item);
+}
+
+@Override
+protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+	if (requestCode == REQUEST_SETTINGS) {
+		if (data.getBooleanExtra(SettingsActivity.RESULT_EXTRA_THEME_CHANGED, false)) {
+			goToToplevelActivity();
+			finish();
+		}
+	} else {
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+}
+
+@Override
+protected Intent navigateUp() {
+	return getToplevelActivityIntent();
+}
+
+@Override
+public void onRefresh() {
+	loadUserInfo(true);
+	loadNotificationIndicator(true);
+	mFactory.onRefresh();
+	super.onRefresh();
+}
+
+@Override
+public void supportInvalidateOptionsMenu() {
+	//noinspection StatementWithEmptyBody
+	if (mFactory instanceof RepositoryFactory) {
+		// happens when load is done; we ignore it as we don't want to close the IME in that case
+	} else {
+		super.supportInvalidateOptionsMenu();
+	}
+}
+
+@Override
+public void onBackPressed() {
+	FragmentManager fm = getSupportFragmentManager();
+	if (!closeDrawers() && fm.getBackStackEntryCount() > 0) {
+		fm.popBackStack();
+	} else {
+		super.onBackPressed();
+	}
+}
+
+@Override
+public void initiateFilter() {
+	toggleRightSideDrawer();
+}
+
+@Override
+protected boolean fragmentNeedsRefresh(final Fragment object) {
+	return true;
+}
+
+public void doInvalidateOptionsMenuAndToolDrawer() {
+	super.supportInvalidateOptionsMenu();
+	updateRightNavigationDrawer();
+}
+
+@Override
+public void invalidateTabs() {
+	super.invalidateTabs();
+}
+
+@Override
+public void invalidateFragments() {
+	super.invalidateFragments();
+}
+
+public void toggleToolDrawer() {
+	toggleRightSideDrawer();
+}
+
+public void invalidateTitle() {
+	getSupportActionBar().setTitle(mFactory.getTitleResId());
+}
+
+private int determineInitialPage() {
+	String initialPage = getIntent().hasExtra("initial_page")
+	                     ? getIntent().getStringExtra("initial_page")
+	                     : getPrefs().getString(SettingsFragment.KEY_START_PAGE, "newsfeed");
+	if (TextUtils.equals(initialPage, "last")) {
+		initialPage = getPrefs().getString("last_selected_home_page", "newsfeed");
+	}
+	for (int i = 0; i < START_PAGE_MAPPING.size(); i++) {
+		if (TextUtils.equals(initialPage, START_PAGE_MAPPING.valueAt(i))) {
+			return START_PAGE_MAPPING.keyAt(i);
+		}
+	}
+	return R.id.news_feed;
+}
+
+private void updateUserInfo() {
+	if (mUserInfo == null) {
+		mAvatarView.setImageDrawable(new AvatarHandler.DefaultAvatarDrawable(mUserLogin, null));
+		return;
+	}
+	if (mAvatarView != null) {
+		AvatarHandler.assignAvatar(mAvatarView, mUserInfo);
+	}
+	if (mUserExtraView != null) {
+		if (TextUtils.isEmpty(mUserInfo.name())) {
+			mUserExtraView.setVisibility(View.GONE);
+		} else {
+			mUserExtraView.setText(mUserInfo.name());
+			mUserExtraView.setVisibility(View.VISIBLE);
+		}
+	}
+	mFactory.setUserInfo(mUserInfo);
+}
+
+private void updateDrawerMode(final boolean accountMode) {
+	mLeftDrawerMenu.setGroupVisible(R.id.my_items, !accountMode);
+	mLeftDrawerMenu.setGroupVisible(R.id.navigation, !accountMode);
+	mLeftDrawerMenu.setGroupVisible(R.id.explore, !accountMode);
+	mLeftDrawerMenu.setGroupVisible(R.id.settings, !accountMode);
+	mLeftDrawerMenu.setGroupVisible(R.id.account, accountMode);
+	mLeftDrawerMenu.setGroupVisible(R.id.other_accounts, accountMode);
+
+	if (accountMode) {
+		// repopulate other account list
+		for (int i = 0; ; i++) {
+			MenuItem item = mLeftDrawerMenu.findItem(OTHER_ACCOUNTS_GROUP_BASE_ID + i);
+			if (item == null) {
+				break;
+			}
+			mLeftDrawerMenu.removeItem(item.getItemId());
+		}
+
+		int id = OTHER_ACCOUNTS_GROUP_BASE_ID;
+		LongSparseArray<String> accounts = Gh4Application.get().getAccounts();
+		for (int i = 0; i < accounts.size(); i++) {
+			String login = accounts.valueAt(i);
+			if (ApiHelpers.loginEquals(mUserLogin, login)) {
+				continue;
+			}
+
+			MenuItem item = mLeftDrawerMenu.add(R.id.other_accounts, id++, Menu.NONE, login);
+			AvatarHandler.assignAvatar(this, item, login, accounts.keyAt(i));
+		}
+	}
+
+	mDrawerSwitcher.setImageResource(accountMode
+	                                 ? R.drawable.drop_up_arrow_white : R.drawable.drop_down_arrow_white);
+	mDrawerInAccountMode = accountMode;
+}
+
+private void switchTo(final int itemId, final FragmentFactory factory) {
+	if (mFactory != null) {
+		mFactory.onDestroy();
+	}
+	mFactory = factory;
+	mSelectedFactoryId = itemId;
+	mFactory.setUserInfo(mUserInfo);
+	mFactory.onStartLoadingData();
+
+	getPrefs().edit()
+	.putString("last_selected_home_page", START_PAGE_MAPPING.get(mSelectedFactoryId))
+	.apply();
+
+	updateRightNavigationDrawer();
+	super.supportInvalidateOptionsMenu();
+	getSupportFragmentManager().popBackStackImmediate(null,
+	                                                  FragmentManager.POP_BACK_STACK_INCLUSIVE);
+	invalidateTitle();
+	invalidateTabs();
+}
+
+private void loadUserInfo(final boolean force) {
+	UserService service = ServiceFactory.get(UserService.class, force);
+	service.getUser(mUserLogin)
+	.map(ApiHelpers::throwOnFailure)
+	.compose(makeLoaderSingle(ID_LOADER_USER, force))
+	.subscribe(result->{
+			Gh4Application.get().setCurrentAccountInfo(result);
+			mUserInfo = result;
+			updateUserInfo();
+		}, this::handleLoadFailure);
+}
+
+private void loadNotificationIndicator(final boolean force) {
+	NotificationService service = ServiceFactory.get(
+		NotificationService.class, force, null, null, 1);
+	HashMap<String, Object> options = new HashMap<>();
+	options.put("all", false);
+	options.put("participating", false);
+
+	service.getNotifications(options, 1)
+	.map(ApiHelpers::throwOnFailure)
+	.map(result->!result.items().isEmpty())
+	.compose(makeLoaderSingle(ID_LOADER_NOTIFICATIONS_INDICATOR, force))
+	.subscribe(this::setNotificationsIndicatorVisible, this::handleLoadFailure);
+}
+
+public static class LoginModeChooserFragment extends DialogFragment implements
+	DialogInterface.OnClickListener {
+@NonNull
+@Override
+public Dialog onCreateDialog(final Bundle savedInstanceState) {
+	return new AlertDialog.Builder(getActivity())
+	       .setMessage(R.string.login_mode_dialog_text)
+	       .setPositiveButton(R.string.login_mode_button_oauth, this)
+	       .setNegativeButton(R.string.login_mode_button_user_pw, this)
+	       .setNeutralButton(R.string.cancel, null)
+	       .create();
+}
+
+@Override
+public void onClick(final DialogInterface dialog, final int which) {
+	if (which == DialogInterface.BUTTON_POSITIVE) {
+		new BrowserLogoutDialogFragment().show(getFragmentManager(), "browserlogout");
+	} else {
+		UserPasswordLoginDialogFragment.newInstance(Github4AndroidActivity.SCOPES)
+		.show(getFragmentManager(), "login");
+	}
+}
+}
+
+public static class BrowserLogoutDialogFragment extends DialogFragment implements
+	DialogInterface.OnClickListener {
+@NonNull
+@Override
+public Dialog onCreateDialog(final Bundle savedInstanceState) {
+	return new AlertDialog.Builder(getActivity())
+	       .setTitle(R.string.browser_logout_dialog_title)
+	       .setMessage(R.string.browser_logout_dialog_text)
+	       .setPositiveButton(R.string.go_to_logout_page, this)
+	       .setNeutralButton(R.string.continue_login, this)
+	       .create();
+}
+
+@Override
+public void onClick(final DialogInterface dialog, final int which) {
+	if (which == DialogInterface.BUTTON_NEUTRAL) {
+		Github4AndroidActivity.launchOauthLogin(getActivity());
+	} else if (which == DialogInterface.BUTTON_POSITIVE) {
+		Uri uri = Uri.parse("https://github.com/logout");
+		FragmentManager fm = getActivity().getSupportFragmentManager();
+		IntentUtils.openInCustomTabOrBrowser(getActivity(), uri);
+		new BrowserLogoutCompletedDialogFragment().show(fm, "browserlogoutcomplete");
+	}
+}
+}
+
+public static class BrowserLogoutCompletedDialogFragment extends DialogFragment implements
+	DialogInterface.OnClickListener {
+@NonNull
+@Override
+public Dialog onCreateDialog(final Bundle savedInstanceState) {
+	return new AlertDialog.Builder(getActivity())
+	       .setMessage(R.string.browser_logout_completed_dialog_text)
+	       .setPositiveButton(R.string.continue_login, this)
+	       .create();
+}
+
+@Override
+public void onClick(final DialogInterface dialog, final int which) {
+	Github4AndroidActivity.launchOauthLogin(getActivity());
+}
+}
 }

@@ -7,26 +7,26 @@ import com.gh4a.R;
 import com.gh4a.fragment.NotificationListFragment;
 
 public class NotificationListFactory extends FragmentFactory {
-    private static final int[] TAB_TITLES =  new int[] {
-        R.string.notifications
-    };
+private static final int[] TAB_TITLES =  new int[] {
+	R.string.notifications
+};
 
-    protected NotificationListFactory(final HomeActivity activity) {
-        super(activity);
-    }
+protected NotificationListFactory(final HomeActivity activity) {
+	super(activity);
+}
 
-    @Override
-    protected @StringRes int getTitleResId() {
-        return R.string.notifications;
-    }
+@Override
+protected @StringRes int getTitleResId() {
+	return R.string.notifications;
+}
 
-    @Override
-    protected int[] getTabTitleResIds() {
-        return TAB_TITLES;
-    }
+@Override
+protected int[] getTabTitleResIds() {
+	return TAB_TITLES;
+}
 
-    @Override
-    protected Fragment makeFragment(final int position) {
-        return NotificationListFragment.newInstance();
-    }
+@Override
+protected Fragment makeFragment(final int position) {
+	return NotificationListFragment.newInstance();
+}
 }
