@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.annotation.AttrRes;
 import android.view.View;
 import android.widget.TextView;
-
 import com.gh4a.R;
 import com.gh4a.ServiceFactory;
 import com.gh4a.activities.EditIssueCommentActivity;
@@ -18,99 +17,115 @@ import com.meisolsson.githubsdk.model.Issue;
 import com.meisolsson.githubsdk.model.IssueState;
 import com.meisolsson.githubsdk.service.issues.IssueCommentService;
 import com.meisolsson.githubsdk.service.issues.IssueEventService;
-
+import io.reactivex.Single;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import io.reactivex.Single;
 import retrofit2.Response;
 
 public class IssueFragment extends IssueFragmentBase {
-public static IssueFragment newInstance(final String repoOwner, final String repoName, final Issue issue,
-                                        final boolean isCollaborator, final IntentUtils.InitialCommentMarker initialComment) {
-	IssueFragment f = new IssueFragment();
-	f.setArguments(buildArgs(repoOwner, repoName, issue, isCollaborator, initialComment));
-	return f;
-}
+  public static IssueFragment
+  newInstance(final String repoOwner, final String repoName, final Issue issue,
+              final boolean isCollaborator,
+              final IntentUtils.InitialCommentMarker initialComment) {
+    IssueFragment f = new IssueFragment();
+    f.setArguments(
+        buildArgs(repoOwner, repoName, issue, isCollaborator, initialComment));
+    return f;
+  }
 
-public void updateState(final Issue issue) {
-	mIssue = mIssue.toBuilder().state(issue.state()).build();
-	assignHighlightColor();
-	reloadEvents(false);
-}
+  public void updateState(final Issue issue) {
+    mIssue = mIssue.toBuilder().state(issue.state()).build();
+    assignHighlightColor();
+    reloadEvents(false);
+  }
 
-@Override
-protected void bindSpecialViews(final View headerView) {
-	TextView tvPull = headerView.findViewById(R.id.tv_pull);
-	if (mIssue.pullRequest() != null && mIssue.pullRequest().diffUrl() != null) {
-		tvPull.setVisibility(View.VISIBLE);
-		tvPull.setOnClickListener(this);
-	} else {
-		tvPull.setVisibility(View.GONE);
-	}
-}
+  @Override
+  protected void bindSpecialViews(final View headerView) {
+    TextView tvPull = headerView.findViewById(R.id.tv_pull);
+    if (mIssue.pullRequest() != null &&
+        mIssue.pullRequest().diffUrl() != null) {
+      tvPull.setVisibility(View.VISIBLE);
+      tvPull.setOnClickListener(this);
+    } else {
+      tvPull.setVisibility(View.GONE);
+    }
+  }
 
-@Override
-protected void assignHighlightColor() {
-	if (mIssue.state() == IssueState.Closed) {
-		setHighlightColors(R.attr.colorIssueClosed, R.attr.colorIssueClosedDark);
-	} else {
-		setHighlightColors(R.attr.colorIssueOpen, R.attr.colorIssueOpenDark);
-	}
-}
+  @Override
+  protected void assignHighlightColor() {
+    if (mIssue.state() == IssueState.Closed) {
+      setHighlightColors(R.attr.colorIssueClosed, R.attr.colorIssueClosedDark);
+    } else {
+      setHighlightColors(R.attr.colorIssueOpen, R.attr.colorIssueOpenDark);
+    }
+  }
 
-@Override
-public void onClick(final View v) {
-	if (v.getId() == R.id.tv_pull) {
-		startActivity(PullRequestActivity.makeIntent(getActivity(),
-		                                             mRepoOwner, mRepoName, mIssue.number()));
-	} else {
-		super.onClick(v);
-	}
-}
+  @Override
+  public void onClick(final View v) {
+    if (v.getId() == R.id.tv_pull) {
+      startActivity(PullRequestActivity.makeIntent(getActivity(), mRepoOwner,
+                                                   mRepoName, mIssue.number()));
+    } else {
+      super.onClick(v);
+    }
+  }
 
-@Override
-protected Single<List<TimelineItem> > onCreateDataSingle(final boolean bypassCache) {
-	final int issueNumber = mIssue.number();
-	final IssueEventService eventService = ServiceFactory.get(IssueEventService.class, bypassCache);
-	final IssueCommentService commentService =
-		ServiceFactory.get(IssueCommentService.class, bypassCache);
+  @Override
+  protected Single<List<TimelineItem>>
+  onCreateDataSingle(final boolean bypassCache) {
+    final int issueNumber = mIssue.number();
+    final IssueEventService eventService =
+        ServiceFactory.get(IssueEventService.class, bypassCache);
+    final IssueCommentService commentService =
+        ServiceFactory.get(IssueCommentService.class, bypassCache);
 
-	Single<List<TimelineItem> > commentSingle = ApiHelpers.PageIterator
-	                                            .toSingle(page->commentService.getIssueComments(mRepoOwner, mRepoName, issueNumber, page))
-	                                            .compose(RxUtils.mapList(TimelineItem.TimelineComment::new));
-	Single<List<TimelineItem> > eventSingle = ApiHelpers.PageIterator
-	                                          .toSingle(page->eventService.getIssueEvents(mRepoOwner, mRepoName, issueNumber, page))
-	                                          .compose(RxUtils.filter(event->INTERESTING_EVENTS.contains(event.event())))
-	                                          .compose((RxUtils.mapList(TimelineItem.TimelineEvent::new)));
+    Single<List<TimelineItem>> commentSingle =
+        ApiHelpers.PageIterator
+            .toSingle(page
+                      -> commentService.getIssueComments(mRepoOwner, mRepoName,
+                                                         issueNumber, page))
+            .compose(RxUtils.mapList(TimelineItem.TimelineComment::new));
+    Single<List<TimelineItem>> eventSingle =
+        ApiHelpers.PageIterator
+            .toSingle(page
+                      -> eventService.getIssueEvents(mRepoOwner, mRepoName,
+                                                     issueNumber, page))
+            .compose(RxUtils.filter(
+                event -> INTERESTING_EVENTS.contains(event.event())))
+            .compose((RxUtils.mapList(TimelineItem.TimelineEvent::new)));
 
-	return Single.zip(commentSingle, eventSingle, (comments, events)->{
-			ArrayList<TimelineItem> result = new ArrayList<>();
-			result.addAll(comments);
-			result.addAll(events);
-			Collections.sort(result, TimelineItem.COMPARATOR);
-			return result;
-		});
-}
+    return Single.zip(commentSingle, eventSingle, (comments, events) -> {
+      ArrayList<TimelineItem> result = new ArrayList<>();
+      result.addAll(comments);
+      result.addAll(events);
+      Collections.sort(result, TimelineItem.COMPARATOR);
+      return result;
+    });
+  }
 
-@Override
-public void editComment(final GitHubCommentBase comment) {
-	@AttrRes int highlightColorAttr = mIssue.state() == IssueState.Closed
-	                                  ? R.attr.colorIssueClosed : R.attr.colorIssueOpen;
-	Intent intent = EditIssueCommentActivity.makeIntent(getActivity(), mRepoOwner, mRepoName,
-	                                                    mIssue.number(), comment.id(), comment.body(), highlightColorAttr);
-	startActivityForResult(intent, REQUEST_EDIT);
-}
+  @Override
+  public void editComment(final GitHubCommentBase comment) {
+    @AttrRes
+    int highlightColorAttr =
+        mIssue.state() == IssueState.Closed ? R.attr.colorIssueClosed
+                                            : R.attr.colorIssueOpen;
+    Intent intent = EditIssueCommentActivity.makeIntent(
+        getActivity(), mRepoOwner, mRepoName, mIssue.number(), comment.id(),
+        comment.body(), highlightColorAttr);
+    startActivityForResult(intent, REQUEST_EDIT);
+  }
 
-@Override
-protected Single<Response<Void> > doDeleteComment(final GitHubCommentBase comment) {
-	IssueCommentService service = ServiceFactory.get(IssueCommentService.class, false);
-	return service.deleteIssueComment(mRepoOwner, mRepoName, comment.id());
-}
+  @Override
+  protected Single<Response<Void>>
+  doDeleteComment(final GitHubCommentBase comment) {
+    IssueCommentService service =
+        ServiceFactory.get(IssueCommentService.class, false);
+    return service.deleteIssueComment(mRepoOwner, mRepoName, comment.id());
+  }
 
-@Override
-public int getCommentEditorHintResId() {
-	return R.string.issue_comment_hint;
-}
+  @Override
+  public int getCommentEditorHintResId() {
+    return R.string.issue_comment_hint;
+  }
 }

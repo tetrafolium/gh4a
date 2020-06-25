@@ -22,7 +22,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.gh4a.R;
 import com.gh4a.utils.ApiHelpers;
 import com.gh4a.utils.StringUtils;
@@ -30,56 +29,61 @@ import com.meisolsson.githubsdk.model.Gist;
 import com.meisolsson.githubsdk.model.User;
 
 public class GistAdapter extends RootAdapter<Gist, GistAdapter.ViewHolder> {
-private final String mOwnerLogin;
+  private final String mOwnerLogin;
 
-public GistAdapter(final Context context, final String owner) {
-	super(context);
-	mOwnerLogin = owner;
-}
+  public GistAdapter(final Context context, final String owner) {
+    super(context);
+    mOwnerLogin = owner;
+  }
 
-@Override
-public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
-	View v = inflater.inflate(R.layout.row_gist, parent, false);
-	return new ViewHolder(v);
-}
+  @Override
+  public ViewHolder onCreateViewHolder(final LayoutInflater inflater,
+                                       final ViewGroup parent,
+                                       final int viewType) {
+    View v = inflater.inflate(R.layout.row_gist, parent, false);
+    return new ViewHolder(v);
+  }
 
-@Override
-public void onBindViewHolder(final ViewHolder holder, final Gist gist) {
-	User user = gist.owner();
-	boolean isSelf = user != null && TextUtils.equals(user.login(), mOwnerLogin);
+  @Override
+  public void onBindViewHolder(final ViewHolder holder, final Gist gist) {
+    User user = gist.owner();
+    boolean isSelf =
+        user != null && TextUtils.equals(user.login(), mOwnerLogin);
 
-	if (isSelf) {
-		holder.tvCreator.setVisibility(View.GONE);
-	} else {
-		holder.tvCreator.setText(ApiHelpers.getUserLogin(mContext, user));
-		holder.tvCreator.setVisibility(View.VISIBLE);
-	}
+    if (isSelf) {
+      holder.tvCreator.setVisibility(View.GONE);
+    } else {
+      holder.tvCreator.setText(ApiHelpers.getUserLogin(mContext, user));
+      holder.tvCreator.setVisibility(View.VISIBLE);
+    }
 
-	holder.tvTimestamp.setText(
-		StringUtils.formatRelativeTime(mContext, gist.createdAt(), false));
-	holder.tvTitle.setText(TextUtils.isEmpty(gist.description())
-	                       ? mContext.getString(R.string.gist_no_description) : gist.description());
-	holder.tvSha.setText(gist.id());
-	holder.tvFiles.setText(String.valueOf(gist.files().size()));
-	holder.tvPrivate.setVisibility(gist.isPublic() ? View.GONE : View.VISIBLE);
-}
+    holder.tvTimestamp.setText(
+        StringUtils.formatRelativeTime(mContext, gist.createdAt(), false));
+    holder.tvTitle.setText(
+        TextUtils.isEmpty(gist.description())
+            ? mContext.getString(R.string.gist_no_description)
+            : gist.description());
+    holder.tvSha.setText(gist.id());
+    holder.tvFiles.setText(String.valueOf(gist.files().size()));
+    holder.tvPrivate.setVisibility(gist.isPublic() ? View.GONE : View.VISIBLE);
+  }
 
-public static class ViewHolder extends RecyclerView.ViewHolder {
-private ViewHolder(final View view) {
-	super(view);
-	tvTitle = view.findViewById(R.id.tv_title);
-	tvCreator = view.findViewById(R.id.tv_creator);
-	tvTimestamp = view.findViewById(R.id.tv_timestamp);
-	tvSha = view.findViewById(R.id.tv_sha);
-	tvFiles = view.findViewById(R.id.tv_files);
-	tvPrivate = view.findViewById(R.id.tv_private);
-}
+  public static class ViewHolder extends RecyclerView.ViewHolder {
+    private ViewHolder(final View view) {
+      super(view);
+      tvTitle = view.findViewById(R.id.tv_title);
+      tvCreator = view.findViewById(R.id.tv_creator);
+      tvTimestamp = view.findViewById(R.id.tv_timestamp);
+      tvSha = view.findViewById(R.id.tv_sha);
+      tvFiles = view.findViewById(R.id.tv_files);
+      tvPrivate = view.findViewById(R.id.tv_private);
+    }
 
-private final TextView tvCreator;
-private final TextView tvTimestamp;
-private final TextView tvTitle;
-private final TextView tvSha;
-private final TextView tvFiles;
-private final TextView tvPrivate;
-}
+    private final TextView tvCreator;
+    private final TextView tvTimestamp;
+    private final TextView tvTitle;
+    private final TextView tvSha;
+    private final TextView tvFiles;
+    private final TextView tvPrivate;
+  }
 }

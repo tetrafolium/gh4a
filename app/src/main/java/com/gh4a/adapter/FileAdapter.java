@@ -23,74 +23,74 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.gh4a.R;
 import com.gh4a.utils.FileUtils;
 import com.gh4a.utils.UiUtils;
 import com.meisolsson.githubsdk.model.Content;
 import com.meisolsson.githubsdk.model.ContentType;
-
 import java.util.Set;
 
 public class FileAdapter extends RootAdapter<Content, FileAdapter.ViewHolder> {
-private Set<String> mSubModuleNames;
+  private Set<String> mSubModuleNames;
 
-public FileAdapter(final Context context) {
-	super(context);
-}
+  public FileAdapter(final Context context) { super(context); }
 
-public void setSubModuleNames(final Set<String> subModules) {
-	mSubModuleNames = subModules;
-	notifyDataSetChanged();
-}
+  public void setSubModuleNames(final Set<String> subModules) {
+    mSubModuleNames = subModules;
+    notifyDataSetChanged();
+  }
 
-@Override
-public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
-	View v = inflater.inflate(R.layout.row_file_manager, parent, false);
-	return new ViewHolder(v);
-}
+  @Override
+  public ViewHolder onCreateViewHolder(final LayoutInflater inflater,
+                                       final ViewGroup parent,
+                                       final int viewType) {
+    View v = inflater.inflate(R.layout.row_file_manager, parent, false);
+    return new ViewHolder(v);
+  }
 
-@Override
-public void onBindViewHolder(final ViewHolder holder, final Content content) {
-	String name = content.name();
-	boolean isSubModule = mSubModuleNames != null && mSubModuleNames.contains(name);
+  @Override
+  public void onBindViewHolder(final ViewHolder holder, final Content content) {
+    String name = content.name();
+    boolean isSubModule =
+        mSubModuleNames != null && mSubModuleNames.contains(name);
 
-	holder.icon.setBackgroundResource(getIconId(content.type(), name));
-	holder.fileName.setText(name);
+    holder.icon.setBackgroundResource(getIconId(content.type(), name));
+    holder.fileName.setText(name);
 
-	if (!isSubModule && content.type() == ContentType.File) {
-		holder.fileSize.setText(Formatter.formatShortFileSize(mContext, content.size()));
-		holder.fileSize.setVisibility(View.VISIBLE);
-	} else {
-		holder.fileSize.setVisibility(View.GONE);
-	}
-}
+    if (!isSubModule && content.type() == ContentType.File) {
+      holder.fileSize.setText(
+          Formatter.formatShortFileSize(mContext, content.size()));
+      holder.fileSize.setVisibility(View.VISIBLE);
+    } else {
+      holder.fileSize.setVisibility(View.GONE);
+    }
+  }
 
-private int getIconId(final ContentType type, final String fileName) {
-	int iconId;
-	if (mSubModuleNames != null && mSubModuleNames.contains(fileName)) {
-		iconId = R.attr.submoduleIcon;
-	} else if (type == ContentType.Directory) {
-		iconId = R.attr.dirIcon;
-	} else if (type == ContentType.File && FileUtils.isImage(fileName)) {
-		iconId = R.attr.contentPictureIcon;
-	} else {
-		iconId = R.attr.fileIcon;
-	}
+  private int getIconId(final ContentType type, final String fileName) {
+    int iconId;
+    if (mSubModuleNames != null && mSubModuleNames.contains(fileName)) {
+      iconId = R.attr.submoduleIcon;
+    } else if (type == ContentType.Directory) {
+      iconId = R.attr.dirIcon;
+    } else if (type == ContentType.File && FileUtils.isImage(fileName)) {
+      iconId = R.attr.contentPictureIcon;
+    } else {
+      iconId = R.attr.fileIcon;
+    }
 
-	return UiUtils.resolveDrawable(mContext, iconId);
-}
+    return UiUtils.resolveDrawable(mContext, iconId);
+  }
 
-public static class ViewHolder extends RecyclerView.ViewHolder {
-private ViewHolder(final View view) {
-	super(view);
-	icon = view.findViewById(R.id.iv_icon);
-	fileName = view.findViewById(R.id.tv_text);
-	fileSize = view.findViewById(R.id.tv_size);
-}
+  public static class ViewHolder extends RecyclerView.ViewHolder {
+    private ViewHolder(final View view) {
+      super(view);
+      icon = view.findViewById(R.id.iv_icon);
+      fileName = view.findViewById(R.id.tv_text);
+      fileSize = view.findViewById(R.id.tv_size);
+    }
 
-private final ImageView icon;
-private final TextView fileName;
-private final TextView fileSize;
-}
+    private final ImageView icon;
+    private final TextView fileName;
+    private final TextView fileSize;
+  }
 }

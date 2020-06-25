@@ -20,37 +20,37 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-
 import com.gh4a.BaseFragmentPagerActivity;
 import com.gh4a.R;
 import com.gh4a.fragment.StargazerListFragment;
 import com.gh4a.fragment.WatcherListFragment;
 
 public class WatcherListActivity extends FragmentContainerActivity {
-public static Intent makeIntent(final Context context, final String repoOwner, final String repoName) {
-	return new Intent(context, WatcherListActivity.class)
-	       .putExtra("owner", repoOwner)
-	       .putExtra("repo", repoName);
-}
+  public static Intent makeIntent(final Context context, final String repoOwner,
+                                  final String repoName) {
+    return new Intent(context, WatcherListActivity.class)
+        .putExtra("owner", repoOwner)
+        .putExtra("repo", repoName);
+  }
 
-private String mRepoOwner;
-private String mRepoName;
+  private String mRepoOwner;
+  private String mRepoName;
 
-@Nullable
-@Override
-protected String getActionBarTitle() {
-	return mRepoOwner + "/" + mRepoName;
-}
+  @Nullable
+  @Override
+  protected String getActionBarTitle() {
+    return mRepoOwner + "/" + mRepoName;
+  }
 
-@Override
-protected void onInitExtras(final Bundle extras) {
-	super.onInitExtras(extras);
-	mRepoOwner = extras.getString("owner");
-	mRepoName = extras.getString("repo");
-}
+  @Override
+  protected void onInitExtras(final Bundle extras) {
+    super.onInitExtras(extras);
+    mRepoOwner = extras.getString("owner");
+    mRepoName = extras.getString("repo");
+  }
 
-@Override
-protected Fragment onCreateFragment() {
-	return WatcherListFragment.newInstance(mRepoOwner, mRepoName);
-}
+  @Override
+  protected Fragment onCreateFragment() {
+    return WatcherListFragment.newInstance(mRepoOwner, mRepoName);
+  }
 }

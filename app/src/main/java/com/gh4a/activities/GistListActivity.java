@@ -20,43 +20,41 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-
 import com.gh4a.R;
 import com.gh4a.fragment.GistListFragment;
 
 public class GistListActivity extends FragmentContainerActivity {
-public static Intent makeIntent(final Context context, final String user) {
-	return new Intent(context, GistListActivity.class)
-	       .putExtra("user", user);
-}
+  public static Intent makeIntent(final Context context, final String user) {
+    return new Intent(context, GistListActivity.class).putExtra("user", user);
+  }
 
-private String mUserLogin;
+  private String mUserLogin;
 
-@Nullable
-@Override
-protected String getActionBarTitle() {
-	return getString(R.string.gists);
-}
+  @Nullable
+  @Override
+  protected String getActionBarTitle() {
+    return getString(R.string.gists);
+  }
 
-@Nullable
-@Override
-protected String getActionBarSubtitle() {
-	return mUserLogin;
-}
+  @Nullable
+  @Override
+  protected String getActionBarSubtitle() {
+    return mUserLogin;
+  }
 
-@Override
-protected void onInitExtras(final Bundle extras) {
-	super.onInitExtras(extras);
-	mUserLogin = extras.getString("user");
-}
+  @Override
+  protected void onInitExtras(final Bundle extras) {
+    super.onInitExtras(extras);
+    mUserLogin = extras.getString("user");
+  }
 
-@Override
-protected Fragment onCreateFragment() {
-	return GistListFragment.newInstance(mUserLogin, false);
-}
+  @Override
+  protected Fragment onCreateFragment() {
+    return GistListFragment.newInstance(mUserLogin, false);
+  }
 
-@Override
-protected Intent navigateUp() {
-	return UserActivity.makeIntent(this, mUserLogin);
-}
+  @Override
+  protected Intent navigateUp() {
+    return UserActivity.makeIntent(this, mUserLogin);
+  }
 }

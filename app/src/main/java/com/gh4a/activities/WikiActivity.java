@@ -19,68 +19,71 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-
 import com.gh4a.R;
 import com.gh4a.model.Feed;
 
 public class WikiActivity extends WebViewerActivity {
-public static Intent makeIntent(final Context context, final String repoOwner, final String repoName, final Feed feed) {
-	return new Intent(context, WikiActivity.class)
-	       .putExtra("owner", repoOwner)
-	       .putExtra("repo", repoName)
-	       .putExtra("title", feed.getTitle())
-	       .putExtra("content", feed.getContent());
-}
+  public static Intent makeIntent(final Context context, final String repoOwner,
+                                  final String repoName, final Feed feed) {
+    return new Intent(context, WikiActivity.class)
+        .putExtra("owner", repoOwner)
+        .putExtra("repo", repoName)
+        .putExtra("title", feed.getTitle())
+        .putExtra("content", feed.getContent());
+  }
 
-private String mUserLogin;
-private String mRepoName;
+  private String mUserLogin;
+  private String mRepoName;
 
-@Override
-public void onCreate(final Bundle savedInstanceState) {
-	super.onCreate(savedInstanceState);
+  @Override
+  public void onCreate(final Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-	onDataReady();
-}
+    onDataReady();
+  }
 
-@Nullable
-@Override
-protected String getActionBarTitle() {
-	return getIntent().getStringExtra("title");
-}
+  @Nullable
+  @Override
+  protected String getActionBarTitle() {
+    return getIntent().getStringExtra("title");
+  }
 
-@Nullable
-@Override
-protected String getActionBarSubtitle() {
-	return mUserLogin + "/" + mRepoName;
-}
+  @Nullable
+  @Override
+  protected String getActionBarSubtitle() {
+    return mUserLogin + "/" + mRepoName;
+  }
 
-@Override
-protected void onInitExtras(final Bundle extras) {
-	super.onInitExtras(extras);
-	mUserLogin = extras.getString("owner");
-	mRepoName = extras.getString("repo");
-}
+  @Override
+  protected void onInitExtras(final Bundle extras) {
+    super.onInitExtras(extras);
+    mUserLogin = extras.getString("owner");
+    mRepoName = extras.getString("repo");
+  }
 
-@Override
-protected String generateHtml(final String cssTheme, final boolean addTitleHeader) {
-	String title = addTitleHeader ? getDocumentTitle() : null;
-	return wrapUnthemedHtml(getIntent().getStringExtra("content"), cssTheme, title);
-}
+  @Override
+  protected String generateHtml(final String cssTheme,
+                                final boolean addTitleHeader) {
+    String title = addTitleHeader ? getDocumentTitle() : null;
+    return wrapUnthemedHtml(getIntent().getStringExtra("content"), cssTheme,
+                            title);
+  }
 
-@Override
-protected String getDocumentTitle() {
-	return getString(R.string.wiki_print_document_title,
-	                 getIntent().getStringExtra("title"), mUserLogin, mRepoName);
-}
+  @Override
+  protected String getDocumentTitle() {
+    return getString(R.string.wiki_print_document_title,
+                     getIntent().getStringExtra("title"), mUserLogin,
+                     mRepoName);
+  }
 
-@Override
-protected boolean canSwipeToRefresh() {
-	// content is passed in intent extras
-	return false;
-}
+  @Override
+  protected boolean canSwipeToRefresh() {
+    // content is passed in intent extras
+    return false;
+  }
 
-@Override
-protected Intent navigateUp() {
-	return WikiListActivity.makeIntent(this, mUserLogin, mRepoName, null);
-}
+  @Override
+  protected Intent navigateUp() {
+    return WikiListActivity.makeIntent(this, mUserLogin, mRepoName, null);
+  }
 }

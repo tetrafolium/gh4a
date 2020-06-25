@@ -25,7 +25,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
 import com.gh4a.R;
 import com.gh4a.ServiceFactory;
 import com.gh4a.activities.CommitActivity;
@@ -38,137 +37,148 @@ import com.meisolsson.githubsdk.model.Commit;
 import com.meisolsson.githubsdk.model.Page;
 import com.meisolsson.githubsdk.model.Repository;
 import com.meisolsson.githubsdk.service.repositories.RepositoryCommitService;
-
-import java.net.HttpURLConnection;
-
 import io.reactivex.Single;
+import java.net.HttpURLConnection;
 import retrofit2.Response;
 
 public class CommitListFragment extends PagedDataBaseFragment<Commit> {
-public interface ContextSelectionCallback {
-boolean baseSelectionAllowed();
-void onCommitSelectedAsBase(Commit commit);
-}
+  public interface ContextSelectionCallback {
+    boolean baseSelectionAllowed();
+    void onCommitSelectedAsBase(Commit commit);
+  }
 
-private static final int REQUEST_COMMIT = 2000;
-private static final int MENU_SELECT_AS_BASE = Menu.FIRST + 2;
+  private static final int REQUEST_COMMIT = 2000;
+  private static final int MENU_SELECT_AS_BASE = Menu.FIRST + 2;
 
-private String mRepoOwner;
-private String mRepoName;
-private String mRef;
-private String mFilePath;
+  private String mRepoOwner;
+  private String mRepoName;
+  private String mRef;
+  private String mFilePath;
 
-private CommitAdapter mAdapter;
-private ContextSelectionCallback mCallback;
+  private CommitAdapter mAdapter;
+  private ContextSelectionCallback mCallback;
 
-public static CommitListFragment newInstance(final Repository repo, final String ref) {
-	return newInstance(repo.owner().login(), repo.name(),
-	                   StringUtils.isBlank(ref) ? repo.defaultBranch() : ref, null);
-}
+  public static CommitListFragment newInstance(final Repository repo,
+                                               final String ref) {
+    return newInstance(repo.owner().login(), repo.name(),
+                       StringUtils.isBlank(ref) ? repo.defaultBranch() : ref,
+                       null);
+  }
 
-public static CommitListFragment newInstance(final String repoOwner, final String repoName,
-                                             final String ref, final String filePath) {
-	CommitListFragment f = new CommitListFragment();
+  public static CommitListFragment newInstance(final String repoOwner,
+                                               final String repoName,
+                                               final String ref,
+                                               final String filePath) {
+    CommitListFragment f = new CommitListFragment();
 
-	Bundle args = new Bundle();
-	args.putString("owner", repoOwner);
-	args.putString("repo", repoName);
-	args.putString("ref", ref);
-	args.putString("path", filePath);
-	f.setArguments(args);
+    Bundle args = new Bundle();
+    args.putString("owner", repoOwner);
+    args.putString("repo", repoName);
+    args.putString("ref", ref);
+    args.putString("path", filePath);
+    f.setArguments(args);
 
-	return f;
-}
+    return f;
+  }
 
-@Override
-public void onCreate(final Bundle savedInstanceState) {
-	super.onCreate(savedInstanceState);
-	mRepoOwner = getArguments().getString("owner");
-	mRepoName = getArguments().getString("repo");
-	mRef = getArguments().getString("ref");
-	mFilePath = getArguments().getString("path");
-}
+  @Override
+  public void onCreate(final Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    mRepoOwner = getArguments().getString("owner");
+    mRepoName = getArguments().getString("repo");
+    mRef = getArguments().getString("ref");
+    mFilePath = getArguments().getString("path");
+  }
 
-@Override
-public void onAttach(final Context context) {
-	super.onAttach(context);
-	mCallback = context instanceof ContextSelectionCallback
-	            ? (ContextSelectionCallback) context : null;
-}
+  @Override
+  public void onAttach(final Context context) {
+    super.onAttach(context);
+    mCallback = context instanceof ContextSelectionCallback
+                    ? (ContextSelectionCallback)context
+                    : null;
+  }
 
-@Override
-protected RootAdapter<Commit, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
-	mAdapter = new CommitAdapter(getActivity());
-	mAdapter.setContextMenuSupported(mCallback != null && mCallback.baseSelectionAllowed());
-	return mAdapter;
-}
+  @Override
+  protected RootAdapter<Commit, ? extends RecyclerView.ViewHolder>
+  onCreateAdapter() {
+    mAdapter = new CommitAdapter(getActivity());
+    mAdapter.setContextMenuSupported(mCallback != null &&
+                                     mCallback.baseSelectionAllowed());
+    return mAdapter;
+  }
 
-@Override
-protected void onRecyclerViewInflated(final RecyclerView view, final LayoutInflater inflater) {
-	super.onRecyclerViewInflated(view, inflater);
-	registerForContextMenu(view);
-}
+  @Override
+  protected void onRecyclerViewInflated(final RecyclerView view,
+                                        final LayoutInflater inflater) {
+    super.onRecyclerViewInflated(view, inflater);
+    registerForContextMenu(view);
+  }
 
-@Override
-protected int getEmptyTextResId() {
-	return R.string.no_commits_found;
-}
+  @Override
+  protected int getEmptyTextResId() {
+    return R.string.no_commits_found;
+  }
 
-@Override
-public void onItemClick(final Commit commit) {
-	String[] urlPart = commit.url().split("/");
-	Intent intent = CommitActivity.makeIntent(getActivity(),
-	                                          urlPart[4], urlPart[5], commit.sha());
-	startActivityForResult(intent, REQUEST_COMMIT);
-}
+  @Override
+  public void onItemClick(final Commit commit) {
+    String[] urlPart = commit.url().split("/");
+    Intent intent = CommitActivity.makeIntent(getActivity(), urlPart[4],
+                                              urlPart[5], commit.sha());
+    startActivityForResult(intent, REQUEST_COMMIT);
+  }
 
-@Override
-public void onCreateContextMenu(final ContextMenu menu, final View v, final ContextMenu.ContextMenuInfo menuInfo) {
-	super.onCreateContextMenu(menu, v, menuInfo);
+  @Override
+  public void onCreateContextMenu(final ContextMenu menu, final View v,
+                                  final ContextMenu.ContextMenuInfo menuInfo) {
+    super.onCreateContextMenu(menu, v, menuInfo);
 
-	menu.add(Menu.NONE, MENU_SELECT_AS_BASE, Menu.NONE, R.string.commit_use_as_ref);
-}
+    menu.add(Menu.NONE, MENU_SELECT_AS_BASE, Menu.NONE,
+             R.string.commit_use_as_ref);
+  }
 
-@Override
-public boolean onContextItemSelected(final MenuItem item) {
-	ContextMenuAwareRecyclerView.RecyclerContextMenuInfo info =
-		(ContextMenuAwareRecyclerView.RecyclerContextMenuInfo) item.getMenuInfo();
-	if (info.position >= mAdapter.getItemCount()) {
-		return false;
-	}
+  @Override
+  public boolean onContextItemSelected(final MenuItem item) {
+    ContextMenuAwareRecyclerView.RecyclerContextMenuInfo info =
+        (ContextMenuAwareRecyclerView.RecyclerContextMenuInfo)
+            item.getMenuInfo();
+    if (info.position >= mAdapter.getItemCount()) {
+      return false;
+    }
 
-	if (item.getItemId() == MENU_SELECT_AS_BASE) {
-		Commit commit = mAdapter.getItemFromAdapterPosition(info.position);
-		mCallback.onCommitSelectedAsBase(commit);
-		return true;
-	}
+    if (item.getItemId() == MENU_SELECT_AS_BASE) {
+      Commit commit = mAdapter.getItemFromAdapterPosition(info.position);
+      mCallback.onCommitSelectedAsBase(commit);
+      return true;
+    }
 
-	return super.onContextItemSelected(item);
-}
+    return super.onContextItemSelected(item);
+  }
 
-@Override
-public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-	if (requestCode == REQUEST_COMMIT) {
-		if (resultCode == Activity.RESULT_OK) {
-			// comments were updated
-			onRefresh();
-		}
-	} else {
-		super.onActivityResult(requestCode, resultCode, data);
-	}
-}
+  @Override
+  public void onActivityResult(final int requestCode, final int resultCode,
+                               final Intent data) {
+    if (requestCode == REQUEST_COMMIT) {
+      if (resultCode == Activity.RESULT_OK) {
+        // comments were updated
+        onRefresh();
+      }
+    } else {
+      super.onActivityResult(requestCode, resultCode, data);
+    }
+  }
 
-@Override
-protected Single<Response<Page<Commit> > > loadPage(final int page, final boolean bypassCache) {
-	final RepositoryCommitService service =
-		ServiceFactory.get(RepositoryCommitService.class, bypassCache);
-	return service.getCommits(mRepoOwner, mRepoName, mRef, mFilePath, page)
-	       .map(response->{
-			// 409 is returned for empty repos
-			if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
-			        return Response.success(new ApiHelpers.DummyPage<>());
-			}
-			return response;
-		});
-}
+  @Override
+  protected Single<Response<Page<Commit>>> loadPage(final int page,
+                                                    final boolean bypassCache) {
+    final RepositoryCommitService service =
+        ServiceFactory.get(RepositoryCommitService.class, bypassCache);
+    return service.getCommits(mRepoOwner, mRepoName, mRef, mFilePath, page)
+        .map(response -> {
+          // 409 is returned for empty repos
+          if (response.code() == HttpURLConnection.HTTP_CONFLICT) {
+            return Response.success(new ApiHelpers.DummyPage<>());
+          }
+          return response;
+        });
+  }
 }

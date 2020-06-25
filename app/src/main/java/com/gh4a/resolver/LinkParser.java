@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
-
 import com.gh4a.activities.BlogListActivity;
 import com.gh4a.activities.BookmarkListActivity;
 import com.gh4a.activities.CommitActivity;
@@ -25,441 +24,472 @@ import com.gh4a.activities.UserActivity;
 import com.gh4a.activities.WikiListActivity;
 import com.gh4a.utils.IntentUtils;
 import com.gh4a.utils.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class LinkParser {
-private static final List<String> RESERVED_NAMES = Arrays.asList(
-	"apps", "integrations", "login", "logout", "marketplace", "sessions", "settings",
-	"updates", "support", "contact", "about", "personal", "open-source",
-	"business", "site", "security", "features", "topics"
-	);
+  private static final List<String> RESERVED_NAMES = Arrays.asList(
+      "apps", "integrations", "login", "logout", "marketplace", "sessions",
+      "settings", "updates", "support", "contact", "about", "personal",
+      "open-source", "business", "site", "security", "features", "topics");
 
-private LinkParser() {
-}
+  private LinkParser() {}
 
-/**
- * Parses the specified {@code uri} and returns a result which will tell where to redirect the
- * user.
- *
- * @return {@code null} to redirect to browser, {@code ParseResult} with specified {@code
- * intent} to redirect to activity for that intent or {@code ParseResult} with specified {@code
- * loadTask} to execute that task in background.
- */
-@Nullable
-public static ParseResult parseUri(final FragmentActivity activity, final @NonNull Uri uri,
-                                   final IntentUtils.InitialCommentMarker initialCommentFallback) {
-	List<String> parts = new ArrayList<>(uri.getPathSegments());
+  /**
+   * Parses the specified {@code uri} and returns a result which will tell where
+   * to redirect the user.
+   *
+   * @return {@code null} to redirect to browser, {@code ParseResult} with
+   *     specified {@code
+   * intent} to redirect to activity for that intent or {@code ParseResult} with
+   * specified {@code loadTask} to execute that task in background.
+   */
+  @Nullable
+  public static ParseResult
+  parseUri(final FragmentActivity activity, final @NonNull Uri uri,
+           final IntentUtils.InitialCommentMarker initialCommentFallback) {
+    List<String> parts = new ArrayList<>(uri.getPathSegments());
 
-	if ("gist.github.com".equals(uri.getHost())) {
-		return parseGistLink(activity, parts);
-	}
-	if ("blog.github.com".equals(uri.getHost())) {
-		return parseNewBlogLink(activity, parts);
-	}
+    if ("gist.github.com".equals(uri.getHost())) {
+      return parseGistLink(activity, parts);
+    }
+    if ("blog.github.com".equals(uri.getHost())) {
+      return parseNewBlogLink(activity, parts);
+    }
 
-	if (parts.isEmpty()) {
-		return null;
-	}
+    if (parts.isEmpty()) {
+      return null;
+    }
 
-	String first = parts.get(0);
-	if (RESERVED_NAMES.contains(first)) {
-		return null;
-	}
+    String first = parts.get(0);
+    if (RESERVED_NAMES.contains(first)) {
+      return null;
+    }
 
-	switch (first) {
-	case "explore":
-		return new ParseResult(new Intent(activity, TrendingActivity.class));
-	case "blog":
-		return parseBlogLink(activity, parts);
-	case "orgs":
-		return parseOrganizationLink(activity, parts);
-	case "search":
-		return parseSearchLink(activity, uri);
-	}
+    switch (first) {
+    case "explore":
+      return new ParseResult(new Intent(activity, TrendingActivity.class));
+    case "blog":
+      return parseBlogLink(activity, parts);
+    case "orgs":
+      return parseOrganizationLink(activity, parts);
+    case "search":
+      return parseSearchLink(activity, uri);
+    }
 
-	//noinspection UnnecessaryLocalVariable
-	String user = first;
-	String repo = parts.size() >= 2 ? parts.get(1) : null;
-	String action = parts.size() >= 3 ? parts.get(2) : null;
-	String id = parts.size() >= 4 ? parts.get(3) : null;
+    // noinspection UnnecessaryLocalVariable
+    String user = first;
+    String repo = parts.size() >= 2 ? parts.get(1) : null;
+    String action = parts.size() >= 3 ? parts.get(2) : null;
+    String id = parts.size() >= 4 ? parts.get(3) : null;
 
-	if (repo == null && action == null) {
-		return parseUserLink(activity, uri, user);
-	}
+    if (repo == null && action == null) {
+      return parseUserLink(activity, uri, user);
+    }
 
-	if (action == null) {
-		return new ParseResult(RepositoryActivity.makeIntent(activity, user, repo));
-	}
+    if (action == null) {
+      return new ParseResult(
+          RepositoryActivity.makeIntent(activity, user, repo));
+    }
 
-	switch (action) {
-	case "releases":
-		return parseReleaseLink(activity, parts, user, repo, id);
-	case "tree":
-	case "commits":
-		return parseCommitsLink(activity, parts, user, repo, action);
-	case "issues":
-		return parseIssuesLink(activity, uri, user, repo, id, initialCommentFallback);
-	case "pulls":
-		return new ParseResult(IssueListActivity.makeIntent(activity, user, repo, true));
-	case "wiki":
-		return new ParseResult(WikiListActivity.makeIntent(activity, user, repo, null));
-	case "pull":
-		return parsePullRequestLink(activity, uri, parts, user,
-		                            repo, id, initialCommentFallback);
-	case "commit":
-		return parseCommitLink(activity, uri, user, repo, id, initialCommentFallback);
-	case "blob":
-		return parseBlobLink(activity, uri, parts, user, repo, id);
-	case "compare":
-		return parseCompareLink(activity, user, repo, id);
-	}
-	return null;
-}
+    switch (action) {
+    case "releases":
+      return parseReleaseLink(activity, parts, user, repo, id);
+    case "tree":
+    case "commits":
+      return parseCommitsLink(activity, parts, user, repo, action);
+    case "issues":
+      return parseIssuesLink(activity, uri, user, repo, id,
+                             initialCommentFallback);
+    case "pulls":
+      return new ParseResult(
+          IssueListActivity.makeIntent(activity, user, repo, true));
+    case "wiki":
+      return new ParseResult(
+          WikiListActivity.makeIntent(activity, user, repo, null));
+    case "pull":
+      return parsePullRequestLink(activity, uri, parts, user, repo, id,
+                                  initialCommentFallback);
+    case "commit":
+      return parseCommitLink(activity, uri, user, repo, id,
+                             initialCommentFallback);
+    case "blob":
+      return parseBlobLink(activity, uri, parts, user, repo, id);
+    case "compare":
+      return parseCompareLink(activity, user, repo, id);
+    }
+    return null;
+  }
 
-@Nullable
-private static ParseResult parseGistLink(final FragmentActivity activity, final List<String> parts) {
-	if (!parts.isEmpty()) {
-		String gistId = parts.get(parts.size() - 1);
-		return new ParseResult(GistActivity.makeIntent(activity, gistId));
-	}
-	return null;
-}
+  @Nullable
+  private static ParseResult parseGistLink(final FragmentActivity activity,
+                                           final List<String> parts) {
+    if (!parts.isEmpty()) {
+      String gistId = parts.get(parts.size() - 1);
+      return new ParseResult(GistActivity.makeIntent(activity, gistId));
+    }
+    return null;
+  }
 
-@Nullable
-private static ParseResult parseBlogLink(final FragmentActivity activity, final List<String> parts) {
-	if (parts.size() == 1) {
-		return new ParseResult(new Intent(activity, BlogListActivity.class));
-	}
-	return null;
-}
+  @Nullable
+  private static ParseResult parseBlogLink(final FragmentActivity activity,
+                                           final List<String> parts) {
+    if (parts.size() == 1) {
+      return new ParseResult(new Intent(activity, BlogListActivity.class));
+    }
+    return null;
+  }
 
-@Nullable
-private static ParseResult parseNewBlogLink(final FragmentActivity activity, final List<String> parts) {
-	if (parts.size() == 0) {
-		return new ParseResult(new Intent(activity, BlogListActivity.class));
-	}
-	return null;
-}
+  @Nullable
+  private static ParseResult parseNewBlogLink(final FragmentActivity activity,
+                                              final List<String> parts) {
+    if (parts.size() == 0) {
+      return new ParseResult(new Intent(activity, BlogListActivity.class));
+    }
+    return null;
+  }
 
-@Nullable
-private static ParseResult parseOrganizationLink(final FragmentActivity activity,
-                                                 final List<String> parts) {
-	String org = parts.size() >= 2 ? parts.get(1) : null;
-	String action = parts.size() >= 3 ? parts.get(2) : null;
+  @Nullable
+  private static ParseResult
+  parseOrganizationLink(final FragmentActivity activity,
+                        final List<String> parts) {
+    String org = parts.size() >= 2 ? parts.get(1) : null;
+    String action = parts.size() >= 3 ? parts.get(2) : null;
 
-	if (org == null) {
-		return null;
-	}
-	if ("people".equals(action)) {
-		return new ParseResult(OrganizationMemberListActivity.makeIntent(activity, org));
-	}
-	return new ParseResult(UserActivity.makeIntent(activity, org));
-}
+    if (org == null) {
+      return null;
+    }
+    if ("people".equals(action)) {
+      return new ParseResult(
+          OrganizationMemberListActivity.makeIntent(activity, org));
+    }
+    return new ParseResult(UserActivity.makeIntent(activity, org));
+  }
 
-private static ParseResult parseUserLink(final FragmentActivity activity, final @NonNull Uri uri,
-                                         final String user) {
-	String tab = uri.getQueryParameter("tab");
-	if (tab != null) {
-		switch (tab) {
-		case "repositories":
-			return new ParseResult(new UserReposLoadTask(activity, user, false));
-		case "stars":
-			return new ParseResult(new UserReposLoadTask(activity, user, true));
-		case "followers":
-			return new ParseResult(new UserFollowersLoadTask(activity, user, true));
-		case "following":
-			return new ParseResult(new UserFollowersLoadTask(activity, user, false));
-		default:
-			return new ParseResult(UserActivity.makeIntent(activity, user));
-		}
-	}
-	return new ParseResult(UserActivity.makeIntent(activity, user));
-}
+  private static ParseResult parseUserLink(final FragmentActivity activity,
+                                           final @NonNull Uri uri,
+                                           final String user) {
+    String tab = uri.getQueryParameter("tab");
+    if (tab != null) {
+      switch (tab) {
+      case "repositories":
+        return new ParseResult(new UserReposLoadTask(activity, user, false));
+      case "stars":
+        return new ParseResult(new UserReposLoadTask(activity, user, true));
+      case "followers":
+        return new ParseResult(new UserFollowersLoadTask(activity, user, true));
+      case "following":
+        return new ParseResult(
+            new UserFollowersLoadTask(activity, user, false));
+      default:
+        return new ParseResult(UserActivity.makeIntent(activity, user));
+      }
+    }
+    return new ParseResult(UserActivity.makeIntent(activity, user));
+  }
 
-private static ParseResult parseSearchLink(final FragmentActivity activity, final @NonNull Uri uri) {
-	String type = uri.getQueryParameter("type");
-	int typeInt = SearchActivity.SEARCH_TYPE_REPO;
-	if (type != null) {
-		switch (type) {
-		case "Repositories":
-			typeInt = SearchActivity.SEARCH_TYPE_REPO;
-			break;
-		case "Users":
-			typeInt = SearchActivity.SEARCH_TYPE_USER;
-			break;
-		case "Code":
-			typeInt = SearchActivity.SEARCH_TYPE_CODE;
-			break;
-		default:
-			return null;
-		}
-	}
-	String query = uri.getQueryParameter("q");
-	return new ParseResult(SearchActivity.makeIntent(activity, query, typeInt, true));
-}
+  private static ParseResult parseSearchLink(final FragmentActivity activity,
+                                             final @NonNull Uri uri) {
+    String type = uri.getQueryParameter("type");
+    int typeInt = SearchActivity.SEARCH_TYPE_REPO;
+    if (type != null) {
+      switch (type) {
+      case "Repositories":
+        typeInt = SearchActivity.SEARCH_TYPE_REPO;
+        break;
+      case "Users":
+        typeInt = SearchActivity.SEARCH_TYPE_USER;
+        break;
+      case "Code":
+        typeInt = SearchActivity.SEARCH_TYPE_CODE;
+        break;
+      default:
+        return null;
+      }
+    }
+    String query = uri.getQueryParameter("q");
+    return new ParseResult(
+        SearchActivity.makeIntent(activity, query, typeInt, true));
+  }
 
-@NonNull
-private static ParseResult parseReleaseLink(final FragmentActivity activity, final List<String> parts,
-                                            final String user, final String repo, final String id) {
-	if ("tag".equals(id)) {
-		final String release = parts.size() >= 5 ? parts.get(4) : null;
-		if (release != null) {
-			return new ParseResult(new ReleaseLoadTask(activity, user, repo, release));
-		}
-	} else if (!TextUtils.isEmpty(id)) {
-		try {
-			long numericId = Long.parseLong(id);
-			return new ParseResult(new ReleaseLoadTask(activity, user, repo, numericId));
-		} catch (NumberFormatException e) {
-			// fall through to release list
-		}
-	}
-	return new ParseResult(ReleaseListActivity.makeIntent(activity, user, repo));
-}
+  @NonNull
+  private static ParseResult
+  parseReleaseLink(final FragmentActivity activity, final List<String> parts,
+                   final String user, final String repo, final String id) {
+    if ("tag".equals(id)) {
+      final String release = parts.size() >= 5 ? parts.get(4) : null;
+      if (release != null) {
+        return new ParseResult(
+            new ReleaseLoadTask(activity, user, repo, release));
+      }
+    } else if (!TextUtils.isEmpty(id)) {
+      try {
+        long numericId = Long.parseLong(id);
+        return new ParseResult(
+            new ReleaseLoadTask(activity, user, repo, numericId));
+      } catch (NumberFormatException e) {
+        // fall through to release list
+      }
+    }
+    return new ParseResult(
+        ReleaseListActivity.makeIntent(activity, user, repo));
+  }
 
-@NonNull
-private static ParseResult parseCommitsLink(final FragmentActivity activity, final List<String> parts,
-                                            final String user, final String repo, final String action) {
-	int page = "tree".equals(action)
-	           ? RepositoryActivity.PAGE_FILES
-	           : RepositoryActivity.PAGE_COMMITS;
+  @NonNull
+  private static ParseResult
+  parseCommitsLink(final FragmentActivity activity, final List<String> parts,
+                   final String user, final String repo, final String action) {
+    int page = "tree".equals(action) ? RepositoryActivity.PAGE_FILES
+                                     : RepositoryActivity.PAGE_COMMITS;
 
-	int refStart = 3;
-	if (parts.size() >= 6
-	    && TextUtils.equals(parts.get(3), "refs")
-	    && TextUtils.equals(parts.get(4), "heads")) {
-		refStart = 5;
-	}
-	String refAndPath = TextUtils.join("/", parts.subList(refStart, parts.size()));
-	return new ParseResult(new RefPathDisambiguationTask(activity, user, repo, refAndPath,
-	                                                     page));
-}
+    int refStart = 3;
+    if (parts.size() >= 6 && TextUtils.equals(parts.get(3), "refs") &&
+        TextUtils.equals(parts.get(4), "heads")) {
+      refStart = 5;
+    }
+    String refAndPath =
+        TextUtils.join("/", parts.subList(refStart, parts.size()));
+    return new ParseResult(
+        new RefPathDisambiguationTask(activity, user, repo, refAndPath, page));
+  }
 
-@Nullable
-private static ParseResult parseIssuesLink(final FragmentActivity activity, final @NonNull Uri uri,
-                                           final String user, final String repo, final String id,
-                                           final IntentUtils.InitialCommentMarker initialCommentFallback) {
-	if (StringUtils.isBlank(id)) {
-		return new ParseResult(IssueListActivity.makeIntent(activity, user, repo));
-	}
-	if ("new".equals(id)) {
-		return new ParseResult(IssueEditActivity.makeCreateIntent(activity, user, repo));
-	}
-	try {
-		int issueNumber = Integer.parseInt(id);
-		IntentUtils.InitialCommentMarker initialComment = generateInitialCommentMarker(
-			uri.getFragment(), "issuecomment-", initialCommentFallback);
-		return new ParseResult(IssueActivity.makeIntent(activity, user, repo, issueNumber,
-		                                                initialComment));
-	} catch (NumberFormatException e) {
-		return null;
-	}
-}
+  @Nullable
+  private static ParseResult parseIssuesLink(
+      final FragmentActivity activity, final @NonNull Uri uri,
+      final String user, final String repo, final String id,
+      final IntentUtils.InitialCommentMarker initialCommentFallback) {
+    if (StringUtils.isBlank(id)) {
+      return new ParseResult(
+          IssueListActivity.makeIntent(activity, user, repo));
+    }
+    if ("new".equals(id)) {
+      return new ParseResult(
+          IssueEditActivity.makeCreateIntent(activity, user, repo));
+    }
+    try {
+      int issueNumber = Integer.parseInt(id);
+      IntentUtils.InitialCommentMarker initialComment =
+          generateInitialCommentMarker(uri.getFragment(), "issuecomment-",
+                                       initialCommentFallback);
+      return new ParseResult(IssueActivity.makeIntent(
+          activity, user, repo, issueNumber, initialComment));
+    } catch (NumberFormatException e) {
+      return null;
+    }
+  }
 
-@Nullable
-private static ParseResult parsePullRequestLink(final FragmentActivity activity, final @NonNull Uri uri,
-                                                final List<String> parts, final String user, final String repo, final String id,
-                                                final IntentUtils.InitialCommentMarker initialCommentFallback) {
-	if (StringUtils.isBlank(id)) {
-		return null;
-	}
+  @Nullable
+  private static ParseResult parsePullRequestLink(
+      final FragmentActivity activity, final @NonNull Uri uri,
+      final List<String> parts, final String user, final String repo,
+      final String id,
+      final IntentUtils.InitialCommentMarker initialCommentFallback) {
+    if (StringUtils.isBlank(id)) {
+      return null;
+    }
 
-	int pullRequestNumber;
-	try {
-		pullRequestNumber = Integer.parseInt(id);
-	} catch (NumberFormatException e) {
-		return null;
-	}
-	if (pullRequestNumber <= 0) {
-		return null;
-	}
+    int pullRequestNumber;
+    try {
+      pullRequestNumber = Integer.parseInt(id);
+    } catch (NumberFormatException e) {
+      return null;
+    }
+    if (pullRequestNumber <= 0) {
+      return null;
+    }
 
-	DiffHighlightId diffId =
-		extractDiffId(uri.getFragment(), "diff-", true);
+    DiffHighlightId diffId = extractDiffId(uri.getFragment(), "diff-", true);
 
-	if (diffId != null) {
-		return new ParseResult(new PullRequestDiffLoadTask(activity, user, repo, diffId,
-		                                                   pullRequestNumber));
-	}
+    if (diffId != null) {
+      return new ParseResult(new PullRequestDiffLoadTask(
+          activity, user, repo, diffId, pullRequestNumber));
+    }
 
-	String target = parts.size() >= 5 ? parts.get(4) : null;
-	int page = parsePullRequestPage(target);
+    String target = parts.size() >= 5 ? parts.get(4) : null;
+    int page = parsePullRequestPage(target);
 
-	IntentUtils.InitialCommentMarker initialDiffComment =
-		generateInitialCommentMarkerWithoutFallback(uri.getFragment(), "r");
-	if (initialDiffComment != null) {
-		return new ParseResult(new PullRequestDiffCommentLoadTask(activity, user, repo,
-		                                                          pullRequestNumber, initialDiffComment, page));
-	}
+    IntentUtils.InitialCommentMarker initialDiffComment =
+        generateInitialCommentMarkerWithoutFallback(uri.getFragment(), "r");
+    if (initialDiffComment != null) {
+      return new ParseResult(new PullRequestDiffCommentLoadTask(
+          activity, user, repo, pullRequestNumber, initialDiffComment, page));
+    }
 
-	IntentUtils.InitialCommentMarker reviewMarker =
-		generateInitialCommentMarkerWithoutFallback(uri.getFragment(),
-		                                            "pullrequestreview-");
-	if (reviewMarker != null) {
-		return new ParseResult(new PullRequestReviewLoadTask(activity, user, repo,
-		                                                     pullRequestNumber, reviewMarker));
-	}
+    IntentUtils.InitialCommentMarker reviewMarker =
+        generateInitialCommentMarkerWithoutFallback(uri.getFragment(),
+                                                    "pullrequestreview-");
+    if (reviewMarker != null) {
+      return new ParseResult(new PullRequestReviewLoadTask(
+          activity, user, repo, pullRequestNumber, reviewMarker));
+    }
 
-	IntentUtils.InitialCommentMarker reviewCommentMarker =
-		generateInitialCommentMarkerWithoutFallback(uri.getFragment(),
-		                                            "discussion_r");
-	if (reviewCommentMarker != null) {
-		return new ParseResult(new PullRequestReviewCommentLoadTask(activity, user, repo,
-		                                                            pullRequestNumber, reviewCommentMarker));
-	}
+    IntentUtils.InitialCommentMarker reviewCommentMarker =
+        generateInitialCommentMarkerWithoutFallback(uri.getFragment(),
+                                                    "discussion_r");
+    if (reviewCommentMarker != null) {
+      return new ParseResult(new PullRequestReviewCommentLoadTask(
+          activity, user, repo, pullRequestNumber, reviewCommentMarker));
+    }
 
-	DiffHighlightId reviewDiffHunkId =
-		extractDiffId(uri.getFragment(), "discussion-diff-", false);
-	if (reviewDiffHunkId != null) {
-		return new ParseResult(new PullRequestReviewDiffLoadTask(activity, user, repo,
-		                                                         reviewDiffHunkId, pullRequestNumber));
-	}
+    DiffHighlightId reviewDiffHunkId =
+        extractDiffId(uri.getFragment(), "discussion-diff-", false);
+    if (reviewDiffHunkId != null) {
+      return new ParseResult(new PullRequestReviewDiffLoadTask(
+          activity, user, repo, reviewDiffHunkId, pullRequestNumber));
+    }
 
-	IntentUtils.InitialCommentMarker initialComment = generateInitialCommentMarker(
-		uri.getFragment(), "issuecomment-", initialCommentFallback);
-	return new ParseResult(PullRequestActivity.makeIntent(activity, user, repo,
-	                                                      pullRequestNumber, page, initialComment));
-}
+    IntentUtils.InitialCommentMarker initialComment =
+        generateInitialCommentMarker(uri.getFragment(), "issuecomment-",
+                                     initialCommentFallback);
+    return new ParseResult(PullRequestActivity.makeIntent(
+        activity, user, repo, pullRequestNumber, page, initialComment));
+  }
 
-private static int parsePullRequestPage(final String target) {
-	if (target == null) {
-		return -1;
-	}
-	switch (target) {
-	case "commits":
-		return PullRequestActivity.PAGE_COMMITS;
-	case "files":
-		return PullRequestActivity.PAGE_FILES;
-	}
-	return -1;
-}
+  private static int parsePullRequestPage(final String target) {
+    if (target == null) {
+      return -1;
+    }
+    switch (target) {
+    case "commits":
+      return PullRequestActivity.PAGE_COMMITS;
+    case "files":
+      return PullRequestActivity.PAGE_FILES;
+    }
+    return -1;
+  }
 
-@Nullable
-private static ParseResult parseCommitLink(final FragmentActivity activity, final @NonNull Uri uri,
-                                           final String user, final String repo, final String id,
-                                           final IntentUtils.InitialCommentMarker initialCommentFallback) {
-	if (StringUtils.isBlank(id)) {
-		return null;
-	}
-	DiffHighlightId diffId =
-		extractDiffId(uri.getFragment(), "diff-", true);
-	if (diffId != null) {
-		return new ParseResult(new CommitDiffLoadTask(activity, user, repo, diffId, id));
-	}
+  @Nullable
+  private static ParseResult parseCommitLink(
+      final FragmentActivity activity, final @NonNull Uri uri,
+      final String user, final String repo, final String id,
+      final IntentUtils.InitialCommentMarker initialCommentFallback) {
+    if (StringUtils.isBlank(id)) {
+      return null;
+    }
+    DiffHighlightId diffId = extractDiffId(uri.getFragment(), "diff-", true);
+    if (diffId != null) {
+      return new ParseResult(
+          new CommitDiffLoadTask(activity, user, repo, diffId, id));
+    }
 
-	IntentUtils.InitialCommentMarker initialComment = generateInitialCommentMarker(
-		uri.getFragment(), "commitcomment-", initialCommentFallback);
-	if (initialComment != null) {
-		return new ParseResult(new CommitCommentLoadTask(activity, user, repo, id, initialComment));
-	}
-	return new ParseResult(CommitActivity.makeIntent(activity, user, repo, id, null));
-}
+    IntentUtils.InitialCommentMarker initialComment =
+        generateInitialCommentMarker(uri.getFragment(), "commitcomment-",
+                                     initialCommentFallback);
+    if (initialComment != null) {
+      return new ParseResult(
+          new CommitCommentLoadTask(activity, user, repo, id, initialComment));
+    }
+    return new ParseResult(
+        CommitActivity.makeIntent(activity, user, repo, id, null));
+  }
 
-@Nullable
-private static ParseResult parseBlobLink(final FragmentActivity activity, final @NonNull Uri uri,
-                                         final List<String> parts, final String user, final String repo, final String id) {
-	if (StringUtils.isBlank(id) || parts.size() < 4) {
-		return null;
-	}
-	String refAndPath = TextUtils.join("/", parts.subList(3, parts.size()));
-	return new ParseResult(new RefPathDisambiguationTask(activity, user, repo, refAndPath,
-	                                                     uri.getFragment()));
-}
+  @Nullable
+  private static ParseResult
+  parseBlobLink(final FragmentActivity activity, final @NonNull Uri uri,
+                final List<String> parts, final String user, final String repo,
+                final String id) {
+    if (StringUtils.isBlank(id) || parts.size() < 4) {
+      return null;
+    }
+    String refAndPath = TextUtils.join("/", parts.subList(3, parts.size()));
+    return new ParseResult(new RefPathDisambiguationTask(
+        activity, user, repo, refAndPath, uri.getFragment()));
+  }
 
-@Nullable
-private static ParseResult parseCompareLink(final FragmentActivity activity,
-                                            final String user, final String repo, final String id) {
-	if (id == null) {
-		return null;
-	}
-	String[] parts = id.split("\\.\\.\\.");
-	if (parts.length != 2) {
-		return null;
-	}
-	if (StringUtils.isBlank(parts[0]) || StringUtils.isBlank(parts[1])) {
-		return null;
-	}
-	return new ParseResult(CompareActivity.makeIntent(activity, user, repo, parts[0], parts[1]));
-}
+  @Nullable
+  private static ParseResult
+  parseCompareLink(final FragmentActivity activity, final String user,
+                   final String repo, final String id) {
+    if (id == null) {
+      return null;
+    }
+    String[] parts = id.split("\\.\\.\\.");
+    if (parts.length != 2) {
+      return null;
+    }
+    if (StringUtils.isBlank(parts[0]) || StringUtils.isBlank(parts[1])) {
+      return null;
+    }
+    return new ParseResult(
+        CompareActivity.makeIntent(activity, user, repo, parts[0], parts[1]));
+  }
 
-private static IntentUtils.InitialCommentMarker generateInitialCommentMarkerWithoutFallback(
-	final String fragment, final String prefix) {
-	if (fragment == null || !fragment.startsWith(prefix)) {
-		return null;
-	}
-	try {
-		long commentId = Long.parseLong(fragment.substring(prefix.length()));
-		return new IntentUtils.InitialCommentMarker(commentId);
-	} catch (NumberFormatException e) {
-		return null;
-	}
-}
+  private static IntentUtils.InitialCommentMarker
+  generateInitialCommentMarkerWithoutFallback(final String fragment,
+                                              final String prefix) {
+    if (fragment == null || !fragment.startsWith(prefix)) {
+      return null;
+    }
+    try {
+      long commentId = Long.parseLong(fragment.substring(prefix.length()));
+      return new IntentUtils.InitialCommentMarker(commentId);
+    } catch (NumberFormatException e) {
+      return null;
+    }
+  }
 
-private static IntentUtils.InitialCommentMarker generateInitialCommentMarker(
-	final String fragment, final String prefix, final IntentUtils.InitialCommentMarker fallback) {
-	IntentUtils.InitialCommentMarker initialCommentMarker =
-		generateInitialCommentMarkerWithoutFallback(fragment, prefix);
-	return initialCommentMarker != null ? initialCommentMarker : fallback;
-}
+  private static IntentUtils.InitialCommentMarker generateInitialCommentMarker(
+      final String fragment, final String prefix,
+      final IntentUtils.InitialCommentMarker fallback) {
+    IntentUtils.InitialCommentMarker initialCommentMarker =
+        generateInitialCommentMarkerWithoutFallback(fragment, prefix);
+    return initialCommentMarker != null ? initialCommentMarker : fallback;
+  }
 
-private static DiffHighlightId extractDiffId(final String fragment, final String prefix,
-                                             final boolean isMd5Hash) {
-	if (fragment == null || !fragment.startsWith(prefix)) {
-		return null;
-	}
+  private static DiffHighlightId extractDiffId(final String fragment,
+                                               final String prefix,
+                                               final boolean isMd5Hash) {
+    if (fragment == null || !fragment.startsWith(prefix)) {
+      return null;
+    }
 
-	boolean right = false;
-	int typePos = fragment.indexOf('L', prefix.length());
-	if (typePos < 0) {
-		right = true;
-		typePos = fragment.indexOf('R', prefix.length());
-	}
+    boolean right = false;
+    int typePos = fragment.indexOf('L', prefix.length());
+    if (typePos < 0) {
+      right = true;
+      typePos = fragment.indexOf('R', prefix.length());
+    }
 
-	String fileHash = typePos > 0
-	                  ? fragment.substring(prefix.length(), typePos)
-	                  : fragment.substring(prefix.length());
-	if (isMd5Hash && fileHash.length() != 32) { // MD5 hash length
-		return null;
-	}
-	if (typePos < 0) {
-		return new DiffHighlightId(fileHash, -1, -1, false);
-	}
+    String fileHash = typePos > 0 ? fragment.substring(prefix.length(), typePos)
+                                  : fragment.substring(prefix.length());
+    if (isMd5Hash && fileHash.length() != 32) { // MD5 hash length
+      return null;
+    }
+    if (typePos < 0) {
+      return new DiffHighlightId(fileHash, -1, -1, false);
+    }
 
-	try {
-		char type = fragment.charAt(typePos);
-		String linePart = fragment.substring(typePos + 1);
-		int startLine, endLine, dashPos = linePart.indexOf("-" + type);
-		if (dashPos > 0) {
-			startLine = Integer.valueOf(linePart.substring(0, dashPos));
-			endLine = Integer.valueOf(linePart.substring(dashPos + 2));
-		} else {
-			startLine = Integer.valueOf(linePart);
-			endLine = startLine;
-		}
-		return new DiffHighlightId(fileHash, startLine, endLine, right);
-	} catch (NumberFormatException e) {
-		return null;
-	}
-}
+    try {
+      char type = fragment.charAt(typePos);
+      String linePart = fragment.substring(typePos + 1);
+      int startLine, endLine, dashPos = linePart.indexOf("-" + type);
+      if (dashPos > 0) {
+        startLine = Integer.valueOf(linePart.substring(0, dashPos));
+        endLine = Integer.valueOf(linePart.substring(dashPos + 2));
+      } else {
+        startLine = Integer.valueOf(linePart);
+        endLine = startLine;
+      }
+      return new DiffHighlightId(fileHash, startLine, endLine, right);
+    } catch (NumberFormatException e) {
+      return null;
+    }
+  }
 
-public static class ParseResult {
-@Nullable
-public final Intent intent;
+  public static class ParseResult {
+    @Nullable public final Intent intent;
 
-@Nullable
-public final UrlLoadTask loadTask;
+    @Nullable public final UrlLoadTask loadTask;
 
-public ParseResult(final @NonNull UrlLoadTask loadTask) {
-	this.intent = null;
-	this.loadTask = loadTask;
-}
+    public ParseResult(final @NonNull UrlLoadTask loadTask) {
+      this.intent = null;
+      this.loadTask = loadTask;
+    }
 
-public ParseResult(final @NonNull Intent intent) {
-	this.intent = intent;
-	this.loadTask = null;
-}
-}
+    public ParseResult(final @NonNull Intent intent) {
+      this.intent = intent;
+      this.loadTask = null;
+    }
+  }
 }

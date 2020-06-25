@@ -18,7 +18,6 @@ package com.gh4a.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-
 import com.gh4a.R;
 import com.gh4a.ServiceFactory;
 import com.gh4a.activities.UserActivity;
@@ -27,55 +26,59 @@ import com.gh4a.adapter.UserAdapter;
 import com.meisolsson.githubsdk.model.Page;
 import com.meisolsson.githubsdk.model.User;
 import com.meisolsson.githubsdk.service.users.UserFollowerService;
-
 import io.reactivex.Single;
 import retrofit2.Response;
 
-public class FollowersFollowingListFragment extends PagedDataBaseFragment<User> {
-public static FollowersFollowingListFragment newInstance(final String login, final boolean showFollowers) {
-	FollowersFollowingListFragment f = new FollowersFollowingListFragment();
+public class FollowersFollowingListFragment
+    extends PagedDataBaseFragment<User> {
+  public static FollowersFollowingListFragment
+  newInstance(final String login, final boolean showFollowers) {
+    FollowersFollowingListFragment f = new FollowersFollowingListFragment();
 
-	Bundle args = new Bundle();
-	args.putString("user", login);
-	args.putBoolean("show_followers", showFollowers);
-	f.setArguments(args);
+    Bundle args = new Bundle();
+    args.putString("user", login);
+    args.putBoolean("show_followers", showFollowers);
+    f.setArguments(args);
 
-	return f;
-}
+    return f;
+  }
 
-private String mLogin;
-private boolean mShowFollowers;
+  private String mLogin;
+  private boolean mShowFollowers;
 
-@Override
-public void onCreate(final Bundle savedInstanceState) {
-	super.onCreate(savedInstanceState);
-	mLogin = getArguments().getString("user");
-	mShowFollowers = getArguments().getBoolean("show_followers");
-}
+  @Override
+  public void onCreate(final Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    mLogin = getArguments().getString("user");
+    mShowFollowers = getArguments().getBoolean("show_followers");
+  }
 
-@Override
-protected RootAdapter<User, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
-	return new UserAdapter(getActivity());
-}
+  @Override
+  protected RootAdapter<User, ? extends RecyclerView.ViewHolder>
+  onCreateAdapter() {
+    return new UserAdapter(getActivity());
+  }
 
-@Override
-protected int getEmptyTextResId() {
-	return mShowFollowers ? R.string.no_followers_found : R.string.no_following_found;
-}
+  @Override
+  protected int getEmptyTextResId() {
+    return mShowFollowers ? R.string.no_followers_found
+                          : R.string.no_following_found;
+  }
 
-@Override
-public void onItemClick(final User user) {
-	Intent intent = UserActivity.makeIntent(getActivity(), user);
-	if (intent != null) {
-		startActivity(intent);
-	}
-}
+  @Override
+  public void onItemClick(final User user) {
+    Intent intent = UserActivity.makeIntent(getActivity(), user);
+    if (intent != null) {
+      startActivity(intent);
+    }
+  }
 
-@Override
-protected Single<Response<Page<User> > > loadPage(final int page, final boolean bypassCache) {
-	final UserFollowerService service = ServiceFactory.get(UserFollowerService.class, bypassCache);
-	return mShowFollowers
-	       ? service.getFollowers(mLogin, page)
-	       : service.getFollowing(mLogin, page);
-}
+  @Override
+  protected Single<Response<Page<User>>> loadPage(final int page,
+                                                  final boolean bypassCache) {
+    final UserFollowerService service =
+        ServiceFactory.get(UserFollowerService.class, bypassCache);
+    return mShowFollowers ? service.getFollowers(mLogin, page)
+                          : service.getFollowing(mLogin, page);
+  }
 }

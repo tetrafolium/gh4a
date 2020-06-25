@@ -19,55 +19,56 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-
 import com.gh4a.R;
 import com.gh4a.model.Feed;
 
 public class BlogActivity extends WebViewerActivity {
-public static Intent makeIntent(final Context context, final Feed blog) {
-	return new Intent(context, BlogActivity.class)
-	       .putExtra("title", blog.getTitle())
-	       .putExtra("content", blog.getContent());
-}
+  public static Intent makeIntent(final Context context, final Feed blog) {
+    return new Intent(context, BlogActivity.class)
+        .putExtra("title", blog.getTitle())
+        .putExtra("content", blog.getContent());
+  }
 
-@Override
-public void onCreate(final Bundle savedInstanceState) {
-	super.onCreate(savedInstanceState);
+  @Override
+  public void onCreate(final Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-	onDataReady();
-}
+    onDataReady();
+  }
 
-@Nullable
-@Override
-protected String getActionBarTitle() {
-	return getDocumentTitle();
-}
+  @Nullable
+  @Override
+  protected String getActionBarTitle() {
+    return getDocumentTitle();
+  }
 
-@Nullable
-@Override
-protected String getActionBarSubtitle() {
-	return getString(R.string.blog);
-}
+  @Nullable
+  @Override
+  protected String getActionBarSubtitle() {
+    return getString(R.string.blog);
+  }
 
-@Override
-protected boolean canSwipeToRefresh() {
-	// content is contained in the intent extras
-	return false;
-}
+  @Override
+  protected boolean canSwipeToRefresh() {
+    // content is contained in the intent extras
+    return false;
+  }
 
-@Override
-protected String generateHtml(final String cssTheme, final boolean addTitleHeader) {
-	String title = addTitleHeader ? getDocumentTitle() : null;
-	return wrapUnthemedHtml(getIntent().getStringExtra("content"), cssTheme, title);
-}
+  @Override
+  protected String generateHtml(final String cssTheme,
+                                final boolean addTitleHeader) {
+    String title = addTitleHeader ? getDocumentTitle() : null;
+    return wrapUnthemedHtml(getIntent().getStringExtra("content"), cssTheme,
+                            title);
+  }
 
-@Override
-protected String getDocumentTitle() {
-	return getIntent().getStringExtra("title");
-}
+  @Override
+  protected String getDocumentTitle() {
+    return getIntent().getStringExtra("title");
+  }
 
-@Override
-protected Intent navigateUp() {
-	return new Intent(this, BlogListActivity.class);
-}
+  @Override
+  protected Intent navigateUp() {
+    return new Intent(this, BlogListActivity.class);
+  }
 }

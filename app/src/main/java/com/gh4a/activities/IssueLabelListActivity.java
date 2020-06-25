@@ -28,7 +28,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
 import com.gh4a.BaseActivity;
 import com.gh4a.Gh4Application;
 import com.gh4a.R;
@@ -42,285 +41,299 @@ import com.gh4a.widget.DividerItemDecoration;
 import com.meisolsson.githubsdk.model.Label;
 import com.meisolsson.githubsdk.service.issues.IssueLabelService;
 
-public class IssueLabelListActivity extends BaseActivity implements
-	RootAdapter.OnItemClickListener<IssueLabelAdapter.EditableLabel>, View.OnClickListener {
-public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
-                                final boolean fromPullRequest) {
-	return new Intent(context, IssueLabelListActivity.class)
-	       .putExtra("owner", repoOwner)
-	       .putExtra("repo", repoName)
-	       .putExtra("from_pr", fromPullRequest);
-}
+public class IssueLabelListActivity extends BaseActivity
+    implements RootAdapter.OnItemClickListener<IssueLabelAdapter.EditableLabel>,
+               View.OnClickListener {
+  public static Intent makeIntent(final Context context, final String repoOwner,
+                                  final String repoName,
+                                  final boolean fromPullRequest) {
+    return new Intent(context, IssueLabelListActivity.class)
+        .putExtra("owner", repoOwner)
+        .putExtra("repo", repoName)
+        .putExtra("from_pr", fromPullRequest);
+  }
 
-private static final int ID_LOADER_LABELS = 0;
+  private static final int ID_LOADER_LABELS = 0;
 
-private String mRepoOwner;
-private String mRepoName;
-private boolean mParentIsPullRequest;
-private EditActionMode mActionMode;
-private IssueLabelAdapter.EditableLabel mAddedLabel;
+  private String mRepoOwner;
+  private String mRepoName;
+  private boolean mParentIsPullRequest;
+  private EditActionMode mActionMode;
+  private IssueLabelAdapter.EditableLabel mAddedLabel;
 
-private FloatingActionButton mFab;
-private IssueLabelAdapter mAdapter;
+  private FloatingActionButton mFab;
+  private IssueLabelAdapter mAdapter;
 
-private static final String STATE_KEY_ADDED_LABEL = "added_label";
-private static final String STATE_KEY_EDITING_LABEL = "editing_label";
+  private static final String STATE_KEY_ADDED_LABEL = "added_label";
+  private static final String STATE_KEY_EDITING_LABEL = "editing_label";
 
-@Override
-public void onCreate(final Bundle savedInstanceState) {
-	super.onCreate(savedInstanceState);
+  @Override
+  public void onCreate(final Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-	setContentView(R.layout.generic_list);
-	setContentShown(false);
+    setContentView(R.layout.generic_list);
+    setContentShown(false);
 
-	mAdapter = new IssueLabelAdapter(this);
-	mAdapter.setOnItemClickListener(this);
+    mAdapter = new IssueLabelAdapter(this);
+    mAdapter.setOnItemClickListener(this);
 
-	RecyclerView recyclerView = findViewById(R.id.list);
-	recyclerView.setLayoutManager(new LinearLayoutManager(this));
-	recyclerView.addItemDecoration(new DividerItemDecoration(this));
-	recyclerView.setTag(R.id.FloatingActionButtonScrollEnabled, new Object());
-	recyclerView.setAdapter(mAdapter);
+    RecyclerView recyclerView = findViewById(R.id.list);
+    recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    recyclerView.addItemDecoration(new DividerItemDecoration(this));
+    recyclerView.setTag(R.id.FloatingActionButtonScrollEnabled, new Object());
+    recyclerView.setAdapter(mAdapter);
 
-	CoordinatorLayout rootLayout = getRootLayout();
-	mFab = (FloatingActionButton) getLayoutInflater().inflate(
-		R.layout.add_fab, rootLayout, false);
-	mFab.setOnClickListener(this);
-	rootLayout.addView(mFab);
-	updateFabVisibility();
+    CoordinatorLayout rootLayout = getRootLayout();
+    mFab = (FloatingActionButton)getLayoutInflater().inflate(R.layout.add_fab,
+                                                             rootLayout, false);
+    mFab.setOnClickListener(this);
+    rootLayout.addView(mFab);
+    updateFabVisibility();
 
-	loadLabels(false);
+    loadLabels(false);
 
-	if (savedInstanceState != null) {
-		if (savedInstanceState.containsKey(STATE_KEY_ADDED_LABEL)) {
-			mAddedLabel = savedInstanceState.getParcelable(STATE_KEY_EDITING_LABEL);
-			mAdapter.add(mAddedLabel);
-			startEditing(mAddedLabel);
-		} else if (savedInstanceState.containsKey(STATE_KEY_EDITING_LABEL)) {
-			IssueLabelAdapter.EditableLabel label =
-				savedInstanceState.getParcelable(STATE_KEY_EDITING_LABEL);
-			int count = mAdapter.getCount();
-			for (int i = 0; i < count; i++) {
-				IssueLabelAdapter.EditableLabel item = mAdapter.getItem(i);
-				if (item.name().equals(label.name())) {
-					item.editedName = label.editedName;
-					item.editedColor = label.editedColor;
-					startEditing(item);
-					break;
-				}
-			}
-		}
-	}
-}
+    if (savedInstanceState != null) {
+      if (savedInstanceState.containsKey(STATE_KEY_ADDED_LABEL)) {
+        mAddedLabel = savedInstanceState.getParcelable(STATE_KEY_EDITING_LABEL);
+        mAdapter.add(mAddedLabel);
+        startEditing(mAddedLabel);
+      } else if (savedInstanceState.containsKey(STATE_KEY_EDITING_LABEL)) {
+        IssueLabelAdapter.EditableLabel label =
+            savedInstanceState.getParcelable(STATE_KEY_EDITING_LABEL);
+        int count = mAdapter.getCount();
+        for (int i = 0; i < count; i++) {
+          IssueLabelAdapter.EditableLabel item = mAdapter.getItem(i);
+          if (item.name().equals(label.name())) {
+            item.editedName = label.editedName;
+            item.editedColor = label.editedColor;
+            startEditing(item);
+            break;
+          }
+        }
+      }
+    }
+  }
 
-@Nullable
-@Override
-protected String getActionBarTitle() {
-	return getString(R.string.issue_labels);
-}
+  @Nullable
+  @Override
+  protected String getActionBarTitle() {
+    return getString(R.string.issue_labels);
+  }
 
-@Nullable
-@Override
-protected String getActionBarSubtitle() {
-	return mRepoOwner + "/" + mRepoName;
-}
+  @Nullable
+  @Override
+  protected String getActionBarSubtitle() {
+    return mRepoOwner + "/" + mRepoName;
+  }
 
-@Override
-protected void onInitExtras(final Bundle extras) {
-	super.onInitExtras(extras);
-	mRepoOwner = extras.getString("owner");
-	mRepoName = extras.getString("repo");
-	mParentIsPullRequest = extras.getBoolean("from_pr", false);
-}
+  @Override
+  protected void onInitExtras(final Bundle extras) {
+    super.onInitExtras(extras);
+    mRepoOwner = extras.getString("owner");
+    mRepoName = extras.getString("repo");
+    mParentIsPullRequest = extras.getBoolean("from_pr", false);
+  }
 
-@Override
-protected boolean canSwipeToRefresh() {
-	// swipe-to-refresh doesn't make much sense in the
-	// interaction model of this activity
-	return false;
-}
+  @Override
+  protected boolean canSwipeToRefresh() {
+    // swipe-to-refresh doesn't make much sense in the
+    // interaction model of this activity
+    return false;
+  }
 
-@Override
-public void onRefresh() {
-	setContentShown(false);
-	mAdapter.clear();
-	loadLabels(true);
-	super.onRefresh();
-}
+  @Override
+  public void onRefresh() {
+    setContentShown(false);
+    mAdapter.clear();
+    loadLabels(true);
+    super.onRefresh();
+  }
 
-@Override
-protected void onSaveInstanceState(final Bundle outState) {
-	super.onSaveInstanceState(outState);
-	if (mActionMode != null) {
-		if (mAddedLabel != null) {
-			outState.putParcelable(STATE_KEY_ADDED_LABEL, mAddedLabel);
-		} else {
-			outState.putParcelable(STATE_KEY_EDITING_LABEL, mActionMode.mLabel);
-		}
-	}
-}
+  @Override
+  protected void onSaveInstanceState(final Bundle outState) {
+    super.onSaveInstanceState(outState);
+    if (mActionMode != null) {
+      if (mAddedLabel != null) {
+        outState.putParcelable(STATE_KEY_ADDED_LABEL, mAddedLabel);
+      } else {
+        outState.putParcelable(STATE_KEY_EDITING_LABEL, mActionMode.mLabel);
+      }
+    }
+  }
 
-@Override
-public void onItemClick(final IssueLabelAdapter.EditableLabel item) {
-	if (mActionMode == null) {
-		startEditing(item);
-	}
-}
+  @Override
+  public void onItemClick(final IssueLabelAdapter.EditableLabel item) {
+    if (mActionMode == null) {
+      startEditing(item);
+    }
+  }
 
-@Override
-protected Intent navigateUp() {
-	return IssueListActivity.makeIntent(this, mRepoOwner, mRepoName, mParentIsPullRequest);
-}
+  @Override
+  protected Intent navigateUp() {
+    return IssueListActivity.makeIntent(this, mRepoOwner, mRepoName,
+                                        mParentIsPullRequest);
+  }
 
-@Override
-public void onClick(final View view) {
-	if (mActionMode == null) {
-		mAddedLabel = new IssueLabelAdapter.EditableLabel("dddddd");
-		mAdapter.add(mAddedLabel);
-		mAdapter.notifyDataSetChanged();
-		startEditing(mAddedLabel);
-	}
-}
+  @Override
+  public void onClick(final View view) {
+    if (mActionMode == null) {
+      mAddedLabel = new IssueLabelAdapter.EditableLabel("dddddd");
+      mAdapter.add(mAddedLabel);
+      mAdapter.notifyDataSetChanged();
+      startEditing(mAddedLabel);
+    }
+  }
 
-private void startEditing(final IssueLabelAdapter.EditableLabel label) {
-	mActionMode = new EditActionMode(label);
-	mAdapter.notifyDataSetChanged();
-	startSupportActionMode(mActionMode);
-	updateFabVisibility();
-}
+  private void startEditing(final IssueLabelAdapter.EditableLabel label) {
+    mActionMode = new EditActionMode(label);
+    mAdapter.notifyDataSetChanged();
+    startSupportActionMode(mActionMode);
+    updateFabVisibility();
+  }
 
-private void updateFabVisibility() {
-	boolean visible = Gh4Application.get().isAuthorized() && mActionMode == null;
-	mFab.setVisibility(visible ? View.VISIBLE : View.GONE);
-}
+  private void updateFabVisibility() {
+    boolean visible =
+        Gh4Application.get().isAuthorized() && mActionMode == null;
+    mFab.setVisibility(visible ? View.VISIBLE : View.GONE);
+  }
 
-private final class EditActionMode implements ActionMode.Callback {
-private final IssueLabelAdapter.EditableLabel mLabel;
+  private final class EditActionMode implements ActionMode.Callback {
+    private final IssueLabelAdapter.EditableLabel mLabel;
 
-public EditActionMode(final IssueLabelAdapter.EditableLabel label) {
-	mLabel = label;
-	mLabel.isEditing = true;
-}
+    public EditActionMode(final IssueLabelAdapter.EditableLabel label) {
+      mLabel = label;
+      mLabel.isEditing = true;
+    }
 
-@Override
-public boolean onCreateActionMode(final ActionMode mode, final Menu menu) {
-	menu.add(Menu.NONE, Menu.FIRST, Menu.NONE, R.string.save)
-	.setIcon(R.drawable.content_save)
-	.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    @Override
+    public boolean onCreateActionMode(final ActionMode mode, final Menu menu) {
+      menu.add(Menu.NONE, Menu.FIRST, Menu.NONE, R.string.save)
+          .setIcon(R.drawable.content_save)
+          .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-	if (mLabel != mAddedLabel) {
-		menu.add(Menu.NONE, Menu.FIRST + 1, Menu.NONE, R.string.delete)
-		.setIcon(R.drawable.content_discard)
-		.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
-	}
+      if (mLabel != mAddedLabel) {
+        menu.add(Menu.NONE, Menu.FIRST + 1, Menu.NONE, R.string.delete)
+            .setIcon(R.drawable.content_discard)
+            .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
+      }
 
-	return true;
-}
+      return true;
+    }
 
-@Override
-public boolean onPrepareActionMode(final ActionMode mode, final Menu menu) {
-	return false;
-}
+    @Override
+    public boolean onPrepareActionMode(final ActionMode mode, final Menu menu) {
+      return false;
+    }
 
-@Override
-public boolean onActionItemClicked(final ActionMode mode, final MenuItem item) {
-	switch (item.getItemId()) {
-	case Menu.FIRST:
-		if (mLabel == mAddedLabel) {
-			addLabel(mLabel);
-		} else {
-			editLabel(mLabel);
-		}
-		break;
-	case Menu.FIRST + 1:
-		new AlertDialog.Builder(IssueLabelListActivity.this)
-		.setMessage(getString(R.string.issue_dialog_delete_message, mLabel.name()))
-		.setPositiveButton(R.string.delete, (dialog, which)->deleteLabel(mLabel))
-		.setNegativeButton(R.string.cancel, null)
-		.show();
-		break;
-	default:
-		break;
-	}
+    @Override
+    public boolean onActionItemClicked(final ActionMode mode,
+                                       final MenuItem item) {
+      switch (item.getItemId()) {
+      case Menu.FIRST:
+        if (mLabel == mAddedLabel) {
+          addLabel(mLabel);
+        } else {
+          editLabel(mLabel);
+        }
+        break;
+      case Menu.FIRST + 1:
+        new AlertDialog.Builder(IssueLabelListActivity.this)
+            .setMessage(
+                getString(R.string.issue_dialog_delete_message, mLabel.name()))
+            .setPositiveButton(R.string.delete,
+                               (dialog, which) -> deleteLabel(mLabel))
+            .setNegativeButton(R.string.cancel, null)
+            .show();
+        break;
+      default:
+        break;
+      }
 
-	mode.finish();
-	return true;
-}
+      mode.finish();
+      return true;
+    }
 
-@Override
-public void onDestroyActionMode(final ActionMode mode) {
-	mActionMode = null;
-	mLabel.isEditing = false;
-	if (mLabel == mAddedLabel) {
-		mAdapter.remove(mLabel);
-		mAddedLabel = null;
-	} else {
-		mLabel.restoreOriginalProperties();
-	}
-	mAdapter.notifyDataSetChanged();
-	updateFabVisibility();
-}
-}
+    @Override
+    public void onDestroyActionMode(final ActionMode mode) {
+      mActionMode = null;
+      mLabel.isEditing = false;
+      if (mLabel == mAddedLabel) {
+        mAdapter.remove(mLabel);
+        mAddedLabel = null;
+      } else {
+        mLabel.restoreOriginalProperties();
+      }
+      mAdapter.notifyDataSetChanged();
+      updateFabVisibility();
+    }
+  }
 
-private void deleteLabel(final IssueLabelAdapter.EditableLabel label) {
-	String errorMessage = getString(R.string.issue_error_delete_label, label.base().name());
-	IssueLabelService service = ServiceFactory.get(IssueLabelService.class, false);
-	service.deleteLabel(mRepoOwner, mRepoName, label.base().name())
-	.map(ApiHelpers::throwOnFailure)
-	.compose(RxUtils.wrapForBackgroundTask(this, R.string.deleting_msg, errorMessage))
-	.subscribe(result->{
-			loadLabels(true);
-			setResult(RESULT_OK);
-		}, error->handleActionFailure("Deleting label failed", error));
-}
+  private void deleteLabel(final IssueLabelAdapter.EditableLabel label) {
+    String errorMessage =
+        getString(R.string.issue_error_delete_label, label.base().name());
+    IssueLabelService service =
+        ServiceFactory.get(IssueLabelService.class, false);
+    service.deleteLabel(mRepoOwner, mRepoName, label.base().name())
+        .map(ApiHelpers::throwOnFailure)
+        .compose(RxUtils.wrapForBackgroundTask(this, R.string.deleting_msg,
+                                               errorMessage))
+        .subscribe(result -> {
+          loadLabels(true);
+          setResult(RESULT_OK);
+        }, error -> handleActionFailure("Deleting label failed", error));
+  }
 
-private void editLabel(final IssueLabelAdapter.EditableLabel label) {
-	Label oldLabel = label.base();
-	String errorMessage = getString(R.string.issue_error_edit_label, oldLabel.name());
-	IssueLabelService service = ServiceFactory.get(IssueLabelService.class, false);
-	Label newLabel = Label.builder()
-	                 .name(label.editedName)
-	                 .color(label.editedColor)
-	                 .build();
+  private void editLabel(final IssueLabelAdapter.EditableLabel label) {
+    Label oldLabel = label.base();
+    String errorMessage =
+        getString(R.string.issue_error_edit_label, oldLabel.name());
+    IssueLabelService service =
+        ServiceFactory.get(IssueLabelService.class, false);
+    Label newLabel =
+        Label.builder().name(label.editedName).color(label.editedColor).build();
 
-	service.editLabel(mRepoOwner, mRepoName, oldLabel.name(), newLabel)
-	.map(ApiHelpers::throwOnFailure)
-	.compose(RxUtils.wrapForBackgroundTask(this, R.string.saving_msg, errorMessage))
-	.subscribe(result->{
-			loadLabels(true);
-			setResult(RESULT_OK);
-		}, error->handleActionFailure("Editing label failed", error));
-}
+    service.editLabel(mRepoOwner, mRepoName, oldLabel.name(), newLabel)
+        .map(ApiHelpers::throwOnFailure)
+        .compose(RxUtils.wrapForBackgroundTask(this, R.string.saving_msg,
+                                               errorMessage))
+        .subscribe(result -> {
+          loadLabels(true);
+          setResult(RESULT_OK);
+        }, error -> handleActionFailure("Editing label failed", error));
+  }
 
-private void addLabel(final IssueLabelAdapter.EditableLabel label) {
-	String errorMessage = getString(R.string.issue_error_create_label, label.name());
-	IssueLabelService service = ServiceFactory.get(IssueLabelService.class, false);
-	Label newLabel = Label.builder()
-	                 .name(label.name())
-	                 .color(label.color())
-	                 .build();
+  private void addLabel(final IssueLabelAdapter.EditableLabel label) {
+    String errorMessage =
+        getString(R.string.issue_error_create_label, label.name());
+    IssueLabelService service =
+        ServiceFactory.get(IssueLabelService.class, false);
+    Label newLabel =
+        Label.builder().name(label.name()).color(label.color()).build();
 
-	service.createLabel(mRepoOwner, mRepoName, newLabel)
-	.map(ApiHelpers::throwOnFailure)
-	.compose(RxUtils.wrapForBackgroundTask(this, R.string.saving_msg, errorMessage))
-	.subscribe(result->{
-			mAddedLabel = null;
-			loadLabels(true);
-			setResult(RESULT_OK);
-		}, error->handleActionFailure("Adding label failed", error));
-}
+    service.createLabel(mRepoOwner, mRepoName, newLabel)
+        .map(ApiHelpers::throwOnFailure)
+        .compose(RxUtils.wrapForBackgroundTask(this, R.string.saving_msg,
+                                               errorMessage))
+        .subscribe(result -> {
+          mAddedLabel = null;
+          loadLabels(true);
+          setResult(RESULT_OK);
+        }, error -> handleActionFailure("Adding label failed", error));
+  }
 
-private void loadLabels(final boolean force) {
-	final IssueLabelService service = ServiceFactory.get(IssueLabelService.class, false);
-	ApiHelpers.PageIterator
-	.toSingle(page->service.getRepositoryLabels(mRepoOwner, mRepoName, page))
-	.compose(RxUtils.mapList(IssueLabelAdapter.EditableLabel::new))
-	.compose(makeLoaderSingle(ID_LOADER_LABELS, force))
-	.subscribe(result->{
-			UiUtils.hideImeForView(getCurrentFocus());
-			mAdapter.clear();
-			mAdapter.addAll(result);
-			setContentShown(true);
-		}, this::handleLoadFailure);
-}
+  private void loadLabels(final boolean force) {
+    final IssueLabelService service =
+        ServiceFactory.get(IssueLabelService.class, false);
+    ApiHelpers.PageIterator
+        .toSingle(
+            page -> service.getRepositoryLabels(mRepoOwner, mRepoName, page))
+        .compose(RxUtils.mapList(IssueLabelAdapter.EditableLabel::new))
+        .compose(makeLoaderSingle(ID_LOADER_LABELS, force))
+        .subscribe(result -> {
+          UiUtils.hideImeForView(getCurrentFocus());
+          mAdapter.clear();
+          mAdapter.addAll(result);
+          setContentShown(true);
+        }, this::handleLoadFailure);
+  }
 }

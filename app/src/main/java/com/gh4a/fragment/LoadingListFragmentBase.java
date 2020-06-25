@@ -10,7 +10,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.gh4a.BaseActivity;
 import com.gh4a.R;
 import com.gh4a.adapter.RootAdapter;
@@ -19,121 +18,121 @@ import com.gh4a.widget.DividerItemDecoration;
 import com.gh4a.widget.SwipeRefreshLayout;
 import com.pluscubed.recyclerfastscroll.RecyclerFastScroller;
 
-public abstract class LoadingListFragmentBase extends LoadingFragmentBase implements
-	BaseActivity.RefreshableChild, SwipeRefreshLayout.ChildScrollDelegate {
-private RecyclerView mRecyclerView;
-private LinearLayoutManager mLayoutManager;
-private NestedScrollView mEmptyViewContainer;
-private RecyclerFastScroller mFastScroller;
+public abstract class LoadingListFragmentBase extends LoadingFragmentBase
+    implements BaseActivity.RefreshableChild,
+               SwipeRefreshLayout.ChildScrollDelegate {
+  private RecyclerView mRecyclerView;
+  private LinearLayoutManager mLayoutManager;
+  private NestedScrollView mEmptyViewContainer;
+  private RecyclerFastScroller mFastScroller;
 
-public interface OnRecyclerViewCreatedListener {
-void onRecyclerViewCreated(Fragment fragment, RecyclerView recyclerView);
-}
+  public interface OnRecyclerViewCreatedListener {
+    void onRecyclerViewCreated(Fragment fragment, RecyclerView recyclerView);
+  }
 
-public LoadingListFragmentBase() {
+  public LoadingListFragmentBase() {}
 
-}
+  @Override
+  protected View onCreateContentView(final LayoutInflater inflater,
+                                     final ViewGroup parent) {
+    View view = inflater.inflate(R.layout.list_fragment_content, parent, false);
 
-@Override
-protected View onCreateContentView(final LayoutInflater inflater, final ViewGroup parent) {
-	View view = inflater.inflate(R.layout.list_fragment_content, parent, false);
+    mEmptyViewContainer = view.findViewById(R.id.empty_view_container);
+    TextView emptyView = view.findViewById(android.R.id.empty);
+    int emptyTextResId = getEmptyTextResId();
+    if (emptyTextResId != 0) {
+      emptyView.setText(emptyTextResId);
+    }
 
-	mEmptyViewContainer = view.findViewById(R.id.empty_view_container);
-	TextView emptyView = view.findViewById(android.R.id.empty);
-	int emptyTextResId = getEmptyTextResId();
-	if (emptyTextResId != 0) {
-		emptyView.setText(emptyTextResId);
-	}
+    mLayoutManager = new LinearLayoutManager(view.getContext());
+    mRecyclerView = view.findViewById(R.id.list);
+    mRecyclerView.setLayoutManager(mLayoutManager);
+    onRecyclerViewInflated(mRecyclerView, inflater);
+    if (hasDividers()) {
+      mRecyclerView.addItemDecoration(
+          new DividerItemDecoration(view.getContext()));
+    }
+    if (!hasCards()) {
+      mRecyclerView.setBackgroundResource(
+          UiUtils.resolveDrawable(getActivity(), R.attr.listBackground));
+    }
 
-	mLayoutManager = new LinearLayoutManager(view.getContext());
-	mRecyclerView = view.findViewById(R.id.list);
-	mRecyclerView.setLayoutManager(mLayoutManager);
-	onRecyclerViewInflated(mRecyclerView, inflater);
-	if (hasDividers()) {
-		mRecyclerView.addItemDecoration(new DividerItemDecoration(view.getContext()));
-	}
-	if (!hasCards()) {
-		mRecyclerView.setBackgroundResource(
-			UiUtils.resolveDrawable(getActivity(), R.attr.listBackground));
-	}
+    mFastScroller = view.findViewById(R.id.fast_scroller);
+    mFastScroller.attachRecyclerView(mRecyclerView);
+    mFastScroller.setVisibility(View.VISIBLE);
+    mFastScroller.setOnHandleTouchListener((v, event) -> {
+      switch (event.getActionMasked()) {
+      case MotionEvent.ACTION_DOWN:
+        getBaseActivity().setRightDrawerLockedClosed(true);
+        break;
 
-	mFastScroller = view.findViewById(R.id.fast_scroller);
-	mFastScroller.attachRecyclerView(mRecyclerView);
-	mFastScroller.setVisibility(View.VISIBLE);
-	mFastScroller.setOnHandleTouchListener((v, event)->{
-			switch (event.getActionMasked()) {
-			case MotionEvent.ACTION_DOWN:
-				getBaseActivity().setRightDrawerLockedClosed(true);
-				break;
+      case MotionEvent.ACTION_UP:
+      case MotionEvent.ACTION_CANCEL:
+        getBaseActivity().setRightDrawerLockedClosed(false);
+        break;
+      }
 
-			case MotionEvent.ACTION_UP:
-			case MotionEvent.ACTION_CANCEL:
-				getBaseActivity().setRightDrawerLockedClosed(false);
-				break;
-			}
+      return false;
+    });
 
-			return false;
-		});
+    return view;
+  }
 
-	return view;
-}
+  @Override
+  public void onViewCreated(final View view, final Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    if (getActivity() instanceof OnRecyclerViewCreatedListener) {
+      ((OnRecyclerViewCreatedListener)getActivity())
+          .onRecyclerViewCreated(this, mRecyclerView);
+    }
+  }
 
-@Override
-public void onViewCreated(final View view, final Bundle savedInstanceState) {
-	super.onViewCreated(view, savedInstanceState);
-	if (getActivity() instanceof OnRecyclerViewCreatedListener) {
-		((OnRecyclerViewCreatedListener) getActivity()).onRecyclerViewCreated(this, mRecyclerView);
-	}
-}
+  @Override
+  public boolean canChildScrollUp() {
+    return getView() != null && UiUtils.canViewScrollUp(mRecyclerView);
+  }
 
-@Override
-public boolean canChildScrollUp() {
-	return getView() != null && UiUtils.canViewScrollUp(mRecyclerView);
-}
+  protected void updateEmptyState() {
+    if (mRecyclerView == null) {
+      return;
+    }
 
-protected void updateEmptyState() {
-	if (mRecyclerView == null) {
-		return;
-	}
+    boolean empty = false;
+    RecyclerView.Adapter<?> adapter = mRecyclerView.getAdapter();
+    if (adapter instanceof RootAdapter) {
+      // don't count headers and footers
+      empty = ((RootAdapter)adapter).getCount() == 0;
+    } else if (adapter != null) {
+      empty = adapter.getItemCount() == 0;
+    }
 
-	boolean empty = false;
-	RecyclerView.Adapter<?> adapter = mRecyclerView.getAdapter();
-	if (adapter instanceof RootAdapter) {
-		// don't count headers and footers
-		empty = ((RootAdapter) adapter).getCount() == 0;
-	} else if (adapter != null) {
-		empty = adapter.getItemCount() == 0;
-	}
+    mRecyclerView.setVisibility(empty ? View.GONE : View.VISIBLE);
+    mEmptyViewContainer.setVisibility(empty ? View.VISIBLE : View.GONE);
+  }
 
-	mRecyclerView.setVisibility(empty ? View.GONE : View.VISIBLE);
-	mEmptyViewContainer.setVisibility(empty ? View.VISIBLE : View.GONE);
-}
+  protected void onRecyclerViewInflated(final RecyclerView view,
+                                        final LayoutInflater inflater) {}
 
-protected void onRecyclerViewInflated(final RecyclerView view, final LayoutInflater inflater) {
-}
+  protected void scrollToAndHighlightPosition(final int position) {
+    getBaseActivity().collapseAppBar();
+    mLayoutManager.scrollToPositionWithOffset(position, 0);
+    final RecyclerView.Adapter<?> adapter = mRecyclerView.getAdapter();
+    if (adapter instanceof RootAdapter) {
+      mRecyclerView.postDelayed(
+          () -> ((RootAdapter)adapter).highlight(position), 600);
+    }
+  }
 
-protected void scrollToAndHighlightPosition(final int position) {
-	getBaseActivity().collapseAppBar();
-	mLayoutManager.scrollToPositionWithOffset(position, 0);
-	final RecyclerView.Adapter<?> adapter = mRecyclerView.getAdapter();
-	if (adapter instanceof RootAdapter) {
-		mRecyclerView.postDelayed(()->((RootAdapter) adapter).highlight(position), 600);
-	}
-}
+  protected boolean hasDividers() { return true; }
+  protected boolean hasCards() { return false; }
 
-protected boolean hasDividers() {
-	return true;
-}
-protected boolean hasCards() {
-	return false;
-}
+  @Override
+  protected void setHighlightColors(final int colorAttrId,
+                                    final int statusBarColorAttrId) {
+    super.setHighlightColors(colorAttrId, statusBarColorAttrId);
+    UiUtils.trySetListOverscrollColor(mRecyclerView, getHighlightColor());
+    mFastScroller.setHandlePressedColor(getHighlightColor());
+  }
 
-@Override
-protected void setHighlightColors(final int colorAttrId, final int statusBarColorAttrId) {
-	super.setHighlightColors(colorAttrId, statusBarColorAttrId);
-	UiUtils.trySetListOverscrollColor(mRecyclerView, getHighlightColor());
-	mFastScroller.setHandlePressedColor(getHighlightColor());
-}
-
-protected abstract int getEmptyTextResId();
+  protected abstract int getEmptyTextResId();
 }

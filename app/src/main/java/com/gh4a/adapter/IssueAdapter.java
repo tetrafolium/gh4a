@@ -23,7 +23,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.gh4a.R;
 import com.gh4a.activities.UserActivity;
 import com.gh4a.utils.ApiHelpers;
@@ -33,78 +32,78 @@ import com.gh4a.widget.LabelBadgeView;
 import com.meisolsson.githubsdk.model.Issue;
 
 public class IssueAdapter extends RootAdapter<Issue, IssueAdapter.ViewHolder> {
-public IssueAdapter(final Context context) {
-	super(context);
-}
+  public IssueAdapter(final Context context) { super(context); }
 
-@Override
-public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
-	View v = inflater.inflate(R.layout.row_issue, parent, false);
-	ViewHolder holder = new ViewHolder(v);
-	holder.ivGravatar.setOnClickListener(this);
-	return holder;
-}
+  @Override
+  public ViewHolder onCreateViewHolder(final LayoutInflater inflater,
+                                       final ViewGroup parent,
+                                       final int viewType) {
+    View v = inflater.inflate(R.layout.row_issue, parent, false);
+    ViewHolder holder = new ViewHolder(v);
+    holder.ivGravatar.setOnClickListener(this);
+    return holder;
+  }
 
-@Override
-protected void onBindViewHolder(final ViewHolder holder, final Issue issue) {
-	AvatarHandler.assignAvatar(holder.ivGravatar, issue.user());
-	holder.ivGravatar.setTag(issue);
+  @Override
+  protected void onBindViewHolder(final ViewHolder holder, final Issue issue) {
+    AvatarHandler.assignAvatar(holder.ivGravatar, issue.user());
+    holder.ivGravatar.setTag(issue);
 
-	holder.lvLabels.setLabels(issue.labels());
-	holder.tvNumber.setText("#" + issue.number());
-	holder.tvDesc.setText(issue.title());
-	holder.tvCreator.setText(ApiHelpers.getUserLogin(mContext, issue.user()));
-	holder.tvTimestamp.setText(StringUtils.formatRelativeTime(mContext,
-	                                                          issue.createdAt(), true));
+    holder.lvLabels.setLabels(issue.labels());
+    holder.tvNumber.setText("#" + issue.number());
+    holder.tvDesc.setText(issue.title());
+    holder.tvCreator.setText(ApiHelpers.getUserLogin(mContext, issue.user()));
+    holder.tvTimestamp.setText(
+        StringUtils.formatRelativeTime(mContext, issue.createdAt(), true));
 
-	if (issue.comments() > 0) {
-		holder.tvComments.setVisibility(View.VISIBLE);
-		holder.tvComments.setText(String.valueOf(issue.comments()));
-	} else {
-		holder.tvComments.setVisibility(View.GONE);
-	}
+    if (issue.comments() > 0) {
+      holder.tvComments.setVisibility(View.VISIBLE);
+      holder.tvComments.setText(String.valueOf(issue.comments()));
+    } else {
+      holder.tvComments.setVisibility(View.GONE);
+    }
 
-	if (issue.milestone() != null) {
-		holder.tvMilestone.setVisibility(View.VISIBLE);
-		holder.tvMilestone.setText(issue.milestone().title());
-	} else {
-		holder.tvMilestone.setVisibility(View.GONE);
-	}
-}
+    if (issue.milestone() != null) {
+      holder.tvMilestone.setVisibility(View.VISIBLE);
+      holder.tvMilestone.setText(issue.milestone().title());
+    } else {
+      holder.tvMilestone.setVisibility(View.GONE);
+    }
+  }
 
-@Override
-public void onClick(final View v) {
-	if (v.getId() == R.id.iv_gravatar) {
-		Issue issue = (Issue) v.getTag();
-		Intent intent = UserActivity.makeIntent(mContext, issue.user());
-		if (intent != null) {
-			mContext.startActivity(intent);
-		}
-	} else {
-		super.onClick(v);
-	}
-}
+  @Override
+  public void onClick(final View v) {
+    if (v.getId() == R.id.iv_gravatar) {
+      Issue issue = (Issue)v.getTag();
+      Intent intent = UserActivity.makeIntent(mContext, issue.user());
+      if (intent != null) {
+        mContext.startActivity(intent);
+      }
+    } else {
+      super.onClick(v);
+    }
+  }
 
-public static class ViewHolder extends RecyclerView.ViewHolder {
-private ViewHolder(final View view) {
-	super(view);
-	ivGravatar = view.findViewById(R.id.iv_gravatar);
-	tvDesc = view.findViewById(R.id.tv_desc);
-	tvCreator = view.findViewById(R.id.tv_creator);
-	tvTimestamp = view.findViewById(R.id.tv_timestamp);
-	tvNumber = view.findViewById(R.id.tv_number);
-	lvLabels = view.findViewById(R.id.labels);
-	tvComments = view.findViewById(R.id.tv_comments);
-	tvMilestone = view.findViewById(R.id.tv_milestone);
-}
+  public static class ViewHolder extends RecyclerView.ViewHolder {
+    private ViewHolder(final View view) {
+      super(view);
+      ivGravatar = view.findViewById(R.id.iv_gravatar);
+      tvDesc = view.findViewById(R.id.tv_desc);
+      tvCreator = view.findViewById(R.id.tv_creator);
+      tvTimestamp = view.findViewById(R.id.tv_timestamp);
+      tvNumber = view.findViewById(R.id.tv_number);
+      lvLabels = view.findViewById(R.id.labels);
+      tvComments = view.findViewById(R.id.tv_comments);
+      tvMilestone = view.findViewById(R.id.tv_milestone);
+    }
 
-final ImageView ivGravatar;
-final TextView tvNumber;
-final TextView tvDesc;
-final TextView tvCreator;
-final TextView tvTimestamp;
-final LabelBadgeView lvLabels;
-final TextView tvComments;
-final TextView tvMilestone;
-}
+    final ImageView ivGravatar;
+    final TextView tvNumber;
+    final TextView tvDesc;
+    final TextView tvCreator;
+    final TextView tvTimestamp;
+    final LabelBadgeView lvLabels;
+    final TextView tvComments;
+    final TextView tvMilestone;
+  }
 }

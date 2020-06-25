@@ -18,7 +18,6 @@ package com.gh4a.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-
 import com.gh4a.ServiceFactory;
 import com.gh4a.utils.ApiHelpers;
 import com.gh4a.utils.IntentUtils;
@@ -31,93 +30,111 @@ import com.meisolsson.githubsdk.model.git.GitComment;
 import com.meisolsson.githubsdk.model.request.ReactionRequest;
 import com.meisolsson.githubsdk.service.reactions.ReactionService;
 import com.meisolsson.githubsdk.service.repositories.RepositoryCommentService;
-
-import java.util.List;
-
 import io.reactivex.Single;
+import java.util.List;
 import retrofit2.Response;
 
 public class CommitDiffViewerActivity extends DiffViewerActivity<GitComment> {
-public static Intent makeIntent(final Context context, final String repoOwner, final String repoName,
-                                final String commitSha, final String path, final String diff, final List<GitComment> comments,
-                                final int highlightStartLine, final int highlightEndLine, final boolean highlightIsRight,
-                                final IntentUtils.InitialCommentMarker initialComment) {
-	return DiffViewerActivity.fillInIntent(new Intent(context, CommitDiffViewerActivity.class),
-	                                       repoOwner, repoName, commitSha, path, diff, comments, -1,
-	                                       highlightStartLine, highlightEndLine, highlightIsRight, initialComment);
-}
+  public static Intent
+  makeIntent(final Context context, final String repoOwner,
+             final String repoName, final String commitSha, final String path,
+             final String diff, final List<GitComment> comments,
+             final int highlightStartLine, final int highlightEndLine,
+             final boolean highlightIsRight,
+             final IntentUtils.InitialCommentMarker initialComment) {
+    return DiffViewerActivity.fillInIntent(
+        new Intent(context, CommitDiffViewerActivity.class), repoOwner,
+        repoName, commitSha, path, diff, comments, -1, highlightStartLine,
+        highlightEndLine, highlightIsRight, initialComment);
+  }
 
-@Override
-protected Intent navigateUp() {
-	return CommitActivity.makeIntent(this, mRepoOwner, mRepoName, mSha);
-}
+  @Override
+  protected Intent navigateUp() {
+    return CommitActivity.makeIntent(this, mRepoOwner, mRepoName, mSha);
+  }
 
-@Override
-protected Uri createUrl(final String lineId, final long replyId) {
-	Uri.Builder builder = IntentUtils.createBaseUriForRepo(mRepoOwner, mRepoName)
-	                      .appendPath("commit")
-	                      .appendPath(mSha);
-	if (replyId > 0L) {
-		builder.fragment("commitcomment-" + replyId);
-	} else {
-		builder.fragment("diff-" + ApiHelpers.md5(mPath) + lineId);
-	}
-	return builder.build();
-}
+  @Override
+  protected Uri createUrl(final String lineId, final long replyId) {
+    Uri.Builder builder =
+        IntentUtils.createBaseUriForRepo(mRepoOwner, mRepoName)
+            .appendPath("commit")
+            .appendPath(mSha);
+    if (replyId > 0L) {
+      builder.fragment("commitcomment-" + replyId);
+    } else {
+      builder.fragment("diff-" + ApiHelpers.md5(mPath) + lineId);
+    }
+    return builder.build();
+  }
 
-@Override
-protected boolean canReply() {
-	return false;
-}
+  @Override
+  protected boolean canReply() {
+    return false;
+  }
 
-@Override
-protected PositionalCommentBase onUpdateReactions(final PositionalCommentBase comment,
-                                                  final Reactions reactions) {
-	return ((GitComment) comment).toBuilder()
-	       .reactions(reactions)
-	       .build();
-}
+  @Override
+  protected PositionalCommentBase
+  onUpdateReactions(final PositionalCommentBase comment,
+                    final Reactions reactions) {
+    return ((GitComment)comment).toBuilder().reactions(reactions).build();
+  }
 
-@Override
-protected void openCommentDialog(final long id, final long replyToId, final String line, final int position,
-                                 final int leftLine, final int rightLine, final PositionalCommentBase commitComment) {
-	String body = commitComment == null ? "" : commitComment.body();
-	Intent intent = EditDiffCommentActivity.makeIntent(this, mRepoOwner, mRepoName,
-	                                                   mSha, mPath, line, leftLine, rightLine, position, id, body);
-	startActivityForResult(intent, REQUEST_EDIT);
-}
+  @Override
+  protected void openCommentDialog(final long id, final long replyToId,
+                                   final String line, final int position,
+                                   final int leftLine, final int rightLine,
+                                   final PositionalCommentBase commitComment) {
+    String body = commitComment == null ? "" : commitComment.body();
+    Intent intent = EditDiffCommentActivity.makeIntent(
+        this, mRepoOwner, mRepoName, mSha, mPath, line, leftLine, rightLine,
+        position, id, body);
+    startActivityForResult(intent, REQUEST_EDIT);
+  }
 
-@Override
-public Single<Response<Void> > doDeleteComment(final long id) {
-	RepositoryCommentService service = ServiceFactory.get(RepositoryCommentService.class, false);
+  @Override
+  public Single<Response<Void>> doDeleteComment(final long id) {
+    RepositoryCommentService service =
+        ServiceFactory.get(RepositoryCommentService.class, false);
 
-	return service.deleteCommitComment(mRepoOwner, mRepoName, id);
-}
+    return service.deleteCommitComment(mRepoOwner, mRepoName, id);
+  }
 
-@Override
-protected Single<List<GitComment> > createCommentSingle(final boolean bypassCache) {
-	final RepositoryCommentService service =
-		ServiceFactory.get(RepositoryCommentService.class, bypassCache);
-	return ApiHelpers.PageIterator
-	       .toSingle(page->service.getCommitComments(mRepoOwner, mRepoName, mSha, page))
-	       .compose(RxUtils.filter(c->c.position() != null));
-}
+  @Override
+  protected Single<List<GitComment>>
+  createCommentSingle(final boolean bypassCache) {
+    final RepositoryCommentService service =
+        ServiceFactory.get(RepositoryCommentService.class, bypassCache);
+    return ApiHelpers.PageIterator
+        .toSingle(
+            page
+            -> service.getCommitComments(mRepoOwner, mRepoName, mSha, page))
+        .compose(RxUtils.filter(c -> c.position() != null));
+  }
 
-@Override
-public Single<List<Reaction> > loadReactionDetails(final ReactionBar.Item item, final boolean bypassCache) {
-	final CommitCommentWrapper comment = (CommitCommentWrapper) item;
-	final ReactionService service = ServiceFactory.get(ReactionService.class, bypassCache);
-	return ApiHelpers.PageIterator
-	       .toSingle(page->service.getCommitCommentReactions(mRepoOwner, mRepoName, comment.comment.id(), page));
-}
+  @Override
+  public Single<List<Reaction>> loadReactionDetails(final ReactionBar.Item item,
+                                                    final boolean bypassCache) {
+    final CommitCommentWrapper comment = (CommitCommentWrapper)item;
+    final ReactionService service =
+        ServiceFactory.get(ReactionService.class, bypassCache);
+    return ApiHelpers.PageIterator.toSingle(
+        page
+        -> service.getCommitCommentReactions(mRepoOwner, mRepoName,
+                                             comment.comment.id(), page));
+  }
 
-@Override
-public Single<Reaction> addReaction(final ReactionBar.Item item, final String content) {
-	CommitCommentWrapper comment = (CommitCommentWrapper) item;
-	final ReactionService service = ServiceFactory.get(ReactionService.class, false);
-	ReactionRequest request = ReactionRequest.builder().content(content).build();
+  @Override
+  public Single<Reaction> addReaction(final ReactionBar.Item item,
+                                      final String content) {
+    CommitCommentWrapper comment = (CommitCommentWrapper)item;
+    final ReactionService service =
+        ServiceFactory.get(ReactionService.class, false);
+    ReactionRequest request =
+        ReactionRequest.builder().content(content).build();
 
-	return service.createCommitCommentReaction(mRepoOwner, mRepoName, comment.comment.id(), request)
-	       .map(ApiHelpers::throwOnFailure);
-}
+    return service
+        .createCommitCommentReaction(mRepoOwner, mRepoName,
+                                     comment.comment.id(), request)
+        .map(ApiHelpers::throwOnFailure);
+  }
 }

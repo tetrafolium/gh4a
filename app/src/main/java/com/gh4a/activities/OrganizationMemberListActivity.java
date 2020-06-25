@@ -20,43 +20,42 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-
 import com.gh4a.R;
 import com.gh4a.fragment.OrganizationMemberListFragment;
 
 public class OrganizationMemberListActivity extends FragmentContainerActivity {
-public static Intent makeIntent(final Context context, final String org) {
-	return new Intent(context, OrganizationMemberListActivity.class)
-	       .putExtra("login", org);
-}
+  public static Intent makeIntent(final Context context, final String org) {
+    return new Intent(context, OrganizationMemberListActivity.class)
+        .putExtra("login", org);
+  }
 
-private String mUserLogin;
+  private String mUserLogin;
 
-@Nullable
-@Override
-protected String getActionBarTitle() {
-	return getString(R.string.members);
-}
+  @Nullable
+  @Override
+  protected String getActionBarTitle() {
+    return getString(R.string.members);
+  }
 
-@Nullable
-@Override
-protected String getActionBarSubtitle() {
-	return mUserLogin;
-}
+  @Nullable
+  @Override
+  protected String getActionBarSubtitle() {
+    return mUserLogin;
+  }
 
-@Override
-protected void onInitExtras(final Bundle extras) {
-	super.onInitExtras(extras);
-	mUserLogin = extras.getString("login");
-}
+  @Override
+  protected void onInitExtras(final Bundle extras) {
+    super.onInitExtras(extras);
+    mUserLogin = extras.getString("login");
+  }
 
-@Override
-protected Fragment onCreateFragment() {
-	return OrganizationMemberListFragment.newInstance(mUserLogin);
-}
+  @Override
+  protected Fragment onCreateFragment() {
+    return OrganizationMemberListFragment.newInstance(mUserLogin);
+  }
 
-@Override
-protected Intent navigateUp() {
-	return UserActivity.makeIntent(this, mUserLogin);
-}
+  @Override
+  protected Intent navigateUp() {
+    return UserActivity.makeIntent(this, mUserLogin);
+  }
 }

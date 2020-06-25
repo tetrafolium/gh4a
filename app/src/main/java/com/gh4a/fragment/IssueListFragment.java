@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
-
 import com.gh4a.R;
 import com.gh4a.ServiceFactory;
 import com.gh4a.activities.IssueActivity;
@@ -34,160 +33,161 @@ import com.gh4a.utils.RxUtils;
 import com.meisolsson.githubsdk.model.Issue;
 import com.meisolsson.githubsdk.model.Page;
 import com.meisolsson.githubsdk.service.search.SearchService;
-
 import io.reactivex.Single;
 import retrofit2.Response;
 
 public class IssueListFragment extends PagedDataBaseFragment<Issue> {
-private static final int REQUEST_ISSUE = 1000;
+  private static final int REQUEST_ISSUE = 1000;
 
-private String mQuery;
-private String mSortMode;
-private String mOrder;
-private int mEmptyTextResId;
-private boolean mShowRepository;
-private String mIssueState;
+  private String mQuery;
+  private String mSortMode;
+  private String mOrder;
+  private int mEmptyTextResId;
+  private boolean mShowRepository;
+  private String mIssueState;
 
-public static IssueListFragment newInstance(final String query, final String sortMode, final String order,
-                                            final String state, final int emptyTextResId, final boolean showRepository) {
-	IssueListFragment f = new IssueListFragment();
+  public static IssueListFragment
+  newInstance(final String query, final String sortMode, final String order,
+              final String state, final int emptyTextResId,
+              final boolean showRepository) {
+    IssueListFragment f = new IssueListFragment();
 
-	Bundle args = new Bundle();
-	args.putString("query", query);
-	args.putString("sortmode", sortMode);
-	args.putString("order", order);
-	args.putInt("emptytext", emptyTextResId);
-	args.putString("state", state);
-	args.putBoolean("withrepo", showRepository);
+    Bundle args = new Bundle();
+    args.putString("query", query);
+    args.putString("sortmode", sortMode);
+    args.putString("order", order);
+    args.putInt("emptytext", emptyTextResId);
+    args.putString("state", state);
+    args.putBoolean("withrepo", showRepository);
 
-	f.setArguments(args);
-	return f;
-}
+    f.setArguments(args);
+    return f;
+  }
 
-@Override
-public void onCreate(final Bundle savedInstanceState) {
-	super.onCreate(savedInstanceState);
+  @Override
+  public void onCreate(final Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-	Bundle args = getArguments();
-	mQuery = args.getString("query");
-	mSortMode = args.getString("sortmode");
-	mOrder = args.getString("order");
-	mEmptyTextResId = args.getInt("emptytext");
-	mIssueState = args.getString("state");
-	mShowRepository = args.getBoolean("withrepo");
-}
+    Bundle args = getArguments();
+    mQuery = args.getString("query");
+    mSortMode = args.getString("sortmode");
+    mOrder = args.getString("order");
+    mEmptyTextResId = args.getInt("emptytext");
+    mIssueState = args.getString("state");
+    mShowRepository = args.getBoolean("withrepo");
+  }
 
-@Override
-public void onViewCreated(final View view, final Bundle savedInstanceState) {
-	super.onViewCreated(view, savedInstanceState);
+  @Override
+  public void onViewCreated(final View view, final Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
 
-	switch (mIssueState) {
-	case ApiHelpers.IssueState.CLOSED:
-		setHighlightColors(R.attr.colorIssueClosed, R.attr.colorIssueClosedDark);
-		break;
-	case ApiHelpers.IssueState.MERGED:
-		setHighlightColors(R.attr.colorPullRequestMerged,
-		                   R.attr.colorPullRequestMergedDark);
-		break;
-	default:
-		setHighlightColors(R.attr.colorIssueOpen, R.attr.colorIssueOpenDark);
-		break;
-	}
-}
+    switch (mIssueState) {
+    case ApiHelpers.IssueState.CLOSED:
+      setHighlightColors(R.attr.colorIssueClosed, R.attr.colorIssueClosedDark);
+      break;
+    case ApiHelpers.IssueState.MERGED:
+      setHighlightColors(R.attr.colorPullRequestMerged,
+                         R.attr.colorPullRequestMergedDark);
+      break;
+    default:
+      setHighlightColors(R.attr.colorIssueOpen, R.attr.colorIssueOpenDark);
+      break;
+    }
+  }
 
-@Override
-public void onItemClick(final Issue issue) {
-	String[] urlPart = issue.url().split("/");
-	Intent intent = issue.pullRequest() != null
-	                ? PullRequestActivity.makeIntent(getActivity(), urlPart[4], urlPart[5], issue.number())
-	                : IssueActivity.makeIntent(getActivity(), urlPart[4], urlPart[5], issue.number());
-	startActivityForResult(intent, REQUEST_ISSUE);
-}
+  @Override
+  public void onItemClick(final Issue issue) {
+    String[] urlPart = issue.url().split("/");
+    Intent intent =
+        issue.pullRequest() != null
+            ? PullRequestActivity.makeIntent(getActivity(), urlPart[4],
+                                             urlPart[5], issue.number())
+            : IssueActivity.makeIntent(getActivity(), urlPart[4], urlPart[5],
+                                       issue.number());
+    startActivityForResult(intent, REQUEST_ISSUE);
+  }
 
-@Override
-public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-	if (requestCode == REQUEST_ISSUE) {
-		if (resultCode == Activity.RESULT_OK) {
-			super.onRefresh();
-		}
-	} else {
-		super.onActivityResult(requestCode, resultCode, data);
-	}
-}
+  @Override
+  public void onActivityResult(final int requestCode, final int resultCode,
+                               final Intent data) {
+    if (requestCode == REQUEST_ISSUE) {
+      if (resultCode == Activity.RESULT_OK) {
+        super.onRefresh();
+      }
+    } else {
+      super.onActivityResult(requestCode, resultCode, data);
+    }
+  }
 
+  @Override
+  protected RootAdapter<Issue, ? extends RecyclerView.ViewHolder>
+  onCreateAdapter() {
+    return mShowRepository ? new RepositoryIssueAdapter(getActivity())
+                           : new IssueAdapter(getActivity());
+  }
 
-@Override
-protected RootAdapter<Issue, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
-	return mShowRepository
-	       ? new RepositoryIssueAdapter(getActivity())
-	       : new IssueAdapter(getActivity());
-}
+  @Override
+  protected int getEmptyTextResId() {
+    return mEmptyTextResId;
+  }
 
-@Override
-protected int getEmptyTextResId() {
-	return mEmptyTextResId;
-}
+  @Override
+  protected Single<Response<Page<Issue>>> loadPage(final int page,
+                                                   final boolean bypassCache) {
+    final SearchService service =
+        ServiceFactory.get(SearchService.class, bypassCache);
+    return service.searchIssues(mQuery, mSortMode, mOrder, page)
+        .compose(RxUtils::searchPageAdapter);
+  }
 
-@Override
-protected Single<Response<Page<Issue> > > loadPage(final int page, final boolean bypassCache) {
-	final SearchService service = ServiceFactory.get(SearchService.class, bypassCache);
-	return service.searchIssues(mQuery, mSortMode, mOrder, page)
-	       .compose(RxUtils::searchPageAdapter);
-}
+  public static class SortDrawerHelper {
+    private String mSortMode;
+    private boolean mSortAscending;
 
-public static class SortDrawerHelper {
-private String mSortMode;
-private boolean mSortAscending;
+    private static final String SORT_MODE_CREATED = "created";
+    private static final String SORT_MODE_UPDATED = "updated";
+    private static final String SORT_MODE_COMMENTS = "comments";
 
-private static final String SORT_MODE_CREATED = "created";
-private static final String SORT_MODE_UPDATED = "updated";
-private static final String SORT_MODE_COMMENTS = "comments";
+    public SortDrawerHelper() {
+      mSortMode = SORT_MODE_CREATED;
+      mSortAscending = false;
+    }
 
-public SortDrawerHelper() {
-	mSortMode = SORT_MODE_CREATED;
-	mSortAscending = false;
-}
+    public static int getMenuResId() { return R.menu.issue_list_sort; }
 
-public static int getMenuResId() {
-	return R.menu.issue_list_sort;
-}
+    public String getSortMode() { return mSortMode; }
 
-public String getSortMode() {
-	return mSortMode;
-}
+    public String getSortOrder() { return mSortAscending ? "asc" : "desc"; }
 
-public String getSortOrder() {
-	return mSortAscending ? "asc" : "desc";
-}
+    public boolean handleItemSelection(final MenuItem item) {
+      switch (item.getItemId()) {
+      case R.id.sort_created_asc:
+        updateSortMode(SORT_MODE_CREATED, true);
+        return true;
+      case R.id.sort_created_desc:
+        updateSortMode(SORT_MODE_CREATED, false);
+        return true;
+      case R.id.sort_updated_asc:
+        updateSortMode(SORT_MODE_UPDATED, true);
+        return true;
+      case R.id.sort_updated_desc:
+        updateSortMode(SORT_MODE_UPDATED, false);
+        return true;
+      case R.id.sort_comments_asc:
+        updateSortMode(SORT_MODE_COMMENTS, true);
+        return true;
+      case R.id.sort_comments_desc:
+        updateSortMode(SORT_MODE_COMMENTS, false);
+        return true;
+      }
 
-public boolean handleItemSelection(final MenuItem item) {
-	switch (item.getItemId()) {
-	case R.id.sort_created_asc:
-		updateSortMode(SORT_MODE_CREATED, true);
-		return true;
-	case R.id.sort_created_desc:
-		updateSortMode(SORT_MODE_CREATED, false);
-		return true;
-	case R.id.sort_updated_asc:
-		updateSortMode(SORT_MODE_UPDATED, true);
-		return true;
-	case R.id.sort_updated_desc:
-		updateSortMode(SORT_MODE_UPDATED, false);
-		return true;
-	case R.id.sort_comments_asc:
-		updateSortMode(SORT_MODE_COMMENTS, true);
-		return true;
-	case R.id.sort_comments_desc:
-		updateSortMode(SORT_MODE_COMMENTS, false);
-		return true;
-	}
+      return false;
+    }
 
-	return false;
-}
-
-protected void updateSortMode(final String sortMode, final boolean ascending) {
-	mSortAscending = ascending;
-	mSortMode = sortMode;
-}
-}
+    protected void updateSortMode(final String sortMode,
+                                  final boolean ascending) {
+      mSortAscending = ascending;
+      mSortMode = sortMode;
+    }
+  }
 }

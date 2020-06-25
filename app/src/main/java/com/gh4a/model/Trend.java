@@ -18,46 +18,31 @@ package com.gh4a.model;
 import com.squareup.moshi.Json;
 
 public class Trend {
-@Json(name = "owner")
-private final String repoOwner;
-@Json(name = "repo")
-private final String repoName;
-private final String description;
-private final String language;
-private final int stars;
-@Json(name = "new_stars")
-private final int newStars;
-private final int forks;
+  @Json(name = "owner") private final String repoOwner;
+  @Json(name = "repo") private final String repoName;
+  private final String description;
+  private final String language;
+  private final int stars;
+  @Json(name = "new_stars") private final int newStars;
+  private final int forks;
 
-public Trend(final String owner, final String repo, final String desc, final String lang, final int stars, final int newStars, final int forks) {
-	this.repoOwner = owner;
-	this.repoName = repo;
-	this.description = desc;
-	this.language = lang;
-	this.forks = forks;
-	this.stars = stars;
-	this.newStars = newStars;
-}
+  public Trend(final String owner, final String repo, final String desc,
+               final String lang, final int stars, final int newStars,
+               final int forks) {
+    this.repoOwner = owner;
+    this.repoName = repo;
+    this.description = desc;
+    this.language = lang;
+    this.forks = forks;
+    this.stars = stars;
+    this.newStars = newStars;
+  }
 
-public String getRepoOwner() {
-	return repoOwner;
-}
-public String getRepoName() {
-	return repoName;
-}
-public String getDescription() {
-	return description;
-}
-public String getLanguage() {
-	return language;
-}
-public int getStars() {
-	return stars;
-}
-public int getNewStars() {
-	return newStars;
-}
-public int getForks() {
-	return forks;
-}
+  public String getRepoOwner() { return repoOwner; }
+  public String getRepoName() { return repoName; }
+  public String getDescription() { return description; }
+  public String getLanguage() { return language; }
+  public int getStars() { return stars; }
+  public int getNewStars() { return newStars; }
+  public int getForks() { return forks; }
 }

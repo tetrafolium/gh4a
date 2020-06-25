@@ -12,132 +12,133 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.gh4a.R;
 import com.gh4a.utils.UiUtils;
 
-public class OverviewRow extends LinearLayoutCompat implements View.OnClickListener {
-public interface OnIconClickListener {
-void onIconClick(OverviewRow row);
-}
+public class OverviewRow
+    extends LinearLayoutCompat implements View.OnClickListener {
+  public interface OnIconClickListener { void onIconClick(OverviewRow row); }
 
-private final ImageView mIcon;
-private final TextView mLabel;
-private final View mRedirectNotice;
-private final View mProgress;
+  private final ImageView mIcon;
+  private final TextView mLabel;
+  private final View mRedirectNotice;
+  private final View mProgress;
 
-private Intent mClickIntent;
-private OnIconClickListener mIconClickListener;
+  private Intent mClickIntent;
+  private OnIconClickListener mIconClickListener;
 
-private String mActionHintChecked;
-private String mActionHintUnchecked;
-private boolean mDisplayRedirectArrowWhenClickable;
+  private String mActionHintChecked;
+  private String mActionHintUnchecked;
+  private boolean mDisplayRedirectArrowWhenClickable;
 
-public OverviewRow(final Context context) {
-	this(context, null);
-}
+  public OverviewRow(final Context context) { this(context, null); }
 
-public OverviewRow(final Context context, final AttributeSet attrs) {
-	this(context, attrs, R.attr.overviewRowStyle);
-}
+  public OverviewRow(final Context context, final AttributeSet attrs) {
+    this(context, attrs, R.attr.overviewRowStyle);
+  }
 
-public OverviewRow(final Context context, final AttributeSet attrs, final int defStyle) {
-	super(context, attrs, defStyle);
+  public OverviewRow(final Context context, final AttributeSet attrs,
+                     final int defStyle) {
+    super(context, attrs, defStyle);
 
-	inflate(getContext(), R.layout.overview_row, this);
-	mIcon = findViewById(R.id.icon);
-	mLabel = findViewById(R.id.label);
-	mRedirectNotice = findViewById(R.id.forward_notice);
-	mProgress = findViewById(R.id.progress);
+    inflate(getContext(), R.layout.overview_row, this);
+    mIcon = findViewById(R.id.icon);
+    mLabel = findViewById(R.id.label);
+    mRedirectNotice = findViewById(R.id.forward_notice);
+    mProgress = findViewById(R.id.progress);
 
-	final TypedArray a = getContext().obtainStyledAttributes(
-		attrs, R.styleable.OverviewRow, defStyle, 0);
+    final TypedArray a = getContext().obtainStyledAttributes(
+        attrs, R.styleable.OverviewRow, defStyle, 0);
 
-	setText(a.getString(R.styleable.OverviewRow_rowText));
-	setIcon(a.getDrawable(R.styleable.OverviewRow_rowIcon));
-	setIconClickListener(null);
+    setText(a.getString(R.styleable.OverviewRow_rowText));
+    setIcon(a.getDrawable(R.styleable.OverviewRow_rowIcon));
+    setIconClickListener(null);
 
-	mActionHintChecked = a.getString(R.styleable.OverviewRow_rowIconActionHintOn);
-	mActionHintUnchecked = a.getString(R.styleable.OverviewRow_rowIconActionHintOff);
-	mDisplayRedirectArrowWhenClickable = a.getBoolean(R.styleable.OverviewRow_displayRedirectArrowWhenClickable, true);
+    mActionHintChecked =
+        a.getString(R.styleable.OverviewRow_rowIconActionHintOn);
+    mActionHintUnchecked =
+        a.getString(R.styleable.OverviewRow_rowIconActionHintOff);
+    mDisplayRedirectArrowWhenClickable = a.getBoolean(
+        R.styleable.OverviewRow_displayRedirectArrowWhenClickable, true);
 
-	a.recycle();
-}
+    a.recycle();
+  }
 
-@Override
-public void drawableHotspotChanged(final float x, final float y) {
-	super.drawableHotspotChanged(x, y);
-}
+  @Override
+  public void drawableHotspotChanged(final float x, final float y) {
+    super.drawableHotspotChanged(x, y);
+  }
 
-@Override
-protected void drawableStateChanged() {
-	super.drawableStateChanged();
-}
+  @Override
+  protected void drawableStateChanged() {
+    super.drawableStateChanged();
+  }
 
+  public void setText(final CharSequence text) {
+    mLabel.setText(text);
+    mProgress.setVisibility(text != null ? View.GONE : View.VISIBLE);
+  }
 
-public void setText(final CharSequence text) {
-	mLabel.setText(text);
-	mProgress.setVisibility(text != null ? View.GONE : View.VISIBLE);
-}
+  public void setClickIntent(final Intent intent) {
+    mClickIntent = intent;
+    if (intent != null) {
+      setOnClickListener(this);
+    } else {
+      setClickable(false);
+    }
+  }
 
-public void setClickIntent(final Intent intent) {
-	mClickIntent = intent;
-	if (intent != null) {
-		setOnClickListener(this);
-	} else {
-		setClickable(false);
-	}
-}
+  @Override
+  public void setClickable(final boolean clickable) {
+    super.setClickable(clickable);
+    if (mDisplayRedirectArrowWhenClickable) {
+      mRedirectNotice.setVisibility(clickable ? VISIBLE : GONE);
+    }
+  }
 
-@Override
-public void setClickable(final boolean clickable) {
-	super.setClickable(clickable);
-	if (mDisplayRedirectArrowWhenClickable) {
-		mRedirectNotice.setVisibility(clickable ? VISIBLE : GONE);
-	}
-}
+  public void setIconClickListener(final OnIconClickListener l) {
+    mIcon.setOnClickListener(l != null ? this : null);
+    mIcon.setEnabled(l != null);
+    mIconClickListener = l;
+    updateIconTint();
+  }
 
-public void setIconClickListener(final OnIconClickListener l) {
-	mIcon.setOnClickListener(l != null ? this : null);
-	mIcon.setEnabled(l != null);
-	mIconClickListener = l;
-	updateIconTint();
-}
+  public void setToggleState(final boolean active) {
+    mIcon.setImageState(
+        active ? new int[] {android.R.attr.state_checked} : new int[0], true);
+    TooltipCompat.setTooltipText(mIcon, active ? mActionHintChecked
+                                               : mActionHintUnchecked);
+  }
 
-public void setToggleState(final boolean active) {
-	mIcon.setImageState(
-		active ? new int[] {android.R.attr.state_checked } : new int[0], true);
-	TooltipCompat.setTooltipText(mIcon, active ? mActionHintChecked : mActionHintUnchecked);
-}
+  private void setIcon(final Drawable icon) {
+    if (icon == null) {
+      mIcon.setVisibility(View.GONE);
+    } else {
+      Drawable wrapped = DrawableCompat.wrap(icon).mutate();
+      mIcon.setImageDrawable(wrapped);
+      mIcon.setVisibility(View.VISIBLE);
+      updateIconTint();
+    }
+  }
 
-private void setIcon(final Drawable icon) {
-	if (icon == null) {
-		mIcon.setVisibility(View.GONE);
-	} else {
-		Drawable wrapped = DrawableCompat.wrap(icon).mutate();
-		mIcon.setImageDrawable(wrapped);
-		mIcon.setVisibility(View.VISIBLE);
-		updateIconTint();
-	}
-}
+  private void updateIconTint() {
+    Drawable drawable = mIcon.getDrawable();
+    if (drawable == null) {
+      return;
+    }
+    int tintColor = UiUtils.resolveColor(
+        getContext(), mIconClickListener != null ? R.attr.colorAccent
+                                                 : R.attr.colorIconForeground);
+    DrawableCompat.setTint(drawable, tintColor);
+    DrawableCompat.setTintMode(drawable, PorterDuff.Mode.SRC_IN);
+  }
 
-private void updateIconTint() {
-	Drawable drawable = mIcon.getDrawable();
-	if (drawable == null) {
-		return;
-	}
-	int tintColor = UiUtils.resolveColor(getContext(),
-	                                     mIconClickListener != null ? R.attr.colorAccent : R.attr.colorIconForeground);
-	DrawableCompat.setTint(drawable, tintColor);
-	DrawableCompat.setTintMode(drawable, PorterDuff.Mode.SRC_IN);
-}
-
-@Override
-public void onClick(final View view) {
-	if (view == mIcon) {
-		mIconClickListener.onIconClick(this);
-	} else if (mClickIntent != null) {
-		getContext().startActivity(mClickIntent);
-	}
-}
+  @Override
+  public void onClick(final View view) {
+    if (view == mIcon) {
+      mIconClickListener.onIconClick(this);
+    } else if (mClickIntent != null) {
+      getContext().startActivity(mClickIntent);
+    }
+  }
 }

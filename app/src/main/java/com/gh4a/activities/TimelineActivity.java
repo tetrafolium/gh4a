@@ -18,24 +18,23 @@ package com.gh4a.activities;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-
 import com.gh4a.R;
 import com.gh4a.fragment.PublicTimelineFragment;
 
 public class TimelineActivity extends FragmentContainerActivity {
-@Nullable
-@Override
-protected String getActionBarTitle() {
-	return getString(R.string.pub_timeline);
-}
+  @Nullable
+  @Override
+  protected String getActionBarTitle() {
+    return getString(R.string.pub_timeline);
+  }
 
-@Override
-protected Fragment onCreateFragment() {
-	return PublicTimelineFragment.newInstance();
-}
+  @Override
+  protected Fragment onCreateFragment() {
+    return PublicTimelineFragment.newInstance();
+  }
 
-@Override
-protected Intent navigateUp() {
-	return getToplevelActivityIntent();
-}
+  @Override
+  protected Intent navigateUp() {
+    return getToplevelActivityIntent();
+  }
 }

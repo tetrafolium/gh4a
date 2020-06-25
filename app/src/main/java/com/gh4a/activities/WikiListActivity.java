@@ -20,51 +20,51 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-
 import com.gh4a.R;
 import com.gh4a.fragment.WikiListFragment;
 import com.meisolsson.githubsdk.model.GitHubWikiPage;
 
 public class WikiListActivity extends FragmentContainerActivity {
-public static Intent makeIntent(final Context context, final String repoOwner,
-                                final String repoName, final GitHubWikiPage initialPage) {
-	String initialPageId = initialPage != null ? initialPage.sha() : null;
-	return new Intent(context, WikiListActivity.class)
-	       .putExtra("owner", repoOwner)
-	       .putExtra("repo", repoName)
-	       .putExtra("initial_page", initialPageId);
-}
+  public static Intent makeIntent(final Context context, final String repoOwner,
+                                  final String repoName,
+                                  final GitHubWikiPage initialPage) {
+    String initialPageId = initialPage != null ? initialPage.sha() : null;
+    return new Intent(context, WikiListActivity.class)
+        .putExtra("owner", repoOwner)
+        .putExtra("repo", repoName)
+        .putExtra("initial_page", initialPageId);
+  }
 
-private String mUserLogin;
-private String mRepoName;
+  private String mUserLogin;
+  private String mRepoName;
 
-@Nullable
-@Override
-protected String getActionBarTitle() {
-	return getString(R.string.recent_wiki);
-}
+  @Nullable
+  @Override
+  protected String getActionBarTitle() {
+    return getString(R.string.recent_wiki);
+  }
 
-@Nullable
-@Override
-protected String getActionBarSubtitle() {
-	return mUserLogin + "/" + mRepoName;
-}
+  @Nullable
+  @Override
+  protected String getActionBarSubtitle() {
+    return mUserLogin + "/" + mRepoName;
+  }
 
-@Override
-protected void onInitExtras(final Bundle extras) {
-	super.onInitExtras(extras);
-	mUserLogin = extras.getString("owner");
-	mRepoName = extras.getString("repo");
-}
+  @Override
+  protected void onInitExtras(final Bundle extras) {
+    super.onInitExtras(extras);
+    mUserLogin = extras.getString("owner");
+    mRepoName = extras.getString("repo");
+  }
 
-@Override
-protected Fragment onCreateFragment() {
-	String initialPage = getIntent().getStringExtra("initial_page");
-	return WikiListFragment.newInstance(mUserLogin, mRepoName, initialPage);
-}
+  @Override
+  protected Fragment onCreateFragment() {
+    String initialPage = getIntent().getStringExtra("initial_page");
+    return WikiListFragment.newInstance(mUserLogin, mRepoName, initialPage);
+  }
 
-@Override
-protected Intent navigateUp() {
-	return RepositoryActivity.makeIntent(this, mUserLogin, mRepoName);
-}
+  @Override
+  protected Intent navigateUp() {
+    return RepositoryActivity.makeIntent(this, mUserLogin, mRepoName);
+  }
 }

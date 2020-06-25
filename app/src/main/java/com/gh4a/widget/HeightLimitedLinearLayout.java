@@ -5,50 +5,50 @@ import android.content.res.TypedArray;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
-
 import com.gh4a.R;
 import com.gh4a.utils.UiUtils;
 
 public class HeightLimitedLinearLayout extends LinearLayout {
-private int mMaxHeight = -1;
+  private int mMaxHeight = -1;
 
-public HeightLimitedLinearLayout(final Context context) {
-	super(context);
-}
+  public HeightLimitedLinearLayout(final Context context) { super(context); }
 
-public HeightLimitedLinearLayout(final Context context,
-                                 final @Nullable AttributeSet attrs) {
-	this(context, attrs, 0);
-}
+  public HeightLimitedLinearLayout(final Context context,
+                                   final @Nullable AttributeSet attrs) {
+    this(context, attrs, 0);
+  }
 
-public HeightLimitedLinearLayout(final Context context,
-                                 final @Nullable AttributeSet attrs, final int defStyleAttr) {
-	super(context, attrs, defStyleAttr);
+  public HeightLimitedLinearLayout(final Context context,
+                                   final @Nullable AttributeSet attrs,
+                                   final int defStyleAttr) {
+    super(context, attrs, defStyleAttr);
 
-	if (attrs != null) {
-		TypedArray a = context.obtainStyledAttributes(attrs,
-		                                              R.styleable.HeightLimitedLinearLayout, defStyleAttr, 0);
-		int n = a.getIndexCount();
+    if (attrs != null) {
+      TypedArray a = context.obtainStyledAttributes(
+          attrs, R.styleable.HeightLimitedLinearLayout, defStyleAttr, 0);
+      int n = a.getIndexCount();
 
-		for (int i = 0; i < n; i++) {
-			int attr = a.getIndex(i);
+      for (int i = 0; i < n; i++) {
+        int attr = a.getIndex(i);
 
-			switch (attr) {
-			case R.styleable.HeightLimitedLinearLayout_maxHeight:
-				mMaxHeight = a.getDimensionPixelSize(attr, -1);
-				break;
-			}
-		}
-		a.recycle();
-	}
-}
+        switch (attr) {
+        case R.styleable.HeightLimitedLinearLayout_maxHeight:
+          mMaxHeight = a.getDimensionPixelSize(attr, -1);
+          break;
+        }
+      }
+      a.recycle();
+    }
+  }
 
-@Override
-protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
-	if (mMaxHeight > 0) {
-		heightMeasureSpec = UiUtils.limitViewHeight(heightMeasureSpec, mMaxHeight);
-	}
+  @Override
+  protected void onMeasure(final int widthMeasureSpec,
+                           final int heightMeasureSpec) {
+    if (mMaxHeight > 0) {
+      heightMeasureSpec =
+          UiUtils.limitViewHeight(heightMeasureSpec, mMaxHeight);
+    }
 
-	super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-}
+    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+  }
 }

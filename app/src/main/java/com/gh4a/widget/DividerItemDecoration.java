@@ -9,45 +9,50 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 public class DividerItemDecoration extends RecyclerView.ItemDecoration {
-private final Drawable mDivider;
+  private final Drawable mDivider;
 
-public DividerItemDecoration(final Context context) {
-	final TypedArray a = context.obtainStyledAttributes(null, new int[] {
-			android.R.attr.listDivider
-		});
-	mDivider = a.getDrawable(0);
-	a.recycle();
-}
+  public DividerItemDecoration(final Context context) {
+    final TypedArray a = context.obtainStyledAttributes(
+        null, new int[] {android.R.attr.listDivider});
+    mDivider = a.getDrawable(0);
+    a.recycle();
+  }
 
-@Override
-public void getItemOffsets(final Rect outRect, final View view, final RecyclerView parent, final RecyclerView.State state) {
-	super.getItemOffsets(outRect, view, parent, state);
-	if (mDivider == null) return;
-	if (parent.getChildAdapterPosition(view) < 1) return;
+  @Override
+  public void getItemOffsets(final Rect outRect, final View view,
+                             final RecyclerView parent,
+                             final RecyclerView.State state) {
+    super.getItemOffsets(outRect, view, parent, state);
+    if (mDivider == null)
+      return;
+    if (parent.getChildAdapterPosition(view) < 1)
+      return;
 
-	outRect.top = mDivider.getIntrinsicHeight();
-}
+    outRect.top = mDivider.getIntrinsicHeight();
+  }
 
-@Override
-public void onDraw(final Canvas c, final RecyclerView parent, final RecyclerView.State state) {
-	if (mDivider == null) {
-		return;
-	}
+  @Override
+  public void onDraw(final Canvas c, final RecyclerView parent,
+                     final RecyclerView.State state) {
+    if (mDivider == null) {
+      return;
+    }
 
-	int left = parent.getPaddingLeft();
-	int right = parent.getWidth() - parent.getPaddingRight();
+    int left = parent.getPaddingLeft();
+    int right = parent.getWidth() - parent.getPaddingRight();
 
-	int childCount = parent.getChildCount();
-	for (int i = 0; i < childCount - 1; i++) {
-		View child = parent.getChildAt(i);
+    int childCount = parent.getChildCount();
+    for (int i = 0; i < childCount - 1; i++) {
+      View child = parent.getChildAt(i);
 
-		RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
+      RecyclerView.LayoutParams params =
+          (RecyclerView.LayoutParams)child.getLayoutParams();
 
-		int top = child.getBottom() + params.bottomMargin;
-		int bottom = top + mDivider.getIntrinsicHeight();
+      int top = child.getBottom() + params.bottomMargin;
+      int bottom = top + mDivider.getIntrinsicHeight();
 
-		mDivider.setBounds(left, top, right, bottom);
-		mDivider.draw(c);
-	}
-}
+      mDivider.setBounds(left, top, right, bottom);
+      mDivider.draw(c);
+    }
+  }
 }

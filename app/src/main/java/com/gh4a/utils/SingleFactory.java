@@ -13,11 +13,7 @@ import com.meisolsson.githubsdk.model.NotificationThread;
 import com.meisolsson.githubsdk.model.Repository;
 import com.meisolsson.githubsdk.service.activity.NotificationService;
 import com.meisolsson.githubsdk.service.repositories.RepositoryCollaboratorService;
-
-import org.simpleframework.xml.core.Persister;
-import org.simpleframework.xml.transform.RegistryMatcher;
-import org.simpleframework.xml.transform.Transform;
-
+import io.reactivex.Single;
 import java.net.HttpURLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -28,169 +24,180 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import io.reactivex.Single;
 import okhttp3.OkHttpClient;
+import org.simpleframework.xml.core.Persister;
+import org.simpleframework.xml.transform.RegistryMatcher;
+import org.simpleframework.xml.transform.Transform;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
 public class SingleFactory {
-public static Single<Boolean> isAppUserRepoCollaborator(final String repoOwner, final String repoName,
-                                                        final boolean bypassCache) {
-	Gh4Application app = Gh4Application.get();
-	if (!app.isAuthorized()) {
-		return Single.just(false);
-	}
+  public static Single<Boolean>
+  isAppUserRepoCollaborator(final String repoOwner, final String repoName,
+                            final boolean bypassCache) {
+    Gh4Application app = Gh4Application.get();
+    if (!app.isAuthorized()) {
+      return Single.just(false);
+    }
 
-	RepositoryCollaboratorService service =
-		ServiceFactory.get(RepositoryCollaboratorService.class, bypassCache);
+    RepositoryCollaboratorService service =
+        ServiceFactory.get(RepositoryCollaboratorService.class, bypassCache);
 
-	return service.isUserCollaborator(repoOwner, repoName, app.getAuthLogin())
-	       // there's no actual content, result is always null
-	       .map(ApiHelpers::mapToTrueOnSuccess)
-	       // the API returns 403 if the user doesn't have push access,
-	       // which in turn means he isn't a collaborator
-	       .compose(RxUtils.mapFailureToValue(HttpURLConnection.HTTP_FORBIDDEN, false));
-}
+    return service
+        .isUserCollaborator(repoOwner, repoName, app.getAuthLogin())
+        // there's no actual content, result is always null
+        .map(ApiHelpers::mapToTrueOnSuccess)
+        // the API returns 403 if the user doesn't have push access,
+        // which in turn means he isn't a collaborator
+        .compose(
+            RxUtils.mapFailureToValue(HttpURLConnection.HTTP_FORBIDDEN, false));
+  }
 
-public static Single<NotificationListLoadResult> getNotifications(final boolean all,
-                                                                  final boolean participating, final boolean bypassCache) {
-	final NotificationService service =
-		ServiceFactory.get(NotificationService.class, bypassCache);
-	final Map<String, Object> options = new HashMap<>();
-	options.put("all", all);
-	options.put("participating", participating);
+  public static Single<NotificationListLoadResult>
+  getNotifications(final boolean all, final boolean participating,
+                   final boolean bypassCache) {
+    final NotificationService service =
+        ServiceFactory.get(NotificationService.class, bypassCache);
+    final Map<String, Object> options = new HashMap<>();
+    options.put("all", all);
+    options.put("participating", participating);
 
-	return ApiHelpers.PageIterator
-	       .toSingle(page->service.getNotifications(options, page))
-	       .map(SingleFactory::notificationsToResult);
-}
+    return ApiHelpers.PageIterator
+        .toSingle(page -> service.getNotifications(options, page))
+        .map(SingleFactory::notificationsToResult);
+  }
 
-private static NotificationListLoadResult notificationsToResult(
-	final List<NotificationThread> notifications) {
-	// group notifications by repo
-	final HashMap<Repository, ArrayList<NotificationThread> > notificationsByRepo = new HashMap<>();
-	for (NotificationThread n : notifications) {
-		ArrayList<NotificationThread> list = notificationsByRepo.get(n.repository());
-		if (list == null) {
-			list = new ArrayList<>();
-			notificationsByRepo.put(n.repository(), list);
-		}
-		list.add(n);
-	}
+  private static NotificationListLoadResult
+  notificationsToResult(final List<NotificationThread> notifications) {
+    // group notifications by repo
+    final HashMap<Repository, ArrayList<NotificationThread>>
+        notificationsByRepo = new HashMap<>();
+    for (NotificationThread n : notifications) {
+      ArrayList<NotificationThread> list =
+          notificationsByRepo.get(n.repository());
+      if (list == null) {
+        list = new ArrayList<>();
+        notificationsByRepo.put(n.repository(), list);
+      }
+      list.add(n);
+    }
 
-	// sort each group by updatedAt
-	for (ArrayList<NotificationThread> list : notificationsByRepo.values()) {
-		Collections.sort(list, (lhs, rhs)->rhs.updatedAt().compareTo(lhs.updatedAt()));
-	}
+    // sort each group by updatedAt
+    for (ArrayList<NotificationThread> list : notificationsByRepo.values()) {
+      Collections.sort(
+          list, (lhs, rhs) -> rhs.updatedAt().compareTo(lhs.updatedAt()));
+    }
 
-	// sort groups by updatedAt of top notification
-	ArrayList<Repository> reposByTimestamp = new ArrayList<>(notificationsByRepo.keySet());
-	Collections.sort(reposByTimestamp, (lhs, rhs)->{
-			NotificationThread lhsNotification = notificationsByRepo.get(lhs).get(0);
-			NotificationThread rhsNotification = notificationsByRepo.get(rhs).get(0);
-			return rhsNotification.updatedAt().compareTo(lhsNotification.updatedAt());
-		});
+    // sort groups by updatedAt of top notification
+    ArrayList<Repository> reposByTimestamp =
+        new ArrayList<>(notificationsByRepo.keySet());
+    Collections.sort(reposByTimestamp, (lhs, rhs) -> {
+      NotificationThread lhsNotification = notificationsByRepo.get(lhs).get(0);
+      NotificationThread rhsNotification = notificationsByRepo.get(rhs).get(0);
+      return rhsNotification.updatedAt().compareTo(lhsNotification.updatedAt());
+    });
 
-	// add to list
-	List<NotificationHolder> result = new ArrayList<>();
-	for (Repository repo : reposByTimestamp) {
-		ArrayList<NotificationThread> notifsForRepo = notificationsByRepo.get(repo);
-		boolean hasUnread = false;
-		int count = notifsForRepo.size();
+    // add to list
+    List<NotificationHolder> result = new ArrayList<>();
+    for (Repository repo : reposByTimestamp) {
+      ArrayList<NotificationThread> notifsForRepo =
+          notificationsByRepo.get(repo);
+      boolean hasUnread = false;
+      int count = notifsForRepo.size();
 
-		NotificationHolder repoItem = new NotificationHolder(repo);
-		result.add(repoItem);
+      NotificationHolder repoItem = new NotificationHolder(repo);
+      result.add(repoItem);
 
-		for (int i = 0; i < count; i++) {
-			NotificationHolder item = new NotificationHolder(notifsForRepo.get(i));
-			hasUnread |= item.notification.unread();
-			item.setIsLastRepositoryNotification(i == count - 1);
-			result.add(item);
-		}
+      for (int i = 0; i < count; i++) {
+        NotificationHolder item = new NotificationHolder(notifsForRepo.get(i));
+        hasUnread |= item.notification.unread();
+        item.setIsLastRepositoryNotification(i == count - 1);
+        result.add(item);
+      }
 
-		repoItem.setIsRead(!hasUnread);
-	}
+      repoItem.setIsRead(!hasUnread);
+    }
 
-	return new NotificationListLoadResult(result);
-}
+    return new NotificationListLoadResult(result);
+  }
 
-public static Single<List<Feed> > loadFeed(final String relativeUrl) {
-	return RetrofitHelper.feedService()
-	       .getFeed(relativeUrl)
-	       .map(ApiHelpers::throwOnFailure)
-	       .map(feed->feed.feed);
-}
+  public static Single<List<Feed>> loadFeed(final String relativeUrl) {
+    return RetrofitHelper.feedService()
+        .getFeed(relativeUrl)
+        .map(ApiHelpers::throwOnFailure)
+        .map(feed -> feed.feed);
+  }
 
-public static Single<List<Feed> > loadBlogFeed() {
-	return RetrofitHelper.feedService()
-	       .getBlogFeed()
-	       .map(ApiHelpers::throwOnFailure)
-	       .map(feed->feed.feed);
-}
+  public static Single<List<Feed>> loadBlogFeed() {
+    return RetrofitHelper.feedService()
+        .getBlogFeed()
+        .map(ApiHelpers::throwOnFailure)
+        .map(feed -> feed.feed);
+  }
 
-public static Single<List<Trend> > loadTrends(final String type) {
-	return RetrofitHelper.trendService()
-	       .getTrends(type)
-	       .map(ApiHelpers::throwOnFailure);
-}
+  public static Single<List<Trend>> loadTrends(final String type) {
+    return RetrofitHelper.trendService().getTrends(type).map(
+        ApiHelpers::throwOnFailure);
+  }
 
-private static class RetrofitHelper {
-private static GitHubFeedService sFeedService;
-private static TrendService sTrendService;
+  private static class RetrofitHelper {
+    private static GitHubFeedService sFeedService;
+    private static TrendService sTrendService;
 
-static GitHubFeedService feedService() {
-	if (sFeedService == null) {
-		initialize();
-	}
-	return sFeedService;
-}
+    static GitHubFeedService feedService() {
+      if (sFeedService == null) {
+        initialize();
+      }
+      return sFeedService;
+    }
 
-static TrendService trendService() {
-	if (sTrendService == null) {
-		initialize();
-	}
-	return sTrendService;
-}
+    static TrendService trendService() {
+      if (sTrendService == null) {
+        initialize();
+      }
+      return sTrendService;
+    }
 
-private static void initialize() {
-	RegistryMatcher matcher = new RegistryMatcher();
-	matcher.bind(Date.class, new Transform<Date>() {
-				private final DateFormat mFormat =
-					new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+    private static void initialize() {
+      RegistryMatcher matcher = new RegistryMatcher();
+      matcher.bind(Date.class, new Transform<Date>() {
+        private final DateFormat mFormat =
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
 
-				@Override
-				public Date read(final String value) throws Exception {
-				        return mFormat.parse(value);
-				}
+        @Override
+        public Date read(final String value) throws Exception {
+          return mFormat.parse(value);
+        }
 
-				@Override
-				public String write(final Date value) throws Exception {
-				        return mFormat.format(value);
-				}
-			});
+        @Override
+        public String write(final Date value) throws Exception {
+          return mFormat.format(value);
+        }
+      });
 
-	OkHttpClient client = ServiceFactory.getHttpClientBuilder()
-	                      .followRedirects(false)
-	                      .build();
+      OkHttpClient client =
+          ServiceFactory.getHttpClientBuilder().followRedirects(false).build();
 
-	sFeedService = new Retrofit.Builder()
-	               .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-	               .addConverterFactory(SimpleXmlConverterFactory.create(new Persister(matcher)))
-	               .baseUrl("https://github.com/")
-	               .client(client)
-	               .build()
-	               .create(GitHubFeedService.class);
-	sTrendService = new Retrofit.Builder()
-	                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-	                .addConverterFactory(MoshiConverterFactory.create(ServiceGenerator.moshi))
-	                .baseUrl("https://raw.githubusercontent.com/Unpublished/GithubTrending/")
-	                .build()
-	                .create(TrendService.class);
-}
-}
-
-
+      sFeedService =
+          new Retrofit.Builder()
+              .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+              .addConverterFactory(
+                  SimpleXmlConverterFactory.create(new Persister(matcher)))
+              .baseUrl("https://github.com/")
+              .client(client)
+              .build()
+              .create(GitHubFeedService.class);
+      sTrendService =
+          new Retrofit.Builder()
+              .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+              .addConverterFactory(
+                  MoshiConverterFactory.create(ServiceGenerator.moshi))
+              .baseUrl(
+                  "https://raw.githubusercontent.com/Unpublished/GithubTrending/")
+              .build()
+              .create(TrendService.class);
+    }
+  }
 }

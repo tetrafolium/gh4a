@@ -27,7 +27,6 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
-
 import com.gh4a.R;
 import com.gh4a.ServiceFactory;
 import com.gh4a.activities.FileViewerActivity;
@@ -46,417 +45,450 @@ import com.meisolsson.githubsdk.model.SearchCode;
 import com.meisolsson.githubsdk.model.TextMatch;
 import com.meisolsson.githubsdk.model.User;
 import com.meisolsson.githubsdk.service.search.SearchService;
-
 import io.reactivex.Single;
 import retrofit2.Response;
 
-public class SearchFragment extends PagedDataBaseFragment<Object> implements
-	SearchView.OnQueryTextListener, SearchView.OnCloseListener,
-	                            SearchView.OnSuggestionListener, FilterQueryProvider,
-	                            AdapterView.OnItemSelectedListener, SearchAdapter.Callback {
-public static SearchFragment newInstance(final int initialType, final String initialQuery,
-                                         final boolean startSearchImmediately) {
-	SearchFragment f = new SearchFragment();
-	Bundle args = new Bundle();
-	args.putInt("search_type", initialType);
-	args.putString("initial_search", initialQuery);
-	args.putBoolean("do_initial_load", startSearchImmediately);
-	f.setArguments(args);
-	return f;
-}
+public class SearchFragment extends PagedDataBaseFragment<Object>
+    implements SearchView.OnQueryTextListener, SearchView.OnCloseListener,
+               SearchView.OnSuggestionListener, FilterQueryProvider,
+               AdapterView.OnItemSelectedListener, SearchAdapter.Callback {
+  public static SearchFragment
+  newInstance(final int initialType, final String initialQuery,
+              final boolean startSearchImmediately) {
+    SearchFragment f = new SearchFragment();
+    Bundle args = new Bundle();
+    args.putInt("search_type", initialType);
+    args.putString("initial_search", initialQuery);
+    args.putBoolean("do_initial_load", startSearchImmediately);
+    f.setArguments(args);
+    return f;
+  }
 
-public static final int SEARCH_TYPE_REPO = 0;
-public static final int SEARCH_TYPE_USER = 1;
-public static final int SEARCH_TYPE_CODE = 2;
+  public static final int SEARCH_TYPE_REPO = 0;
+  public static final int SEARCH_TYPE_USER = 1;
+  public static final int SEARCH_TYPE_CODE = 2;
 
-private static final int[][] HINT_AND_EMPTY_TEXTS = {
-	{R.string.search_hint_repo, R.string.no_search_repos_found },
-	{R.string.search_hint_user, R.string.no_search_users_found },
-	{R.string.search_hint_code, R.string.no_search_code_found }
-};
+  private static final int[][] HINT_AND_EMPTY_TEXTS = {
+      {R.string.search_hint_repo, R.string.no_search_repos_found},
+      {R.string.search_hint_user, R.string.no_search_users_found},
+      {R.string.search_hint_code, R.string.no_search_code_found}};
 
-private static final String[] SUGGESTION_PROJECTION = {
-	SuggestionsProvider.Columns._ID, SuggestionsProvider.Columns.SUGGESTION
-};
-private static final String SUGGESTION_SELECTION =
-	SuggestionsProvider.Columns.TYPE + " = ? AND "
-	+ SuggestionsProvider.Columns.SUGGESTION + " LIKE ?";
-private static final String SUGGESTION_ORDER = SuggestionsProvider.Columns.DATE + " DESC";
+  private static final String[] SUGGESTION_PROJECTION = {
+      SuggestionsProvider.Columns._ID, SuggestionsProvider.Columns.SUGGESTION};
+  private static final String SUGGESTION_SELECTION =
+      SuggestionsProvider.Columns.TYPE + " = ? AND " +
+      SuggestionsProvider.Columns.SUGGESTION + " LIKE ?";
+  private static final String SUGGESTION_ORDER =
+      SuggestionsProvider.Columns.DATE + " DESC";
 
-private static final String STATE_KEY_QUERY = "query";
-private static final String STATE_KEY_SEARCH_TYPE = "search_type";
+  private static final String STATE_KEY_QUERY = "query";
+  private static final String STATE_KEY_SEARCH_TYPE = "search_type";
 
-private SearchAdapter mAdapter;
+  private SearchAdapter mAdapter;
 
-private Spinner mSearchType;
-private SearchView mSearch;
-private int mSelectedSearchType;
-private String mQuery;
+  private Spinner mSearchType;
+  private SearchView mSearch;
+  private int mSelectedSearchType;
+  private String mQuery;
 
-@Override
-public void onCreate(final @Nullable Bundle savedInstanceState) {
-	super.onCreate(savedInstanceState);
-	setHasOptionsMenu(true);
-	if (savedInstanceState != null) {
-		mQuery = savedInstanceState.getString(STATE_KEY_QUERY);
-		mSelectedSearchType = savedInstanceState.getInt(STATE_KEY_SEARCH_TYPE, SEARCH_TYPE_REPO);
-	} else {
-		Bundle args = getArguments();
-		mSelectedSearchType = args.getInt("search_type", SEARCH_TYPE_REPO);
-		mQuery = args.getString("initial_search");
-	}
-}
+  @Override
+  public void onCreate(final @Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setHasOptionsMenu(true);
+    if (savedInstanceState != null) {
+      mQuery = savedInstanceState.getString(STATE_KEY_QUERY);
+      mSelectedSearchType =
+          savedInstanceState.getInt(STATE_KEY_SEARCH_TYPE, SEARCH_TYPE_REPO);
+    } else {
+      Bundle args = getArguments();
+      mSelectedSearchType = args.getInt("search_type", SEARCH_TYPE_REPO);
+      mQuery = args.getString("initial_search");
+    }
+  }
 
-@Override
-public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
-	inflater.inflate(R.menu.search, menu);
+  @Override
+  public void onCreateOptionsMenu(final Menu menu,
+                                  final MenuInflater inflater) {
+    inflater.inflate(R.menu.search, menu);
 
-	mSearchType = (Spinner) menu.findItem(R.id.type).getActionView();
-	mSearchType.setAdapter(new SearchTypeAdapter(mSearchType.getContext(), getActivity()));
-	mSearchType.setOnItemSelectedListener(this);
-	mSearchType.setSelection(mSelectedSearchType);
+    mSearchType = (Spinner)menu.findItem(R.id.type).getActionView();
+    mSearchType.setAdapter(
+        new SearchTypeAdapter(mSearchType.getContext(), getActivity()));
+    mSearchType.setOnItemSelectedListener(this);
+    mSearchType.setSelection(mSelectedSearchType);
 
-	SuggestionAdapter adapter = new SuggestionAdapter(getActivity());
-	adapter.setFilterQueryProvider(this);
+    SuggestionAdapter adapter = new SuggestionAdapter(getActivity());
+    adapter.setFilterQueryProvider(this);
 
-	mSearch = (SearchView) menu.findItem(R.id.search).getActionView();
-	mSearch.setIconifiedByDefault(true);
-	mSearch.requestFocus();
-	mSearch.onActionViewExpanded();
-	mSearch.setIconified(false);
-	mSearch.setOnQueryTextListener(this);
-	mSearch.setOnCloseListener(this);
-	mSearch.setOnSuggestionListener(this);
-	mSearch.setSuggestionsAdapter(adapter);
-	if (mQuery != null) {
-		mSearch.setQuery(mQuery, false);
-	}
+    mSearch = (SearchView)menu.findItem(R.id.search).getActionView();
+    mSearch.setIconifiedByDefault(true);
+    mSearch.requestFocus();
+    mSearch.onActionViewExpanded();
+    mSearch.setIconified(false);
+    mSearch.setOnQueryTextListener(this);
+    mSearch.setOnCloseListener(this);
+    mSearch.setOnSuggestionListener(this);
+    mSearch.setSuggestionsAdapter(adapter);
+    if (mQuery != null) {
+      mSearch.setQuery(mQuery, false);
+    }
 
-	updateSearchViewHint();
+    updateSearchViewHint();
 
-	super.onCreateOptionsMenu(menu, inflater);
-}
+    super.onCreateOptionsMenu(menu, inflater);
+  }
 
-@Override
-public void onSaveInstanceState(final Bundle outState) {
-	outState.putInt(STATE_KEY_SEARCH_TYPE, mSelectedSearchType);
-	outState.putString(STATE_KEY_QUERY, mQuery);
-	super.onSaveInstanceState(outState);
-}
+  @Override
+  public void onSaveInstanceState(final Bundle outState) {
+    outState.putInt(STATE_KEY_SEARCH_TYPE, mSelectedSearchType);
+    outState.putString(STATE_KEY_QUERY, mQuery);
+    super.onSaveInstanceState(outState);
+  }
 
-@Override
-protected RootAdapter<Object, ? extends RecyclerView.ViewHolder> onCreateAdapter() {
-	mAdapter = new SearchAdapter(getActivity(), this);
-	mAdapter.setMode(mSelectedSearchType);
-	return mAdapter;
-}
+  @Override
+  protected RootAdapter<Object, ? extends RecyclerView.ViewHolder>
+  onCreateAdapter() {
+    mAdapter = new SearchAdapter(getActivity(), this);
+    mAdapter.setMode(mSelectedSearchType);
+    return mAdapter;
+  }
 
-@Override
-protected boolean shouldDoInitialLoad() {
-	return getArguments().getBoolean("do_initial_load", true);
-}
+  @Override
+  protected boolean shouldDoInitialLoad() {
+    return getArguments().getBoolean("do_initial_load", true);
+  }
 
-@Override
-protected Single<Response<Page<Object> > > loadPage(final int page, final boolean bypassCache) {
-	if (TextUtils.isEmpty(mQuery)) {
-		return Single.just(Response.success(new ApiHelpers.DummyPage<>()));
-	}
-	switch (mSelectedSearchType) {
-	case SEARCH_TYPE_REPO:
-		return makeRepoSearchSingle(page, bypassCache);
-	case SEARCH_TYPE_USER:
-		return makeUserSearchSingle(page, bypassCache);
-	case SEARCH_TYPE_CODE:
-		return makeCodeSearchSingle(page, bypassCache);
-	}
-	throw new IllegalStateException("Unexpected search type " + mSelectedSearchType);
-}
+  @Override
+  protected Single<Response<Page<Object>>> loadPage(final int page,
+                                                    final boolean bypassCache) {
+    if (TextUtils.isEmpty(mQuery)) {
+      return Single.just(Response.success(new ApiHelpers.DummyPage<>()));
+    }
+    switch (mSelectedSearchType) {
+    case SEARCH_TYPE_REPO:
+      return makeRepoSearchSingle(page, bypassCache);
+    case SEARCH_TYPE_USER:
+      return makeUserSearchSingle(page, bypassCache);
+    case SEARCH_TYPE_CODE:
+      return makeCodeSearchSingle(page, bypassCache);
+    }
+    throw new IllegalStateException("Unexpected search type " +
+                                    mSelectedSearchType);
+  }
 
-@Override
-protected int getEmptyTextResId() {
-	return 0; // will be updated later
-}
+  @Override
+  protected int getEmptyTextResId() {
+    return 0; // will be updated later
+  }
 
-@Override
-public void onItemClick(final Object item) {
-	if (item instanceof Repository) {
-		Repository repository = (Repository) item;
-		startActivity(RepositoryActivity.makeIntent(getActivity(), repository));
-	} else if (item instanceof SearchCode) {
-		openFileViewer((SearchCode) item, -1);
-	} else {
-		User user = (User) item;
-		startActivity(UserActivity.makeIntent(getActivity(), user));
-	}
-}
+  @Override
+  public void onItemClick(final Object item) {
+    if (item instanceof Repository) {
+      Repository repository = (Repository)item;
+      startActivity(RepositoryActivity.makeIntent(getActivity(), repository));
+    } else if (item instanceof SearchCode) {
+      openFileViewer((SearchCode)item, -1);
+    } else {
+      User user = (User)item;
+      startActivity(UserActivity.makeIntent(getActivity(), user));
+    }
+  }
 
-@Override
-public boolean onQueryTextSubmit(final String query) {
-	mQuery = query;
-	if (!StringUtils.isBlank(query)) {
-		final ContentResolver cr = getActivity().getContentResolver();
-		final ContentValues cv = new ContentValues();
-		cv.put(SuggestionsProvider.Columns.TYPE, mSelectedSearchType);
-		cv.put(SuggestionsProvider.Columns.SUGGESTION, query);
-		cv.put(SuggestionsProvider.Columns.DATE, System.currentTimeMillis());
+  @Override
+  public boolean onQueryTextSubmit(final String query) {
+    mQuery = query;
+    if (!StringUtils.isBlank(query)) {
+      final ContentResolver cr = getActivity().getContentResolver();
+      final ContentValues cv = new ContentValues();
+      cv.put(SuggestionsProvider.Columns.TYPE, mSelectedSearchType);
+      cv.put(SuggestionsProvider.Columns.SUGGESTION, query);
+      cv.put(SuggestionsProvider.Columns.DATE, System.currentTimeMillis());
 
-		new Thread() {
-			@Override
-			public void run() {
-				cr.insert(SuggestionsProvider.Columns.CONTENT_URI, cv);
-			}
-		}.start();
-	}
-	loadResults();
-	return true;
-}
+      new Thread() {
+        @Override
+        public void run() {
+          cr.insert(SuggestionsProvider.Columns.CONTENT_URI, cv);
+        }
+      }.start();
+    }
+    loadResults();
+    return true;
+  }
 
-@Override
-public boolean onQueryTextChange(final String newText) {
-	mQuery = newText;
-	return true;
-}
+  @Override
+  public boolean onQueryTextChange(final String newText) {
+    mQuery = newText;
+    return true;
+  }
 
-@Override
-public boolean onClose() {
-	if (mAdapter != null) {
-		mAdapter.clear();
-	}
-	mQuery = null;
-	return true;
-}
+  @Override
+  public boolean onClose() {
+    if (mAdapter != null) {
+      mAdapter.clear();
+    }
+    mQuery = null;
+    return true;
+  }
 
-@Override
-public boolean onSuggestionSelect(final int position) {
-	return false;
-}
+  @Override
+  public boolean onSuggestionSelect(final int position) {
+    return false;
+  }
 
-@Override
-public boolean onSuggestionClick(final int position) {
-	Cursor cursor = mSearch.getSuggestionsAdapter().getCursor();
-	if (cursor.moveToPosition(position)) {
-		if (position == cursor.getCount() - 1) {
-			final int type = mSelectedSearchType;
-			final ContentResolver cr = getActivity().getContentResolver();
-			new Thread() {
-				@Override
-				public void run() {
-					cr.delete(SuggestionsProvider.Columns.CONTENT_URI,
-					          SuggestionsProvider.Columns.TYPE + " = ?",
-					          new String[] {String.valueOf(type) });
-				}
-			}.start();
-		} else {
-			mQuery = cursor.getString(1);
-			mSearch.setQuery(mQuery, false);
-		}
-	}
-	return true;
-}
+  @Override
+  public boolean onSuggestionClick(final int position) {
+    Cursor cursor = mSearch.getSuggestionsAdapter().getCursor();
+    if (cursor.moveToPosition(position)) {
+      if (position == cursor.getCount() - 1) {
+        final int type = mSelectedSearchType;
+        final ContentResolver cr = getActivity().getContentResolver();
+        new Thread() {
+          @Override
+          public void run() {
+            cr.delete(SuggestionsProvider.Columns.CONTENT_URI,
+                      SuggestionsProvider.Columns.TYPE + " = ?",
+                      new String[] {String.valueOf(type)});
+          }
+        }.start();
+      } else {
+        mQuery = cursor.getString(1);
+        mSearch.setQuery(mQuery, false);
+      }
+    }
+    return true;
+  }
 
-@Override
-public void onItemSelected(final AdapterView<?> parent, final View view, final int position, final long id) {
-	updateSelectedSearchType();
-}
+  @Override
+  public void onItemSelected(final AdapterView<?> parent, final View view,
+                             final int position, final long id) {
+    updateSelectedSearchType();
+  }
 
-@Override
-public void onNothingSelected(final AdapterView<?> parent) {
-	updateSelectedSearchType();
-}
+  @Override
+  public void onNothingSelected(final AdapterView<?> parent) {
+    updateSelectedSearchType();
+  }
 
-@Override
-public void onSearchFragmentClick(final SearchCode result, final int matchIndex) {
-	openFileViewer(result, matchIndex);
-}
+  @Override
+  public void onSearchFragmentClick(final SearchCode result,
+                                    final int matchIndex) {
+    openFileViewer(result, matchIndex);
+  }
 
-@Override
-public Cursor runQuery(final CharSequence query) {
-	if (TextUtils.isEmpty(query)) {
-		return null;
-	}
-	return getContext().getContentResolver().query(SuggestionsProvider.Columns.CONTENT_URI,
-	                                               SUGGESTION_PROJECTION, SUGGESTION_SELECTION,
-	                                               new String[] {String.valueOf(mSelectedSearchType), query + "%" }, SUGGESTION_ORDER);
-}
+  @Override
+  public Cursor runQuery(final CharSequence query) {
+    if (TextUtils.isEmpty(query)) {
+      return null;
+    }
+    return getContext().getContentResolver().query(
+        SuggestionsProvider.Columns.CONTENT_URI, SUGGESTION_PROJECTION,
+        SUGGESTION_SELECTION,
+        new String[] {String.valueOf(mSelectedSearchType), query + "%"},
+        SUGGESTION_ORDER);
+  }
 
-private void openFileViewer(final SearchCode result, final int matchIndex) {
-	Repository repo = result.repository();
-	Uri uri = Uri.parse(result.url());
-	String ref = uri.getQueryParameter("ref");
-	TextMatch textMatch = matchIndex >= 0 ? result.textMatches().get(matchIndex) : null;
-	startActivity(FileViewerActivity.makeIntentWithSearchMatch(getActivity(),
-	                                                           repo.owner().login(), repo.name(), ref, result.path(),
-	                                                           textMatch));
-}
+  private void openFileViewer(final SearchCode result, final int matchIndex) {
+    Repository repo = result.repository();
+    Uri uri = Uri.parse(result.url());
+    String ref = uri.getQueryParameter("ref");
+    TextMatch textMatch =
+        matchIndex >= 0 ? result.textMatches().get(matchIndex) : null;
+    startActivity(FileViewerActivity.makeIntentWithSearchMatch(
+        getActivity(), repo.owner().login(), repo.name(), ref, result.path(),
+        textMatch));
+  }
 
-private void loadResults() {
-	mSearch.clearFocus();
-	onRefresh();
-}
+  private void loadResults() {
+    mSearch.clearFocus();
+    onRefresh();
+  }
 
-private void updateSearchViewHint() {
-	int[] hintAndEmptyTextResIds = HINT_AND_EMPTY_TEXTS[mSelectedSearchType];
-	mSearch.setQueryHint(getString(hintAndEmptyTextResIds[0]));
-	updateEmptyText(hintAndEmptyTextResIds[1]);
-}
+  private void updateSearchViewHint() {
+    int[] hintAndEmptyTextResIds = HINT_AND_EMPTY_TEXTS[mSelectedSearchType];
+    mSearch.setQueryHint(getString(hintAndEmptyTextResIds[0]));
+    updateEmptyText(hintAndEmptyTextResIds[1]);
+  }
 
-private void updateSelectedSearchType() {
-	int newType = mSearchType.getSelectedItemPosition();
-	if (newType == mSelectedSearchType) {
-		return;
-	}
-	mSelectedSearchType = newType;
-	mAdapter.setMode(newType);
+  private void updateSelectedSearchType() {
+    int newType = mSearchType.getSelectedItemPosition();
+    if (newType == mSelectedSearchType) {
+      return;
+    }
+    mSelectedSearchType = newType;
+    mAdapter.setMode(newType);
 
-	updateSearchViewHint();
-	updateEmptyState();
-	resetSubject();
+    updateSearchViewHint();
+    updateEmptyState();
+    resetSubject();
 
-	// force re-filtering of the view
-	mSearch.setQuery(mQuery, true);
-}
+    // force re-filtering of the view
+    mSearch.setQuery(mQuery, true);
+  }
 
-private void updateEmptyText(final @StringRes int emptyTextResId) {
-	TextView emptyView = getView().findViewById(android.R.id.empty);
-	emptyView.setText(emptyTextResId);
-}
+  private void updateEmptyText(final @StringRes int emptyTextResId) {
+    TextView emptyView = getView().findViewById(android.R.id.empty);
+    emptyView.setText(emptyTextResId);
+  }
 
-private Single<Response<Page<Object> > > makeRepoSearchSingle(final long page, final boolean bypassCache) {
-	SearchService service = ServiceFactory.get(SearchService.class, bypassCache);
-	String params = mQuery + " fork:true";
+  private Single<Response<Page<Object>>>
+  makeRepoSearchSingle(final long page, final boolean bypassCache) {
+    SearchService service =
+        ServiceFactory.get(SearchService.class, bypassCache);
+    String params = mQuery + " fork:true";
 
-	return service.searchRepositories(params, null, null, page)
-	       .compose(result->RxUtils.<Repository, Object>searchPageAdapter(result, item->item))
-	       // With that status code, Github wants to tell us there are no
-	       // repositories to search in. Just pretend no error and return
-	       // an empty list in that case.
-	       .compose(RxUtils.mapFailureToValue(422, Response.success(new ApiHelpers.DummyPage<>())));
-}
+    return service.searchRepositories(params, null, null, page)
+        .compose(result
+                 -> RxUtils.<Repository, Object>searchPageAdapter(result,
+                                                                  item -> item))
+        // With that status code, Github wants to tell us there are no
+        // repositories to search in. Just pretend no error and return
+        // an empty list in that case.
+        .compose(RxUtils.mapFailureToValue(
+            422, Response.success(new ApiHelpers.DummyPage<>())));
+  }
 
-private Single<Response<Page<Object> > > makeUserSearchSingle(final long page, final boolean bypassCache) {
-	final SearchService service = ServiceFactory.get(SearchService.class, bypassCache);
-	return service.searchUsers(mQuery, null, null, page)
-	       .compose(result->RxUtils.<User, Object>searchPageAdapter(result, item->item));
-}
+  private Single<Response<Page<Object>>>
+  makeUserSearchSingle(final long page, final boolean bypassCache) {
+    final SearchService service =
+        ServiceFactory.get(SearchService.class, bypassCache);
+    return service.searchUsers(mQuery, null, null, page)
+        .compose(
+            result
+            -> RxUtils.<User, Object>searchPageAdapter(result, item -> item));
+  }
 
-private Single<Response<Page<Object> > > makeCodeSearchSingle(final long page, final boolean bypassCache) {
-	SearchService service = ServiceFactory.get(SearchService.class, bypassCache,
-	                                           "application/vnd.github.v3.text-match+json", null, null);
+  private Single<Response<Page<Object>>>
+  makeCodeSearchSingle(final long page, final boolean bypassCache) {
+    SearchService service = ServiceFactory.get(
+        SearchService.class, bypassCache,
+        "application/vnd.github.v3.text-match+json", null, null);
 
-	return service.searchCode(mQuery, null, null, page)
-	       .compose(result->RxUtils.<SearchCode, Object>searchPageAdapter(result, item->item));
-}
+    return service.searchCode(mQuery, null, null, page)
+        .compose(result
+                 -> RxUtils.<SearchCode, Object>searchPageAdapter(
+                     result, item -> item));
+  }
 
-private static class SearchTypeAdapter extends BaseAdapter implements SpinnerAdapter {
-private final Context mContext;
-private final LayoutInflater mInflater;
-private final LayoutInflater mPopupInflater;
+  private static class SearchTypeAdapter
+      extends BaseAdapter implements SpinnerAdapter {
+    private final Context mContext;
+    private final LayoutInflater mInflater;
+    private final LayoutInflater mPopupInflater;
 
-private final int[][] mResources = new int[][] {
-	{R.string.search_type_repo, R.drawable.icon_repositories_dark, R.attr.searchRepoIcon, 0 },
-	{R.string.search_type_user, R.drawable.search_users_dark, R.attr.searchUserIcon, 0 },
-	{R.string.search_type_code, R.drawable.search_code_dark, R.attr.searchCodeIcon, 0 }
-};
+    private final int[][] mResources = new int[][] {
+        {R.string.search_type_repo, R.drawable.icon_repositories_dark,
+         R.attr.searchRepoIcon, 0},
+        {R.string.search_type_user, R.drawable.search_users_dark,
+         R.attr.searchUserIcon, 0},
+        {R.string.search_type_code, R.drawable.search_code_dark,
+         R.attr.searchCodeIcon, 0}};
 
-private SearchTypeAdapter(final Context context, final Context popupContext) {
-	mContext = context;
-	mInflater = LayoutInflater.from(context);
-	mPopupInflater = LayoutInflater.from(popupContext);
-	for (int i = 0; i < mResources.length; i++) {
-		mResources[i][3] = UiUtils.resolveDrawable(popupContext, mResources[i][2]);
-	}
-}
+    private SearchTypeAdapter(final Context context,
+                              final Context popupContext) {
+      mContext = context;
+      mInflater = LayoutInflater.from(context);
+      mPopupInflater = LayoutInflater.from(popupContext);
+      for (int i = 0; i < mResources.length; i++) {
+        mResources[i][3] =
+            UiUtils.resolveDrawable(popupContext, mResources[i][2]);
+      }
+    }
 
-@Override
-public int getCount() {
-	return mResources.length;
-}
+    @Override
+    public int getCount() {
+      return mResources.length;
+    }
 
-@Override
-public CharSequence getItem(final int position) {
-	return mContext.getString(mResources[position][0]);
-}
+    @Override
+    public CharSequence getItem(final int position) {
+      return mContext.getString(mResources[position][0]);
+    }
 
-@Override
-public long getItemId(final int position) {
-	return 0;
-}
+    @Override
+    public long getItemId(final int position) {
+      return 0;
+    }
 
-@Override
-public View getView(final int position, final View convertView, final ViewGroup parent) {
-	if (convertView == null) {
-		convertView = mInflater.inflate(R.layout.search_type_small, null);
-	}
+    @Override
+    public View getView(final int position, final View convertView,
+                        final ViewGroup parent) {
+      if (convertView == null) {
+        convertView = mInflater.inflate(R.layout.search_type_small, null);
+      }
 
-	ImageView icon = convertView.findViewById(R.id.icon);
-	icon.setImageResource(mResources[position][1]);
+      ImageView icon = convertView.findViewById(R.id.icon);
+      icon.setImageResource(mResources[position][1]);
 
-	return convertView;
-}
+      return convertView;
+    }
 
-@Override
-public View getDropDownView(final int position, final View convertView, final ViewGroup parent) {
-	if (convertView == null) {
-		convertView = mPopupInflater.inflate(R.layout.search_type_popup, null);
-	}
+    @Override
+    public View getDropDownView(final int position, final View convertView,
+                                final ViewGroup parent) {
+      if (convertView == null) {
+        convertView = mPopupInflater.inflate(R.layout.search_type_popup, null);
+      }
 
-	ImageView icon = convertView.findViewById(R.id.icon);
-	icon.setImageResource(mResources[position][3]);
+      ImageView icon = convertView.findViewById(R.id.icon);
+      icon.setImageResource(mResources[position][3]);
 
-	TextView label = convertView.findViewById(R.id.label);
-	label.setText(mResources[position][0]);
+      TextView label = convertView.findViewById(R.id.label);
+      label.setText(mResources[position][0]);
 
-	return convertView;
-}
-}
+      return convertView;
+    }
+  }
 
-private static class SuggestionAdapter extends CursorAdapter {
-private final LayoutInflater mInflater;
+  private static class SuggestionAdapter extends CursorAdapter {
+    private final LayoutInflater mInflater;
 
-public SuggestionAdapter(final Context context) {
-	super(context, null, false);
-	mInflater = LayoutInflater.from(context);
-}
+    public SuggestionAdapter(final Context context) {
+      super(context, null, false);
+      mInflater = LayoutInflater.from(context);
+    }
 
-@Override
-public Cursor swapCursor(final Cursor newCursor) {
-	if (newCursor != null && newCursor.getCount() > 0) {
-		MatrixCursor clearRowCursor = new MatrixCursor(SUGGESTION_PROJECTION);
-		clearRowCursor.addRow(new Object[] {
-					Long.MAX_VALUE,
-					mContext.getString(R.string.clear_suggestions)
-				});
-		newCursor = new MergeCursor(new Cursor[] {newCursor, clearRowCursor });
-	}
-	return super.swapCursor(newCursor);
-}
+    @Override
+    public Cursor swapCursor(final Cursor newCursor) {
+      if (newCursor != null && newCursor.getCount() > 0) {
+        MatrixCursor clearRowCursor = new MatrixCursor(SUGGESTION_PROJECTION);
+        clearRowCursor.addRow(new Object[] {
+            Long.MAX_VALUE, mContext.getString(R.string.clear_suggestions)});
+        newCursor = new MergeCursor(new Cursor[] {newCursor, clearRowCursor});
+      }
+      return super.swapCursor(newCursor);
+    }
 
-@Override
-public int getItemViewType(final int position) {
-	return isClearRow(position) ? 1 : 0;
-}
+    @Override
+    public int getItemViewType(final int position) {
+      return isClearRow(position) ? 1 : 0;
+    }
 
-@Override
-public int getViewTypeCount() {
-	return 2;
-}
+    @Override
+    public int getViewTypeCount() {
+      return 2;
+    }
 
-@Override
-public View newView(final Context context, final Cursor cursor, final ViewGroup parent) {
-	@LayoutRes int layoutResId = isClearRow(cursor.getPosition())
-	                                 ? R.layout.row_suggestion_clear : R.layout.row_suggestion;
-	return mInflater.inflate(layoutResId, parent, false);
-}
+    @Override
+    public View newView(final Context context, final Cursor cursor,
+                        final ViewGroup parent) {
+      @LayoutRes
+      int layoutResId =
+          isClearRow(cursor.getPosition()) ? R.layout.row_suggestion_clear
+                                           : R.layout.row_suggestion;
+      return mInflater.inflate(layoutResId, parent, false);
+    }
 
-@Override
-public void bindView(final View view, final Context context, final Cursor cursor) {
-	TextView textView = (TextView) view;
-	int columnIndex = cursor.getColumnIndexOrThrow(SuggestionsProvider.Columns.SUGGESTION);
-	textView.setText(cursor.getString(columnIndex));
-}
+    @Override
+    public void bindView(final View view, final Context context,
+                         final Cursor cursor) {
+      TextView textView = (TextView)view;
+      int columnIndex =
+          cursor.getColumnIndexOrThrow(SuggestionsProvider.Columns.SUGGESTION);
+      textView.setText(cursor.getString(columnIndex));
+    }
 
-private boolean isClearRow(final int position) {
-	return position == getCount() - 1;
-}
-}
+    private boolean isClearRow(final int position) {
+      return position == getCount() - 1;
+    }
+  }
 }

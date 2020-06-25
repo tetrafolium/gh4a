@@ -18,129 +18,136 @@ package com.gh4a.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuItem;
-
 import com.gh4a.R;
 import com.gh4a.fragment.RepositoryListContainerFragment;
 
-public class RepositoryListActivity extends FragmentContainerActivity implements
-	RepositoryListContainerFragment.Callback {
-public static Intent makeIntent(final Context context, final String user, final boolean userIsOrg) {
-	return makeIntent(context, user, userIsOrg, null);
-}
+public class RepositoryListActivity extends FragmentContainerActivity
+    implements RepositoryListContainerFragment.Callback {
+  public static Intent makeIntent(final Context context, final String user,
+                                  final boolean userIsOrg) {
+    return makeIntent(context, user, userIsOrg, null);
+  }
 
-public static Intent makeIntent(final Context context, final String user, final boolean userIsOrg,
-                                final String defaultFilter) {
-	return new Intent(context, RepositoryListActivity.class)
-	       .putExtra("user", user)
-	       .putExtra("is_org", userIsOrg)
-	       .putExtra("filter_type", defaultFilter);
-}
+  public static Intent makeIntent(final Context context, final String user,
+                                  final boolean userIsOrg,
+                                  final String defaultFilter) {
+    return new Intent(context, RepositoryListActivity.class)
+        .putExtra("user", user)
+        .putExtra("is_org", userIsOrg)
+        .putExtra("filter_type", defaultFilter);
+  }
 
-private String mUserLogin;
-private boolean mUserIsOrg;
-private String mFilterType;
-private RepositoryListContainerFragment mFragment;
-private RepositoryListContainerFragment.FilterDrawerHelper mFilterDrawerHelper;
-private RepositoryListContainerFragment.SortDrawerHelper mSortDrawerHelper;
+  private String mUserLogin;
+  private boolean mUserIsOrg;
+  private String mFilterType;
+  private RepositoryListContainerFragment mFragment;
+  private RepositoryListContainerFragment
+      .FilterDrawerHelper mFilterDrawerHelper;
+  private RepositoryListContainerFragment.SortDrawerHelper mSortDrawerHelper;
 
-@Override
-public void onCreate(final Bundle savedInstanceState) {
-	super.onCreate(savedInstanceState);
+  @Override
+  public void onCreate(final Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-	mFragment = (RepositoryListContainerFragment) getFragment();
-	mSortDrawerHelper.setFilterType(mFragment.getFilterType());
-	updateRightNavigationDrawer();
-}
+    mFragment = (RepositoryListContainerFragment)getFragment();
+    mSortDrawerHelper.setFilterType(mFragment.getFilterType());
+    updateRightNavigationDrawer();
+  }
 
-@Nullable
-@Override
-protected String getActionBarTitle() {
-	return getString(R.string.user_pub_repos);
-}
+  @Nullable
+  @Override
+  protected String getActionBarTitle() {
+    return getString(R.string.user_pub_repos);
+  }
 
-@Nullable
-@Override
-protected String getActionBarSubtitle() {
-	return mUserLogin;
-}
+  @Nullable
+  @Override
+  protected String getActionBarSubtitle() {
+    return mUserLogin;
+  }
 
-@Override
-protected void onInitExtras(final Bundle extras) {
-	super.onInitExtras(extras);
-	Bundle data = getIntent().getExtras();
-	mUserLogin = data.getString("user");
-	mUserIsOrg = data.getBoolean("is_org");
-	mFilterType = data.getString("filter_type");
+  @Override
+  protected void onInitExtras(final Bundle extras) {
+    super.onInitExtras(extras);
+    Bundle data = getIntent().getExtras();
+    mUserLogin = data.getString("user");
+    mUserIsOrg = data.getBoolean("is_org");
+    mFilterType = data.getString("filter_type");
 
-	mFilterDrawerHelper = RepositoryListContainerFragment.FilterDrawerHelper.create(
-		mUserLogin, mUserIsOrg);
-	mSortDrawerHelper = new RepositoryListContainerFragment.SortDrawerHelper();
-	if (mFilterType != null) {
-		mSortDrawerHelper.setFilterType(mFilterType);
-	}
-}
+    mFilterDrawerHelper =
+        RepositoryListContainerFragment.FilterDrawerHelper.create(mUserLogin,
+                                                                  mUserIsOrg);
+    mSortDrawerHelper = new RepositoryListContainerFragment.SortDrawerHelper();
+    if (mFilterType != null) {
+      mSortDrawerHelper.setFilterType(mFilterType);
+    }
+  }
 
-@Override
-protected Fragment onCreateFragment() {
-	return RepositoryListContainerFragment.newInstance(mUserLogin, mUserIsOrg, mFilterType);
-}
+  @Override
+  protected Fragment onCreateFragment() {
+    return RepositoryListContainerFragment.newInstance(mUserLogin, mUserIsOrg,
+                                                       mFilterType);
+  }
 
-@Override
-protected int[] getRightNavigationDrawerMenuResources() {
-	int sortMenuResId = mSortDrawerHelper.getMenuResId();
-	int filterMenuResId = mFilterDrawerHelper.getMenuResId();
-	if (sortMenuResId == 0) {
-		return new int[] {filterMenuResId };
-	} else {
-		return new int[] {sortMenuResId, filterMenuResId };
-	}
-}
+  @Override
+  protected int[] getRightNavigationDrawerMenuResources() {
+    int sortMenuResId = mSortDrawerHelper.getMenuResId();
+    int filterMenuResId = mFilterDrawerHelper.getMenuResId();
+    if (sortMenuResId == 0) {
+      return new int[] {filterMenuResId};
+    } else {
+      return new int[] {sortMenuResId, filterMenuResId};
+    }
+  }
 
-@Override
-protected void onPrepareRightNavigationDrawerMenu(final Menu menu) {
-	if (mFragment != null) {
-		mFilterDrawerHelper.selectFilterType(menu, mFragment.getFilterType());
-		mSortDrawerHelper.selectSortType(menu, mFragment.getSortOrder(),
-		                                 mFragment.getSortDirection(), false);
-	}
-}
+  @Override
+  protected void onPrepareRightNavigationDrawerMenu(final Menu menu) {
+    if (mFragment != null) {
+      mFilterDrawerHelper.selectFilterType(menu, mFragment.getFilterType());
+      mSortDrawerHelper.selectSortType(menu, mFragment.getSortOrder(),
+                                       mFragment.getSortDirection(), false);
+    }
+  }
 
-@Override
-public boolean onNavigationItemSelected(final @NonNull MenuItem item) {
-	super.onNavigationItemSelected(item);
-	String type = mFilterDrawerHelper.handleSelectionAndGetFilterType(item);
-	if (type != null) {
-		mFragment.setFilterType(type);
-		super.supportInvalidateOptionsMenu();
-		updateRightNavigationDrawer();
-		return true;
-	}
-	String[] sortOrderAndDirection = mSortDrawerHelper.handleSelectionAndGetSortOrder(item);
-	if (sortOrderAndDirection != null) {
-		mFragment.setSortOrder(sortOrderAndDirection[0], sortOrderAndDirection[1]);
-		updateRightNavigationDrawer();
-		return true;
-	}
-	return false;
-}
+  @Override
+  public boolean onNavigationItemSelected(final @NonNull MenuItem item) {
+    super.onNavigationItemSelected(item);
+    String type = mFilterDrawerHelper.handleSelectionAndGetFilterType(item);
+    if (type != null) {
+      mFragment.setFilterType(type);
+      super.supportInvalidateOptionsMenu();
+      updateRightNavigationDrawer();
+      return true;
+    }
+    String[] sortOrderAndDirection =
+        mSortDrawerHelper.handleSelectionAndGetSortOrder(item);
+    if (sortOrderAndDirection != null) {
+      mFragment.setSortOrder(sortOrderAndDirection[0],
+                             sortOrderAndDirection[1]);
+      updateRightNavigationDrawer();
+      return true;
+    }
+    return false;
+  }
 
-@Override
-public void initiateFilter() {
-	toggleRightSideDrawer();
-}
+  @Override
+  public void initiateFilter() {
+    toggleRightSideDrawer();
+  }
 
-@Override
-public void supportInvalidateOptionsMenu() {
-	// happens when load is done; we ignore it as we don't want to close the IME in that case
-}
+  @Override
+  public void supportInvalidateOptionsMenu() {
+    // happens when load is done; we ignore it as we don't want to close the IME
+    // in that case
+  }
 
-@Override
-protected Intent navigateUp() {
-	return UserActivity.makeIntent(this, mUserLogin);
-}
+  @Override
+  protected Intent navigateUp() {
+    return UserActivity.makeIntent(this, mUserLogin);
+  }
 }

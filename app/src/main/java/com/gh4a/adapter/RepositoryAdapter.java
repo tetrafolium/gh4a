@@ -24,90 +24,95 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filterable;
 import android.widget.TextView;
-
 import com.gh4a.R;
 import com.gh4a.utils.StringUtils;
 import com.meisolsson.githubsdk.model.Repository;
 import com.vdurmont.emoji.EmojiParser;
-
 import java.util.Locale;
 
-public class RepositoryAdapter extends RootAdapter<Repository, RepositoryAdapter.ViewHolder>
-	implements Filterable {
-public RepositoryAdapter(final Context context) {
-	super(context);
-}
+public class RepositoryAdapter
+    extends RootAdapter<Repository, RepositoryAdapter.ViewHolder>
+    implements Filterable {
+  public RepositoryAdapter(final Context context) { super(context); }
 
-@Override
-public ViewHolder onCreateViewHolder(final LayoutInflater inflater, final ViewGroup parent, final int viewType) {
-	View v = inflater.inflate(R.layout.row_repo, parent, false);
-	return new ViewHolder(v);
-}
+  @Override
+  public ViewHolder onCreateViewHolder(final LayoutInflater inflater,
+                                       final ViewGroup parent,
+                                       final int viewType) {
+    View v = inflater.inflate(R.layout.row_repo, parent, false);
+    return new ViewHolder(v);
+  }
 
-@Override
-public void onBindViewHolder(final ViewHolder holder, final Repository repository) {
-	holder.tvTitle.setText(repository.owner().login() + "/" + repository.name());
+  @Override
+  public void onBindViewHolder(final ViewHolder holder,
+                               final Repository repository) {
+    holder.tvTitle.setText(repository.owner().login() + "/" +
+                           repository.name());
 
-	if (!StringUtils.isBlank(repository.description())) {
-		holder.tvDesc.setVisibility(View.VISIBLE);
-		holder.tvDesc.setText(
-			EmojiParser.parseToUnicode(StringUtils.doTeaser(repository.description())));
-	} else {
-		holder.tvDesc.setVisibility(View.GONE);
-	}
+    if (!StringUtils.isBlank(repository.description())) {
+      holder.tvDesc.setVisibility(View.VISIBLE);
+      holder.tvDesc.setText(EmojiParser.parseToUnicode(
+          StringUtils.doTeaser(repository.description())));
+    } else {
+      holder.tvDesc.setVisibility(View.GONE);
+    }
 
-	holder.tvLanguage.setText(repository.language() != null
-	                          ? repository.language() : mContext.getString(R.string.unknown));
-	holder.tvForks.setText(String.valueOf(repository.forksCount()));
-	holder.tvStars.setText(String.valueOf(repository.stargazersCount()));
-	holder.tvSize.setText(Formatter.formatFileSize(mContext, 1024L * repository.size()));
-	holder.tvPrivate.setVisibility(repository.isPrivate() ? View.VISIBLE : View.GONE);
-	holder.tvFork.setVisibility(repository.isFork() ? View.VISIBLE : View.GONE);
-}
+    holder.tvLanguage.setText(repository.language() != null
+                                  ? repository.language()
+                                  : mContext.getString(R.string.unknown));
+    holder.tvForks.setText(String.valueOf(repository.forksCount()));
+    holder.tvStars.setText(String.valueOf(repository.stargazersCount()));
+    holder.tvSize.setText(
+        Formatter.formatFileSize(mContext, 1024L * repository.size()));
+    holder.tvPrivate.setVisibility(repository.isPrivate() ? View.VISIBLE
+                                                          : View.GONE);
+    holder.tvFork.setVisibility(repository.isFork() ? View.VISIBLE : View.GONE);
+  }
 
-@Override
-protected boolean isFiltered(final CharSequence filter, final Repository repo) {
-	String lcFilter = filter.toString().toLowerCase(Locale.getDefault());
-	String name = repo.name().toLowerCase(Locale.getDefault());
-	return name.contains(lcFilter);
-}
+  @Override
+  protected boolean isFiltered(final CharSequence filter,
+                               final Repository repo) {
+    String lcFilter = filter.toString().toLowerCase(Locale.getDefault());
+    String name = repo.name().toLowerCase(Locale.getDefault());
+    return name.contains(lcFilter);
+  }
 
-public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
-	                               View.OnTouchListener {
-private ViewHolder(final View view) {
-	super(view);
-	tvTitle = view.findViewById(R.id.tv_title);
-	tvDesc = view.findViewById(R.id.tv_desc);
-	tvLanguage = view.findViewById(R.id.tv_language);
-	tvForks = view.findViewById(R.id.tv_forks);
-	tvStars = view.findViewById(R.id.tv_stars);
-	tvSize = view.findViewById(R.id.tv_size);
-	tvPrivate = view.findViewById(R.id.tv_private);
-	tvFork = view.findViewById(R.id.tv_fork);
+  public static class ViewHolder extends RecyclerView.ViewHolder
+      implements View.OnClickListener, View.OnTouchListener {
+    private ViewHolder(final View view) {
+      super(view);
+      tvTitle = view.findViewById(R.id.tv_title);
+      tvDesc = view.findViewById(R.id.tv_desc);
+      tvLanguage = view.findViewById(R.id.tv_language);
+      tvForks = view.findViewById(R.id.tv_forks);
+      tvStars = view.findViewById(R.id.tv_stars);
+      tvSize = view.findViewById(R.id.tv_size);
+      tvPrivate = view.findViewById(R.id.tv_private);
+      tvFork = view.findViewById(R.id.tv_fork);
 
-	view.findViewById(R.id.attributes).setOnClickListener(this);
-	view.findViewById(R.id.scrollView).setOnTouchListener(this);
-}
+      view.findViewById(R.id.attributes).setOnClickListener(this);
+      view.findViewById(R.id.scrollView).setOnTouchListener(this);
+    }
 
-private final TextView tvTitle;
-private final TextView tvDesc;
-private final TextView tvLanguage;
-private final TextView tvForks;
-private final TextView tvStars;
-private final TextView tvSize;
-private final TextView tvPrivate;
-private final TextView tvFork;
+    private final TextView tvTitle;
+    private final TextView tvDesc;
+    private final TextView tvLanguage;
+    private final TextView tvForks;
+    private final TextView tvStars;
+    private final TextView tvSize;
+    private final TextView tvPrivate;
+    private final TextView tvFork;
 
-@Override
-public void onClick(final View v) {
-	// Workaround to make it possible to open repositories when clicking inside of
-	// attributes ScrollView
-	itemView.performClick();
-}
+    @Override
+    public void onClick(final View v) {
+      // Workaround to make it possible to open repositories when clicking
+      // inside of attributes ScrollView
+      itemView.performClick();
+    }
 
-@Override
-public boolean onTouch(final View v, final MotionEvent event) {
-	return false;
-}
-}
+    @Override
+    public boolean onTouch(final View v, final MotionEvent event) {
+      return false;
+    }
+  }
 }

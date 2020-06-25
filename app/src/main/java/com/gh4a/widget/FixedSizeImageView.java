@@ -28,41 +28,40 @@ import android.util.AttributeSet;
  * optimize the drawable change code paths.
  */
 public class FixedSizeImageView extends AppCompatImageView {
-private boolean mSuppressLayoutRequest;
+  private boolean mSuppressLayoutRequest;
 
-public FixedSizeImageView(final Context context) {
-	super(context);
-}
+  public FixedSizeImageView(final Context context) { super(context); }
 
-public FixedSizeImageView(final Context context, final AttributeSet attrs) {
-	super(context, attrs);
-}
+  public FixedSizeImageView(final Context context, final AttributeSet attrs) {
+    super(context, attrs);
+  }
 
-public FixedSizeImageView(final Context context, final AttributeSet attrs, final int defStyle) {
-	super(context, attrs, defStyle);
-}
+  public FixedSizeImageView(final Context context, final AttributeSet attrs,
+                            final int defStyle) {
+    super(context, attrs, defStyle);
+  }
 
-public void setImageResource(final int resId) {
-	mSuppressLayoutRequest = true;
-	super.setImageResource(resId);
-	mSuppressLayoutRequest = false;
-}
+  public void setImageResource(final int resId) {
+    mSuppressLayoutRequest = true;
+    super.setImageResource(resId);
+    mSuppressLayoutRequest = false;
+  }
 
-public void setImageURI(final Uri uri) {
-	mSuppressLayoutRequest = true;
-	super.setImageURI(uri);
-	mSuppressLayoutRequest = false;
-}
+  public void setImageURI(final Uri uri) {
+    mSuppressLayoutRequest = true;
+    super.setImageURI(uri);
+    mSuppressLayoutRequest = false;
+  }
 
-public void setImageDrawable(final Drawable drawable) {
-	mSuppressLayoutRequest = true;
-	super.setImageDrawable(drawable);
-	mSuppressLayoutRequest = false;
-}
+  public void setImageDrawable(final Drawable drawable) {
+    mSuppressLayoutRequest = true;
+    super.setImageDrawable(drawable);
+    mSuppressLayoutRequest = false;
+  }
 
-public void requestLayout() {
-	if (!mSuppressLayoutRequest) {
-		super.requestLayout();
-	}
-}
+  public void requestLayout() {
+    if (!mSuppressLayoutRequest) {
+      super.requestLayout();
+    }
+  }
 }

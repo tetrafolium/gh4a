@@ -7,103 +7,109 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
-
 import com.gh4a.Gh4Application;
 import com.gh4a.R;
 import com.gh4a.utils.UiUtils;
 import com.gh4a.widget.EditorBottomSheet;
 import com.meisolsson.githubsdk.model.GitHubCommentBase;
-
 import io.reactivex.Single;
 
-public abstract class EditCommentActivity extends AppCompatActivity implements
-	EditorBottomSheet.Callback {
+public abstract class EditCommentActivity
+    extends AppCompatActivity implements EditorBottomSheet.Callback {
 
-protected static Intent fillInIntent(final Intent baseIntent, final String repoOwner, final String repoName,
-                                     final long id, final long replyToId, final String body, final @AttrRes int highlightColorAttr) {
-	return baseIntent.putExtra("owner", repoOwner)
-	       .putExtra("repo", repoName)
-	       .putExtra("id", id)
-	       .putExtra("reply_to", replyToId)
-	       .putExtra("body", body)
-	       .putExtra("highlight_color_attr", highlightColorAttr);
-}
+  protected static Intent fillInIntent(final Intent baseIntent,
+                                       final String repoOwner,
+                                       final String repoName, final long id,
+                                       final long replyToId, final String body,
+                                       final @AttrRes int highlightColorAttr) {
+    return baseIntent.putExtra("owner", repoOwner)
+        .putExtra("repo", repoName)
+        .putExtra("id", id)
+        .putExtra("reply_to", replyToId)
+        .putExtra("body", body)
+        .putExtra("highlight_color_attr", highlightColorAttr);
+  }
 
-private CoordinatorLayout mRootLayout;
-protected EditorBottomSheet mEditorSheet;
+  private CoordinatorLayout mRootLayout;
+  protected EditorBottomSheet mEditorSheet;
 
-@Override
-public void onCreate(final Bundle savedInstanceState) {
-	setTheme(Gh4Application.THEME == R.style.DarkTheme
-	         ? R.style.BottomSheetDarkTheme : R.style.BottomSheetLightTheme);
-	super.onCreate(savedInstanceState);
+  @Override
+  public void onCreate(final Bundle savedInstanceState) {
+    setTheme(Gh4Application.THEME == R.style.DarkTheme
+                 ? R.style.BottomSheetDarkTheme
+                 : R.style.BottomSheetLightTheme);
+    super.onCreate(savedInstanceState);
 
-	setContentView(R.layout.comment_editor);
+    setContentView(R.layout.comment_editor);
 
-	mRootLayout = findViewById(R.id.coordinator_layout);
-	mEditorSheet = findViewById(R.id.bottom_sheet);
+    mRootLayout = findViewById(R.id.coordinator_layout);
+    mEditorSheet = findViewById(R.id.bottom_sheet);
 
-	if (getIntent().getLongExtra("id", 0L) != 0L) {
-		ImageView saveButton = mEditorSheet.findViewById(R.id.send_button);
-		saveButton.setImageResource(UiUtils.resolveDrawable(this, R.attr.saveIcon));
-	}
+    if (getIntent().getLongExtra("id", 0L) != 0L) {
+      ImageView saveButton = mEditorSheet.findViewById(R.id.send_button);
+      saveButton.setImageResource(
+          UiUtils.resolveDrawable(this, R.attr.saveIcon));
+    }
 
-	mEditorSheet.setCallback(this);
-	if (getIntent().hasExtra("body")) {
-		mEditorSheet.setCommentText(getIntent().getStringExtra("body"), false);
-		getIntent().removeExtra("body");
-	}
+    mEditorSheet.setCallback(this);
+    if (getIntent().hasExtra("body")) {
+      mEditorSheet.setCommentText(getIntent().getStringExtra("body"), false);
+      getIntent().removeExtra("body");
+    }
 
-	@AttrRes int highlightColorAttr = getIntent().getIntExtra("highlight_color_attr", 0);
-	if (highlightColorAttr != 0) {
-		mEditorSheet.setHighlightColor(highlightColorAttr);
-	}
+    @AttrRes
+    int highlightColorAttr = getIntent().getIntExtra("highlight_color_attr", 0);
+    if (highlightColorAttr != 0) {
+      mEditorSheet.setHighlightColor(highlightColorAttr);
+    }
 
-	setResult(RESULT_CANCELED);
-}
+    setResult(RESULT_CANCELED);
+  }
 
-@Override
-public int getCommentEditorHintResId() {
-	return 0;
-}
+  @Override
+  public int getCommentEditorHintResId() {
+    return 0;
+  }
 
-@Override
-public Single<?> onEditorDoSend(final String body) {
-	Bundle extras = getIntent().getExtras();
-	String repoOwner = extras.getString("owner");
-	String repoName = extras.getString("repo");
-	long id = extras.getLong("id", 0L);
+  @Override
+  public Single<?> onEditorDoSend(final String body) {
+    Bundle extras = getIntent().getExtras();
+    String repoOwner = extras.getString("owner");
+    String repoName = extras.getString("repo");
+    long id = extras.getLong("id", 0L);
 
-	if (id == 0L) {
-		return createComment(repoOwner, repoName, body, extras.getLong("reply_to"));
-	} else {
-		return editComment(repoOwner, repoName, id, body);
-	}
-}
+    if (id == 0L) {
+      return createComment(repoOwner, repoName, body,
+                           extras.getLong("reply_to"));
+    } else {
+      return editComment(repoOwner, repoName, id, body);
+    }
+  }
 
-@Override
-public void onEditorTextSent() {
-	setResult(RESULT_OK);
-	finish();
-}
+  @Override
+  public void onEditorTextSent() {
+    setResult(RESULT_OK);
+    finish();
+  }
 
-@Override
-public int getEditorErrorMessageResId() {
-	return R.string.issue_error_comment;
-}
+  @Override
+  public int getEditorErrorMessageResId() {
+    return R.string.issue_error_comment;
+  }
 
-@Override
-public FragmentActivity getActivity() {
-	return this;
-}
+  @Override
+  public FragmentActivity getActivity() {
+    return this;
+  }
 
-@Override
-public CoordinatorLayout getRootLayout() {
-	return mRootLayout;
-}
+  @Override
+  public CoordinatorLayout getRootLayout() {
+    return mRootLayout;
+  }
 
-protected abstract Single<GitHubCommentBase> createComment(
-	String repoOwner, String repoName, String body, long replyToCommentId);
-protected abstract Single<GitHubCommentBase> editComment(
-	String repoOwner, String repoName, long commentId, String body);
+  protected abstract Single<GitHubCommentBase>
+  createComment(String repoOwner, String repoName, String body,
+                long replyToCommentId);
+  protected abstract Single<GitHubCommentBase>
+  editComment(String repoOwner, String repoName, long commentId, String body);
 }

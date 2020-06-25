@@ -11,135 +11,139 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.util.Log;
-
 import com.gh4a.BuildConfig;
-
 import java.util.Locale;
 
 public class SuggestionsProvider extends ContentProvider {
-private static final String TAG = "SuggestionsProvider";
+  private static final String TAG = "SuggestionsProvider";
 
-public interface Columns extends BaseColumns {
-Uri CONTENT_URI = Uri.parse(String.format(Locale.US,
-                                          "content://%s.SuggestionsProvider/suggestions", BuildConfig.APPLICATION_ID));
+  public interface Columns extends BaseColumns {
+    Uri CONTENT_URI = Uri.parse(
+        String.format(Locale.US, "content://%s.SuggestionsProvider/suggestions",
+                      BuildConfig.APPLICATION_ID));
 
-String TYPE = "type";
-String SUGGESTION = "suggestion";
-String DATE = "date";
+    String TYPE = "type";
+    String SUGGESTION = "suggestion";
+    String DATE = "date";
 
-int TYPE_REPO = 0;
-int TYPE_USER = 1;
-int TYPE_CODE = 2;
-}
+    int TYPE_REPO = 0;
+    int TYPE_USER = 1;
+    int TYPE_CODE = 2;
+  }
 
-private static final int MATCH_ALL = 0;
+  private static final int MATCH_ALL = 0;
 
-private static final UriMatcher
-        sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+  private static final UriMatcher sURIMatcher =
+      new UriMatcher(UriMatcher.NO_MATCH);
 
-static {
-	sURIMatcher.addURI(
-		String.format(Locale.US, "%s.SuggestionsProvider", BuildConfig.APPLICATION_ID),
-		"suggestions", MATCH_ALL);
-}
+  static {
+    sURIMatcher.addURI(String.format(Locale.US, "%s.SuggestionsProvider",
+                                     BuildConfig.APPLICATION_ID),
+                       "suggestions", MATCH_ALL);
+  }
 
-private DbHelper mDbHelper;
+  private DbHelper mDbHelper;
 
-@Override
-public boolean onCreate() {
-	mDbHelper = new DbHelper(getContext());
-	return true;
-}
+  @Override
+  public boolean onCreate() {
+    mDbHelper = new DbHelper(getContext());
+    return true;
+  }
 
-@Override
-public Cursor query(final @NonNull Uri uri, final String[] projection, final String selection,
-                    final String[] selectionArgs, final String sortOrder) {
-	SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-	int match = sURIMatcher.match(uri);
+  @Override
+  public Cursor query(final @NonNull Uri uri, final String[] projection,
+                      final String selection, final String[] selectionArgs,
+                      final String sortOrder) {
+    SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+    int match = sURIMatcher.match(uri);
 
-	qb.setTables(DbHelper.SUGGESTIONS_TABLE);
+    qb.setTables(DbHelper.SUGGESTIONS_TABLE);
 
-	switch (match) {
-	case MATCH_ALL:
-		break;
-	default:
-		Log.e(TAG, "query: invalid request: " + uri);
-		return null;
-	}
+    switch (match) {
+    case MATCH_ALL:
+      break;
+    default:
+      Log.e(TAG, "query: invalid request: " + uri);
+      return null;
+    }
 
-	if (sortOrder == null) {
-		sortOrder = Columns.DATE + " desc";
-	}
+    if (sortOrder == null) {
+      sortOrder = Columns.DATE + " desc";
+    }
 
-	SQLiteDatabase db = mDbHelper.getReadableDatabase();
-	Cursor ret = qb.query(db, projection, selection, selectionArgs, null, null, sortOrder);
+    SQLiteDatabase db = mDbHelper.getReadableDatabase();
+    Cursor ret = qb.query(db, projection, selection, selectionArgs, null, null,
+                          sortOrder);
 
-	ret.setNotificationUri(getContext().getContentResolver(), uri);
+    ret.setNotificationUri(getContext().getContentResolver(), uri);
 
-	return ret;
-}
+    return ret;
+  }
 
-@Override
-public String getType(final @NonNull Uri uri) {
-	return null;
-}
+  @Override
+  public String getType(final @NonNull Uri uri) {
+    return null;
+  }
 
-@Override
-public Uri insert(final @NonNull Uri uri, final ContentValues values) {
-	if (sURIMatcher.match(uri) != MATCH_ALL) {
-		return null;
-	}
+  @Override
+  public Uri insert(final @NonNull Uri uri, final ContentValues values) {
+    if (sURIMatcher.match(uri) != MATCH_ALL) {
+      return null;
+    }
 
-	SQLiteDatabase db = mDbHelper.getWritableDatabase();
-	long rowID = db.insert(DbHelper.SUGGESTIONS_TABLE, null, values);
-	if (rowID <= 0) {
-		return null;
-	}
+    SQLiteDatabase db = mDbHelper.getWritableDatabase();
+    long rowID = db.insert(DbHelper.SUGGESTIONS_TABLE, null, values);
+    if (rowID <= 0) {
+      return null;
+    }
 
-	getContext().getContentResolver().notifyChange(Columns.CONTENT_URI, null);
+    getContext().getContentResolver().notifyChange(Columns.CONTENT_URI, null);
 
-	return ContentUris.withAppendedId(Columns.CONTENT_URI, rowID);
-}
+    return ContentUris.withAppendedId(Columns.CONTENT_URI, rowID);
+  }
 
-@Override
-public int update(final @NonNull Uri uri, final ContentValues values, final String selection, final String[] selectionArgs) {
-	int count;
-	int match = sURIMatcher.match(uri);
-	SQLiteDatabase db = mDbHelper.getWritableDatabase();
+  @Override
+  public int update(final @NonNull Uri uri, final ContentValues values,
+                    final String selection, final String[] selectionArgs) {
+    int count;
+    int match = sURIMatcher.match(uri);
+    SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
-	switch (match) {
-	case MATCH_ALL:
-		count = db.update(DbHelper.SUGGESTIONS_TABLE, values, selection, selectionArgs);
-		break;
-	default:
-		throw new UnsupportedOperationException("Cannot update that URI: " + uri);
-	}
+    switch (match) {
+    case MATCH_ALL:
+      count = db.update(DbHelper.SUGGESTIONS_TABLE, values, selection,
+                        selectionArgs);
+      break;
+    default:
+      throw new UnsupportedOperationException("Cannot update that URI: " + uri);
+    }
 
-	if (count > 0) {
-		getContext().getContentResolver().notifyChange(Columns.CONTENT_URI, null);
-	}
+    if (count > 0) {
+      getContext().getContentResolver().notifyChange(Columns.CONTENT_URI, null);
+    }
 
-	return count;
-}
+    return count;
+  }
 
-@Override
-public int delete(final @NonNull Uri uri, final String selection, final String[] selectionArgs) {
-	int match = sURIMatcher.match(uri);
-	SQLiteDatabase db = mDbHelper.getWritableDatabase();
+  @Override
+  public int delete(final @NonNull Uri uri, final String selection,
+                    final String[] selectionArgs) {
+    int match = sURIMatcher.match(uri);
+    SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
-	switch (match) {
-	case MATCH_ALL:
-		break;
-	default:
-		throw new UnsupportedOperationException("Cannot delete the URI " + uri);
-	}
+    switch (match) {
+    case MATCH_ALL:
+      break;
+    default:
+      throw new UnsupportedOperationException("Cannot delete the URI " + uri);
+    }
 
-	int count = db.delete(DbHelper.SUGGESTIONS_TABLE, selection, selectionArgs);
+    int count = db.delete(DbHelper.SUGGESTIONS_TABLE, selection, selectionArgs);
 
-	if (count > 0) {
-		getContext().getContentResolver().notifyChange(Columns.CONTENT_URI, null);
-	}
+    if (count > 0) {
+      getContext().getContentResolver().notifyChange(Columns.CONTENT_URI, null);
+    }
 
-	return count;
-}
+    return count;
+  }
 }

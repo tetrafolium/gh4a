@@ -24,18 +24,20 @@ import android.content.Context;
 import android.content.Intent;
 
 public class EventReceiver extends BroadcastReceiver {
-@SuppressLint("InlinedApi")
-@Override
-public void onReceive(final Context context, final Intent intent) {
-	if (DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(intent.getAction())) {
-		try {
-			Intent downloadManagerIntent = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
-			downloadManagerIntent.addFlags(
-				Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-			context.startActivity(downloadManagerIntent);
-		} catch (ActivityNotFoundException e) {
-			// ignore, there's nothing we can do about this
-		}
-	}
-}
+  @SuppressLint("InlinedApi")
+  @Override
+  public void onReceive(final Context context, final Intent intent) {
+    if (DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(
+            intent.getAction())) {
+      try {
+        Intent downloadManagerIntent =
+            new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
+        downloadManagerIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                                       Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        context.startActivity(downloadManagerIntent);
+      } catch (ActivityNotFoundException e) {
+        // ignore, there's nothing we can do about this
+      }
+    }
+  }
 }
